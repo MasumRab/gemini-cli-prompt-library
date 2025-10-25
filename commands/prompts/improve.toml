@@ -46,6 +46,8 @@ Analyze and improve the following prompt:
 **Current State:**
 - Is the desired output format specified?
 - Are examples provided?
-- Is the level of detail clear?
-
-**
+**Improvements:**
+- Define the exact output format (e.g., JSON, Markdown)
+- Provide concrete examples of desired output
+- Specify the required level of detail and length
+"""
