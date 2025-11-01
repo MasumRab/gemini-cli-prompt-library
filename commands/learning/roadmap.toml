@@ -11,9 +11,9 @@ Please create a comprehensive learning roadmap for:
 
 #### Prerequisites Check
 What you should know before starting:
-- ☐ Prerequisite 1
-- ☐ Prerequisite 2
-- ☐ Prerequisite 3
+- [ ] Prerequisite 1
+- [ ] Prerequisite 2
+- [ ] Prerequisite 3
 
 #### Skill Level Check
 Which level are you?
@@ -53,9 +53,9 @@ Which level are you?
 - [ ] Topic 3: Development environment setup
 
 **Resources:**
-- 📚 [Resource 1]: Type (Article/Video/Course)
-- 📚 [Resource 2]: Type
-- 📚 [Resource 3]: Type
+- [books] [Resource 1]: Type (Article/Video/Course)
+- [books] [Resource 2]: Type
+- [books] [Resource 3]: Type
 
 **Practice Projects:**
 1. **Project 1**: Simple starter project
@@ -76,8 +76,8 @@ Which level are you?
 - [ ] Topic 3
 
 **Resources:**
-- 📚 [Resource 1]
-- 📚 [Resource 2]
+- [books] [Resource 1]
+- [books] [Resource 2]
 
 **Practice Projects:**
 1. **Project 1**: Description

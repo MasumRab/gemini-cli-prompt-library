@@ -86,8 +86,8 @@ Describe when/why you'd use this
    ```
 
 **Common Pitfalls**:
-- ⚠️ Mistake 1: How to avoid
-- ⚠️ Mistake 2: How to avoid
+- [!] Mistake 1: How to avoid
+- [!] Mistake 2: How to avoid
 
 ---
 
@@ -106,8 +106,8 @@ Advanced concepts for experienced readers
 - Optimization tip 2
 
 **Best Practices**:
-- ✅ Do this
-- ❌ Don't do this
+- [OK] Do this
+- [X] Don't do this
 
 ### 5. Complete Working Example
 

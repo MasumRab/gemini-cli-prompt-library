@@ -36,14 +36,14 @@ Provide detailed technical explanation:
 Use ASCII diagrams or step-by-step illustrations:
 ```
 Step 1: [Description]
-   ┌───────┐
-   │  A    │
-   └───┬───┘
-       │
+   +-------+
+   |  A    |
+   +---+---+
+       |
 Step 2: [Description]
-   ┌───▼───┐
-   │  B    │
-   └───────┘
+   +---v---+
+   |  B    |
+   +-------+
 ```
 
 ### 5. Code Examples
@@ -99,14 +99,14 @@ When to use this concept:
 ### 10. Advantages & Disadvantages
 
 #### Advantages
-- ✅ Benefit 1
-- ✅ Benefit 2
-- ✅ Benefit 3
+- [OK] Benefit 1
+- [OK] Benefit 2
+- [OK] Benefit 3
 
 #### Disadvantages
-- ❌ Limitation 1
-- ❌ Limitation 2
-- ❌ Limitation 3
+- [X] Limitation 1
+- [X] Limitation 2
+- [X] Limitation 3
 
 ### 11. Best Practices
 

@@ -143,23 +143,23 @@ Without databases, we'd still be waiting minutes or hours for computers to find 
 
 ## What NOT to Do
 
-❌ Don't use technical terms without explaining
-❌ Don't assume prior knowledge
-❌ Don't make it too abstract
-❌ Don't use complex sentence structures
-❌ Don't skip the "why it matters"
-❌ Don't make it boring
-❌ Don't condescend (talk down)
+[X] Don't use technical terms without explaining
+[X] Don't assume prior knowledge
+[X] Don't make it too abstract
+[X] Don't use complex sentence structures
+[X] Don't skip the "why it matters"
+[X] Don't make it boring
+[X] Don't condescend (talk down)
 
 ## What TO Do
 
-✅ Use simple, concrete examples
-✅ Relate to their world
-✅ Make it fun and engaging
-✅ Show practical benefits
-✅ Use repetition for key points
-✅ Build from known to unknown
-✅ Encourage curiosity
+[OK] Use simple, concrete examples
+[OK] Relate to their world
+[OK] Make it fun and engaging
+[OK] Show practical benefits
+[OK] Use repetition for key points
+[OK] Build from known to unknown
+[OK] Encourage curiosity
 
 Generate a comprehensive ELI5 explanation that a 5-year-old (or complete beginner) can understand and find interesting.
 """

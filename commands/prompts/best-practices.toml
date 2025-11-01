@@ -129,10 +129,10 @@ Input: [your actual input]
 #### Show Good and Bad Examples
 ```
 Good example:
-✅ [Show correct approach]
+[OK] [Show correct approach]
 
 Bad example:
-❌ [Show wrong approach]
+[X] [Show wrong approach]
 
 Now apply this to: [your case]
 ```
@@ -357,24 +357,24 @@ If any constraint cannot be satisfied, explain why and suggest alternatives.
 ### 9. Common Prompt Mistakes
 
 #### Mistake 1: Too Vague
-❌ "Make it better"
-✅ "Improve performance by reducing time complexity from O(n²) to O(n log n)"
+[X] "Make it better"
+[OK] "Improve performance by reducing time complexity from O(n^2) to O(n log n)"
 
 #### Mistake 2: Assuming Context
-❌ "Add validation to the form"
-✅ "Add email validation to the registration form, checking for: valid format, not already registered, and not from blacklisted domains"
+[X] "Add validation to the form"
+[OK] "Add email validation to the registration form, checking for: valid format, not already registered, and not from blacklisted domains"
 
 #### Mistake 3: Multiple Unrelated Tasks
-❌ "Build a login system, write tests, create documentation, and deploy it"
-✅ "First, let's build the login system. We'll handle tests, docs, and deployment in separate steps."
+[X] "Build a login system, write tests, create documentation, and deploy it"
+[OK] "First, let's build the login system. We'll handle tests, docs, and deployment in separate steps."
 
 #### Mistake 4: No Success Criteria
-❌ "Optimize this function"
-✅ "Optimize this function to run in under 100ms for inputs up to 10,000 elements"
+[X] "Optimize this function"
+[OK] "Optimize this function to run in under 100ms for inputs up to 10,000 elements"
 
 #### Mistake 5: Ambiguous Pronouns
-❌ "It should connect to it using that"
-✅ "The client should connect to the database using connection pooling"
+[X] "It should connect to it using that"
+[OK] "The client should connect to the database using connection pooling"
 
 ---
 

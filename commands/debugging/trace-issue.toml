@@ -52,11 +52,11 @@ Use iterative "why" questioning to dig deeper:
 ```
 Issue: Users can't log in
 
-Why? → The authentication service is returning 500 errors
-  Why? → The database connection pool is exhausted
-    Why? → Connections are not being released properly
-      Why? → The ORM is not closing connections on error
-        Why? → Missing error handling in the database layer
+Why? -> The authentication service is returning 500 errors
+  Why? -> The database connection pool is exhausted
+    Why? -> Connections are not being released properly
+      Why? -> The ORM is not closing connections on error
+        Why? -> Missing error handling in the database layer
 
 Root Cause: Inadequate error handling causing connection leaks
 ```
@@ -208,27 +208,27 @@ Organize potential causes by category:
 
 ```
 Problem: Authentication Failures
-│
-├─ People
-│  ├─ Insufficient error handling in code
-│  └─ Lack of monitoring
-│
-├─ Process
-│  ├─ No rollback procedure
-│  └─ Inadequate testing
-│
-├─ Technology
-│  ├─ Database connection pool size
-│  ├─ Network timeout configuration
-│  └─ ORM connection management
-│
-├─ Environment
-│  ├─ High traffic load
-│  └─ Infrastructure capacity
-│
-└─ Data
-   ├─ Database migration issues
-   └─ Data corruption
+|
++- People
+|  +- Insufficient error handling in code
+|  +- Lack of monitoring
+|
++- Process
+|  +- No rollback procedure
+|  +- Inadequate testing
+|
++- Technology
+|  +- Database connection pool size
+|  +- Network timeout configuration
+|  +- ORM connection management
+|
++- Environment
+|  +- High traffic load
+|  +- Infrastructure capacity
+|
++- Data
+   +- Database migration issues
+   +- Data corruption
 ```
 
 ### 11. Root Cause Determination

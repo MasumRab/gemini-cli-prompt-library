@@ -36,7 +36,7 @@ Please design a comprehensive system architecture for the following requirements
 Daily Active Users (DAU): 1M
 Requests per user per day: 50
 Total daily requests: 50M
-Requests per second (RPS): 50M / 86400 ≈ 580 RPS
+Requests per second (RPS): 50M / 86400 ~ 580 RPS
 Peak RPS (3x average): ~1740 RPS
 ```
 
@@ -46,14 +46,14 @@ Average data per user: 1KB
 Total users: 10M
 Total storage: 10GB
 Storage growth: 1GB/month
-5-year projection: 10GB + (60 months × 1GB) = 70GB
+5-year projection: 10GB + (60 months x 1GB) = 70GB
 ```
 
 #### Bandwidth Estimates
 ```
 Average request size: 1KB
 Average response size: 5KB
-Total bandwidth: (580 RPS × 6KB) = 3.5 MB/s
+Total bandwidth: (580 RPS x 6KB) = 3.5 MB/s
 ```
 
 #### Memory/Cache Estimates
@@ -66,41 +66,41 @@ Session storage: 100MB per 10K concurrent users
 
 #### Architecture Diagram (Text Format)
 ```
-                    ┌──────────────┐
-                    │    Client    │
-                    │  (Web/Mobile)│
-                    └──────┬───────┘
-                           │
-                    ┌──────▼───────┐
-                    │     CDN      │
-                    └──────┬───────┘
-                           │
-                    ┌──────▼───────┐
-                    │ Load Balancer│
-                    └──────┬───────┘
-                           │
-            ┌──────────────┼──────────────┐
-            │              │              │
-      ┌─────▼─────┐  ┌─────▼─────┐  ┌─────▼─────┐
-      │  Web      │  │  Web      │  │  Web      │
-      │  Server 1 │  │  Server 2 │  │  Server 3 │
-      └─────┬─────┘  └─────┬─────┘  └─────┬─────┘
-            │              │              │
-            └──────────────┼──────────────┘
-                           │
-            ┌──────────────┼──────────────┐
-            │              │              │
-      ┌─────▼─────┐  ┌─────▼─────┐  ┌─────▼─────┐
-      │   Cache   │  │ Message   │  │  Search   │
-      │  (Redis)  │  │   Queue   │  │(Elastic)  │
-      └───────────┘  └─────┬─────┘  └───────────┘
-                           │
-            ┌──────────────┼──────────────┐
-            │              │              │
-      ┌─────▼─────┐  ┌─────▼─────┐  ┌─────▼─────┐
-      │  Primary  │  │  Read     │  │  Object   │
-      │  Database │  │  Replica  │  │  Storage  │
-      └───────────┘  └───────────┘  └───────────┘
+                    +--------------+
+                    |    Client    |
+                    |  (Web/Mobile)|
+                    +------+-------+
+                           |
+                    +------v-------+
+                    |     CDN      |
+                    +------+-------+
+                           |
+                    +------v-------+
+                    | Load Balancer|
+                    +------+-------+
+                           |
+            +--------------+--------------+
+            |              |              |
+      +-----v-----+  +-----v-----+  +-----v-----+
+      |  Web      |  |  Web      |  |  Web      |
+      |  Server 1 |  |  Server 2 |  |  Server 3 |
+      +-----+-----+  +-----+-----+  +-----+-----+
+            |              |              |
+            +--------------+--------------+
+                           |
+            +--------------+--------------+
+            |              |              |
+      +-----v-----+  +-----v-----+  +-----v-----+
+      |   Cache   |  | Message   |  |  Search   |
+      |  (Redis)  |  |   Queue   |  |(Elastic)  |
+      +-----------+  +-----+-----+  +-----------+
+                           |
+            +--------------+--------------+
+            |              |              |
+      +-----v-----+  +-----v-----+  +-----v-----+
+      |  Primary  |  |  Read     |  |  Object   |
+      |  Database |  |  Replica  |  |  Storage  |
+      +-----------+  +-----------+  +-----------+
 ```
 
 ### 4. Component Design
@@ -163,24 +163,24 @@ Session storage: 100MB per 10K concurrent users
 
 #### Read Flow
 ```
-1. Client → CDN (if static content)
-2. Client → Load Balancer
-3. Load Balancer → Web Server
-4. Web Server → Check Cache
-   ├─ Cache Hit → Return data
-   └─ Cache Miss → Query Database
-       └─ Store in Cache → Return data
+1. Client -> CDN (if static content)
+2. Client -> Load Balancer
+3. Load Balancer -> Web Server
+4. Web Server -> Check Cache
+   +- Cache Hit -> Return data
+   +- Cache Miss -> Query Database
+       +- Store in Cache -> Return data
 ```
 
 #### Write Flow
 ```
-1. Client → Load Balancer
-2. Load Balancer → Web Server
-3. Web Server → Validate data
-4. Web Server → Write to Primary DB
-5. Web Server → Invalidate cache
-6. Web Server → Publish event to queue
-7. Background worker → Process event
+1. Client -> Load Balancer
+2. Load Balancer -> Web Server
+3. Web Server -> Validate data
+4. Web Server -> Write to Primary DB
+5. Web Server -> Invalidate cache
+6. Web Server -> Publish event to queue
+7. Background worker -> Process event
 8. Return response to client
 ```
 
@@ -267,7 +267,7 @@ Each service:
 ### 9. API Gateway Pattern
 
 ```
-Client → API Gateway → Microservices
+Client -> API Gateway -> Microservices
 ```
 
 **API Gateway responsibilities:**
@@ -299,7 +299,7 @@ Client → API Gateway → Microservices
 ### 11. Async Processing Pattern
 
 ```
-Web Server → Message Queue → Worker
+Web Server -> Message Queue -> Worker
 ```
 
 **Use cases:**

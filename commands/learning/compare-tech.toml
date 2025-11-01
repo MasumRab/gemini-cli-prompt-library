@@ -28,7 +28,7 @@ Please provide a comprehensive comparison of the following technologies:
 | Feature | Technology A | Technology B | Winner |
 |---------|-------------|-------------|---------|
 | Learning Curve | Easy/Medium/Hard | Easy/Medium/Hard | |
-| Performance | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | |
+| Performance | ***** | ***** | |
 | Community Size | Large/Medium/Small | Large/Medium/Small | |
 | Job Market | High/Medium/Low | High/Medium/Low | |
 | Maturity | Mature/Growing/Young | Mature/Growing/Young | |
@@ -102,10 +102,10 @@ Winner: [A/B] (Z% faster)
 
 | Feature | Tech A | Tech B | Notes |
 |---------|--------|--------|-------|
-| Feature 1 | ✅ | ✅ | |
-| Feature 2 | ✅ | ❌ | Only in A |
-| Feature 3 | ❌ | ✅ | Only in B |
-| Feature 4 | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Better in B |
+| Feature 1 | [OK] | [OK] | |
+| Feature 2 | [OK] | [X] | Only in A |
+| Feature 3 | [X] | [OK] | Only in B |
+| Feature 4 | *** | ***** | Better in B |
 
 #### Unique Features
 - **Technology A Only**: What it offers exclusively
@@ -180,26 +180,26 @@ Winner: [A/B] (Z% faster)
 #### Technology A
 
 **Pros:**
-- ✅ Advantage 1
-- ✅ Advantage 2
-- ✅ Advantage 3
+- [OK] Advantage 1
+- [OK] Advantage 2
+- [OK] Advantage 3
 
 **Cons:**
-- ❌ Disadvantage 1
-- ❌ Disadvantage 2
-- ❌ Disadvantage 3
+- [X] Disadvantage 1
+- [X] Disadvantage 2
+- [X] Disadvantage 3
 
 #### Technology B
 
 **Pros:**
-- ✅ Advantage 1
-- ✅ Advantage 2
-- ✅ Advantage 3
+- [OK] Advantage 1
+- [OK] Advantage 2
+- [OK] Advantage 3
 
 **Cons:**
-- ❌ Disadvantage 1
-- ❌ Disadvantage 2
-- ❌ Disadvantage 3
+- [X] Disadvantage 1
+- [X] Disadvantage 2
+- [X] Disadvantage 3
 
 ### 12. Migration Considerations
 
@@ -251,13 +251,13 @@ Help make the choice based on priorities:
 
 ```
 If you prioritize:
-- Performance → Choose [A/B] because...
-- Ease of Learning → Choose [A/B] because...
-- Job Opportunities → Choose [A/B] because...
-- Ecosystem → Choose [A/B] because...
-- Modern Features → Choose [A/B] because...
-- Stability → Choose [A/B] because...
-- Community Support → Choose [A/B] because...
+- Performance -> Choose [A/B] because...
+- Ease of Learning -> Choose [A/B] because...
+- Job Opportunities -> Choose [A/B] because...
+- Ecosystem -> Choose [A/B] because...
+- Modern Features -> Choose [A/B] because...
+- Stability -> Choose [A/B] because...
+- Community Support -> Choose [A/B] because...
 ```
 
 ### 16. Real-World Project Comparison

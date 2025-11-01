@@ -103,7 +103,7 @@ stats.print_stats()
 #### Common Bottlenecks
 
 **Computational Bottlenecks**
-- Inefficient algorithms (O(n²) vs O(n log n))
+- Inefficient algorithms (O(n^2) vs O(n log n))
 - Unnecessary calculations
 - Heavy computations in loops
 - Lack of memoization/caching
@@ -149,8 +149,8 @@ stats.print_stats()
 Function Name          | Self Time | Total Time | Calls
 -----------------------|-----------|------------|-------
 processData()          | 850ms     | 1200ms     | 1
-  └─ validateItem()    | 300ms     | 350ms      | 1000
-     └─ checkFormat()  | 200ms     | 200ms      | 1000
+  +- validateItem()    | 300ms     | 350ms      | 1000
+     +- checkFormat()  | 200ms     | 200ms      | 1000
 ```
 
 **Findings:**
@@ -197,7 +197,7 @@ image1.png           | 600ms  | 2MB (not optimized)
 
 #### Algorithm Optimization
 
-**Before (O(n²)):**
+**Before (O(n^2)):**
 ```javascript
 function findDuplicates(arr) {
   const duplicates = [];
@@ -300,7 +300,7 @@ async function getUsersWithPosts() {
 }
 ```
 
-**Impact**: N+1 queries → 2 queries
+**Impact**: N+1 queries -> 2 queries
 
 #### Lazy Loading
 
@@ -397,12 +397,12 @@ Set performance targets:
 ```
 Metric                    | Budget  | Current | Status
 --------------------------|---------|---------|--------
-Initial Page Load         | < 3s    | 4.2s    | ❌ Over
-Time to Interactive       | < 5s    | 6.1s    | ❌ Over
-JavaScript Bundle Size    | < 200KB | 500KB   | ❌ Over
-API Response Time (p95)   | < 500ms | 350ms   | ✅ Good
-Database Query Time (p95) | < 100ms | 80ms    | ✅ Good
-Memory Usage              | < 100MB | 150MB   | ❌ Over
+Initial Page Load         | < 3s    | 4.2s    | [X] Over
+Time to Interactive       | < 5s    | 6.1s    | [X] Over
+JavaScript Bundle Size    | < 200KB | 500KB   | [X] Over
+API Response Time (p95)   | < 500ms | 350ms   | [OK] Good
+Database Query Time (p95) | < 100ms | 80ms    | [OK] Good
+Memory Usage              | < 100MB | 150MB   | [X] Over
 ```
 
 ### 8. Output Format

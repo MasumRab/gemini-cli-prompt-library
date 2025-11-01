@@ -33,33 +33,33 @@ Please analyze test coverage for the following code and identify gaps:
 ### 2. Coverage by Category
 
 #### Happy Path Coverage
-✓ **Covered:**
+[OK] **Covered:**
 - Normal operation scenarios
 - Expected inputs
 - Standard workflows
 
-✗ **Missing:**
+[X] **Missing:**
 - Additional common use cases
 - Variations in normal flow
 
 #### Error Path Coverage
-✓ **Covered:**
+[OK] **Covered:**
 - Handled exceptions
 - Validation errors
 
-✗ **Missing:**
+[X] **Missing:**
 - Unhandled exceptions
 - Edge case errors
 - System errors
 - Network failures
 
 #### Edge Case Coverage
-✓ **Covered:**
+[OK] **Covered:**
 - Empty inputs
 - Null/undefined
 - Basic boundaries
 
-✗ **Missing:**
+[X] **Missing:**
 - Extreme values
 - Resource limits
 - Concurrent access
@@ -91,10 +91,10 @@ Specific tests that should be added
 
 | Metric | Percentage | Status |
 |--------|------------|--------|
-| Lines | 75% | 🟡 Fair |
-| Branches | 60% | 🔴 Poor |
-| Functions | 85% | 🟢 Good |
-| Statements | 73% | 🟡 Fair |
+| Lines | 75% | [Y] Fair |
+| Branches | 60% | [R] Poor |
+| Functions | 85% | [G] Good |
+| Statements | 73% | [Y] Fair |
 
 ### Coverage Goals
 - Lines: 80%+ (current: 75%)
@@ -129,9 +129,9 @@ Specific tests that should be added
 #### File: `user.js`, Lines 78-82
 ```javascript
 if (user.age > 18) {
-  // ✓ Tested
+  // [OK] Tested
 } else {
-  // ✗ Not tested
+  // [X] Not tested
 }
 ```
 **Risk**: Medium
@@ -140,13 +140,13 @@ if (user.age > 18) {
 #### File: `payment.js`, Lines 145-152
 ```javascript
 switch (paymentMethod) {
-  case 'credit': // ✓ Tested
+  case 'credit': // [OK] Tested
     break;
-  case 'debit': // ✗ Not tested
+  case 'debit': // [X] Not tested
     break;
-  case 'paypal': // ✗ Not tested
+  case 'paypal': // [X] Not tested
     break;
-  default: // ✗ Not tested
+  default: // [X] Not tested
 }
 ```
 **Risk**: Critical

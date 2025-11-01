@@ -91,27 +91,27 @@ Expected output:
 ### 4. Prompt Engineering Best Practices Applied
 
 #### Clarity
-- ✅ Clear role definition
-- ✅ Explicit objective
-- ✅ Specific requirements
-- ✅ Defined output format
+- [OK] Clear role definition
+- [OK] Explicit objective
+- [OK] Specific requirements
+- [OK] Defined output format
 
 #### Completeness
-- ✅ All necessary context provided
-- ✅ Edge cases considered
-- ✅ Examples included
-- ✅ Constraints specified
+- [OK] All necessary context provided
+- [OK] Edge cases considered
+- [OK] Examples included
+- [OK] Constraints specified
 
 #### Flexibility
-- ✅ Variables for customization
-- ✅ Optional parameters
-- ✅ Adaptable to different inputs
+- [OK] Variables for customization
+- [OK] Optional parameters
+- [OK] Adaptable to different inputs
 
 #### Effectiveness
-- ✅ Structured output
-- ✅ Clear expectations
-- ✅ Actionable instructions
-- ✅ Quality guidelines
+- [OK] Structured output
+- [OK] Clear expectations
+- [OK] Actionable instructions
+- [OK] Quality guidelines
 
 ### 5. Usage Instructions
 
@@ -209,20 +209,20 @@ Based on results, refine the prompt:
 ### 8. Common Mistakes to Avoid
 
 **Mistake 1: Being Too Vague**
-- ❌ Bad: "Analyze this code"
-- ✅ Good: "Perform security analysis focusing on [specific aspects]"
+- [X] Bad: "Analyze this code"
+- [OK] Good: "Perform security analysis focusing on [specific aspects]"
 
 **Mistake 2: Missing Context**
-- ❌ Bad: Jumping straight to task without background
-- ✅ Good: Providing role, objective, and context first
+- [X] Bad: Jumping straight to task without background
+- [OK] Good: Providing role, objective, and context first
 
 **Mistake 3: Unclear Output Format**
-- ❌ Bad: No structure specified
-- ✅ Good: Clear sections and formatting requirements
+- [X] Bad: No structure specified
+- [OK] Good: Clear sections and formatting requirements
 
 **Mistake 4: Too Many Requirements**
-- ❌ Bad: 20+ bullet points of requirements
-- ✅ Good: 5-7 key requirements, grouped logically
+- [X] Bad: 20+ bullet points of requirements
+- [OK] Good: 5-7 key requirements, grouped logically
 
 ### 9. Optimization Tips
 
@@ -381,17 +381,17 @@ Output:
 #### File Structure
 ```
 templates/
-├── technical/
-│   ├── code-review.md
-│   ├── debugging.md
-│   └── architecture.md
-├── writing/
-│   ├── blog-post.md
-│   ├── documentation.md
-│   └── email.md
-└── analysis/
-    ├── data-analysis.md
-    └── security-audit.md
++-- technical/
+|   +-- code-review.md
+|   +-- debugging.md
+|   +-- architecture.md
++-- writing/
+|   +-- blog-post.md
+|   +-- documentation.md
+|   +-- email.md
++-- analysis/
+    +-- data-analysis.md
+    +-- security-audit.md
 ```
 
 #### Naming Convention

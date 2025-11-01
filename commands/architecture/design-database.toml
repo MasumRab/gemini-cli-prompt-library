@@ -48,19 +48,19 @@ Comments
 
 **One-to-One (1:1)**
 ```
-User ←→ Profile
+User <--> Profile
 One user has one profile
 ```
 
 **One-to-Many (1:N)**
 ```
-User ←→ Posts
+User <--> Posts
 One user has many posts
 ```
 
 **Many-to-Many (M:N)**
 ```
-Posts ←→ Tags (through PostTags junction table)
+Posts <--> Tags (through PostTags junction table)
 Many posts can have many tags
 ```
 

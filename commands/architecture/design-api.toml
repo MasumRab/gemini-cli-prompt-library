@@ -72,8 +72,8 @@ GET /companies/789/employees
 
 **Avoid Deep Nesting:**
 ```
-❌ /users/123/orders/456/items/789/reviews
-✅ /order-items/789/reviews
+[X] /users/123/orders/456/items/789/reviews
+[OK] /order-items/789/reviews
 ```
 
 ### 4. Query Parameters

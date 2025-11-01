@@ -599,24 +599,24 @@ auth.handle({ token: 'xyz', hasPermission: true });
 ### 5. Pattern Selection Guide
 
 #### For Object Creation Issues
-- Too many constructor parameters → **Builder**
-- Complex object creation logic → **Factory**
-- Need to clone objects → **Prototype**
-- Need single instance → **Singleton** (use cautiously)
+- Too many constructor parameters -> **Builder**
+- Complex object creation logic -> **Factory**
+- Need to clone objects -> **Prototype**
+- Need single instance -> **Singleton** (use cautiously)
 
 #### For Code Structure Issues
-- Incompatible interfaces → **Adapter**
-- Need to add features → **Decorator**
-- Complex subsystem → **Facade**
-- Control access → **Proxy**
-- Part-whole hierarchy → **Composite**
+- Incompatible interfaces -> **Adapter**
+- Need to add features -> **Decorator**
+- Complex subsystem -> **Facade**
+- Control access -> **Proxy**
+- Part-whole hierarchy -> **Composite**
 
 #### For Behavior Issues
-- Multiple algorithms → **Strategy**
-- Event handling → **Observer**
-- Undo/redo → **Command**
-- Request handlers → **Chain of Responsibility**
-- Algorithm skeleton → **Template Method**
+- Multiple algorithms -> **Strategy**
+- Event handling -> **Observer**
+- Undo/redo -> **Command**
+- Request handlers -> **Chain of Responsibility**
+- Algorithm skeleton -> **Template Method**
 
 ### 6. Output Format
 
