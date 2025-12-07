@@ -98,6 +98,12 @@ After installation, restart Gemini CLI and start using prompts:
 - `/prompts:create-template` - Create prompt templates
 - `/prompts:best-practices` - Learn prompt tips
 
+### 🔄 Linear Workflows (New!)
+*Recommended for complex tasks.*
+- `/workflows:feature-dev` - Design, Implement, and Test a feature in one continuous flow.
+- `/workflows:comprehensive-test` - Generate a unified test suite (Unit + Edge + Security) with shared context.
+- `/workflows:smart-refactor` - Analyze, Refactor, and Verify code without losing intent.
+
 ## 💡 Usage Examples
 
 ### Security Code Review
