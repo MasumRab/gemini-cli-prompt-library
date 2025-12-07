@@ -12,49 +12,46 @@ This extension provides a curated library of high-quality prompts for common dev
 - **code-review-security**: Deep security analysis of code
 - **code-review-performance**: Performance optimization suggestions
 - **code-review-best-practices**: General best practices review
-- **explain-code**: Detailed code explanation
-- **refactor-suggestions**: Code refactoring recommendations
+- **code-review-refactor**: Code refactoring recommendations
 
 ### 2. Documentation
 - **write-readme**: Generate comprehensive README files
 - **write-api-docs**: Create API documentation
-- **write-inline-comments**: Add helpful code comments
 - **write-changelog**: Generate changelog from changes
 - **write-contributing**: Create CONTRIBUTING.md guidelines
 
 ### 3. Testing
 - **generate-unit-tests**: Create unit tests for code
 - **generate-e2e-tests**: Create end-to-end tests
-- **test-edge-cases**: Identify and test edge cases
-- **review-test-coverage**: Analyze test coverage gaps
+- **edge-cases**: Identify and test edge cases
+- **coverage-analysis**: Analyze test coverage gaps
 
 ### 4. Debugging
 - **debug-error**: Help diagnose and fix errors
 - **trace-issue**: Trace the root cause of issues
-- **suggest-fixes**: Suggest potential bug fixes
+- **performance-profile**: Performance profiling and optimization
 
 ### 5. Architecture & Design
 - **design-api**: Design RESTful APIs
 - **design-database**: Design database schemas
-- **system-architecture**: Design system architecture
+- **system-design**: Design system architecture
 - **design-patterns**: Suggest appropriate design patterns
 
 ### 6. Learning & Explanation
 - **explain-concept**: Explain technical concepts clearly
 - **eli5**: Explain like I'm 5 (simple explanations)
-- **compare-technologies**: Compare different technologies
-- **learning-path**: Create learning roadmaps
+- **compare-tech**: Compare different technologies
+- **learning-roadmap**: Create learning roadmaps
 
 ### 7. Writing & Communication
-- **write-technical-blog**: Write technical blog posts
-- **write-email**: Draft professional emails
-- **write-presentation**: Create presentation outlines
-- **simplify-jargon**: Simplify technical jargon
+- **technical-blog**: Write technical blog posts
+- **email**: Draft professional emails
+- **presentation**: Create presentation outlines
 
 ### 8. Prompt Engineering
-- **improve-prompt**: Improve existing prompts
-- **create-prompt-template**: Create reusable prompt templates
-- **prompt-best-practices**: Learn prompt engineering tips
+- **improve**: Improve existing prompts
+- **create-template**: Create reusable prompt templates
+- **best-practices**: Learn prompt engineering tips
 
 ## How to Use Prompts
 
@@ -108,7 +105,7 @@ Prompts can include variables that get replaced with user input:
 **You do:** Use the `write-readme` prompt, gather project info, generate comprehensive README
 
 **User asks:** "Explain this complex algorithm"
-**You do:** Use the `explain-code` prompt, break down the algorithm step-by-step
+**You do:** Use the `explain-concept` prompt, break down the algorithm step-by-step
 
 ## Prompt Library Philosophy
 
