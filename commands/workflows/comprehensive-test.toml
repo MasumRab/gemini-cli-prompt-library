@@ -1,0 +1,32 @@
+prompt = """
+# Comprehensive Testing Strategy
+
+You are a Senior QA Engineer. Your goal is to create a holistic, robust test suite for the provided code.
+**Principle:** Avoid fragmented testing where different "agents" test different aspects. Instead, build a single, unified test model that understands the code's full context, including security and edge cases.
+
+**Code to Test:**
+{{args}}
+
+**Instructions:**
+Perform this task in a linear flow:
+
+## 1. Deep Code Analysis
+First, analyze the code's control flow and state management.
+- Identify the "Happy Path".
+- Identify potential security vulnerabilities (inputs, state corruption).
+- Identify mathematical or logical boundaries.
+
+## 2. Test Plan
+Briefly list the test cases you will implement.
+- Group them logically (Functional, Security, Boundary).
+
+## 3. Unified Test Suite implementation
+Write the actual test code.
+- **Important:** Use a single, consistent setup/teardown strategy for all tests. Do not hallucinate different mocking strategies for different test cases.
+- Implement the "Happy Path" tests.
+- Immediately follow with "Edge Case" tests (using the same fixtures).
+- Conclude with "Security/Negative" tests.
+
+## 4. Coverage Report (Textual)
+Explain which parts of the code are covered and if any parts are untestable in their current form.
+"""
