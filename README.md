@@ -34,6 +34,8 @@ gemini extensions link .
 
 After installation, restart Gemini CLI and start using prompts:
 
+> **Note:** For Windows, Linux, and specific integrations (like Goose or Claude), see our [Advanced Installation & Integrations](#-advanced-installation--integrations) section.
+
 ```bash
 # Review code for security issues
 /code-review:security "your code here"
@@ -195,6 +197,14 @@ Your prompt content here with {{args}} for user input.
 ### Modifying Existing Prompts
 
 Fork the repository and edit any `.toml` file to customize prompts to your needs.
+
+## 🔗 Advanced Installation & Integrations
+
+Expand the reach of this library beyond the standard `gemini-cli`:
+
+- **[Cross-Platform Guide](docs/INSTALL_CROSS_PLATFORM.md)**: Tips for Windows & Linux users.
+- **[Gemini CLI Forks](docs/INSTALL_FORKS.md)**: Instructions for `qwen-code` and `llxprt`.
+- **[Ecosystem Integration](docs/INTEGRATION_ECOSYSTEMS.md)**: How to use with **Goose** and **Claude** (MCP).
 
 ## 📚 Prompt Engineering Tips
 
