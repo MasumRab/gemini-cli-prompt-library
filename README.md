@@ -16,23 +16,33 @@ A curated library of high-quality, professionally crafted prompts for common dev
 
 ## 📦 Installation
 
-Install the extension using the Gemini CLI:
+This extension supports both **Gemini CLI** and **Qwen Code**.
 
+### Gemini CLI
 ```bash
 gemini extensions install yourusername/prompt-library-extension
 ```
 
-Or install from a local directory:
+### Qwen Code
+```bash
+qwen-code extensions install yourusername/prompt-library-extension
+```
 
+### Local Installation
 ```bash
 git clone https://github.com/yourusername/prompt-library-extension.git
 cd prompt-library-extension
+
+# For Gemini
 gemini extensions link .
+
+# For Qwen
+qwen-code extensions link .
 ```
 
 ## 🚀 Quick Start
 
-After installation, restart Gemini CLI and start using prompts:
+After installation, restart your CLI and start using prompts:
 
 > **Note:** For Windows, Linux, and specific integrations (like Goose or Claude), see our [Advanced Installation & Integrations](#-advanced-installation--integrations) section.
 
