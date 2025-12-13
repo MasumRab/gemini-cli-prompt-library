@@ -53,6 +53,11 @@ This extension provides a curated library of high-quality prompts for common dev
 - **create-template**: Create reusable prompt templates
 - **best-practices**: Learn prompt engineering tips
 
+### 9. Workflows
+- **workflows-feature-dev**: Linear feature development workflow
+- **workflows-smart-refactor**: Intelligent refactoring workflow
+- **workflows-comprehensive-test**: Comprehensive testing workflow
+
 ## How to Use Prompts
 
 When a user runs a prompt command (e.g., `/prompts:code-review-security`), you should:
