@@ -73,4 +73,27 @@ Your goal is to analyze a user's request and a list of available commands, and t
 
 3.  `/debugging:debug-error "check my code for security flaws"`
     *Why: If you're trying to fix a security-related bug, this command can help you diagnose and fix the error.*
+
+**Improvements:**
+- Add clear structure with headers
+- Use numbered steps for processes
+- Group related information
+
+### 3. Context & Constraints
+**Current State:**
+- Does it provide enough context?
+- Are constraints clearly defined?
+- Are assumptions stated?
+
+**Improvements:**
+- Add relevant background information
+- Specify limitations and boundaries
+- State assumptions explicitly
+
+### 4. Output Specification
+**Current State:**
+- Is the desired output format specified?
+- Are examples provided?
+- Is the level of detail clear?
+
 """
