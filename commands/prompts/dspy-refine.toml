@@ -1,0 +1,18 @@
+prompt = """
+# DSPy Code Refinement
+
+Take the QA feedback and original DSPy module to generate a refined version.
+
+**Input:**
+Feedback:
+{{feedback}}
+
+Original Module:
+{{dspy_code}}
+
+**Instructions:**
+1.  **Apply Fixes**: Address all issues raised in the QA feedback.
+2.  **Improve Modularity**: Ensure the code is clean and Pythonic.
+3.  **Integrate Features**: Add any suggested advanced DSPy features (e.g. assertions).
+4.  **Output**: Provide the refined, runnable Python code.
+"""

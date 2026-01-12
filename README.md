@@ -116,6 +116,15 @@ After installation, restart your CLI and start using prompts:
 - `/workflows:comprehensive-test` - Generate a unified test suite (Unit + Edge + Security) with shared context.
 - `/workflows:smart-refactor` - Analyze, Refactor, and Verify code without losing intent.
 
+### 🤖 DSPy Integration (New!)
+*Prompts to help you generate and optimize DSPy modules.*
+- `/prompts:dspy-convert` - Convert TOML prompts to DSPy modules
+- `/prompts:dspy-qa` - QA reviewer for DSPy code
+- `/prompts:dspy-refine` - Refine DSPy modules based on feedback
+- `/prompts:dspy-cookbook` - Get suggestions for DSPy patterns
+
+See [meta-dspy.md](meta-dspy.md) for full details on the DSPy integration, including Python modules and optimization scripts.
+
 ## 💡 Usage Examples
 
 ### Security Code Review

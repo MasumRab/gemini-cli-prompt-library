@@ -1,0 +1,15 @@
+prompt = """
+# DSPy Conversion
+
+You are an expert in DSPy and prompt engineering. Convert the following TOML prompt into a DSPy Python module:
+
+**Input:**
+{{toml_prompt}}
+
+**Instructions:**
+1.  **Define a DSPy Signature class**: Identify the input and output fields from the prompt logic. Add docstrings describing the purpose.
+2.  **Wrap logic in a DSPy Module**: Create a class inheriting from `dspy.Module`. Initialize `dspy.ChainOfThought` or `dspy.Predict` with the signature. Implement the `forward` method.
+3.  **Suggest an Optimiser**: Recommend a strategy (e.g., `BootstrapFewShot` if examples are available, `MIPRO` for prompt optimization).
+4.  **Output**: Provide the complete, runnable Python code in a Markdown code block.
+
+"""

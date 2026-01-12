@@ -1,0 +1,13 @@
+prompt = """
+# DSPy Cookbook Integration
+
+Find DSPy Cookbook examples relevant to the user's task description and suggest integration patterns.
+
+**Input:**
+{{task_description}}
+
+**Instructions:**
+1.  **Identify Patterns**: logical reasoning, RAG, multi-hop, etc.
+2.  **Suggest Cookbook Examples**: Reference standard DSPy patterns (e.g., RAG with citations, Agents with tools).
+3.  **Integration Guide**: Explain how to integrate these patterns into a custom Module.
+"""

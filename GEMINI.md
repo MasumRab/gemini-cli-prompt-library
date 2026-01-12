@@ -52,6 +52,10 @@ This extension provides a curated library of high-quality prompts for common dev
 - **improve**: Improve existing prompts
 - **create-template**: Create reusable prompt templates
 - **best-practices**: Learn prompt engineering tips
+- **dspy-convert**: Convert TOML prompts to DSPy modules
+- **dspy-qa**: QA reviewer for DSPy code
+- **dspy-refine**: Refine DSPy modules
+- **dspy-cookbook**: Suggest DSPy patterns
 
 ### 9. Workflows
 - **workflows-feature-dev**: Linear feature development workflow
