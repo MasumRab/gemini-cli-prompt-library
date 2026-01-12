@@ -9,7 +9,8 @@ You are guiding the user through the "Prompt Refinery" process: a linear workflo
 **Task:** {{task_description}}
 
 1. **Establish Workspace:**
-   - Create a directory: `.prompts/history/{{task_description | slugify}}/`
+   - Create a directory: `.prompts/history/{{task_description}}/`
+   - *Note: Ensure the directory name is safe for your file system (e.g., use a slug or short name).*
    - You will save versions here (e.g., `v1.md`, `v2.md`).
 
 2. **Drafting (Step 1):**
