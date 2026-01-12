@@ -1,0 +1,48 @@
+description = "Generate test cases to verify prompt performance"
+args = "prompt_text"
+prompt = """
+# Generate Prompt Test Cases
+
+Act as a QA Engineer for Large Language Models. Your task is to design a test suite for the following prompt to ensure it performs reliably across different scenarios.
+
+## Target Prompt:
+```
+{{prompt_text}}
+```
+
+## Test Suite Design
+
+Generate 5 diverse test cases. For each case, define the input and the expected output criteria.
+
+### 1. The "Happy Path" Case
+*The standard, expected use case.*
+- **Input:** [Example input]
+- **Expected Output:** [Description of ideal response]
+
+### 2. The Complex/Edge Case
+*Input with maximum complexity or ambiguity.*
+- **Input:** [Example input]
+- **Expected Output:** [How it should handle complexity]
+
+### 3. The "Negative" Constraint Case
+*Input that tries to violate a constraint (e.g., asking for forbidden format).*
+- **Input:** [Example input]
+- **Expected Output:** [Graceful refusal or correction]
+
+### 4. The Minimal Case
+*Input with very little context or data.*
+- **Input:** [Example input]
+- **Expected Output:** [Request for clarification or best-effort inference]
+
+### 5. The Creative/Unexpected Case
+*Unusual input to test robustness.*
+- **Input:** [Example input]
+- **Expected Output:** [Stable behavior]
+
+## Usage Instructions
+To use these tests:
+1. Run the target prompt with the **Input** from Test Case 1.
+2. Compare the actual result with the **Expected Output**.
+3. Repeat for all cases.
+4. If failures occur, run `/prompt/refine` with the specific failure details.
+"""
