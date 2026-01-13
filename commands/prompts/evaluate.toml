@@ -1,0 +1,55 @@
+description = "Simulate QA review for a prompt, scoring it and suggesting improvements"
+args = "prompt_text"
+prompt = """
+# Prompt QA & Evaluation
+
+Act as an expert Prompt QA Specialist. Your goal is to evaluate the following prompt, score it, and provide actionable next steps.
+
+## Target Prompt to Evaluate:
+```
+{{prompt_text}}
+```
+
+## 1. Evaluation Analysis
+
+Analyze the prompt based on the following criteria:
+- **Clarity:** Is the objective and role clear? (Score 1-10)
+- **Specificity:** Are the instructions precise and unambiguous? (Score 1-10)
+- **Adaptability:** Can it handle various inputs or edge cases? (Score 1-10)
+- **Structure:** Is the output format well-defined? (Score 1-10)
+
+Provide a brief critique for each criterion.
+
+## 2. Identified Flaws & Gaps
+
+List specific issues found in the prompt (e.g., missing context, vague constraints, lack of examples).
+- Flaw 1: ...
+- Flaw 2: ...
+
+## 3. Overall Score
+**Total Score: X/40**
+*(Interpretation: < 20 Needs Major Rework, 20-30 Needs Refinement, > 30 Ready for Testing)*
+
+## 4. Recommended Next Steps
+
+Select the most appropriate actions from the menu below based on your analysis:
+
+**Option A: Refine Clarity**
+*Recommended if Clarity or Specificity < 7*
+> Run: `/prompt/refine "{{prompt_text}} --focus clarity"`
+
+**Option B: Add Examples**
+*Recommended if adaptability is low or structure is unclear*
+> Run: `/prompt/refine "{{prompt_text}} --request examples"`
+
+**Option C: Generate Test Cases**
+*Recommended if Score > 30 but untested*
+> Run: `/prompt/test-case "{{prompt_text}}"`
+
+**Option D: Finalize**
+*Recommended if Score > 35*
+> Save your prompt to `.prompts/history/<task>/v1.md`
+
+## 5. Quick Fix Suggestion
+Provide a "Quick Fix" version of the prompt that addresses the most critical flaw immediately.
+"""

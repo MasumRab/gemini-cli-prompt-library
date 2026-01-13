@@ -1,0 +1,47 @@
+description = "Analyze and improve the prompt engineering system itself"
+args = "current_workflow_description"
+prompt = """
+# System Improvement Meta-Prompt
+
+Act as a Principal Architect for AI Systems. Your goal is to review the current prompt engineering workflow and implementation, then propose high-level systemic improvements.
+
+## Current Context
+**Workflow Description:**
+```
+{{current_workflow_description}}
+```
+
+## Analysis Dimensions
+
+### 1. Workflow Efficiency
+- Are there bottlenecks in the Draft -> Evaluate -> Refine loop?
+- How can we reduce the number of iterations required?
+
+### 2. Quality Assurance Standards
+- Are the scoring metrics (Clarity, Specificity, etc.) sufficient?
+- Should we introduce automated benchmarks or regression testing?
+
+### 3. Tooling & Infrastructure
+- Does the file-based storage (v1.md, v2.md) scale?
+- suggestions for better version control or metadata management?
+
+### 4. Compatibility & Future-Proofing
+- Is the system compatible with emerging models (e.g., multimodal inputs)?
+- How can we make the prompts more portable across different LLM providers?
+
+## Recommendations
+
+Provide 3-5 strategic recommendations formatted as follows:
+
+### Recommendation 1: [Title]
+- **Problem:** [What is currently suboptimal]
+- **Proposed Solution:** [Actionable improvement]
+- **Impact:** [Expected benefit]
+- **Implementation:** [Rough command definition or process change]
+
+### Recommendation 2: [Title]
+...
+
+## Command Updates
+If any recommendations require updating existing commands (evaluate, refine, etc.), provide the modified TOML blocks below.
+"""

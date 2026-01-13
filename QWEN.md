@@ -52,8 +52,13 @@ This extension provides a curated library of high-quality prompts for common dev
 - **improve**: Improve existing prompts
 - **create-template**: Create reusable prompt templates
 - **best-practices**: Learn prompt engineering tips
+- **evaluate**: Simulate QA review for a prompt
+- **refine**: Refine an existing prompt based on feedback
+- **test-case**: Generate test cases to verify prompt performance
+- **system-improver**: Analyze and improve the prompt engineering system
 
 ### 9. Workflows
+- **workflows-prompt-refinery**: Master workflow for the prompt engineering lifecycle
 - **workflows-feature-dev**: Linear feature development workflow
 - **workflows-smart-refactor**: Intelligent refactoring workflow
 - **workflows-comprehensive-test**: Comprehensive testing workflow

@@ -1,0 +1,54 @@
+description = "Master workflow for the prompt engineering lifecycle"
+args = "task_description"
+prompt = """
+# Prompt Refinery Workflow
+
+You are guiding the user through the "Prompt Refinery" process: a linear workflow to create, evaluate, and perfect LLM prompts.
+
+## Phase 1: Context & Setup
+**Task:** {{task_description}}
+
+1. **Establish Workspace:**
+   - Create a directory: `.prompts/history/{{task_description}}/`
+   - *Note: Ensure the directory name is safe for your file system (e.g., use a slug or short name).*
+   - You will save versions here (e.g., `v1.md`, `v2.md`).
+
+2. **Drafting (Step 1):**
+   - If you have a draft, paste it below.
+   - If not, use `/prompt/create-template "{{task_description}}"` to generate V1.
+   - **Action:** Save this draft as `v1.md`.
+
+## Phase 2: Evaluation & Refinement Loop
+
+*Repeat this loop until Score > 35/40.*
+
+1. **Evaluate:**
+   - Run: `/prompt/evaluate "{{ '{{current_prompt_text}}' }}"`
+   - **Output:** Note the Score and the "Recommended Next Step".
+
+2. **Refine (if Score < 30):**
+   - Run: `/prompt/refine "{{ '{{current_prompt_text}}' }} --feedback {{ '{{evaluation_flaws}}' }}"`
+   - **Action:** Save the result as `vNext.md`.
+
+3. **Verify (if Score > 30):**
+   - Run: `/prompt/test-case "{{ '{{current_prompt_text}}' }}"`
+   - Manually check the prompt against the 5 generated test cases.
+   - If it fails, go back to **Refine**.
+
+## Phase 3: Finalization
+
+Once the prompt passes evaluation (>35) and testing:
+
+1. **Final Save:**
+   - Save the final content to your active prompts library (e.g., `commands/prompts/my-new-prompt.toml`).
+
+2. **Documentation:**
+   - Append a usage guide based on the "Happy Path" test case.
+
+## Current Status Request
+Where are you in this process?
+- [ ] Just starting (Need Draft)
+- [ ] Have Draft (Need Evaluation)
+- [ ] Have Evaluation (Need Refinement)
+- [ ] Testing
+"""
