@@ -239,6 +239,7 @@ def main():
         choices=["scenarios", "modules", "optimizers", "all"],
         help="What to list",
     )
+    list_p.add_argument("--output", "-O", default="text", choices=["json", "text"])
 
     opt = subparsers.add_parser("optimize", help="Run DSPy optimization")
     opt.add_argument("scenario", help="Scenario to optimize")
