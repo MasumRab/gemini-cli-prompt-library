@@ -1,14 +1,3 @@
-prompt = """
-# Intelligent Command Dispatcher
-
-You are an expert AI assistant that helps users find the most relevant command for their task.
-Your goal is to analyze a user's request and a list of available commands, and then suggest the best command to use.
-
-**USER QUERY:**
-"{{args}}"
-
-**AVAILABLE COMMANDS:**
-```json
 {
   "/testing:coverage-analysis": "Test Coverage Analysis",
   "/testing:edge-cases": "Identify Edge Cases",
@@ -52,24 +41,3 @@ Your goal is to analyze a user's request and a list of available commands, and t
   "/learning:roadmap": "Create Learning Roadmap",
   "/learning:explain-concept": "Explain Technical Concept"
 }
-```
-
-**TASK:**
-1. Analyze the user query to understand the user's intent.
-2. Review the command manifest to find the best command.
-3. Return a ranked list of the top 3 most relevant commands.
-4. For each suggestion, provide a brief (1-sentence) explanation of why it's a good choice.
-5. Present the output in a numbered list.
-6. Each item in the list should include the executable command and the explanation.
-
-**OUTPUT EXAMPLE:**
-
-1.  `/code-review:security "check my code for security flaws"`
-    *Why: This command is ideal for performing a deep security analysis of your code.*
-
-2.  `/code-review:best-practices "check my code for security flaws"`
-    *Why: This command will review your code for common best-practice violations, which can often include security issues.*
-
-3.  `/debugging:debug-error "check my code for security flaws"`
-    *Why: If you're trying to fix a security-related bug, this command can help you diagnose and fix the error.*
-"""
