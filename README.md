@@ -263,9 +263,10 @@ Contributions are welcome! Here's how you can help:
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/new-prompt`
-3. Add your prompt in the appropriate category
-4. Test it thoroughly
-5. Submit a pull request with clear description
+3. Add or modify your prompt in the appropriate category
+4. **Important:** After adding or changing a command, run `python3 scripts/generate_manifest.py` to update the command manifest and `improve` prompt.
+5. Test it thoroughly
+6. Submit a pull request with a clear description
 
 ## 📖 Documentation
 
