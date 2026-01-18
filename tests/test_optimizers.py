@@ -11,7 +11,7 @@ class TestBaseOptimizer:
 
     def test_base_optimizer_init(self):
         """Test base optimizer initialization."""
-        from dspy_helm.optimizers.base import BaseOptimizer
+        from dspy_integration.framework.optimizers.base import BaseOptimizer
 
         mock_metric = MagicMock()
         optimizer = BaseOptimizer(metric=mock_metric)
@@ -23,7 +23,7 @@ class TestBaseOptimizer:
 
     def test_base_optimizer_custom_values(self):
         """Test base optimizer with custom values."""
-        from dspy_helm.optimizers.base import BaseOptimizer
+        from dspy_integration.framework.optimizers.base import BaseOptimizer
 
         mock_metric = MagicMock()
         optimizer = BaseOptimizer(
@@ -39,7 +39,7 @@ class TestBaseOptimizer:
 
     def test_base_optimizer_repr(self):
         """Test base optimizer string representation."""
-        from dspy_helm.optimizers.base import BaseOptimizer
+        from dspy_integration.framework.optimizers.base import BaseOptimizer
 
         mock_metric = MagicMock()
         optimizer = BaseOptimizer(metric=mock_metric)
@@ -51,7 +51,7 @@ class TestBaseOptimizer:
 
     def test_base_optimizer_abstract_create_teleprompter(self):
         """Test that _create_teleprompter is abstract."""
-        from dspy_helm.optimizers.base import BaseOptimizer
+        from dspy_integration.framework.optimizers.base import BaseOptimizer
 
         mock_metric = MagicMock()
         optimizer = BaseOptimizer(metric=mock_metric)
@@ -65,7 +65,7 @@ class TestMIPROv2Optimizer:
 
     def test_init(self):
         """Test MIPROv2 optimizer initialization."""
-        from dspy_helm.optimizers.mipro_v2 import MIPROv2Optimizer
+        from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
 
         mock_metric = MagicMock()
         optimizer = MIPROv2Optimizer(metric=mock_metric)
@@ -75,7 +75,7 @@ class TestMIPROv2Optimizer:
 
     def test_init_custom_values(self):
         """Test MIPROv2 with custom values."""
-        from dspy_helm.optimizers.mipro_v2 import MIPROv2Optimizer
+        from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
 
         mock_metric = MagicMock()
         optimizer = MIPROv2Optimizer(
@@ -93,10 +93,10 @@ class TestMIPROv2Optimizer:
         assert optimizer.prompt_model == "gpt-4"
         assert optimizer.task_model == "gpt-3.5-turbo"
 
-    @patch("dspy_helm.optimizers.mipro_v2.dspy")
+    @patch("dspy_integration.framework.optimizers.mipro_v2.dspy")
     def test_create_teleprompter(self, mock_dspy):
         """Test creating MIPROv2 teleprompter."""
-        from dspy_helm.optimizers.mipro_v2 import MIPROv2Optimizer
+        from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
 
         mock_dspy.teleprompt.MIPROv2.return_value = MagicMock()
 
@@ -118,17 +118,17 @@ class TestBootstrapFewShotOptimizer:
 
     def test_init(self):
         """Test BootstrapFewShot optimizer initialization."""
-        from dspy_helm.optimizers.bootstrap import BootstrapFewShotOptimizer
+        from dspy_integration.framework.optimizers.bootstrap import BootstrapFewShotOptimizer
 
         mock_metric = MagicMock()
         optimizer = BootstrapFewShotOptimizer(metric=mock_metric)
 
         assert optimizer.metric is mock_metric
 
-    @patch("dspy_helm.optimizers.bootstrap.dspy")
+    @patch("dspy_integration.framework.optimizers.bootstrap.dspy")
     def test_create_teleprompter(self, mock_dspy):
         """Test creating BootstrapFewShot teleprompter."""
-        from dspy_helm.optimizers.bootstrap import BootstrapFewShotOptimizer
+        from dspy_integration.framework.optimizers.bootstrap import BootstrapFewShotOptimizer
 
         mock_dspy.teleprompt.BootstrapFewShot.return_value = MagicMock()
 
@@ -144,7 +144,7 @@ class TestBootstrapFewShotRandomSearchOptimizer:
 
     def test_init(self):
         """Test initialization."""
-        from dspy_helm.optimizers.bootstrap import BootstrapFewShotRandomSearchOptimizer
+        from dspy_integration.framework.optimizers.bootstrap import BootstrapFewShotRandomSearchOptimizer
 
         mock_metric = MagicMock()
         optimizer = BootstrapFewShotRandomSearchOptimizer(
@@ -155,10 +155,10 @@ class TestBootstrapFewShotRandomSearchOptimizer:
         assert optimizer.metric is mock_metric
         assert optimizer.num_candidate_programs == 15
 
-    @patch("dspy_helm.optimizers.bootstrap.dspy")
+    @patch("dspy_integration.framework.optimizers.bootstrap.dspy")
     def test_create_teleprompter(self, mock_dspy):
         """Test creating teleprompter with random search."""
-        from dspy_helm.optimizers.bootstrap import BootstrapFewShotRandomSearchOptimizer
+        from dspy_integration.framework.optimizers.bootstrap import BootstrapFewShotRandomSearchOptimizer
 
         mock_dspy.teleprompt.BootstrapFewShotWithRandomSearch.return_value = MagicMock()
 
@@ -180,7 +180,7 @@ class TestOptimizerRegistry:
 
     def test_list_optimizers(self):
         """Test listing available optimizers."""
-        from dspy_helm.optimizers import OptimizerRegistry
+        from dspy_integration.framework.optimizers import OptimizerRegistry
 
         optimizers = OptimizerRegistry.list()
         assert "MIPROv2" in optimizers
@@ -189,14 +189,14 @@ class TestOptimizerRegistry:
 
     def test_get_optimizer(self):
         """Test retrieving an optimizer class."""
-        from dspy_helm.optimizers import OptimizerRegistry
+        from dspy_integration.framework.optimizers import OptimizerRegistry
 
         optimizer_class = OptimizerRegistry.get("MIPROv2")
         assert optimizer_class is not None
 
     def test_get_unknown_optimizer(self):
         """Test that unknown optimizer raises error."""
-        from dspy_helm.optimizers import OptimizerRegistry
+        from dspy_integration.framework.optimizers import OptimizerRegistry
 
         with pytest.raises(ValueError) as exc_info:
             OptimizerRegistry.get("UnknownOptimizer")
@@ -206,10 +206,10 @@ class TestOptimizerRegistry:
 class TestOptimizerCompile:
     """Test optimizer compile functionality."""
 
-    @patch("dspy_helm.optimizers.mipro_v2.dspy")
+    @patch("dspy_integration.framework.optimizers.mipro_v2.dspy")
     def test_compile_requires_lm(self, mock_dspy):
         """Test that compile requires LM to be configured."""
-        from dspy_helm.optimizers.mipro_v2 import MIPROv2Optimizer
+        from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
 
         mock_dspy.settings.lm = None
         mock_dspy.settings.configure = MagicMock()
