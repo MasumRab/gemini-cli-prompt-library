@@ -1,0 +1,20 @@
+{"vars": {"code": "SELECT * FROM users WHERE name = 'user_input'", "expected": "SQL injection vulnerability detected. Use parameterized queries."}}
+{"vars": {"code": "const apiKey = 'sk-12345abcdef';", "expected": "Hardcoded API key detected. Use environment variables."}}
+{"vars": {"code": "function checkAuth(req) { return true; }", "expected": "Missing authentication check. Implement proper auth verification."}}
+{"vars": {"code": "crypto.createHash('md5').update(password).digest('hex')", "expected": "MD5 is cryptographically broken. Use SHA-256 or bcrypt."}}
+{"vars": {"code": "fs.readFileSync(userFile, 'utf8');", "expected": "Path traversal risk. Validate and sanitize file paths."}}
+{"vars": {"code": "eval(userInput);", "expected": "Dangerous eval() usage. Avoid dynamic code execution."}}
+{"vars": {"code": "document.innerHTML = userContent;", "expected": "XSS vulnerability. Use textContent or sanitized HTML."}}
+{"vars": {"code": "process.env.API_KEY in code", "expected": "Secret in environment. Use secrets management."}}
+{"vars": {"code": "if (user.isAdmin) { grantAccess(); }", "expected": "Insecure direct reference. Verify admin status server-side."}}
+{"vars": {"code": "jwt.sign({user: id}, null);", "expected": "JWT without expiration. Add exp claim."}}
+{"vars": {"code": "os.system('rm -rf ' + user_input)", "expected": "Command injection risk. Never pass user input to system()."}}
+{"vars": {"code": "new FileReader(userFile).readAsText(file)", "expected": "XXE vulnerability. Disable external entity parsing."}}
+{"vars": {"code": "requests.get(user_url)", "expected": "SSRF vulnerability. Validate and whitelist URLs."}}
+{"vars": {"code": "password.length > 6", "expected": "Weak password policy. Require stronger validation."}}
+{"vars": {"code": "if (user.admin) { showAdminPanel(); }", "expected": "Insecure client-side check. Verify server-side."}}
+{"vars": {"code": "sessionStorage.setItem('token', jwt)", "expected": "Token in localStorage. Use httpOnly cookies."}}
+{"vars": {"code": "buffer.write(user_data)", "expected": "Buffer overflow risk. Validate input length."}}
+{"vars": {"code": "String.format('SELECT * FROM %s', table_name)", "expected": "SQL injection via table name. Whitelist table names."}}
+{"vars": {"code": "XMLParser.parse(user_xml)", "expected": "XXE injection. Use safe XML parser configuration."}}
+{"vars": {"code": "Math.random() * 1000", "expected": "Insecure random. Use cryptographically secure RNG."}}
