@@ -1,5 +1,9 @@
-from .registry import CommandRegistry, get_command
-from .dispatcher import IntelligentDispatcher
-from .providers import get_provider
-from .optimizers import get_optimizer
-from .evaluation import Evaluator
+from .registry import CommandRegistry, get_command, IntelligentDispatcher
+from .providers import get_provider_by_name as get_provider
+
+__all__ = [
+    "CommandRegistry",
+    "get_command",
+    "IntelligentDispatcher",
+    "get_provider",
+]
