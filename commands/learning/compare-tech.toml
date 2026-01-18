@@ -1,11 +1,18 @@
 prompt = """
-# Compare Technologies
+# Enhanced Technology Comparison with DSPy Multi-Faceted Analysis
 
-Please provide a comprehensive comparison of the following technologies:
+Please provide a comprehensive comparison of the following technologies using advanced multi-faceted analysis techniques:
 
 {{args}}
 
-## Technology Comparison Framework
+## 1. Chain of Thought Analysis
+First, analyze the technologies systematically:
+- Identify the core purposes and design philosophies
+- Determine the target use cases and audiences
+- Recognize the strengths and weaknesses of each
+- Understand the market positioning and trends
+
+## 2. Technology Comparison Framework
 
 ### 1. Overview
 
@@ -320,15 +327,27 @@ What industry experts say:
 2. Then [next step]
 3. Practice by [project idea]
 
-## Comparison Principles
+## 3. Multi-Step Verification
+For each comparison point, verify:
+- The accuracy of the information
+- The relevance to the technologies
+- The fairness of the comparison
+- The validity of the conclusions
 
-1. **Be Objective**: Present facts, not opinions
-2. **Be Balanced**: Show pros/cons of both fairly
-3. **Be Specific**: Use concrete examples and data
-4. **Be Current**: Use latest versions and info
-5. **Be Practical**: Focus on real-world usage
-6. **Be Honest**: Acknowledge limitations
-7. **Be Helpful**: Guide decision-making
+## 4. Confidence Assessment
+Rate the confidence in each comparison:
+- High: Well-established facts with reliable sources
+- Medium: Reasonable assessment based on available data
+- Low: Speculative assessment requiring further validation
 
-Generate a comprehensive, balanced comparison following this framework.
+## 5. Output Format
+
+Provide:
+1. Comprehensive, balanced comparison following the framework
+2. Confidence ratings for each comparison point
+3. Prioritized recommendations based on specific needs
+4. Risk assessment for each technology choice
+5. Suggestions for additional research that might be needed
+
+Generate a comprehensive, balanced comparison following this framework with DSPy-enhanced multi-faceted analysis.
 """

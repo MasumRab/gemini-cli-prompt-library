@@ -1,9 +1,9 @@
-description = "Analyze and improve the prompt engineering system itself"
+description = "Analyze and improve the prompt engineering system itself with DSPy system analysis"
 args = "current_workflow_description"
 prompt = """
-# System Improvement Meta-Prompt
+# Enhanced System Improvement Meta-Prompt with DSPy System Analysis
 
-Act as a Principal Architect for AI Systems. Your goal is to review the current prompt engineering workflow and implementation, then propose high-level systemic improvements.
+Act as a Principal Architect for AI Systems with advanced system analysis capabilities. Your goal is to review the current prompt engineering workflow and implementation, then propose high-level systemic improvements using DSPy techniques.
 
 ## Current Context
 **Workflow Description:**
@@ -11,25 +11,59 @@ Act as a Principal Architect for AI Systems. Your goal is to review the current 
 {{current_workflow_description}}
 ```
 
-## Analysis Dimensions
+## 1. Chain of Thought Analysis
+First, analyze the system systematically:
+- Identify the system architecture and components
+- Determine the current workflow and processes
+- Recognize the bottlenecks and inefficiencies
+- Understand the quality standards and metrics
+
+## 2. Analysis Dimensions
 
 ### 1. Workflow Efficiency
 - Are there bottlenecks in the Draft -> Evaluate -> Refine loop?
 - How can we reduce the number of iterations required?
+- Can we automate parts of the workflow?
+- Are there redundant steps that can be eliminated?
 
 ### 2. Quality Assurance Standards
 - Are the scoring metrics (Clarity, Specificity, etc.) sufficient?
 - Should we introduce automated benchmarks or regression testing?
+- How can we standardize quality assessment?
+- Can we implement continuous quality monitoring?
 
 ### 3. Tooling & Infrastructure
 - Does the file-based storage (v1.md, v2.md) scale?
-- suggestions for better version control or metadata management?
+- Suggestions for better version control or metadata management?
+- How can we improve the development environment?
+- What tools are missing for efficient development?
 
 ### 4. Compatibility & Future-Proofing
 - Is the system compatible with emerging models (e.g., multimodal inputs)?
 - How can we make the prompts more portable across different LLM providers?
+- Are we prepared for new model capabilities?
+- How can we ensure backward compatibility?
 
-## Recommendations
+### 5. Performance & Scalability
+- How well does the system handle increased load?
+- Are there performance bottlenecks?
+- How can we optimize resource usage?
+- What are the scalability limits?
+
+## 3. Multi-Step Verification
+For each analysis dimension, verify:
+- The accuracy of the assessment
+- The relevance to the current system
+- The feasibility of the proposed improvements
+- The potential impact of changes
+
+## 4. Confidence Assessment
+Rate the confidence in each finding:
+- High: Clear evidence with proven solutions
+- Medium: Reasonable assessment with some uncertainty
+- Low: Speculative assessment requiring validation
+
+## 5. Recommendations
 
 Provide 3-5 strategic recommendations formatted as follows:
 
@@ -38,10 +72,21 @@ Provide 3-5 strategic recommendations formatted as follows:
 - **Proposed Solution:** [Actionable improvement]
 - **Impact:** [Expected benefit]
 - **Implementation:** [Rough command definition or process change]
+- **Confidence Level:** [High/Medium/Low]
 
 ### Recommendation 2: [Title]
 ...
 
-## Command Updates
+## 6. Command Updates
 If any recommendations require updating existing commands (evaluate, refine, etc.), provide the modified TOML blocks below.
+
+## 7. Output Format
+Provide:
+1. Complete system analysis with DSPy-enhanced reasoning
+2. Strategic recommendations with confidence ratings
+3. Implementation roadmap with priorities
+4. Risk assessment for each recommendation
+5. Suggestions for additional analysis that might be needed
+
+Generate comprehensive system improvements following this framework with DSPy-enhanced system analysis.
 """

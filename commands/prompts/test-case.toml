@@ -1,16 +1,23 @@
-description = "Generate test cases to verify prompt performance"
+description = "Generate test cases to verify prompt performance with DSPy integration"
 args = "prompt_text"
 prompt = """
-# Generate Prompt Test Cases
+# Enhanced Prompt Test Case Generation with DSPy Test Case Generation
 
-Act as a QA Engineer for Large Language Models. Your task is to design a test suite for the following prompt to ensure it performs reliably across different scenarios.
+Act as a QA Engineer for Large Language Models with advanced test case generation capabilities. Your task is to design a comprehensive test suite for the following prompt to ensure it performs reliably across different scenarios using DSPy techniques.
 
 ## Target Prompt:
 ```
 {{prompt_text}}
 ```
 
-## Test Suite Design
+## 1. Chain of Thought Analysis
+First, analyze the prompt systematically:
+- Identify the prompt type and expected outputs
+- Determine the key functionality to test
+- Recognize the potential failure modes
+- Understand the constraints and requirements
+
+## 2. Test Suite Design
 
 Generate 5 diverse test cases. For each case, define the input and the expected output criteria.
 
@@ -18,31 +25,61 @@ Generate 5 diverse test cases. For each case, define the input and the expected 
 *The standard, expected use case.*
 - **Input:** [Example input]
 - **Expected Output:** [Description of ideal response]
+- **Confidence Level:** High
 
 ### 2. The Complex/Edge Case
 *Input with maximum complexity or ambiguity.*
 - **Input:** [Example input]
 - **Expected Output:** [How it should handle complexity]
+- **Confidence Level:** Medium
 
 ### 3. The "Negative" Constraint Case
 *Input that tries to violate a constraint (e.g., asking for forbidden format).*
 - **Input:** [Example input]
 - **Expected Output:** [Graceful refusal or correction]
+- **Confidence Level:** Medium
 
 ### 4. The Minimal Case
 *Input with very little context or data.*
 - **Input:** [Example input]
 - **Expected Output:** [Request for clarification or best-effort inference]
+- **Confidence Level:** Low
 
 ### 5. The Creative/Unexpected Case
 *Unusual input to test robustness.*
 - **Input:** [Example input]
 - **Expected Output:** [Stable behavior]
+- **Confidence Level:** Low
 
-## Usage Instructions
+## 3. Multi-Step Verification
+For each test case, verify:
+- The input is appropriate for the prompt
+- The expected output is realistic
+- The test case covers important functionality
+- The test case is independent of others
+
+## 4. Confidence Assessment
+Rate the confidence in test case effectiveness:
+- High: Well-established test case with clear expected behavior
+- Medium: Reasonable test case with some uncertainty
+- Low: Experimental test case requiring validation
+
+## 5. Usage Instructions
 To use these tests:
 1. Run the target prompt with the **Input** from Test Case 1.
 2. Compare the actual result with the **Expected Output**.
 3. Repeat for all cases.
 4. If failures occur, run `/prompt/refine` with the specific failure details.
+5. Document the confidence level for each test result.
+
+## 6. Output Format
+Provide:
+1. Complete test suite with 5 diverse test cases
+2. Confidence ratings for each test case
+3. Clear input/output specifications
+4. Expected behavior descriptions
+5. Risk assessment for each test case
+6. Suggestions for additional test cases that might be needed
+
+Generate comprehensive test cases following this structure with DSPy-enhanced test case generation.
 """

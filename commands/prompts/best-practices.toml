@@ -1,11 +1,18 @@
 prompt = """
-# Prompt Engineering Best Practices
+# Enhanced Prompt Engineering Best Practices with DSPy Best Practice Enforcement
 
 Please provide best practices and tips for prompt engineering related to:
 
 {{args}}
 
-## Core Prompt Engineering Principles
+## 1. Chain of Thought Analysis
+First, analyze the prompt engineering requirements systematically:
+- Identify the specific prompt engineering challenge
+- Determine the appropriate techniques and patterns
+- Recognize the best practices for the context
+- Understand the optimization opportunities
+
+## 2. Core Prompt Engineering Principles
 
 ### 1. Clarity and Specificity
 
@@ -530,5 +537,27 @@ Solve this problem 3 different ways, then:
 7. **Be specific**: Vague prompts = vague answers
 8. **Set boundaries**: Define what you don't want
 
-Generate comprehensive prompt engineering guidance following these best practices.
+## 3. Multi-Step Verification
+For each best practice recommendation, verify:
+- The applicability to the specific context
+- The effectiveness of the technique
+- The potential impact on prompt quality
+- The feasibility of implementation
+
+## 4. Confidence Assessment
+Rate the confidence in each best practice:
+- High: Well-established practice with proven effectiveness
+- Medium: Reasonable practice with some uncertainty
+- Low: Experimental practice requiring validation
+
+## 5. Output Format
+
+Provide:
+1. Comprehensive prompt engineering guidance following these best practices
+2. Confidence ratings for each best practice
+3. Prioritized recommendations based on effectiveness
+4. Risk assessment for each technique
+5. Suggestions for additional practices that might be needed
+
+Generate comprehensive prompt engineering guidance following these best practices with DSPy-enhanced best practice enforcement.
 """

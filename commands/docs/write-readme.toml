@@ -1,11 +1,18 @@
 prompt = """
-# Generate Comprehensive README
+# Enhanced README Generation with DSPy Content Structuring
 
-Please create a comprehensive README.md file for the following project:
+Please create a comprehensive README.md file for the following project using advanced content structuring techniques:
 
 {{args}}
 
-## Structure
+## 1. Chain of Thought Analysis
+First, analyze the project systematically:
+- Identify the project type and primary purpose
+- Determine the target audience and use cases
+- Recognize key features and differentiators
+- Understand the technical stack and dependencies
+
+## 2. Structure
 
 Your README should include:
 
@@ -85,7 +92,20 @@ Your README should include:
 - Issue tracker link
 - Community channels (Discord, Slack, etc.)
 
-## Best Practices
+## 3. Multi-Step Verification
+For each section, verify:
+- The content is relevant to the project
+- The information is accurate and up-to-date
+- The examples are working and clear
+- The instructions are complete and testable
+
+## 4. Confidence Assessment
+Rate the confidence in content quality:
+- High: All information verified and accurate
+- Medium: Most information accurate with some assumptions
+- Low: Significant portions require verification
+
+## 5. Best Practices
 
 - Use clear, concise language
 - Include working code examples
@@ -95,11 +115,18 @@ Your README should include:
 - Make it beginner-friendly
 - Include troubleshooting section if needed
 
-## Tone
+## 6. Tone
 - Professional but approachable
 - Assume basic technical knowledge
 - Be enthusiastic but not hyperbolic
 - Focus on clarity over cleverness
 
-Generate a complete, production-ready README following these guidelines.
+## 7. Output Format
+Provide:
+1. Complete README.md content with proper structure
+2. Confidence rating for content accuracy
+3. Suggestions for additional sections that might be needed
+4. Recommendations for visual elements (diagrams, screenshots)
+
+Generate a complete, production-ready README following these guidelines with DSPy-enhanced content structuring.
 """

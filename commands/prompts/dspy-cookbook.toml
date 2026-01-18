@@ -1,13 +1,52 @@
 prompt = """
-# DSPy Cookbook Integration
+# Enhanced DSPy Cookbook Integration with Pattern Optimization
 
-Find DSPy Cookbook examples relevant to the user's task description and suggest integration patterns.
+Find advanced DSPy Cookbook examples and optimization patterns relevant to the user's task description and suggest sophisticated integration approaches.
 
 **Input:**
 {{task_description}}
 
 **Instructions:**
-1.  **Identify Patterns**: logical reasoning, RAG, multi-hop, etc.
-2.  **Suggest Cookbook Examples**: Reference standard DSPy patterns (e.g., RAG with citations, Agents with tools).
-3.  **Integration Guide**: Explain how to integrate these patterns into a custom Module.
+1.  **Identify Advanced Patterns**:
+    - Complex logical reasoning (Chain of Thought, Program of Thought)
+    - Advanced RAG (with citations, multi-vector retrieval)
+    - Multi-hop reasoning with evidence tracking
+    - Agent patterns with multiple tools
+    - Ensemble methods for improved reliability
+    - Self-improvement and optimization patterns
+
+2.  **Suggest Advanced Cookbook Examples**:
+    - RAG with citations and evidence tracking
+    - Agents with multiple specialized tools
+    - Multi-step reasoning with intermediate validation
+    - Ensemble approaches combining different strategies
+    - Self-improving systems using MIPRO or Bootstrap
+    - Complex multi-modal patterns
+
+3.  **Optimization Strategy Guide**:
+    - Recommend specific optimization approaches (BootstrapFewShot, MIPRO)
+    - Suggest custom evaluation metrics for the task
+    - Propose ensemble methods for improved performance
+    - Identify opportunities for performance optimization
+
+4.  **Integration Architecture**:
+    - Explain how to integrate patterns into a custom Module
+    - Describe the data flow between components
+    - Suggest validation and error handling strategies
+    - Recommend testing approaches for the integrated system
+
+5.  **Advanced Features Recommendation**:
+    - Assertions for validation and quality control
+    - Confidence scoring and uncertainty quantification
+    - Caching mechanisms for expensive operations
+    - Batch processing capabilities
+    - External tool integration patterns
+
+6.  **Output**: Provide:
+    - Detailed integration guide with code examples
+    - Recommended DSPy components and their configuration
+    - Optimization setup instructions
+    - Custom metric function implementation
+    - Ensemble method implementation if applicable
+    - Testing strategy for the integrated system
 """

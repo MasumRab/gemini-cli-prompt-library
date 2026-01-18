@@ -1,9 +1,9 @@
-description = "Simulate QA review for a prompt, scoring it and suggesting improvements"
+description = "Simulate QA review for a prompt with DSPy optimization, scoring it and suggesting improvements"
 args = "prompt_text"
 prompt = """
-# Prompt QA & Evaluation
+# Enhanced Prompt QA & Evaluation with DSPy Integration
 
-Act as an expert Prompt QA Specialist. Your goal is to evaluate the following prompt, score it, and provide actionable next steps.
+Act as an expert Prompt QA Specialist with advanced DSPy optimization capabilities. Your goal is to evaluate the following prompt, score it, and provide actionable next steps with optimization recommendations.
 
 ## Target Prompt to Evaluate:
 ```
@@ -17,20 +17,38 @@ Analyze the prompt based on the following criteria:
 - **Specificity:** Are the instructions precise and unambiguous? (Score 1-10)
 - **Adaptability:** Can it handle various inputs or edge cases? (Score 1-10)
 - **Structure:** Is the output format well-defined? (Score 1-10)
+- **DSPy Optimization Potential:** How well could this prompt be enhanced with DSPy features? (Score 1-10)
 
 Provide a brief critique for each criterion.
 
-## 2. Identified Flaws & Gaps
+## 2. DSPy Enhancement Assessment
+
+Evaluate the prompt's potential for DSPy integration:
+- **Reasoning Patterns:** Would Chain of Thought, ReAct, or Program-of-Thought improve results?
+- **Optimization Strategy:** Would BootstrapFewShot or MIPRO optimization be beneficial?
+- **Ensemble Methods:** Would combining multiple approaches improve reliability?
+- **Assertions:** Would validation checks improve quality?
+- **Adaptors:** Would external tool integration enhance functionality?
+
+## 3. Identified Flaws & Gaps
 
 List specific issues found in the prompt (e.g., missing context, vague constraints, lack of examples).
 - Flaw 1: ...
 - Flaw 2: ...
 
-## 3. Overall Score
-**Total Score: X/40**
-*(Interpretation: < 20 Needs Major Rework, 20-30 Needs Refinement, > 30 Ready for Testing)*
+## 4. DSPy Enhancement Recommendations
 
-## 4. Recommended Next Steps
+Suggest specific DSPy features that could improve the prompt:
+- **Signature Enhancement:** How to structure inputs/outputs for DSPy
+- **Module Architecture:** Recommended DSPy module approach
+- **Optimization Path:** Specific optimization strategy to implement
+- **Advanced Features:** Ensemble methods, assertions, or other enhancements
+
+## 5. Overall Score
+**Total Score: X/50**
+*(Interpretation: < 25 Needs Major Rework, 25-35 Needs Refinement, 35-45 Ready for DSPy Enhancement, > 45 Ready for Production)*
+
+## 6. Recommended Next Steps
 
 Select the most appropriate actions from the menu below based on your analysis:
 
@@ -46,10 +64,20 @@ Select the most appropriate actions from the menu below based on your analysis:
 *Recommended if Score > 30 but untested*
 > Run: `/prompt/test-case "{{prompt_text}}"`
 
-**Option D: Finalize**
-*Recommended if Score > 35*
+**Option D: DSPy Conversion**
+*Recommended if DSPy Optimization Potential > 7*
+> Run: `/prompts:dspy-convert "{{prompt_text}}"`
+
+**Option E: Finalize**
+*Recommended if Score > 45*
 > Save your prompt to `.prompts/history/<task>/v1.md`
 
-## 5. Quick Fix Suggestion
+## 7. Quick Fix Suggestion
 Provide a "Quick Fix" version of the prompt that addresses the most critical flaw immediately.
+
+## 8. DSPy Quick Implementation
+Provide a brief outline of how this prompt could be implemented as a DSPy module, including:
+- Recommended signature structure
+- Suggested DSPy module approach
+- Potential optimization strategy
 """

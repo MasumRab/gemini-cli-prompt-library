@@ -1,11 +1,18 @@
 prompt = """
-# Identify Edge Cases
+# Enhanced Edge Case Identification with DSPy Reasoning
 
-Please identify comprehensive edge cases for the following code or feature:
+Please identify comprehensive edge cases for the following code or feature using advanced reasoning techniques:
 
 {{args}}
 
-## Edge Case Categories
+## 1. Chain of Thought Analysis
+First, analyze the code/system systematically:
+- Identify the input types and expected ranges
+- Determine the processing logic and potential failure points
+- Recognize the dependencies and external factors
+- Understand the business context and constraints
+
+## 2. Edge Case Categories
 
 ### 1. Boundary Values
 
@@ -213,7 +220,20 @@ Please identify comprehensive edge cases for the following code or feature:
 - Abandoning process
 - Re-entering process
 
-## Output Format
+## 3. Multi-Step Verification
+For each edge case, verify:
+- The existence of the potential issue
+- The likelihood of occurrence
+- The severity of potential impact
+- The feasibility of proper handling
+
+## 4. Confidence Assessment
+Rate the confidence in each edge case identification:
+- High: Well-known issue with clear impact
+- Medium: Possible issue based on similar systems
+- Low: Theoretical issue requiring further validation
+
+## 5. Output Format
 
 For each edge case, provide:
 
@@ -234,6 +254,9 @@ Concrete test case to verify handling
 
 ### 6. Fix/Handling
 How to properly handle this edge case
+
+### 7. Confidence Level
+Confidence in the edge case identification
 
 ## Example Output
 
@@ -272,6 +295,8 @@ function processArray(arr) {
   // Process array
 }
 ```
+
+**Confidence Level**: High
 ```
 
 ## Priority Levels
@@ -282,5 +307,12 @@ Mark each edge case with priority:
 - **Medium**: Could cause user confusion
 - **Low**: Minor inconvenience
 
-Generate a comprehensive list of edge cases following this structure.
+## Output Format
+Provide:
+1. Comprehensive list of edge cases with detailed analysis
+2. Confidence ratings for each edge case
+3. Prioritized list based on risk and impact
+4. Recommendations for testing strategies
+
+Generate a comprehensive list of edge cases following this structure with DSPy-enhanced reasoning.
 """

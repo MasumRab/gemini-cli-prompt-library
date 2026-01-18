@@ -1,11 +1,18 @@
 prompt = """
-# System Architecture Design
+# Enhanced System Architecture Design with DSPy Complex Reasoning
 
-Please design a comprehensive system architecture for the following requirements:
+Please design a comprehensive system architecture for the following requirements using advanced reasoning techniques:
 
 {{args}}
 
-## System Design Framework
+## 1. Chain of Thought Analysis
+First, analyze the requirements systematically:
+- Identify the system type and primary purpose
+- Determine the scale and performance requirements
+- Recognize the constraints and trade-offs
+- Understand the technology landscape and options
+
+## 2. System Design Framework
 
 ### 1. Requirements Clarification
 
@@ -369,7 +376,21 @@ Based on requirements, suggest:
 - Containers: Docker, Kubernetes
 - CI/CD: GitHub Actions, Jenkins
 
-### 15. Output Format
+## 3. Multi-Step Verification
+For each architectural decision, verify:
+- The alignment with requirements
+- The scalability implications
+- The security considerations
+- The cost-effectiveness
+- The maintainability
+
+## 4. Confidence Assessment
+Rate the confidence in architectural decisions:
+- High: Well-established patterns with proven success
+- Medium: Reasonable approach with some uncertainty
+- Low: Experimental approach requiring validation
+
+## 5. Output Format
 
 Provide:
 
@@ -384,6 +405,8 @@ Provide:
 9. **Capacity Planning** - Traffic/storage estimates
 10. **Trade-offs** - Design decisions and rationale
 11. **Deployment Strategy** - How to deploy and maintain
+12. **Confidence Rating** - Confidence in architectural decisions
+13. **Risk Assessment** - Potential risks and mitigation strategies
 
-Generate a complete, production-ready system architecture following best practices.
+Generate a complete, production-ready system architecture following best practices with DSPy-enhanced complex reasoning.
 """

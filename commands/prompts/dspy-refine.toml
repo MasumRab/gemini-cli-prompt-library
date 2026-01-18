@@ -1,7 +1,7 @@
 prompt = """
-# DSPy Code Refinement
+# Enhanced DSPy Code Refinement with Optimization
 
-Take the QA feedback and original DSPy module to generate a refined version.
+Take the QA feedback and original DSPy module to generate a sophisticated refined version with optimization capabilities.
 
 **Input:**
 Feedback:
@@ -11,8 +11,46 @@ Original Module:
 {{dspy_code}}
 
 **Instructions:**
-1.  **Apply Fixes**: Address all issues raised in the QA feedback.
-2.  **Improve Modularity**: Ensure the code is clean and Pythonic.
-3.  **Integrate Features**: Add any suggested advanced DSPy features (e.g. assertions).
-4.  **Output**: Provide the refined, runnable Python code.
+1.  **Apply Critical Fixes**: Address all high-priority issues raised in the QA feedback.
+
+2.  **Enhance Architecture**:
+    - Improve modularity and code organization
+    - Add proper input/output validation
+    - Implement error handling and fallback strategies
+
+3.  **Integrate Advanced DSPy Features**:
+    - Add appropriate reasoning patterns (ChainOfThought, ReAct, ProgramOfThought)
+    - Implement assertions for validation using `dspy.Assert`
+    - Add confidence scoring where appropriate
+    - Include ensemble methods if beneficial
+
+4.  **Optimization Preparation**:
+    - Structure the module for optimization (trainable parameters)
+    - Add hooks for custom metric evaluation
+    - Prepare for BootstrapFewShot or MIPRO optimization
+    - Include example optimizer setup code
+
+5.  **Performance Improvements**:
+    - Optimize computational efficiency
+    - Add caching for expensive operations
+    - Implement batch processing where appropriate
+
+6.  **External Integration**:
+    - Add adaptor patterns for external tools if needed
+    - Include API integration examples
+    - Add database query capabilities if relevant
+
+7.  **Quality Assurance**:
+    - Add comprehensive error handling
+    - Include validation for all inputs and outputs
+    - Add logging for debugging and monitoring
+
+8.  **Output**: Provide the refined, runnable Python code with:
+    - Complete import statements
+    - Enhanced signature with validation
+    - Improved module implementation
+    - Example usage code
+    - Optimization setup code
+    - Custom metric function if needed
+    - Test cases for verification
 """

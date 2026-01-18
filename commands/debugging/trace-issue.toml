@@ -1,11 +1,17 @@
 prompt = """
-# Root Cause Analysis - Trace Issue
+# Enhanced Root Cause Analysis with DSPy Reasoning
 
-Please perform a comprehensive root cause analysis for the following issue:
+Please perform a comprehensive root cause analysis for the following issue using advanced reasoning techniques:
 
 {{args}}
 
-## Root Cause Analysis Framework
+## 1. Chain of Thought Analysis
+Approach the root cause analysis systematically, explaining your reasoning at each step:
+- First, identify the issue type and symptoms
+- Then, analyze the potential causes and contributing factors
+- Finally, assess the root cause and solution approach
+
+## 2. Root Cause Analysis Framework
 
 ### 1. Issue Definition
 
@@ -282,7 +288,20 @@ Problem: Authentication Failures
 5. Check for side effects
 6. Monitor in production
 
-### 15. Output Format
+## 3. Multi-Step Verification
+For each potential root cause, verify:
+- The existence of the issue
+- The validity of the root cause hypothesis
+- The potential impact of the fix
+- The feasibility of the solution
+
+## 4. Confidence Assessment
+Rate your confidence in each finding:
+- High: Clear evidence of root cause with known solution
+- Medium: Likely cause based on patterns and evidence
+- Low: Potential cause requiring further investigation
+
+## 5. Output Format
 
 Provide:
 
@@ -319,5 +338,9 @@ Provide:
 - What went right
 - What to improve
 
-Generate a complete root cause analysis following this framework.
+#### 7. Confidence Rating
+- Confidence level in root cause determination
+- Confidence level in solution effectiveness
+
+Generate a complete root cause analysis following this framework with DSPy-enhanced reasoning.
 """

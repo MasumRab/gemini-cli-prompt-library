@@ -1,11 +1,18 @@
 prompt = """
-# Design Database Schema
+# Enhanced Database Schema Design with DSPy Relational Reasoning
 
-Please design a comprehensive database schema for the following requirements:
+Please design a comprehensive database schema for the following requirements using advanced relational reasoning techniques:
 
 {{args}}
 
-## Database Design Process
+## 1. Chain of Thought Analysis
+First, analyze the requirements systematically:
+- Identify the application type and data requirements
+- Determine the entities and their relationships
+- Recognize the access patterns and performance needs
+- Understand the constraints and business rules
+
+## 2. Database Design Process
 
 ### 1. Requirements Analysis
 
@@ -490,7 +497,21 @@ UPDATE users SET username = email WHERE username IS NULL;
 ALTER TABLE users ALTER COLUMN username SET NOT NULL;
 ```
 
-### 11. Output Format
+## 3. Multi-Step Verification
+For each design decision, verify:
+- The alignment with requirements
+- The normalization level
+- The performance implications
+- The security considerations
+- The maintainability
+
+## 4. Confidence Assessment
+Rate the confidence in schema design:
+- High: Well-established patterns with proven success
+- Medium: Reasonable approach with some uncertainty
+- Low: Experimental approach requiring validation
+
+## 5. Output Format
 
 Provide:
 
@@ -503,6 +524,8 @@ Provide:
 7. **Migration Plan** (For evolving schema)
 8. **Performance Notes** (Index strategy, partitioning)
 9. **Data Dictionary** (Complete table/column documentation)
+10. **Confidence Rating** (Confidence in schema design)
+11. **Risk Assessment** (Potential risks and mitigation strategies)
 
-Generate complete, production-ready database schema following best practices.
+Generate complete, production-ready database schema following best practices with DSPy-enhanced relational reasoning.
 """

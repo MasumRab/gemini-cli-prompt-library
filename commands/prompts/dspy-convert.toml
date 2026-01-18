@@ -1,15 +1,47 @@
 prompt = """
-# DSPy Conversion
+# Enhanced DSPy Conversion with Optimization
 
-You are an expert in DSPy and prompt engineering. Convert the following TOML prompt into a DSPy Python module:
+You are an expert in DSPy and advanced prompt engineering. Convert the following TOML prompt into a sophisticated DSPy Python module with optimization capabilities.
 
 **Input:**
 {{toml_prompt}}
 
 **Instructions:**
-1.  **Define a DSPy Signature class**: Identify the input and output fields from the prompt logic. Add docstrings describing the purpose.
-2.  **Wrap logic in a DSPy Module**: Create a class inheriting from `dspy.Module`. Initialize `dspy.ChainOfThought` or `dspy.Predict` with the signature. Implement the `forward` method.
-3.  **Suggest an Optimiser**: Recommend a strategy (e.g., `BootstrapFewShot` if examples are available, `MIPRO` for prompt optimization).
-4.  **Output**: Provide the complete, runnable Python code in a Markdown code block.
+1.  **Define an Advanced DSPy Signature class**: Identify the input and output fields from the prompt logic. Add detailed docstrings describing the purpose and constraints. Include type hints and validation requirements.
 
+2.  **Create an Optimizable DSPy Module**: Create a class inheriting from `dspy.Module`. Implement multiple approaches:
+    - Use `dspy.ChainOfThought` for complex reasoning tasks
+    - Use `dspy.ReAct` for tasks requiring interaction with external tools
+    - Use `dspy.ProgramOfThought` for multi-step complex problems
+    - Include assertions for validation using `dspy.Assert`
+
+3.  **Implement the forward method** with:
+    - Input validation and preprocessing
+    - Multi-step reasoning where appropriate
+    - Output validation and postprocessing
+    - Error handling and fallback strategies
+
+4.  **Suggest Advanced Optimisers**: Recommend specific optimization strategies:
+    - `BootstrapFewShot` for few-shot learning scenarios
+    - `MIPRO` for comprehensive prompt optimization
+    - `BootstrapOptimizer` for few-shot optimization
+    - Custom metric functions for evaluation
+
+5.  **Include Ensemble Methods**: Where appropriate, suggest ensemble approaches:
+    - `dspy.Ensemble` for combining multiple module outputs
+    - Voting mechanisms for consensus
+    - Confidence scoring for result ranking
+
+6.  **Add Adaptor Integration**: Suggest how to connect to external tools:
+    - API calls using `dspy.Tool`
+    - Database queries
+    - File system operations
+
+7.  **Output**: Provide the complete, runnable Python code with:
+    - Import statements for all required DSPy components
+    - Signature definition with validation
+    - Module implementation with advanced features
+    - Example usage code
+    - Optimization setup code
+    - Custom metric function if needed
 """

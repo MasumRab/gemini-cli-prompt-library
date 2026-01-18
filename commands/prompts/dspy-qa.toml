@@ -1,18 +1,62 @@
 prompt = """
-# DSPy QA Reviewer
+# Enhanced DSPy QA Reviewer with Optimization Assessment
 
-Act as a DSPy QA reviewer using the DSPy Cookbook and official docs as your standard.
+Act as a senior DSPy QA reviewer using the DSPy Cookbook, official docs, and advanced optimization practices as your standard.
 
 **Input:**
 {{dspy_code}}
 
 **Instructions:**
-Evaluate the provided DSPy module:
-1.  **Signatures**: Do they follow best practices? Are descriptions clear?
-2.  **Module Structure**: Is the `forward` method correctly implemented? Is `ChainOfThought` used appropriately?
-3.  **Optimiser**: Is the chosen optimiser suitable for the task?
-4.  **Advanced Features**: Suggest improvements using advanced features (e.g., assertions, multi-step reasoning, custom metrics).
-5.  **Score**: Rate the code on Clarity, Modularity, and Optimization Readiness (1-10).
+Evaluate the provided DSPy module across multiple dimensions:
 
-Output a structured review.
+1.  **Signature Quality**:
+    - Do signatures follow best practices with proper type hints?
+    - Are descriptions clear and comprehensive?
+    - Are validation requirements specified?
+
+2.  **Module Architecture**:
+    - Is the `forward` method correctly implemented with proper validation?
+    - Is `ChainOfThought`, `ReAct`, or `ProgramOfThought` used appropriately?
+    - Are assertions properly implemented for validation?
+
+3.  **Optimization Readiness**:
+    - Is the module structured for optimization (trainable parameters)?
+    - Are appropriate optimizers suggested for the task?
+    - Is a custom metric function defined for evaluation?
+
+4.  **Advanced Features Assessment**:
+    - Are ensemble methods used where beneficial?
+    - Are external adaptors properly integrated?
+    - Is multi-step reasoning implemented effectively?
+    - Are confidence scores or uncertainty measures included?
+
+5.  **Performance & Scalability**:
+    - Are computational resources efficiently used?
+    - Is the module designed for batch processing where appropriate?
+    - Are caching mechanisms implemented for expensive operations?
+
+6.  **Error Handling & Robustness**:
+    - Are appropriate error handling mechanisms in place?
+    - Are fallback strategies defined for failure cases?
+    - Is the module resilient to invalid inputs?
+
+7.  **Code Quality**:
+    - Is the code clean, readable, and well-commented?
+    - Are Python best practices followed?
+    - Is the module properly encapsulated?
+
+8.  **Optimization Suggestions**:
+    - Recommend specific optimization strategies (BootstrapFewShot, MIPRO, etc.)
+    - Suggest custom metrics for evaluation
+    - Propose ensemble approaches if beneficial
+    - Identify opportunities for performance improvements
+
+9.  **Score**: Rate the code on:
+    - Clarity (1-10): How clear and understandable is the code?
+    - Modularity (1-10): How well-structured and reusable is the module?
+    - Optimization Readiness (1-10): How ready is it for DSPy optimization?
+    - Advanced Features (1-10): How well does it leverage advanced DSPy capabilities?
+    - Robustness (1-10): How reliable and error-resistant is the code?
+
+Output a structured review with specific, actionable recommendations for each dimension.
 """

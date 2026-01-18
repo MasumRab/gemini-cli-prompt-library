@@ -1,11 +1,18 @@
 prompt = """
-# Generate Unit Tests
+# Enhanced Unit Test Generation with DSPy Reasoning
 
-Please create comprehensive unit tests for the following code:
+Please create comprehensive unit tests for the following code using advanced reasoning techniques:
 
 {{args}}
 
-## Test Framework Considerations
+## 1. Chain of Thought Analysis
+First, analyze the code systematically:
+- Identify the function/method types and their purposes
+- Determine the input/output contracts
+- Recognize potential edge cases and error conditions
+- Understand the dependencies and side effects
+
+## 2. Test Framework Considerations
 
 Adapt to the appropriate testing framework:
 - JavaScript/TypeScript: Jest, Vitest, Mocha
@@ -16,7 +23,7 @@ Adapt to the appropriate testing framework:
 - Ruby: RSpec
 - PHP: PHPUnit
 
-## Test Structure
+## 3. Test Structure
 
 ### 1. Test Organization
 
@@ -30,7 +37,7 @@ describe('FunctionName' or 'ClassName', () => {
 });
 ```
 
-### 2. Test Coverage Areas
+### 2. Comprehensive Test Coverage Areas
 
 #### Happy Path Tests
 Test normal, expected behavior:
@@ -38,27 +45,30 @@ Test normal, expected behavior:
 - Common use cases
 - Typical workflows
 
-#### Edge Cases
-Test boundary conditions:
+#### Edge Cases (Based on Code Analysis)
+Test boundary conditions identified through systematic analysis:
 - Empty inputs (null, undefined, empty string, empty array)
 - Zero values
 - Negative numbers
 - Very large numbers
 - Maximum/minimum values
 - Single element collections
+- Boundary values specific to the code logic
 
-#### Error Cases
-Test error handling:
+#### Error Cases (Based on Code Analysis)
+Test error handling identified through systematic analysis:
 - Invalid inputs
 - Type mismatches
 - Out of range values
 - Missing required parameters
 - Malformed data
+- Exception scenarios specific to the code
 
-#### Boundary Conditions
+#### Boundary Conditions (Based on Code Analysis)
 - First and last elements
 - Off-by-one scenarios
 - Limits and thresholds
+- Code-specific boundary conditions
 
 ### 3. Test Patterns
 
@@ -179,26 +189,39 @@ Use descriptive names that explain:
 - `it works`
 - `should work correctly`
 
-## Test Quality Guidelines
+## 4. Multi-Step Verification
+For each test case, verify:
+- The test covers the intended functionality
+- The test is independent of other tests
+- The test has clear arrange, act, and assert phases
+- The test name accurately describes what is being tested
+
+## 5. Confidence Assessment
+Rate the confidence in test coverage:
+- High: All major code paths covered
+- Medium: Most code paths covered with some gaps
+- Low: Significant portions of code not tested
+
+## 6. Test Quality Guidelines
 
 1. **Independence**: Tests should not depend on each other
 2. **Repeatability**: Tests should produce same results every time
 3. **Fast**: Unit tests should run quickly
 4. **Isolated**: Use mocks/stubs for external dependencies
 5. **Clear**: Test intent should be obvious
-6. **Comprehensive**: Cover all code paths
+6. **Comprehensive**: Cover all code paths identified through analysis
 7. **Maintainable**: Easy to update when code changes
 
-## Coverage Goals
+## 7. Coverage Goals
 
 Aim to test:
 - All public methods/functions
-- All branches (if/else)
-- All error paths
-- All edge cases
-- All important combinations
+- All branches (if/else) identified through code analysis
+- All error paths identified through code analysis
+- All edge cases identified through code analysis
+- All important combinations identified through code analysis
 
-## Output Format
+## 8. Output Format
 
 Provide:
 1. Complete test suite with all necessary imports
@@ -207,6 +230,8 @@ Provide:
 4. Clear test descriptions
 5. Comments explaining complex test scenarios
 6. Assertion explanations where helpful
+7. Confidence rating for test coverage
+8. Suggestions for additional tests that might be needed
 
-Generate a complete, production-ready test suite following these best practices.
+Generate a complete, production-ready test suite following these best practices with DSPy-enhanced reasoning.
 """

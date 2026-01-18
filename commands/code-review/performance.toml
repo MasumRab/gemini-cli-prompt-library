@@ -1,61 +1,84 @@
 prompt = """
-# Performance Code Review
+# Enhanced Performance Code Review with DSPy Reasoning
 
-Please perform a comprehensive performance analysis of the following code:
+Please perform a comprehensive performance analysis of the following code using advanced reasoning techniques:
 
 ```
 {{args}}
 ```
 
-Focus on:
+## 1. Chain of Thought Analysis
+Approach the performance review systematically, explaining your reasoning at each step:
+- First, identify the application type and architecture
+- Then, analyze the performance bottlenecks and hot paths
+- Finally, assess specific performance optimizations
 
-## 1. Algorithmic Complexity
+## 2. Focus Areas
+
+### Algorithmic Complexity
 - Identify time complexity (Big O notation) of key operations
 - Identify space complexity issues
 - Are there more efficient algorithms or data structures?
 - Look for nested loops, redundant calculations
 
-## 2. Memory Management
+### Memory Management
 - Are there memory leaks or unnecessary allocations?
 - Can objects be reused or pooled?
 - Are large objects held in memory unnecessarily?
 - Is garbage collection pressure minimized?
 
-## 3. I/O Operations
+### I/O Operations
 - Are I/O operations batched or optimized?
 - Can operations be done asynchronously?
 - Are there unnecessary file reads/writes?
 - Is caching used effectively?
 
-## 4. Database & Query Performance
+### Database & Query Performance
 - Are queries optimized with proper indexes?
 - Is there N+1 query problem?
 - Are connections pooled?
 - Can queries be batched or consolidated?
 
-## 5. Rendering & UI Performance
+### Rendering & UI Performance
 - Are unnecessary re-renders happening?
 - Is virtual scrolling used for long lists?
 - Are expensive operations memoized?
 - Is lazy loading implemented where appropriate?
 
-## 6. Network Performance
+### Network Performance
 - Are API calls optimized and batched?
 - Is data prefetching used?
 - Are responses properly cached?
 - Is compression enabled?
 
-## 7. Code Patterns
+### Code Patterns
 - Are there premature optimizations?
 - Is code clarity sacrificed unnecessarily?
 - Are there blocking operations in hot paths?
 
+## 3. Multi-Step Verification
+For each identified performance issue, verify:
+- The existence of the bottleneck
+- The potential performance impact
+- The recommended optimization approach
+- The feasibility of implementation
+
+## 4. Confidence Assessment
+Rate your confidence in each finding:
+- High: Clear evidence of performance issue
+- Medium: Likely performance issue based on patterns
+- Low: Potential issue requiring further investigation
+
+## 5. Output Format
 Provide:
-1. **Critical Issues**: Performance bottlenecks causing significant problems
-2. **High Priority**: Substantial performance improvements
-3. **Medium Priority**: Moderate optimizations
-4. **Low Priority**: Minor refinements
-5. **Code Examples**: Show optimized alternatives with performance comparisons
+1. **Executive Summary**: High-level performance posture
+2. **Critical Issues**: Performance bottlenecks causing significant problems
+3. **High Priority**: Substantial performance improvements
+4. **Medium Priority**: Moderate optimizations
+5. **Low Priority**: Minor refinements
+6. **Performance Assessment**: Overall performance level and confidence ratings
+7. **Optimization Steps**: Detailed steps to address each issue
+8. **Code Examples**: Show optimized alternatives with performance comparisons
 
 For each issue, explain:
 - What the performance problem is
@@ -63,4 +86,5 @@ For each issue, explain:
 - Expected performance impact
 - How to optimize it
 - Benchmarks or measurements where relevant
+- Confidence level in the finding
 """

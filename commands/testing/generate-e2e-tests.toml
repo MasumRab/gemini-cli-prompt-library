@@ -1,11 +1,18 @@
 prompt = """
-# Generate End-to-End Tests
+# Enhanced End-to-End Test Generation with DSPy Reasoning
 
-Please create comprehensive end-to-end tests for the following application/feature:
+Please create comprehensive end-to-end tests for the following application/feature using advanced reasoning techniques:
 
 {{args}}
 
-## Test Framework Considerations
+## 1. Chain of Thought Analysis
+First, analyze the application systematically:
+- Identify the application type and architecture
+- Determine the critical user journeys and business workflows
+- Recognize the testing frameworks and tools available
+- Understand the dependencies and integration points
+
+## 2. Test Framework Considerations
 
 Choose appropriate E2E testing framework:
 - Web: Playwright, Cypress, Selenium
@@ -13,7 +20,7 @@ Choose appropriate E2E testing framework:
 - API: Supertest, REST Assured
 - Desktop: TestComplete, WinAppDriver
 
-## E2E Test Structure
+## 3. E2E Test Structure
 
 ### 1. User Journey Tests
 
@@ -264,7 +271,20 @@ test('page should load within 3 seconds', async ({ page }) => {
 });
 ```
 
-## Best Practices
+## 4. Multi-Step Verification
+For each test case, verify:
+- The test covers the intended functionality
+- The test is independent of other tests
+- The test has clear arrange, act, and assert phases
+- The test name accurately describes what is being tested
+
+## 5. Confidence Assessment
+Rate the confidence in test coverage:
+- High: All major user journeys covered
+- Medium: Most user journeys covered with some gaps
+- Low: Significant portions of functionality not tested
+
+## 6. Best Practices
 
 1. **Stability**: Use reliable selectors (data-testid preferred)
 2. **Independence**: Tests should not depend on each other
@@ -277,7 +297,7 @@ test('page should load within 3 seconds', async ({ page }) => {
 9. **Logs**: Capture console logs
 10. **Reports**: Generate comprehensive test reports
 
-## Output Format
+## 7. Output Format
 
 Provide:
 1. Complete E2E test suite
@@ -287,6 +307,8 @@ Provide:
 5. Configuration suggestions
 6. Clear test descriptions
 7. Comments for complex interactions
+8. Confidence rating for test coverage
+9. Suggestions for additional tests that might be needed
 
-Generate a complete, production-ready E2E test suite following these best practices.
+Generate a complete, production-ready E2E test suite following these best practices with DSPy-enhanced reasoning.
 """

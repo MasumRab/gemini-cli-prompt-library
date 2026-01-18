@@ -1,73 +1,96 @@
 prompt = """
-# Best Practices Code Review
+# Enhanced Best Practices Code Review with DSPy Best Practice Enforcement
 
-Please perform a comprehensive best practices review of the following code:
+Please perform a comprehensive best practices review of the following code using advanced reasoning techniques:
 
 ```
 {{args}}
 ```
 
-Focus on:
+## 1. Chain of Thought Analysis
+Approach the best practices review systematically, explaining your reasoning at each step:
+- First, identify the code type and architecture
+- Then, analyze the best practices compliance
+- Finally, assess the maintainability and quality
 
-## 1. Code Style & Readability
+## 2. Focus Areas
+
+### 1. Code Style & Readability
 - Is the code following language/framework conventions?
 - Are naming conventions clear and consistent?
 - Is the code self-documenting?
 - Are comments helpful and up-to-date?
 - Is indentation and formatting consistent?
 
-## 2. Code Organization
+### 2. Code Organization
 - Is code properly modularized?
 - Is separation of concerns respected?
 - Are functions/methods single-purpose?
 - Is the file/folder structure logical?
 - Is code duplication minimized (DRY principle)?
 
-## 3. Error Handling
+### 3. Error Handling
 - Are errors handled gracefully?
 - Are error messages helpful?
 - Is there proper logging?
 - Are edge cases considered?
 - Is defensive programming used appropriately?
 
-## 4. Testing & Testability
+### 4. Testing & Testability
 - Is the code testable?
 - Are dependencies injectable?
 - Are side effects isolated?
 - Is test coverage adequate?
 - Are tests meaningful?
 
-## 5. Maintainability
+### 5. Maintainability
 - Will this code be easy to modify?
 - Is technical debt being introduced?
 - Are magic numbers/strings avoided?
 - Is configuration externalized?
 - Is documentation adequate?
 
-## 6. SOLID Principles
+### 6. SOLID Principles
 - Single Responsibility: Does each unit have one clear purpose?
 - Open/Closed: Is code open for extension, closed for modification?
 - Liskov Substitution: Are inheritance hierarchies correct?
 - Interface Segregation: Are interfaces focused?
 - Dependency Inversion: Are abstractions used properly?
 
-## 7. Language/Framework Specific
+### 7. Language/Framework Specific
 - Are modern language features used appropriately?
 - Are framework best practices followed?
 - Are deprecated APIs avoided?
 - Are appropriate design patterns used?
 
-## 8. Scalability & Future-Proofing
+### 8. Scalability & Future-Proofing
 - Will this code scale with growth?
 - Is it flexible for future requirements?
 - Are assumptions documented?
 
+## 3. Multi-Step Verification
+For each best practice violation, verify:
+- The existence of the issue
+- The validity of the best practice application
+- The potential impact of the violation
+- The feasibility of the recommended fix
+
+## 4. Confidence Assessment
+Rate your confidence in each finding:
+- High: Clear best practice violation with known solution
+- Medium: Likely issue based on common patterns
+- Low: Potential issue requiring further validation
+
+## 5. Output Format
 Provide:
-1. **Critical Issues**: Must-fix problems
-2. **High Priority**: Important improvements
-3. **Medium Priority**: Recommended changes
-4. **Low Priority**: Nice-to-have enhancements
-5. **Code Examples**: Show improved versions following best practices
+1. **Executive Summary**: High-level best practices posture
+2. **Critical Issues**: Must-fix problems
+3. **High Priority**: Important improvements
+4. **Medium Priority**: Recommended changes
+5. **Low Priority**: Nice-to-have enhancements
+6. **Best Practices Assessment**: Overall compliance rating and confidence
+7. **Refactoring Steps**: Detailed steps to address each issue
+8. **Code Examples**: Show improved versions following best practices
 
 For each issue, explain:
 - What the problem is
@@ -75,4 +98,5 @@ For each issue, explain:
 - What principle/pattern to apply
 - How to refactor it
 - Benefits of the improvement
+- Confidence level in the finding
 """

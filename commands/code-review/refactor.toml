@@ -1,15 +1,21 @@
 prompt = """
-# Code Refactoring Suggestions
+# Enhanced Code Refactoring Suggestions with DSPy Reasoning
 
-Please analyze the following code and provide refactoring recommendations:
+Please analyze the following code and provide refactoring recommendations using advanced reasoning techniques:
 
 ```
 {{args}}
 ```
 
-Focus on:
+## 1. Chain of Thought Analysis
+Approach the refactoring systematically, explaining your reasoning at each step:
+- First, identify the code structure and architecture
+- Then, analyze the code smells and design issues
+- Finally, assess the refactoring approach and impact
 
-## 1. Code Smells
+## 2. Focus Areas
+
+### Code Smells
 Identify and suggest fixes for:
 - Long methods/functions (>20-30 lines)
 - Long parameter lists (>3-4 parameters)
@@ -20,7 +26,7 @@ Identify and suggest fixes for:
 - Data clumps
 - Switch/conditional complexity
 
-## 2. Design Patterns
+### Design Patterns
 Suggest appropriate design patterns:
 - Can Strategy pattern replace conditionals?
 - Would Factory pattern improve object creation?
@@ -29,52 +35,68 @@ Suggest appropriate design patterns:
 - Would Adapter pattern help integration?
 - Is Singleton appropriate (or anti-pattern)?
 
-## 3. Simplification Opportunities
+### Simplification Opportunities
 - Can complex conditionals be simplified?
 - Are there opportunities to use guard clauses?
 - Can nested structures be flattened?
 - Should temporary variables be eliminated?
 - Can expression complexity be reduced?
 
-## 4. Extract & Compose
+### Extract & Compose
 - Methods that should be extracted
 - Classes that should be split
 - Modules that should be separated
 - Utilities that should be shared
 - Constants that should be defined
 
-## 5. Naming Improvements
+### Naming Improvements
 - Variables with unclear names
 - Functions that don't describe what they do
 - Classes with vague or misleading names
 - Naming inconsistencies
 
-## 6. Dependency Management
+### Dependency Management
 - Dependencies that should be inverted
 - Coupling that should be reduced
 - Cohesion that should be improved
 - Circular dependencies to eliminate
 
-## 7. Modern Code Practices
+### Modern Code Practices
 - Legacy patterns to modernize
 - Functional programming opportunities
 - Async/await over callbacks
 - Modern syntax improvements
 - Type safety enhancements
 
-## 8. Architecture Improvements
+### Architecture Improvements
 - Layer violations to fix
 - Separation of concerns issues
 - API design improvements
 - State management enhancements
 
+## 3. Multi-Step Verification
+For each refactoring suggestion, verify:
+- The existence of the issue
+- The validity of the suggested fix
+- The potential impact of the change
+- The safety of the refactoring approach
+
+## 4. Confidence Assessment
+Rate your confidence in each suggestion:
+- High: Clear improvement with low risk
+- Medium: Likely improvement with moderate risk
+- Low: Potential improvement requiring careful evaluation
+
+## 5. Output Format
 Provide:
-1. **High Impact Refactorings**: Most valuable changes
-2. **Medium Impact**: Worthwhile improvements
-3. **Low Impact**: Polish and minor enhancements
-4. **Before/After Examples**: Show concrete refactoring steps
-5. **Step-by-Step Guide**: Safe refactoring sequence
-6. **Tests to Write**: What to test before/during refactoring
+1. **Executive Summary**: High-level refactoring priorities
+2. **High Impact Refactorings**: Most valuable changes
+3. **Medium Impact**: Worthwhile improvements
+4. **Low Impact**: Polish and minor enhancements
+5. **Before/After Examples**: Show concrete refactoring steps
+6. **Step-by-Step Guide**: Safe refactoring sequence
+7. **Tests to Write**: What to test before/during refactoring
+8. **Risk Assessment**: Confidence ratings for each suggestion
 
 For each refactoring, explain:
 - What needs to change
@@ -82,4 +104,5 @@ For each refactoring, explain:
 - How to refactor safely
 - What tests to have in place
 - Expected improvement in maintainability
+- Confidence level in the suggestion
 """

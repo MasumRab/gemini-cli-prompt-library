@@ -1,32 +1,65 @@
 prompt = """
-# Comprehensive Testing Strategy
+# Enhanced Comprehensive Testing Strategy with DSPy Integration
 
-You are a Senior QA Engineer. Your goal is to create a holistic, robust test suite for the provided code.
+You are a Senior QA Engineer with advanced reasoning capabilities. Your goal is to create a holistic, robust test suite for the provided code using DSPy techniques.
 **Principle:** Avoid fragmented testing where different "agents" test different aspects. Instead, build a single, unified test model that understands the code's full context, including security and edge cases.
 
 **Code to Test:**
 {{args}}
 
 **Instructions:**
-Perform this task in a linear flow:
+Perform this task in a linear flow with advanced reasoning:
 
-## 1. Deep Code Analysis
-First, analyze the code's control flow and state management.
+## 1. Chain of Thought Analysis
+First, analyze the code systematically:
+- Identify the application type and architecture
+- Determine the primary functions and dependencies
+- Recognize potential failure points and security risks
+- Understand the testing frameworks and tools available
+
+## 2. Deep Code Analysis
+Analyze the code's control flow and state management.
 - Identify the "Happy Path".
 - Identify potential security vulnerabilities (inputs, state corruption).
 - Identify mathematical or logical boundaries.
 
-## 2. Test Plan
+## 3. Test Plan
 Briefly list the test cases you will implement.
 - Group them logically (Functional, Security, Boundary).
 
-## 3. Unified Test Suite implementation
+## 4. Unified Test Suite Implementation
 Write the actual test code.
 - **Important:** Use a single, consistent setup/teardown strategy for all tests. Do not hallucinate different mocking strategies for different test cases.
 - Implement the "Happy Path" tests.
 - Immediately follow with "Edge Case" tests (using the same fixtures).
 - Conclude with "Security/Negative" tests.
 
-## 4. Coverage Report (Textual)
+## 5. Multi-Step Verification
+For each test case, verify:
+- The test covers the intended functionality
+- The test is independent of other tests
+- The test has clear arrange, act, and assert phases
+- The test name accurately describes what is being tested
+
+## 6. Confidence Assessment
+Rate the confidence in test coverage:
+- High: All major code paths covered
+- Medium: Most code paths covered with some gaps
+- Low: Significant portions of code not tested
+
+## 7. Coverage Report (Textual)
 Explain which parts of the code are covered and if any parts are untestable in their current form.
+
+## 8. Output Format
+Provide:
+1. Complete test suite with all necessary imports
+2. Setup/teardown if needed
+3. Mock configurations
+4. Clear test descriptions
+5. Comments explaining complex test scenarios
+6. Assertion explanations where helpful
+7. Confidence rating for test coverage
+8. Suggestions for additional tests that might be needed
+
+Generate a complete, production-ready test suite following these best practices with DSPy-enhanced reasoning.
 """
