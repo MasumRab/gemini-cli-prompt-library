@@ -1,3 +1,6 @@
+description = "Explain technical concepts with comprehensive, multi-level explanations"
+args = "concept_name"
+
 prompt = """
 # Explain Technical Concept
 
