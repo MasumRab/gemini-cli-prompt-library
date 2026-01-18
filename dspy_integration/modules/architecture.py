@@ -1,17 +1,38 @@
 import dspy
+from typing import Optional
 
-class SystemDesignSignature(dspy.Signature):
+
+class ArchitectureSignature(dspy.Signature):
     """
     System Architecture Design.
     Designs a comprehensive system architecture including requirements, capacity, high-level design, components, and data flow.
     """
-    requirements = dspy.InputField(desc="System requirements and constraints")
-    architecture = dspy.OutputField(desc="Complete system architecture design including diagram, component specs, and scaling strategy.")
 
-class SystemDesignModule(dspy.Module):
+    requirements = dspy.InputField(desc="System requirements and constraints")
+    architecture = dspy.OutputField(
+        desc="Complete system architecture design including diagram, component specs, and scaling strategy."
+    )
+
+
+class Architecture(dspy.Module):
+    """Architecture design module for system design."""
+
+    def __init__(self, model: Optional[dspy.LM] = None):
+        super().__init__()
+        self.model = model or dspy.settings.lm
+        self.design_system = dspy.ChainOfThought(ArchitectureSignature)
+
+    def forward(self, requirements: str):
+        return self.design_system(requirements=requirements)
+
+
+class ArchitectureOptimizer(dspy.Module):
+    """Optimized architecture module."""
+
     def __init__(self):
         super().__init__()
-        self.design_system = dspy.ChainOfThought(SystemDesignSignature)
+        self.program = dspy.ChainOfThought(ArchitectureSignature)
 
-    def forward(self, requirements):
-        return self.design_system(requirements=requirements)
+    def forward(self, requirements: str):
+        result = self.program(requirements=requirements)
+        return result.architecture
