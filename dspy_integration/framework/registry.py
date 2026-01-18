@@ -1,100 +1,63 @@
-"""
-Command manifest and registry for intelligent dispatcher.
+import os
+import toml
+from dataclasses import dataclass
 
-Automatically discovers all commands from commands/ directory.
-Provides metadata for dispatcher to select appropriate commands.
-"""
-
-import sys
-from pathlib import Path
-from typing import Dict, List, Optional
-import tomllib
-
+@dataclass
+class Command:
+    name: str
+    category: str
+    description: str
+    prompt: str
+    author: str = ""
+    tags: list = None
 
 class CommandRegistry:
-    """
-    Registry of all available commands.
+    def __init__(self, commands_dir="commands"):
+        self.commands_dir = commands_dir
+        self.commands = self._discover_commands()
 
-    Auto-discovers commands from commands/ directory and provides
-    lookup and search functionality for the intelligent dispatcher.
-    """
+    def _discover_commands(self):
+        commands = {}
+        for category in os.listdir(self.commands_dir):
+            category_path = os.path.join(self.commands_dir, category)
+            if os.path.isdir(category_path):
+                for command_file in os.listdir(category_path):
+                    if command_file.endswith(".toml"):
+                        command_name = command_file[:-5]
+                        try:
+                            with open(os.path.join(category_path, command_file), "r") as f:
+                                data = toml.load(f)
+                                commands[command_name] = Command(
+                                    name=command_name,
+                                    category=category,
+                                    description=data.get("description", ""),
+                                    prompt=data.get("prompt", ""),
+                                    author=data.get("author", ""),
+                                    tags=data.get("tags", [])
+                                )
+                        except Exception as e:
+                            print(f"Error loading command {command_name}: {e}")
+        return commands
 
-    def __init__(self, root: Path = Path("commands")):
-        self.root = Path(root)
-        self._commands: Dict[str, Dict] = {}
-        self._load_all()
-
-    def _load_all(self):
-        """Load metadata from all TOML files."""
-        for toml_file in self.root.rglob("*.toml"):
-            try:
-                metadata = self._load_metadata(toml_file)
-                self._commands[metadata["name"]] = metadata
-            except Exception as e:
-                print(f"Warning: Failed to load {toml_file}: {e}", file=sys.stderr)
-                continue
-
-    def _load_metadata(self, path: Path) -> Dict:
-        """Load command metadata from TOML file."""
-        try:
-            content = path.read_text()
-            data = tomllib.loads(content)
-
-            # Extract metadata
-            name = path.stem
-            category = path.parent.name
-            description = data.get("description", "")
-            args = data.get("args", "")
-
-            # Extract examples from prompt if available
-            examples = []
-            prompt = data.get("prompt", "")
-            if "example" in prompt.lower():
-                # Simple extraction - can be improved
-                examples = ["Basic usage"]
-
-            return {
-                "name": name,
-                "category": category,
-                "path": str(path),
-                "description": description,
-                "args": args,
-                "examples": examples,
-            }
-        except Exception as e:
-            raise ValueError(f"Failed to parse {path}: {e}")
-
-    def get_command(self, name: str) -> Optional[Dict]:
-        """Get command metadata by name."""
-        return self._commands.get(name)
-
-    def list_by_category(self, category: str) -> List[str]:
-        """List command names in a category."""
-        return [
-            name for name, cmd in self._commands.items() if cmd["category"] == category
-        ]
-
-    def search(self, query: str) -> List[Dict]:
-        """Search commands by keyword in description."""
-        query_lower = query.lower()
+    def search(self, keyword):
+        """Search for commands by keyword in name, description, or tags."""
         results = []
-
-        for name, cmd in self._commands.items():
-            if query_lower in cmd["description"].lower() or query_lower in name.lower():
-                results.append(cmd)
-
+        for command in self.commands.values():
+            if (keyword in command.name or
+                keyword in command.description or
+                (command.tags and keyword in command.tags)):
+                results.append(command)
         return results
 
-    def get_all_commands(self) -> List[Dict]:
-        """Get all commands."""
-        return list(self._commands.values())
+    def list_by_category(self, category):
+        """List all commands in a given category."""
+        return [command for command in self.commands.values() if command.category == category]
 
-    def get_categories(self) -> List[str]:
-        """Get all categories."""
-        return list(set(cmd["category"] for cmd in self._commands.values()))
+    def get_command(self, name):
+        """Get a command by its name."""
+        return self.commands.get(name)
 
-
-def get_commands() -> List[Dict]:
-    """Get all commands (convenience function)."""
+def get_command(name):
+    """Convenience function to get a command from the default registry."""
     registry = CommandRegistry()
-    return registry.get_all_commands()
+    return registry.get_command(name)
