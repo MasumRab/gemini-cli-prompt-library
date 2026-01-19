@@ -13,6 +13,7 @@ This extension provides a curated library of high-quality prompts for common dev
 - **code-review-performance**: Performance optimization suggestions
 - **code-review-best-practices**: General best practices review
 - **code-review-refactor**: Code refactoring recommendations
+- **code-review-scheduled-codebase-audit**: Scheduled codebase audit and issue prediction
 
 ### 2. Documentation
 - **write-readme**: Generate comprehensive README files
