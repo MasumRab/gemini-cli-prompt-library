@@ -15,6 +15,8 @@ class Command:
 
 
 class CommandRegistry:
+    # TODO [Medium Priority]: Unify command discovery logic
+    # Currently, manifest.py has similar logic using os.walk. Consolidate to one source of truth.
     def __init__(self, commands_dir="commands"):
         self.commands_dir = commands_dir
         self.commands = self._discover_commands()
@@ -75,6 +77,8 @@ def get_command(name):
     return registry.get_command(name)
 
 
+# TODO [High Priority]: Move IntelligentDispatcher to dispatcher.py
+# This class belongs in dspy_integration/framework/dispatcher.py to separate concerns
 class IntelligentDispatcher:
     """
     Intelligent dispatcher that routes natural language requests to appropriate commands.

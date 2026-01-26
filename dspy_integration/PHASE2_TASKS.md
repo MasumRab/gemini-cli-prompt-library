@@ -1,5 +1,6 @@
 # Phase 2: Framework Consolidation + Dispatcher
 
+# TODO: Update status to reflect current progress (some files exist but need refactoring)
 **Status**: NOT STARTED  
 **Started**: -  
 **Completed**: -  

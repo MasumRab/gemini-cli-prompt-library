@@ -1,5 +1,8 @@
 from dspy_integration.framework.manifest import get_commands
 
+# TODO [High Priority]: Replace functional dispatch with IntelligentDispatcher class
+# The IntelligentDispatcher class from registry.py should be moved here.
+# TODO [Performance]: Avoid calling get_commands() on every request; use Registry caching.
 def dispatch(user_input):
     commands = get_commands()
     user_input = user_input.lower()
