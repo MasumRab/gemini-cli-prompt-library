@@ -2,6 +2,14 @@
 
 This document describes the architecture of the Gemini CLI Prompt Library with DSPy integration.
 
+TODO: Add architecture diagrams showing component relationships
+TODO: Include performance benchmarks and scalability information
+TODO: Document the testing strategy and coverage targets
+TODO: Add security considerations and best practices
+TODO: Include deployment guidelines for different environments
+TODO: Add troubleshooting and debugging guidelines
+TODO: Document API contracts and versioning strategy
+
 ## Overview
 
 The Gemini CLI Prompt Library is a comprehensive framework for managing and executing AI prompts through a command-line interface. It supports both traditional TOML-based prompts and advanced DSPy modules for optimization and evaluation.

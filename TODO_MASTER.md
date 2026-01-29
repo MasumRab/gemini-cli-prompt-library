@@ -33,6 +33,13 @@ This implementation is divided into 5 phases. Complete phases in order.
 - [ ] Task 3.6: Add make-module
 - **File**: `dspy_integration/PHASE3_TODOS.md`
 
+TODO: Implement interactive mode with readline support for command history
+TODO: Add tab completion for available commands
+TODO: Create a visual comparison interface for different prompt approaches
+TODO: Implement diff functionality to compare prompt variations
+TODO: Add local storage for saving and retrieving prompt iterations
+TODO: Create a module generator for scaffolding new DSPy modules
+
 ### Phase 4: Integration (Days 5-6)
 - [x] Task 4.1: Create gemini_dspy_wrapper.py
 - [x] Task 4.2: Update GEMINI.md

@@ -5,6 +5,14 @@ Gemini DSPy Wrapper
 This script provides a unified interface to execute DSPy-based operations
 through the gemini-cli-prompt-library. It bridges traditional command execution
 with advanced DSPy optimization and evaluation capabilities.
+
+TODO: Add logging configuration for better debugging
+TODO: Add support for more DSPy scenarios beyond the current mapping
+TODO: Implement result caching to avoid redundant computations
+TODO: Add comprehensive error handling and user-friendly error messages
+TODO: Add support for batch operations to process multiple inputs at once
+TODO: Implement progress tracking for long-running operations
+TODO: Add configuration file support for default settings
 """
 
 import sys

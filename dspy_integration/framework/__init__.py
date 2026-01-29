@@ -20,6 +20,14 @@ Features:
 Usage:
     python -m dspy_integration.framework.cli --scenario security_review --optimizer MIPROv2
     python -m dspy_integration.framework.cli --list-scenarios
+
+TODO: Add support for custom provider configurations
+TODO: Implement adaptive optimization based on performance metrics
+TODO: Add real-time performance monitoring and reporting
+TODO: Create a plugin system for extending scenario types
+TODO: Add support for distributed evaluation across multiple machines
+TODO: Implement automated A/B testing for prompt variants
+TODO: Add integration with popular CI/CD platforms for automated testing
 """
 
 from .providers import (
