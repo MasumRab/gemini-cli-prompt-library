@@ -12,7 +12,7 @@ class TestTOMLPrompt:
 
     def test_extract_variables(self):
         """Test extracting variables from prompt template."""
-        from dspy_helm.prompts import TOMLPrompt
+        from dspy_integration.prompts import TOMLPrompt
 
         prompt = TOMLPrompt(
             name="test_prompt",
@@ -25,7 +25,7 @@ class TestTOMLPrompt:
 
     def test_extract_variables_complex(self):
         """Test extracting variables with different patterns."""
-        from dspy_helm.prompts import TOMLPrompt
+        from dspy_integration.prompts import TOMLPrompt
 
         prompt = TOMLPrompt(
             name="test_prompt",
@@ -40,7 +40,7 @@ class TestTOMLPrompt:
 
     def test_render_template(self):
         """Test rendering prompt template with variables."""
-        from dspy_helm.prompts import TOMLPrompt
+        from dspy_integration.prompts import TOMLPrompt
 
         prompt = TOMLPrompt(
             name="test_prompt",
@@ -54,7 +54,7 @@ class TestTOMLPrompt:
 
     def test_render_missing_variable(self):
         """Test rendering with missing variable (should leave placeholder)."""
-        from dspy_helm.prompts import TOMLPrompt
+        from dspy_integration.prompts import TOMLPrompt
 
         prompt = TOMLPrompt(
             name="test_prompt",
@@ -68,7 +68,7 @@ class TestTOMLPrompt:
 
     def test_prompt_category(self):
         """Test prompt category extraction from path."""
-        from dspy_helm.prompts import TOMLPrompt
+        from dspy_integration.prompts import TOMLPrompt
 
         prompt = TOMLPrompt(
             name="security",
@@ -80,7 +80,7 @@ class TestTOMLPrompt:
 
     def test_repr(self):
         """Test string representation."""
-        from dspy_helm.prompts import TOMLPrompt
+        from dspy_integration.prompts import TOMLPrompt
 
         prompt = TOMLPrompt(
             name="security_review",
@@ -98,7 +98,7 @@ class TestPromptRegistry:
 
     def test_register_and_get(self):
         """Test registering and retrieving a prompt."""
-        from dspy_helm.prompts import PromptRegistry, TOMLPrompt
+        from dspy_integration.prompts import PromptRegistry, TOMLPrompt
 
         PromptRegistry.clear()
 
@@ -115,7 +115,7 @@ class TestPromptRegistry:
 
     def test_list_prompts(self):
         """Test listing all prompts."""
-        from dspy_helm.prompts import PromptRegistry, TOMLPrompt
+        from dspy_integration.prompts import PromptRegistry, TOMLPrompt
 
         PromptRegistry.clear()
 
@@ -133,7 +133,7 @@ class TestPromptRegistry:
 
     def test_list_by_category(self):
         """Test listing prompts by category."""
-        from dspy_helm.prompts import PromptRegistry, TOMLPrompt
+        from dspy_integration.prompts import PromptRegistry, TOMLPrompt
 
         PromptRegistry.clear()
 
@@ -157,7 +157,7 @@ class TestPromptRegistry:
 
     def test_register_dspy_mapping(self):
         """Test registering TOML to DSPy mapping."""
-        from dspy_helm.prompts import PromptRegistry
+        from dspy_integration.prompts import PromptRegistry
 
         PromptRegistry.clear()
 
@@ -172,7 +172,7 @@ class TestPromptRegistry:
 
     def test_clear_registry(self):
         """Test clearing the registry."""
-        from dspy_helm.prompts import PromptRegistry, TOMLPrompt
+        from dspy_integration.prompts import PromptRegistry, TOMLPrompt
 
         PromptRegistry._prompts["test/prompt"] = TOMLPrompt(
             "prompt", Path("/test.toml"), {"prompt": "{{x}}"}
@@ -190,7 +190,7 @@ class TestTOMLToDSPyConverter:
 
     def test_convert_basic(self):
         """Test basic conversion."""
-        from dspy_helm.prompts import TOMLPrompt, TOMLToDSPyConverter
+        from dspy_integration.prompts import TOMLPrompt, TOMLToDSPyConverter
 
         prompt = TOMLPrompt(
             name="test_prompt",
@@ -217,7 +217,7 @@ class TestTOMLToDSPyConverter:
         Note: This test requires real dspy module and may not work with mocked dspy.
         """
         import dspy
-        from dspy_helm.prompts import TOMLPrompt, TOMLToDSPyConverter
+        from dspy_integration.prompts import TOMLPrompt, TOMLToDSPyConverter
 
         prompt = TOMLPrompt(
             name="security_review",
@@ -234,7 +234,7 @@ class TestTOMLToDSPyConverter:
 
     def test_create_module_default_name(self):
         """Test creating module with auto-generated name."""
-        from dspy_helm.prompts import TOMLPrompt, TOMLToDSPyConverter
+        from dspy_integration.prompts import TOMLPrompt, TOMLToDSPyConverter
 
         prompt = TOMLPrompt(
             name="my_test_prompt",
@@ -254,7 +254,7 @@ class TestLoadPrompts:
 
     def test_load_from_directory(self, tmp_path):
         """Test loading prompts from a directory."""
-        from dspy_helm.prompts import PromptRegistry, load_commands_prompts
+        from dspy_integration.prompts import PromptRegistry, load_commands_prompts
 
         # Create test TOML files
         (tmp_path / "category1").mkdir()
@@ -273,7 +273,7 @@ class TestLoadPrompts:
 
     def test_load_ignores_invalid_files(self, tmp_path):
         """Test that invalid files are ignored."""
-        from dspy_helm.prompts import PromptRegistry, load_commands_prompts
+        from dspy_integration.prompts import PromptRegistry, load_commands_prompts
 
         # Create a file that's not valid TOML
         (tmp_path / "invalid.toml").write_text("not valid toml {")
@@ -290,7 +290,7 @@ class TestDefaultMappings:
 
     def test_default_mappings_defined(self):
         """Test that default mappings are defined."""
-        from dspy_helm.prompts import DEFAULT_MAPPINGS
+        from dspy_integration.prompts import DEFAULT_MAPPINGS
 
         assert "code-review/security" in DEFAULT_MAPPINGS
         assert "testing/generate-unit-tests" in DEFAULT_MAPPINGS
@@ -299,8 +299,8 @@ class TestDefaultMappings:
 
     def test_default_mappings_point_to_scenarios(self):
         """Test that default mappings point to valid scenarios."""
-        from dspy_helm.prompts import DEFAULT_MAPPINGS
-        from dspy_helm.scenarios import ScenarioRegistry
+        from dspy_integration.prompts import DEFAULT_MAPPINGS
+        from dspy_integration.scenarios import ScenarioRegistry
 
         for toml_name, scenario_name in DEFAULT_MAPPINGS.items():
             assert scenario_name in ScenarioRegistry.list(), (

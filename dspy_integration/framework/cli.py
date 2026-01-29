@@ -76,7 +76,7 @@ def run_evaluation(
     try:
         program = get_module_for_scenario(scenario_name)
         print(f"Loaded module: {program.__class__.__name__}")
-    except (ImportError, ValueError) as e:
+    except ValueError as e:
         print(f"Warning: Could not load module: {e}")
         print("Using basic ChainOfThought program...")
         import dspy

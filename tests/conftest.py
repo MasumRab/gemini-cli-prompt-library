@@ -111,7 +111,7 @@ def sample_api_design_data():
 @pytest.fixture
 def mock_provider_response():
     """Create a mock provider response."""
-    from dspy_helm.providers.base import ProviderResponse
+    from dspy_integration.providers.base import ProviderResponse
 
     return ProviderResponse(
         success=True,

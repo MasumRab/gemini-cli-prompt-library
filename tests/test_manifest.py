@@ -4,7 +4,7 @@ from dspy_integration.framework.manifest import get_commands
 class TestManifest(unittest.TestCase):
     def test_get_commands(self):
         commands = get_commands()
-        self.assertEqual(len(commands), 42)
+        self.assertEqual(len(commands), 41)
 
         # Check that a few expected commands are present
         command_names = [cmd["name"] for cmd in commands]

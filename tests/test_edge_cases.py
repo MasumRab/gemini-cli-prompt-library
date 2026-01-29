@@ -11,7 +11,7 @@ class TestScenarioEdgeCases:
 
     def test_empty_data_fallback(self):
         """Test scenario handles missing JSONL file."""
-        from dspy_helm.scenarios.security_review import SecurityReviewScenario
+        from dspy_integration.scenarios.security_review import SecurityReviewScenario
         from pathlib import Path
 
         # Create scenario with non-existent data path
@@ -25,7 +25,7 @@ class TestScenarioEdgeCases:
 
     def test_scenario_with_custom_split(self):
         """Test scenario with custom train/val split."""
-        from dspy_helm.scenarios import ScenarioRegistry
+        from dspy_integration.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")(test_size=0.3, seed=123)
         trainset, valset = scenario.load_data()
@@ -37,7 +37,7 @@ class TestScenarioEdgeCases:
 
     def test_scenario_repr(self):
         """Test scenario string representation."""
-        from dspy_helm.scenarios import ScenarioRegistry
+        from dspy_integration.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")(test_size=0.2, seed=42)
         repr_str = repr(scenario)
@@ -52,7 +52,7 @@ class TestProviderEdgeCases:
 
     def test_provider_response_with_no_tokens(self):
         """Test provider response when no token info available."""
-        from dspy_helm.providers.base import ProviderResponse
+        from dspy_integration.providers.base import ProviderResponse
 
         response = ProviderResponse(
             success=True,
@@ -67,7 +67,7 @@ class TestProviderEdgeCases:
 
     def test_rate_limit_config_defaults(self):
         """Test rate limit config default values."""
-        from dspy_helm.providers.base import RateLimitConfig
+        from dspy_integration.providers.base import RateLimitConfig
 
         config = RateLimitConfig()
         assert config.enabled is True
@@ -77,7 +77,7 @@ class TestProviderEdgeCases:
 
     def test_provider_chain_with_single_provider(self):
         """Test provider chain with single provider."""
-        from dspy_helm.providers.base import (
+        from dspy_integration.providers.base import (
             BaseProvider,
             ProviderChain,
             ProviderResponse,
@@ -108,7 +108,7 @@ class TestRegistryEdgeCases:
 
     def test_unknown_scenario_error_message(self):
         """Test that unknown scenario gives helpful error message."""
-        from dspy_helm.scenarios import ScenarioRegistry
+        from dspy_integration.scenarios import ScenarioRegistry
 
         with pytest.raises(ValueError) as exc_info:
             ScenarioRegistry.get("totally_unknown_scenario")
@@ -120,7 +120,7 @@ class TestRegistryEdgeCases:
 
     def test_unknown_optimizer_error_message(self):
         """Test that unknown optimizer gives helpful error message."""
-        from dspy_helm.optimizers import OptimizerRegistry
+        from dspy_integration.optimizers import OptimizerRegistry
 
         with pytest.raises(ValueError) as exc_info:
             OptimizerRegistry.create("UnknownOptimizer123")
@@ -130,7 +130,7 @@ class TestRegistryEdgeCases:
 
     def test_unknown_provider_error_message(self):
         """Test that unknown provider gives helpful error message."""
-        from dspy_helm.providers import get_provider_by_name
+        from dspy_integration.providers import get_provider_by_name
 
         with pytest.raises(ValueError) as exc_info:
             get_provider_by_name("nonexistent_provider")
@@ -145,7 +145,7 @@ class TestPromptEdgeCases:
 
     def test_prompt_with_no_variables(self):
         """Test prompt with no variables."""
-        from dspy_helm.prompts import TOMLPrompt
+        from dspy_integration.prompts import TOMLPrompt
         from pathlib import Path
 
         prompt = TOMLPrompt(
@@ -160,7 +160,7 @@ class TestPromptEdgeCases:
 
     def test_prompt_with_empty_content(self):
         """Test prompt with empty content."""
-        from dspy_helm.prompts import TOMLPrompt
+        from dspy_integration.prompts import TOMLPrompt
         from pathlib import Path
 
         prompt = TOMLPrompt(
@@ -174,7 +174,7 @@ class TestPromptEdgeCases:
 
     def test_prompt_registry_clear(self):
         """Test clearing prompt registry."""
-        from dspy_helm.prompts import PromptRegistry, TOMLPrompt
+        from dspy_integration.prompts import PromptRegistry, TOMLPrompt
         from pathlib import Path
 
         # Add some prompts
@@ -189,14 +189,14 @@ class TestPromptEdgeCases:
 
     def test_get_nonexistent_prompt(self):
         """Test getting nonexistent prompt returns None."""
-        from dspy_helm.prompts import PromptRegistry
+        from dspy_integration.prompts import PromptRegistry
 
         result = PromptRegistry.get("nonexistent/prompt")
         assert result is None
 
     def test_get_dspy_module_for_unmapped_prompt(self):
         """Test getting DSPy module for unmapped prompt returns None."""
-        from dspy_helm.prompts import PromptRegistry
+        from dspy_integration.prompts import PromptRegistry
 
         result = PromptRegistry.get_dspy_module("unmapped/prompt")
         assert result is None
@@ -207,7 +207,7 @@ class TestCLIEdgeCases:
 
     def test_cli_without_args_shows_help(self, capsys):
         """Test CLI without arguments shows help."""
-        from dspy_helm.cli import main
+        from dspy_integration.cli import main
         import sys
 
         with patch.object(sys, "argv", ["dspy_helm.cli"]):
@@ -220,7 +220,7 @@ class TestCLIEdgeCases:
 
     def test_cli_with_invalid_scenario(self):
         """Test CLI with invalid scenario name."""
-        from dspy_helm.cli import main
+        from dspy_integration.cli import main
         import sys
 
         with patch.object(
@@ -234,7 +234,7 @@ class TestCLIEdgeCases:
 
     def test_cli_with_invalid_optimizer(self):
         """Test CLI with invalid optimizer name."""
-        from dspy_helm.cli import main
+        from dspy_integration.cli import main
         import sys
 
         with patch.object(
@@ -260,7 +260,7 @@ class TestEvaluatorEdgeCases:
 
     def test_evaluator_with_none_program(self):
         """Test evaluator handles None program gracefully."""
-        from dspy_helm.eval import Evaluator
+        from dspy_integration.eval import Evaluator
 
         mock_metric = MagicMock()
         evaluator = Evaluator(metric=mock_metric)
@@ -272,7 +272,7 @@ class TestEvaluatorEdgeCases:
 
     def test_evaluator_with_custom_threads(self):
         """Test evaluator with custom thread count."""
-        from dspy_helm.eval import Evaluator
+        from dspy_integration.eval import Evaluator
 
         mock_metric = MagicMock()
         evaluator = Evaluator(metric=mock_metric, num_threads=4)
@@ -285,7 +285,7 @@ class TestDataLoadingEdgeCases:
 
     def test_scenario_with_insufficient_data(self):
         """Test scenario handles insufficient data gracefully."""
-        from dspy_helm.scenarios.base import BaseScenario, ScenarioRegistry
+        from dspy_integration.scenarios.base import BaseScenario, ScenarioRegistry
         from typing import List, Dict, Any
 
         # Create a minimal scenario with few examples
@@ -317,7 +317,7 @@ class TestMetricEdgeCases:
 
     def test_metric_with_none_trace(self):
         """Test metric handles None trace."""
-        from dspy_helm.scenarios import ScenarioRegistry
+        from dspy_integration.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")()
 
@@ -334,7 +334,7 @@ class TestMetricEdgeCases:
 
     def test_metric_with_empty_prediction(self):
         """Test metric handles empty prediction."""
-        from dspy_helm.scenarios import ScenarioRegistry
+        from dspy_integration.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")()
 

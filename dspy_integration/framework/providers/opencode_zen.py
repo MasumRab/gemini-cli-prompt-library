@@ -13,6 +13,7 @@ from typing import Optional
 import openai
 import time
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
+from ..common import CommonUtils
 
 
 class OpenCodeZenProvider(BaseProvider):
@@ -95,15 +96,3 @@ class OpenCodeZenProvider(BaseProvider):
                 model=self.model,
                 latency_seconds=time.time() - start_time,
             )
-
-    def _is_rate_limited(self, output: str) -> bool:
-        """Detect rate limiting indicators."""
-        rate_limit_indicators = [
-            "rate limit",
-            "too many requests",
-            "429",
-            "quota exceeded",
-        ]
-
-        output_lower = output.lower()
-        return any(indicator in output_lower for indicator in rate_limit_indicators)

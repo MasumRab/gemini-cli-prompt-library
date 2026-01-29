@@ -10,6 +10,7 @@ from typing import Optional
 import subprocess
 import time
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
+from ..common import CommonUtils
 
 
 class GeminiProvider(BaseProvider):
@@ -49,15 +50,16 @@ class GeminiProvider(BaseProvider):
         start_time = time.time()
 
         try:
-            result = subprocess.run(
-                ["gemini", "ask", prompt], capture_output=True, text=True, timeout=120
+            # Use common utility for subprocess execution
+            returncode, stdout, stderr = CommonUtils.execute_subprocess_cmd(
+                ["gemini", "ask", prompt], timeout=120
             )
 
             latency = time.time() - start_time
 
-            if result.returncode != 0:
-                error_output = result.stderr or result.stdout
-                rate_limited = self._is_rate_limited(error_output)
+            if returncode != 0:
+                error_output = stderr or stdout
+                rate_limited = CommonUtils.is_rate_limited(error_output)
 
                 return ProviderResponse(
                     success=False,
@@ -70,19 +72,10 @@ class GeminiProvider(BaseProvider):
 
             return ProviderResponse(
                 success=True,
-                content=result.stdout.strip(),
+                content=stdout.strip(),
                 provider=self.name,
                 model=self.model,
                 latency_seconds=latency,
-            )
-
-        except subprocess.TimeoutExpired:
-            return ProviderResponse(
-                success=False,
-                error="Command timed out after 120 seconds",
-                provider=self.name,
-                model=self.model,
-                latency_seconds=time.time() - start_time,
             )
 
         except Exception as e:
@@ -93,16 +86,3 @@ class GeminiProvider(BaseProvider):
                 model=self.model,
                 latency_seconds=time.time() - start_time,
             )
-
-    def _is_rate_limited(self, output: str) -> bool:
-        """Detect rate limiting indicators."""
-        rate_limit_indicators = [
-            "rate limit",
-            "too many requests",
-            "429",
-            "quota exceeded",
-            "user rate limit",
-        ]
-
-        output_lower = output.lower()
-        return any(indicator in output_lower for indicator in rate_limit_indicators)
