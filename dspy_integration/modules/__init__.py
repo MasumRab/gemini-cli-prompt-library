@@ -1,22 +1,5 @@
 from typing import Type
 
-# TODO: Phase 1.4 - Add improve to registry
-# See: OPTIMAL_CONFIG_PLAN.md Part 6, Task 1.4
-# Changes Required:
-# - [ ] Add "improve" to conditional imports (if False: block)
-# - [ ] Add "improve" to _SCENARIOS_TO_MODULES dict
-# - [ ] Add improve imports to imports dict (get_module_for_scenario)
-# - [ ] Add improve imports to imports dict (get_optimizer_for_scenario)
-# - [ ] Test get_module_for_scenario("improve")
-# - [ ] Test get_optimizer_for_scenario("improve")
-#
-# Acceptance Criteria:
-# - [ ] get_module_for_scenario("improve") returns Improve class
-# - [ ] get_optimizer_for_scenario("improve") returns ImproveOptimizer class
-# - [ ] No import errors
-#
-# Related: OPTIMAL_CONFIG_PLAN.md Part 1.3 (Files to Modify)
-
 if False:
     from .code_review import CodeReview, CodeReviewOptimizer
     from .architecture import Architecture, ArchitectureOptimizer
@@ -24,7 +7,7 @@ if False:
     from .unit_test import UnitTest, UnitTestOptimizer
     from .documentation import Documentation, DocumentationOptimizer
     from .security_review import SecurityReview, SecurityReviewOptimizer
-    from .improve import Improve, ImproveOptimizer  # NEW
+    from .improve import Improve, ImproveOptimizer
 
 
 _SCENARIOS_TO_MODULES = {
@@ -34,7 +17,7 @@ _SCENARIOS_TO_MODULES = {
     "unit_test": ("UnitTest", "UnitTestOptimizer"),
     "documentation": ("Documentation", "DocumentationOptimizer"),
     "security_review": ("SecurityReview", "SecurityReviewOptimizer"),
-    "improve": ("Improve", "ImproveOptimizer"),  # NEW
+    "improve": ("Improve", "ImproveOptimizer"),
 }
 
 

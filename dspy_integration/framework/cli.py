@@ -3,10 +3,10 @@
 CLI entry point for DSPy-HELM evaluation framework.
 
 Usage:
-    python -m dspy_helm.cli --list-scenarios
-    python -m dspy_helm.cli --scenario security_review --evaluate-only
-    python -m dspy_helm.cli --scenario security_review --optimizer MIPROv2
-    python -m dspy_helm.cli --scenario unit_test --optimizer BootstrapFewShot
+    python -m dspy_integration.framework.cli --list-scenarios
+    python -m dspy_integration.framework.cli --scenario security_review --evaluate-only
+    python -m dspy_integration.framework.cli --scenario security_review --optimizer MIPROv2
+    python -m dspy_integration.framework.cli --scenario unit_test --optimizer BootstrapFewShot
 """
 
 import argparse
@@ -17,7 +17,7 @@ from typing import Optional
 def setup_dspy_lm(provider: str = "groq", model: str = "llama-3.3-70b-versatile"):
     """Configure DSPy with the specified LM provider."""
     import dspy
-    from dspy_helm.providers import get_provider_by_name
+    from .providers import get_provider_by_name
 
     try:
         provider_instance = get_provider_by_name(provider)
@@ -38,7 +38,7 @@ def setup_dspy_lm(provider: str = "groq", model: str = "llama-3.3-70b-versatile"
 
 def list_scenarios():
     """List all available scenarios."""
-    from dspy_helm.scenarios import ScenarioRegistry
+    from .scenarios import ScenarioRegistry
 
     scenarios = ScenarioRegistry.list()
     print("Available scenarios:")
@@ -58,9 +58,9 @@ def run_evaluation(
     model: str = "llama-3.3-70b-versatile",
 ):
     """Run evaluation for a scenario."""
-    from dspy_helm.scenarios import ScenarioRegistry
-    from dspy_helm.eval import Evaluator
-    from dspy_helm.optimizers import OptimizerRegistry
+    from .scenarios import ScenarioRegistry
+    from .evaluation import Evaluator
+    from .optimizers import OptimizerRegistry
     from dspy_integration.modules import get_module_for_scenario
 
     print(f"\n{'=' * 60}")
@@ -114,10 +114,10 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    python -m dspy_helm.cli --list-scenarios
-    python -m dspy_helm.cli --scenario security_review --evaluate-only
-    python -m dspy_helm.cli --scenario security_review --optimizer MIPROv2
-    python -m dspy_helm.cli --scenario unit_test --optimizer BootstrapFewShot
+    python -m dspy_integration.framework.cli --list-scenarios
+    python -m dspy_integration.framework.cli --scenario security_review --evaluate-only
+    python -m dspy_integration.framework.cli --scenario security_review --optimizer MIPROv2
+    python -m dspy_integration.framework.cli --scenario unit_test --optimizer BootstrapFewShot
         """,
     )
 
