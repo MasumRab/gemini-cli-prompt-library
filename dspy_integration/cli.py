@@ -1,6 +1,10 @@
 import argparse
 from dspy_integration.framework.dispatcher import dispatch
 
+# TODO [Medium Priority]: Update to use IntelligentDispatcher class.
+# Reason: Currently uses the legacy function-based dispatch() from framework/dispatcher.py.
+# Should instantiate and use the class-based IntelligentDispatcher for consistency.
+
 def main():
     parser = argparse.ArgumentParser(description="Dispatch a command based on natural language input.")
     parser.add_argument("user_input", type=str, help="The natural language input from the user.")

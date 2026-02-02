@@ -1,5 +1,10 @@
 from dspy_integration.framework.manifest import get_commands
 
+# TODO [High Priority]: Refactor to use IntelligentDispatcher.
+# Reason: This implementation uses legacy dictionary-based command loading.
+# It should be updated to use the IntelligentDispatcher class from command_loader.py
+# to leverage the unified Command object model and improved scoring logic.
+
 def dispatch(user_input):
     commands = get_commands()
     user_input = user_input.lower()
