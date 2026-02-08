@@ -5,6 +5,10 @@ This addresses the duplication between registry.py and manifest.py by using
 the unified command loader implementation.
 """
 
+# TODO [Low Priority]: Review for deprecation.
+# Reason: This file primarily wraps command_loader.py. Once the refactor is stable,
+# consider removing this wrapper if no longer needed by external scripts.
+
 from typing import List, Optional
 from .command_loader import (
     UnifiedCommandLoader,

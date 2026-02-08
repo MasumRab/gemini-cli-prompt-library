@@ -5,6 +5,11 @@ This module consolidates the duplicate command discovery logic found in
 registry.py and manifest.py into a single, consistent implementation.
 """
 
+# TODO [Low Priority]: Split classes into separate files.
+# Reason: This file currently contains UnifiedCommandLoader, Command, CommandRegistry,
+# and IntelligentDispatcher. To adhere to Single Responsibility Principle,
+# these should be extracted into loader.py, models.py, and dispatcher.py.
+
 import os
 import tomli
 import logging

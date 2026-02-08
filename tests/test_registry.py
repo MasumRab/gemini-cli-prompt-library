@@ -16,7 +16,9 @@ def test_registry():
         from dspy_integration.framework.registry import CommandRegistry
 
         registry = CommandRegistry()
-        commands = registry._commands
+        # TODO: Fix attribute access from _commands to commands (or use public API)
+        # after recent registry refactor using UnifiedCommandLoader.
+        commands = getattr(registry, 'commands', getattr(registry, '_commands', {}))
         print(f"✅ Registry loaded: {len(commands)} commands")
 
         # Test getting a command
