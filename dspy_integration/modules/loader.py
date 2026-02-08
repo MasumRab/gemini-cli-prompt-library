@@ -1,8 +1,9 @@
 """
 Dynamic module loader to replace hardcoded mappings.
 
-This module provides a dynamic way to load DSPy modules based on scenario names
-without requiring hardcoded mappings in the __init__.py file.
+This module provides a dynamic way to load DSPy modules based on scenario names.
+It is a core component for extending the project with new dspy modules without
+updating registry entries manually.
 """
 
 import importlib

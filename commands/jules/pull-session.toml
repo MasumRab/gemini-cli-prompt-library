@@ -1,0 +1,42 @@
+prompt = """
+# Pull Jules Session
+
+Pull and apply changes from a specific Jules coding session. This command will:
+- Retrieve the latest changes from the session
+- Apply them to your local repository
+- Verify the changes are applied correctly
+
+**INSTRUCTIONS:**
+1. First, validate the session ID
+2. Check if your working tree is clean
+3. Run the Jules CLI command to pull and apply changes
+4. Verify the changes are applied correctly
+5. Display what changed
+
+**CLI COMMAND TO EXECUTE:**
+jules remote pull --session {{args}} --apply
+
+**EXAMPLE OUTPUT:**
+```
+Session 12345 pulled and applied successfully!
+
+Changes made:
+- Modified: src/auth/auth.service.js
+- Added: src/auth/auth.service.test.js
+
+Changes summary:
+- Fixed authentication logic
+- Added error handling for invalid credentials
+- Updated test cases
+```
+
+**IMPORTANT SAFETY CHECKS:**
+- Working tree must be clean before applying
+- Session must be in Completed status
+- Changes must match task intent
+
+**NEXT STEPS:**
+- To view session details: /jules:view-session "{{args}}"
+- To list all sessions: /jules:list-sessions
+- To run tests: npm test (if available)
+"""

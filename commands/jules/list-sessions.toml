@@ -1,0 +1,34 @@
+prompt = """
+# List Jules Sessions
+
+Display all active Jules coding sessions using the Jules CLI. This command will show you:
+- Session IDs
+- Corresponding tasks
+- Status information
+- Any available results
+
+**INSTRUCTIONS:**
+1. First, run the Jules CLI command to list all sessions
+2. Display the output in a clear, readable format
+3. Explain how to use the session IDs with other commands
+
+**CLI COMMAND TO EXECUTE:**
+jules remote list --session
+
+**EXAMPLE OUTPUT FORMAT:**
+```
+Sessions:
+1. Session ID: 12345
+   Task: "Fix login functionality"
+   Status: Completed
+
+2. Session ID: 67890 
+   Task: "Implement payment processing"
+   Status: In Progress
+```
+
+**NEXT STEPS:**
+- To view details of a specific session: /jules:view-session "SESSION_ID"
+- To pull and apply changes: /jules:pull-session "SESSION_ID"
+- To create a new session: /jules:create-session "TASK_DESCRIPTION"
+"""

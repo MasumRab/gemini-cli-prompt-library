@@ -1,0 +1,44 @@
+prompt = """
+# Teleport to Jules Session
+
+Teleport to a specific Jules coding session. This command will:
+- Clone the repository if needed
+- Checkout the appropriate branch
+- Apply the session changes
+- Set up your environment for working on the session
+
+**INSTRUCTIONS:**
+1. First, validate the session ID
+2. Run the Jules CLI command to teleport
+3. Display the progress and result
+4. Explain what to do next
+
+**CLI COMMAND TO EXECUTE:**
+jules teleport {{args}}
+
+**EXAMPLE OUTPUT:**
+```
+Teleport successful!
+Session: 12345
+Repo: MasumRab/gemini-cli-prompt-library
+Branch: jules/12345
+
+Environment is ready for you to work on the session.
+
+Changes made in this session:
+- Fixed login functionality
+- Updated authentication service
+- Added test cases
+```
+
+**BENEFITS:**
+- No need to manually clone, checkout, or apply changes
+- Perfect for working on sessions from different repositories
+- Ensures your environment matches the session state
+
+**NEXT STEPS:**
+- To view session details: /jules:view-session "{{args}}"
+- To list all sessions: /jules:list-sessions
+- To start working: git status
+```
+"""

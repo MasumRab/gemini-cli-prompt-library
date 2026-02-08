@@ -49,10 +49,11 @@ The codebase is currently in a transitional state of consolidation. The `dspy_he
 1.  **Refactor Dispatcher**: Replace the logic in `dspy_integration/framework/dispatcher.py` with the `IntelligentDispatcher` class from `command_loader.py`.
 2.  **Update CLI**: Modify `dspy_integration/cli.py` to instantiate and use `IntelligentDispatcher`.
 3.  **Insert TODOs**: Flag these issues in the code (Actioned in this audit).
+4.  **Rescue Critical Assets**: Retain `dspy_integration/modules/loader.py` and `tests/test_comprehensive.py` as they provide essential dynamic loading and integration testing capabilities.
 
 ### Medium-Term
 1.  **Performance Optimization**: Implement caching for the `CommandRegistry` to avoid re-parsing TOML files.
-2.  **Testing**: Ensure tests cover the new `IntelligentDispatcher` class.
+2.  **Test Suite Consolidation**: Align `tests/test_comprehensive.py` with the new framework structure to serve as the primary integration suite.
 
 ### Long-Term
 1.  **Agentic Capabilities**: Implement the "Phase 4" agentic features (self-correction, proactive suggestions) using the now-consolidated framework.

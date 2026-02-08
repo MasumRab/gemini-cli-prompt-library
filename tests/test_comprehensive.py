@@ -1,12 +1,10 @@
 """
-Comprehensive unit tests for the gemini-cli-prompt-library project.
+Comprehensive integration tests for the gemini-cli-prompt-library.
 
-This test suite covers various components of the framework including:
-- Providers
-- Scenarios
-- Command loading
-- Module loading
-- Common utilities
+This suite serves as the primary integration anchor, covering:
+- New Framework Components (Registry, Dispatcher, Providers)
+- Legacy Module Loading & Backward Compatibility (loader.py)
+- End-to-End Scenarios and Cross-Component Interaction
 """
 
 import unittest
