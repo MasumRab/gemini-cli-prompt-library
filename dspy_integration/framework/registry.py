@@ -8,6 +8,10 @@ the unified command loader implementation.
 # TODO [Low Priority]: Review for deprecation.
 # Reason: This file primarily wraps command_loader.py. Once the refactor is stable,
 # consider removing this wrapper if no longer needed by external scripts.
+# TODO [Medium Priority]: Unify command discovery logic
+# Currently, manifest.py has similar logic using os.walk. Consolidate to one source of truth.
+# TODO [High Priority]: Move IntelligentDispatcher to dispatcher.py
+# This class belongs in dspy_integration/framework/dispatcher.py to separate concerns
 
 from typing import List, Optional
 from .command_loader import (

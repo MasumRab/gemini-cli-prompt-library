@@ -1,9 +1,10 @@
 import argparse
 from dspy_integration.framework.dispatcher import dispatch
 
-# TODO [Medium Priority]: Update to use IntelligentDispatcher class.
-# Reason: Currently uses the legacy function-based dispatch() from framework/dispatcher.py.
-# Should instantiate and use the class-based IntelligentDispatcher for consistency.
+# TODO [High Priority]: Implement full CLI args parsing (argparse/click).
+# See JOBS_FOR_JULES.md for requirements (forgiving parsing, robot mode).
+# TODO: Add robot mode and smart dispatch integration.
+# parser.add_argument("--robot", action="store_true", help="Enable robot/AI mode")
 
 def main():
     parser = argparse.ArgumentParser(description="Dispatch a command based on natural language input.")

@@ -51,16 +51,24 @@ The codebase is currently in a transitional state of consolidation. The `dspy_he
 3.  **Insert TODOs**: Flag these issues in the code (Actioned in this audit).
 
 ### Medium-Term
-1.  **Split command_loader.py**: Extract classes into dedicated files to adhere to Single Responsibility Principle.
-2.  **Deprecate registry.py**: Once the refactor is stable, remove the wrapper if no longer needed by external scripts.
+1.  **Performance Optimization**: Implement caching for the `CommandRegistry` to avoid re-parsing TOML files.
+2.  **Testing**: Ensure tests cover the new `IntelligentDispatcher` class.
 
 ### Long-Term
 1.  **Agentic Capabilities**: Implement the "Phase 4" agentic features (self-correction, proactive suggestions) using the now-consolidated framework.
+2.  **DSPy Integration**: Fully integrate the DSPy optimizers once the framework structure is solidified.
 
 ---
 
-## 6. Inserted TODOs
-*   `dspy_integration/framework/dispatcher.py`: [High Priority] Refactor to use `IntelligentDispatcher`.
-*   `dspy_integration/cli.py`: [Medium Priority] Update to use class-based dispatcher.
-*   `dspy_integration/framework/command_loader.py`: [Low Priority] Split classes.
-*   `dspy_integration/framework/registry.py`: [Low Priority] Review for deprecation.
+## 6. List of Inserted TODOs
+
+| File Path | Priority | TODO Content |
+|-----------|----------|--------------|
+| `dspy_integration/framework/registry.py` | High | `Move IntelligentDispatcher to dispatcher.py` |
+| `dspy_integration/framework/registry.py` | Medium | `Unify command discovery logic` |
+| `dspy_integration/framework/dispatcher.py` | High | `Replace functional dispatch with IntelligentDispatcher class` |
+| `dspy_integration/framework/dispatcher.py` | Performance | `Avoid calling get_commands() on every request; use Registry caching.` |
+| `dspy_integration/framework/manifest.py` | Low | `Deprecate this module in favor of registry.py` |
+| `dspy_integration/cli.py` | High | `Implement full CLI args parsing (argparse/click)` |
+| `dspy_integration/cli.py` | - | `Add robot mode and smart dispatch integration` |
+| `dspy_integration/PHASE2_TASKS.md` | - | `Update status to reflect current progress` |
