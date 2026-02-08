@@ -23,9 +23,11 @@ def setup_dspy_lm(provider: str = "groq", model: str = "llama-3.3-70b-versatile"
         provider_instance = get_provider_by_name(provider)
         lm = dspy.OpenAI(
             model=model,
-            api_key=provider_instance.api_key
-            if hasattr(provider_instance, "api_key")
-            else "",
+            api_key=(
+                provider_instance.api_key
+                if hasattr(provider_instance, "api_key")
+                else ""
+            ),
             base_url=provider_instance.base_url,
         )
         dspy.settings.configure(lm=lm)

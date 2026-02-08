@@ -1,3 +1,4 @@
+import dspy
 """
 MIPROv2 Optimizer Implementation.
 """

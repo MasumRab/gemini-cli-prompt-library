@@ -11,7 +11,6 @@ from .base import BaseOptimizer, OptimizerRegistry, IOptimizer
 from .mipro_v2 import MIPROv2Optimizer
 from .bootstrap import BootstrapFewShotOptimizer, BootstrapFewShotRandomSearchOptimizer
 
-
 __all__ = [
     "BaseOptimizer",
     "IOptimizer",

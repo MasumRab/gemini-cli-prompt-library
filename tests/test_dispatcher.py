@@ -1,6 +1,7 @@
 import unittest
 from dspy_integration.framework.dispatcher import dispatch
 
+
 class TestDispatcher(unittest.TestCase):
     def test_dispatch(self):
         # Test that a specific input returns the expected command
@@ -15,5 +16,6 @@ class TestDispatcher(unittest.TestCase):
         self.assertIsNotNone(recommended_command)
         self.assertEqual(recommended_command.name, "refactor")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

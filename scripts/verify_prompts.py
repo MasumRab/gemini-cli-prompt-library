@@ -3,6 +3,7 @@ import tomllib
 import re
 import sys
 
+
 def get_toml_files(root_dir):
     toml_files = []
     for root, dirs, files in os.walk(root_dir):
@@ -11,20 +12,22 @@ def get_toml_files(root_dir):
                 toml_files.append(os.path.join(root, file))
     return toml_files
 
+
 def parse_registry(filepath):
     commands = set()
-    with open(filepath, 'r') as f:
+    with open(filepath, "r") as f:
         content = f.read()
 
     # Simple regex to find list items like "- **command-name**:"
-    matches = re.findall(r'- \*\*(.*?)\*\*:', content)
+    matches = re.findall(r"- \*\*(.*?)\*\*:", content)
     for match in matches:
         commands.add(match)
     return commands
 
+
 def verify_prompts():
     commands_dir = "commands"
-    registry_file = "GEMINI.md" # QWEN.md is identical
+    registry_file = "GEMINI.md"  # QWEN.md is identical
 
     if not os.path.exists(commands_dir):
         print(f"Error: {commands_dir} directory not found.")
@@ -45,10 +48,10 @@ def verify_prompts():
     # Check TOML files
     for file_path in toml_files:
         try:
-            with open(file_path, 'rb') as f:
+            with open(file_path, "rb") as f:
                 content = tomllib.load(f)
 
-            if 'prompt' not in content:
+            if "prompt" not in content:
                 errors.append(f"Missing 'prompt' key in {file_path}")
 
             # Logic to verify mapping
@@ -67,11 +70,13 @@ def verify_prompts():
                 command_name_simple = name
 
                 if command_name_prefixed in registry_commands:
-                    pass # OK
+                    pass  # OK
                 elif command_name_simple in registry_commands:
-                    pass # OK
+                    pass  # OK
                 else:
-                    errors.append(f"File {file_path} (checked: {command_name_prefixed}, {command_name_simple}) not found in {registry_file}")
+                    errors.append(
+                        f"File {file_path} (checked: {command_name_prefixed}, {command_name_simple}) not found in {registry_file}"
+                    )
 
         except tomllib.TOMLDecodeError as e:
             errors.append(f"Invalid TOML in {file_path}: {e}")
@@ -85,6 +90,7 @@ def verify_prompts():
         sys.exit(1)
     else:
         print("\nVerification Passed! All prompts are valid and listed in registry.")
+
 
 if __name__ == "__main__":
     verify_prompts()

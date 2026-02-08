@@ -92,9 +92,9 @@ class TestPromptToScenarioMapping:
         from dspy_integration.scenarios import ScenarioRegistry
 
         for toml_name, scenario_name in DEFAULT_MAPPINGS.items():
-            assert scenario_name in ScenarioRegistry.list(), (
-                f"Scenario '{scenario_name}' from mapping '{toml_name}' is not registered"
-            )
+            assert (
+                scenario_name in ScenarioRegistry.list()
+            ), f"Scenario '{scenario_name}' from mapping '{toml_name}' is not registered"
 
     def test_prompt_registry_has_mappings(self):
         """Test that prompt registry has the mappings."""
@@ -109,9 +109,9 @@ class TestPromptToScenarioMapping:
 
         for toml_name, scenario_name in DEFAULT_MAPPINGS.items():
             registered = PromptRegistry.get_dspy_module(toml_name)
-            assert registered == scenario_name, (
-                f"Mapping for '{toml_name}' not found in registry"
-            )
+            assert (
+                registered == scenario_name
+            ), f"Mapping for '{toml_name}' not found in registry"
 
 
 class TestPromptRendering:
@@ -271,9 +271,9 @@ class TestScenarioPromptVariability:
 
         # All prompts should be different
         prompt_set = set(prompts.values())
-        assert len(prompt_set) == len(prompts), (
-            "Some scenarios generate identical prompts"
-        )
+        assert len(prompt_set) == len(
+            prompts
+        ), "Some scenarios generate identical prompts"
 
 
 class TestJSONLDataConsistency:

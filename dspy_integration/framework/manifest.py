@@ -11,6 +11,7 @@ the unified command registry implementation.
 from .registry import CommandRegistry
 
 
+
 def get_commands():
     """
     Get commands using the registry for consistency.

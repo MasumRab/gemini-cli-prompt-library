@@ -22,6 +22,7 @@ except ImportError:
     from dspy_integration.modules.code_review import CodeReviewModule
     from dspy_integration.modules.architecture import SystemDesignModule
 
+
 def test_feature_dev():
     print("\n--- Testing FeatureDevModule ---")
     module = FeatureDevModule()
@@ -34,7 +35,7 @@ def test_feature_dev():
     try:
         # Attempt to use Ollama with Gemma
         # Note: This requires Ollama running locally with the gemma model pulled
-        lm = dspy.OllamaLocal(model='gemma')
+        lm = dspy.OllamaLocal(model="gemma")
         # Simple probe to check connection
         lm("Hello")
         dspy.settings.configure(lm=lm)
@@ -62,12 +63,13 @@ def test_feature_dev():
         # DSPy 3.1 default adapter expects JSON-like structure or structured parsing.
         # We will provide a JSON string that matches the fields.
         import json
+
         response_data = {
             "reasoning": "Standard REST API design",
             "context_design": "Design: API uses REST...",
             "implementation": "def api(): pass",
             "verification": "test_api()",
-            "usage": "Run python api.py"
+            "usage": "Run python api.py",
         }
         lm = MockLM([json.dumps(response_data)])
         dspy.settings.configure(lm=lm)
@@ -79,23 +81,28 @@ def test_feature_dev():
     except Exception as e:
         print(f"Failed: {e}")
 
+
 def test_code_review():
     print("\n--- Testing CodeReviewModule ---")
     module = CodeReviewModule()
+
     # MockLM definition is local to test_feature_dev, we should make it global or redefine
     class MockLM(dspy.LM):
         def __init__(self, responses):
             super().__init__("mock/model")
             self.responses = responses
             self.call_count = 0
+
         def __call__(self, prompt=None, messages=None, **kwargs):
             resp = self.responses[self.call_count % len(self.responses)]
             self.call_count += 1
             return [resp]
 
-    lm = MockLM([
-        '{"reasoning": "Code is clean", "review": "Code looks good. Suggest adding docstrings."}'
-    ])
+    lm = MockLM(
+        [
+            '{"reasoning": "Code is clean", "review": "Code looks good. Suggest adding docstrings."}'
+        ]
+    )
     dspy.settings.configure(lm=lm)
 
     try:
@@ -104,22 +111,27 @@ def test_code_review():
     except Exception as e:
         print(f"Failed: {e}")
 
+
 def test_architecture():
     print("\n--- Testing SystemDesignModule ---")
     module = SystemDesignModule()
+
     class MockLM(dspy.LM):
         def __init__(self, responses):
             super().__init__("mock/model")
             self.responses = responses
             self.call_count = 0
+
         def __call__(self, prompt=None, messages=None, **kwargs):
             resp = self.responses[self.call_count % len(self.responses)]
             self.call_count += 1
             return [resp]
 
-    lm = MockLM([
-        '{"reasoning": "Standard web architecture", "architecture": "High level design: Load Balancer -> Web Server -> DB"}'
-    ])
+    lm = MockLM(
+        [
+            '{"reasoning": "Standard web architecture", "architecture": "High level design: Load Balancer -> Web Server -> DB"}'
+        ]
+    )
     dspy.settings.configure(lm=lm)
 
     try:
@@ -127,6 +139,7 @@ def test_architecture():
         print("Success! Output:", result.architecture)
     except Exception as e:
         print(f"Failed: {e}")
+
 
 def main():
     print("Starting DSPy Module Verification (using DummyLM for structure check)...")
@@ -148,6 +161,7 @@ def main():
     test_architecture()
 
     print("\nAll structure tests passed.")
+
 
 if __name__ == "__main__":
     main()

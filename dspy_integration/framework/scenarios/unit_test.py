@@ -5,6 +5,8 @@ Maps to: commands/testing/generate-unit-tests.toml
 Category: Testing
 """
 
+import dspy
+
 from typing import List, Dict, Any
 from .base import BaseScenario, ScenarioRegistry
 

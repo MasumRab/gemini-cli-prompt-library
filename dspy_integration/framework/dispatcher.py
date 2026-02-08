@@ -90,3 +90,9 @@ def dispatch(user_input: str) -> Optional[Command]:
     """
     dispatcher = IntelligentDispatcher()
     return dispatcher.dispatch(user_input)
+
+
+if __name__ == "__main__":
+    test_input = "my test is broken"
+    recommended_command = dispatch(test_input)
+    print(recommended_command)

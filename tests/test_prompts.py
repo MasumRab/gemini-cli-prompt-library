@@ -303,9 +303,9 @@ class TestDefaultMappings:
         from dspy_integration.scenarios import ScenarioRegistry
 
         for toml_name, scenario_name in DEFAULT_MAPPINGS.items():
-            assert scenario_name in ScenarioRegistry.list(), (
-                f"Mapping {toml_name} -> {scenario_name} but {scenario_name} is not registered"
-            )
+            assert (
+                scenario_name in ScenarioRegistry.list()
+            ), f"Mapping {toml_name} -> {scenario_name} but {scenario_name} is not registered"
 
 
 if __name__ == "__main__":

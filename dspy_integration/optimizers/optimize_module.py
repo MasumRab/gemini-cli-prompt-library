@@ -1,6 +1,7 @@
 import dspy
 from dspy.teleprompt import BootstrapFewShot
 
+
 def optimize_module(module_class, trainset, metric=None):
     """
     Generic optimization script for a DSPy module.
@@ -16,6 +17,7 @@ def optimize_module(module_class, trainset, metric=None):
 
     # Default metric if none provided (placeholder)
     if metric is None:
+
         def simple_metric(example, pred, trace=None):
             # Basic check: output should not be empty
             # This works for modules with single output or multiple.
@@ -24,11 +26,14 @@ def optimize_module(module_class, trainset, metric=None):
                 if pred[key]:
                     return True
             return False
+
         metric = simple_metric
 
     # Initialize the optimizer
     # BootstrapFewShot is a good default for getting started
-    teleprompter = BootstrapFewShot(metric=metric, max_bootstrapped_demos=4, max_labeled_demos=4)
+    teleprompter = BootstrapFewShot(
+        metric=metric, max_bootstrapped_demos=4, max_labeled_demos=4
+    )
 
     # Instantiate the module
     student = module_class()
@@ -40,21 +45,31 @@ def optimize_module(module_class, trainset, metric=None):
 
     return compiled_module
 
+
 if __name__ == "__main__":
     # Example usage (mock)
     # Adjusted import for dspy_integration
     try:
-        from dspy_integration.modules.feature_dev import FeatureDevModule, FeatureDevSignature
+        from dspy_integration.modules.feature_dev import (
+            FeatureDevModule,
+            FeatureDevSignature,
+        )
     except ImportError:
         import sys
         import os
+
         sys.path.append(os.getcwd())
-        from dspy_integration.modules.feature_dev import FeatureDevModule, FeatureDevSignature
+        from dspy_integration.modules.feature_dev import (
+            FeatureDevModule,
+            FeatureDevSignature,
+        )
 
     # Mock data
     trainset = [
-        dspy.Example(args="Create a simple specific-purpose calculator").with_inputs("args"),
-        dspy.Example(args="Add a login page to the website").with_inputs("args")
+        dspy.Example(args="Create a simple specific-purpose calculator").with_inputs(
+            "args"
+        ),
+        dspy.Example(args="Add a login page to the website").with_inputs("args"),
     ]
 
     optimized = optimize_module(FeatureDevModule, trainset)
