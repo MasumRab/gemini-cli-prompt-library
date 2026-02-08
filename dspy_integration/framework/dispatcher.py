@@ -1,5 +1,6 @@
 from dspy_integration.framework.manifest import get_commands
 
+
 def dispatch(user_input):
     commands = get_commands()
     user_input = user_input.lower()
@@ -27,6 +28,7 @@ def dispatch(user_input):
             best_match = command
 
     return best_match
+
 
 if __name__ == "__main__":
     test_input = "my test is broken"

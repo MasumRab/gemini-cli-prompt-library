@@ -14,7 +14,6 @@ from .unit_test import UnitTestScenario
 from .documentation import DocumentationScenario
 from .api_design import APIDesignScenario
 
-
 __all__ = [
     "BaseScenario",
     "ScenarioRegistry",

@@ -63,7 +63,6 @@ from .prompts import (
     initialize_prompt_registry,
 )
 
-
 __version__ = "1.0.0"
 __author__ = "gemini-cli-prompt-library"
 

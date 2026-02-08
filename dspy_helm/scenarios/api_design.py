@@ -5,6 +5,8 @@ Maps to: commands/architecture/design-api.toml
 Category: Architecture & Design
 """
 
+import dspy
+
 from typing import List, Dict, Any
 from .base import BaseScenario, ScenarioRegistry
 

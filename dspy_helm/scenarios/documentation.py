@@ -5,6 +5,8 @@ Maps to: commands/docs/write-readme.toml
 Category: Documentation
 """
 
+import dspy
+
 from typing import List, Dict, Any
 from .base import BaseScenario, ScenarioRegistry
 

@@ -118,7 +118,9 @@ class TestBootstrapFewShotOptimizer:
 
     def test_init(self):
         """Test BootstrapFewShot optimizer initialization."""
-        from dspy_integration.framework.optimizers.bootstrap import BootstrapFewShotOptimizer
+        from dspy_integration.framework.optimizers.bootstrap import (
+            BootstrapFewShotOptimizer,
+        )
 
         mock_metric = MagicMock()
         optimizer = BootstrapFewShotOptimizer(metric=mock_metric)
@@ -128,7 +130,9 @@ class TestBootstrapFewShotOptimizer:
     @patch("dspy_integration.framework.optimizers.bootstrap.dspy")
     def test_create_teleprompter(self, mock_dspy):
         """Test creating BootstrapFewShot teleprompter."""
-        from dspy_integration.framework.optimizers.bootstrap import BootstrapFewShotOptimizer
+        from dspy_integration.framework.optimizers.bootstrap import (
+            BootstrapFewShotOptimizer,
+        )
 
         mock_dspy.teleprompt.BootstrapFewShot.return_value = MagicMock()
 
@@ -144,7 +148,9 @@ class TestBootstrapFewShotRandomSearchOptimizer:
 
     def test_init(self):
         """Test initialization."""
-        from dspy_integration.framework.optimizers.bootstrap import BootstrapFewShotRandomSearchOptimizer
+        from dspy_integration.framework.optimizers.bootstrap import (
+            BootstrapFewShotRandomSearchOptimizer,
+        )
 
         mock_metric = MagicMock()
         optimizer = BootstrapFewShotRandomSearchOptimizer(
@@ -158,7 +164,9 @@ class TestBootstrapFewShotRandomSearchOptimizer:
     @patch("dspy_integration.framework.optimizers.bootstrap.dspy")
     def test_create_teleprompter(self, mock_dspy):
         """Test creating teleprompter with random search."""
-        from dspy_integration.framework.optimizers.bootstrap import BootstrapFewShotRandomSearchOptimizer
+        from dspy_integration.framework.optimizers.bootstrap import (
+            BootstrapFewShotRandomSearchOptimizer,
+        )
 
         mock_dspy.teleprompt.BootstrapFewShotWithRandomSearch.return_value = MagicMock()
 
