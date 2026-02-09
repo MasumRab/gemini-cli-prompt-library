@@ -7,12 +7,12 @@ Create a new Jules coding session for a specific task. This command will:
 - Display the session ID for future reference
 
 **INSTRUCTIONS:**
-1. First, validate the task description is clear and complete
+1. Open your terminal
 2. Run the Jules CLI command to create the session
 3. Display the generated session ID
 4. Explain next steps
 
-**CLI COMMAND TO EXECUTE:**
+**CLI COMMAND TO RUN IN YOUR TERMINAL:**
 jules new --repo {{repo}} "{{args}}"
 
 **Where:**

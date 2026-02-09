@@ -8,12 +8,12 @@ Teleport to a specific Jules coding session. This command will:
 - Set up your environment for working on the session
 
 **INSTRUCTIONS:**
-1. First, validate the session ID
+1. Open your terminal
 2. Run the Jules CLI command to teleport
 3. Display the progress and result
 4. Explain what to do next
 
-**CLI COMMAND TO EXECUTE:**
+**CLI COMMAND TO RUN IN YOUR TERMINAL:**
 jules teleport {{args}}
 
 **EXAMPLE OUTPUT:**
@@ -40,5 +40,4 @@ Changes made in this session:
 - To view session details: /jules:view-session "{{args}}"
 - To list all sessions: /jules:list-sessions
 - To start working: git status
-```
 """
