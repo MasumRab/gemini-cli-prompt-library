@@ -68,12 +68,12 @@ This extension provides a curated library of high-quality prompts for common dev
 - **workflows-smart-refactor**: Intelligent refactoring workflow
 - **workflows-comprehensive-test**: Comprehensive testing workflow
 
-### 10. Jules Agent
-- **jules-create-session**: Create a new interactive session
-- **jules-list-sessions**: List available sessions
-- **jules-pull-session**: Pull a session context
-- **jules-teleport-session**: Teleport session to a new context
-- **jules-view-session**: View session details
+### 10. Jules Session Management
+- **jules:list-sessions**: List all active Jules coding sessions
+- **jules:view-session**: Display detailed information about a specific session
+- **jules:create-session**: Create a new Jules coding session for a specific task
+- **jules:pull-session**: Pull and apply changes from a specific session
+- **jules:teleport-session**: Teleport to a specific session (clones, checks out, and applies changes)
 
 ## How to Use Prompts
 
