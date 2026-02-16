@@ -11,7 +11,7 @@ This module provides:
 from typing import Dict, Type, Optional, Any, List, TYPE_CHECKING
 from pathlib import Path
 import re
-import toml
+import tomli
 
 if TYPE_CHECKING:
     import dspy
@@ -76,7 +76,8 @@ class PromptRegistry:
         """Load all TOML prompts from commands directory."""
         for toml_file in commands_dir.glob("**/*.toml"):
             try:
-                content = toml.load(toml_file)
+                with open(toml_file, "rb") as f:
+                    content = tomli.load(f)
                 if "prompt" in content:
                     name = toml_file.stem
                     category = toml_file.parent.name
