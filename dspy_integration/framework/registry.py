@@ -199,5 +199,7 @@ def get_command(name: str) -> Optional[Command]:
     Returns:
         Command object if found, None otherwise
     """
+    # TODO [High Priority]: Implement singleton pattern or caching for CommandRegistry to avoid re-parsing TOML files on every call.
+    # Reason: Current implementation re-instantiates CommandRegistry on every call, leading to O(N) file reads.
     registry = CommandRegistry()
     return registry.get_command(name)

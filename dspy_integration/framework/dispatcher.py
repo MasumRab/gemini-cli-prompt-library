@@ -13,6 +13,8 @@ class IntelligentDispatcher:
     """
     Intelligent dispatcher that routes natural language requests to appropriate commands.
     """
+    # TODO [Medium Priority]: Integrate this dispatcher with the main CLI (dspy_integration/cli.py) to enable intelligent command routing.
+    # Currently, this class is not used by the main CLI entry point.
 
     def __init__(self, registry: Optional[CommandRegistry] = None):
         self.registry = registry or CommandRegistry()
