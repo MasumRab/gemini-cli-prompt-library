@@ -111,6 +111,8 @@ def run_evaluation(
 
 
 def main():
+    # TODO [Medium Priority]: Add 'dispatch' command to use IntelligentDispatcher for natural language request routing.
+    # Currently, this CLI only supports scenario evaluation, missing the core "Prompt Refinery" feature.
     parser = argparse.ArgumentParser(
         description="DSPy-HELM: Evaluation and Optimization Framework",
         formatter_class=argparse.RawDescriptionHelpFormatter,
