@@ -3,6 +3,8 @@ import tomli
 import logging
 
 
+# TODO [Low Priority]: Deprecate this module in favor of registry.py
+# This module performs duplicate work to registry.py and is inefficient.
 def get_commands():
     commands = []
     for root, dirs, files in os.walk("commands"):
