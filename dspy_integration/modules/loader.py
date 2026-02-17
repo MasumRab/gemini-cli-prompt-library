@@ -27,8 +27,7 @@ class DynamicModuleLoader:
         Args:
             modules_dir: Directory containing module files (defaults to current directory)
         """
-        # TODO [High Priority]: Fix modules_dir path. Path(__file__).parent / "modules" does not exist; it should be Path(__file__).parent.
-        self.modules_dir = modules_dir or Path(__file__).parent / "modules"
+        self.modules_dir = Path(modules_dir) if modules_dir else Path(__file__).parent
         if isinstance(self.modules_dir, str):
             self.modules_dir = Path(self.modules_dir)
 
