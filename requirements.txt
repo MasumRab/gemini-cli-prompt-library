@@ -1,3 +1,5 @@
 requests
 dspy-ai
 pyyaml
+openai
+pytest

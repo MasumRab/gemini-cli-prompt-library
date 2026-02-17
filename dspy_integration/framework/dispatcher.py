@@ -78,21 +78,30 @@ class IntelligentDispatcher:
         return score
 
 
+# Global instance for convenience
+_dispatcher = None
+
+
+def get_dispatcher() -> IntelligentDispatcher:
+    """Get or create the singleton IntelligentDispatcher instance."""
+    global _dispatcher
+    if _dispatcher is None:
+        _dispatcher = IntelligentDispatcher()
+    return _dispatcher
+
+
 def dispatch(user_input: str) -> Optional[Command]:
     """
-    Convenience function to dispatch a request using the default dispatcher.
-
-    Args:
-        user_input: Natural language request
-
-    Returns:
-        Best matching Command object or None
+    Dispatch user input to the best matching command using the IntelligentDispatcher.
     """
-    dispatcher = IntelligentDispatcher()
+    dispatcher = get_dispatcher()
     return dispatcher.dispatch(user_input)
 
 
 if __name__ == "__main__":
-    test_input = "my test is broken"
+    test_input = "fix my code"
     recommended_command = dispatch(test_input)
-    print(recommended_command)
+    if recommended_command:
+        print(f"Recommended: {recommended_command.name} (Score: {recommended_command.category})")
+    else:
+        print("No recommendation found.")
