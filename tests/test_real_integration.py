@@ -61,7 +61,7 @@ class TestOpenCodeZenProvider:
     @require_any_provider
     def test_opencode_zen_basic_completion(self):
         """Test basic completion with OpenCode Zen grok-code (free)."""
-        from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
+        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
         provider = OpenCodeZenProvider(model="grok-code")
 
@@ -76,7 +76,7 @@ class TestOpenCodeZenProvider:
     @require_any_provider
     def test_opencode_zen_security_review(self):
         """Test security review with OpenCode Zen (free model)."""
-        from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
+        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
         provider = OpenCodeZenProvider(model="grok-code")
 
@@ -92,7 +92,7 @@ class TestOpenCodeZenProvider:
     @require_any_provider
     def test_opencode_zen_with_different_free_models(self):
         """Test OpenCode Zen with different free models."""
-        from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
+        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
         free_models = ["grok-code", "minimax-m2.1-free", "glm-4.7-free"]
 
@@ -106,8 +106,8 @@ class TestOpenCodeZenProvider:
     @require_any_provider
     def test_opencode_zen_rate_limit_config(self):
         """Test provider with rate limiting config."""
-        from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
-        from dspy_integration.providers.base import RateLimitConfig
+        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
+        from dspy_helm.providers.base import RateLimitConfig
 
         config = RateLimitConfig(enabled=True, max_retries=2, backoff_factor=0.5)
         provider = OpenCodeZenProvider(model="grok-code", rate_limit=config)
@@ -124,7 +124,7 @@ class TestGoogleGeminiProvider:
 
     def test_gemini_basic_completion(self):
         """Test basic completion with Gemini 1.5 Flash (free tier)."""
-        from dspy_integration.providers.gemini import GeminiProvider
+        from dspy_helm.providers.gemini import GeminiProvider
 
         api_key = get_gemini_api_key()
         # Gemini provider uses subprocess to call gemini CLI
@@ -150,7 +150,7 @@ class TestProviderChainIntegration:
     @require_any_provider
     def test_provider_chain_single_provider(self):
         """Test provider chain with OpenCode Zen (free)."""
-        from dspy_integration.providers import create_provider_chain
+        from dspy_helm.providers import create_provider_chain
 
         chain = create_provider_chain()
 
@@ -162,7 +162,7 @@ class TestProviderChainIntegration:
     @require_any_provider
     def test_provider_chain_response_time(self):
         """Test that provider chain returns reasonable response times."""
-        from dspy_integration.providers import create_provider_chain
+        from dspy_helm.providers import create_provider_chain
 
         chain = create_provider_chain()
 
@@ -183,7 +183,7 @@ class TestScenarioIntegration:
     @require_any_provider
     def test_security_review_scenario_full(self):
         """Test security review scenario with real model call."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")()
         trainset, valset = scenario.load_data()
@@ -195,7 +195,7 @@ class TestScenarioIntegration:
             prompt = scenario.make_prompt(example_dict)
 
             # Get response from free provider
-            from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
+            from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
             provider = OpenCodeZenProvider(model="grok-code")
 
@@ -207,7 +207,7 @@ class TestScenarioIntegration:
     @require_any_provider
     def test_unit_test_scenario_full(self):
         """Test unit test scenario with real model call."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("unit_test")()
         trainset, valset = scenario.load_data()
@@ -217,7 +217,7 @@ class TestScenarioIntegration:
             example_dict = {"function": example.function, "tests": example.tests}
             prompt = scenario.make_prompt(example_dict)
 
-            from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
+            from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
             provider = OpenCodeZenProvider(model="grok-code")
 
@@ -232,7 +232,7 @@ class TestScenarioIntegration:
     @require_any_provider
     def test_documentation_scenario_full(self):
         """Test documentation scenario with real model call."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("documentation")()
         trainset, valset = scenario.load_data()
@@ -242,7 +242,7 @@ class TestScenarioIntegration:
             example_dict = {"project": example.project, "readme": example.readme}
             prompt = scenario.make_prompt(example_dict)
 
-            from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
+            from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
             provider = OpenCodeZenProvider(model="grok-code")
 
@@ -253,7 +253,7 @@ class TestScenarioIntegration:
     @require_any_provider
     def test_api_design_scenario_full(self):
         """Test API design scenario with real model call."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("api_design")()
         trainset, valset = scenario.load_data()
@@ -266,7 +266,7 @@ class TestScenarioIntegration:
             }
             prompt = scenario.make_prompt(example_dict)
 
-            from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
+            from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
             provider = OpenCodeZenProvider(model="grok-code")
 
@@ -281,8 +281,8 @@ class TestMetricIntegration:
     @require_any_provider
     def test_security_review_metric_real(self):
         """Test security review metric with real prediction."""
-        from dspy_integration.scenarios import ScenarioRegistry
-        from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
+        from dspy_helm.scenarios import ScenarioRegistry
+        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
         scenario = ScenarioRegistry.get("security_review")()
         example_data = scenario._load_raw_data()[0]
@@ -331,7 +331,7 @@ class TestPerformanceIntegration:
     @require_any_provider
     def test_response_time_under_60s(self):
         """Test that responses complete within 60 seconds."""
-        from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
+        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
         import time
 
         provider = OpenCodeZenProvider(model="grok-code")
@@ -346,7 +346,7 @@ class TestPerformanceIntegration:
     @require_any_provider
     def test_multiple_sequential_requests(self):
         """Test multiple sequential requests."""
-        from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
+        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
         provider = OpenCodeZenProvider(model="grok-code")
 
@@ -364,14 +364,14 @@ class TestFreeProviderVerification:
 
     def test_opencode_zen_no_api_key_required(self):
         """Verify OpenCode Zen doesn't require API key."""
-        from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
+        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
         provider = OpenCodeZenProvider(model="grok-code")
         assert provider.api_key == "not-required"  # Free models don't need key
 
     def test_opencode_zen_free_models_listed(self):
         """Verify OpenCode Zen free models are documented."""
-        from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
+        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
         provider = OpenCodeZenProvider()
         assert "grok-code" in provider.model  # Primary free model

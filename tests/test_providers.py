@@ -11,7 +11,7 @@ class TestBaseProvider:
 
     def test_provider_response_dataclass(self):
         """Test ProviderResponse dataclass."""
-        from dspy_integration.providers.base import ProviderResponse, RateLimitConfig
+        from dspy_helm.providers.base import ProviderResponse, RateLimitConfig
 
         response = ProviderResponse(
             success=True,
@@ -29,7 +29,7 @@ class TestBaseProvider:
 
     def test_rate_limit_config(self):
         """Test RateLimitConfig dataclass."""
-        from dspy_integration.providers.base import RateLimitConfig
+        from dspy_helm.providers.base import RateLimitConfig
 
         config = RateLimitConfig(
             enabled=True,
@@ -44,7 +44,7 @@ class TestBaseProvider:
 
     def test_provider_chain(self):
         """Test ProviderChain."""
-        from dspy_integration.providers.base import (
+        from dspy_helm.providers.base import (
             BaseProvider,
             ProviderChain,
             ProviderResponse,
@@ -84,7 +84,7 @@ class TestBaseProvider:
 
     def test_provider_chain_all_fail(self):
         """Test ProviderChain when all providers fail."""
-        from dspy_integration.providers.base import (
+        from dspy_helm.providers.base import (
             BaseProvider,
             ProviderChain,
             ProviderResponse,
@@ -119,14 +119,14 @@ class TestProviderRegistry:
 
     def test_create_provider_chain(self):
         """Test creating provider chain."""
-        from dspy_integration.providers import create_provider_chain
+        from dspy_helm.providers import create_provider_chain
 
         chain = create_provider_chain()
         assert len(chain.providers) > 0
 
     def test_get_default_provider(self):
         """Test getting default provider."""
-        from dspy_integration.providers import get_default_provider
+        from dspy_helm.providers import get_default_provider
 
         provider = get_default_provider()
         assert provider is not None
@@ -134,14 +134,14 @@ class TestProviderRegistry:
 
     def test_get_provider_by_name(self):
         """Test getting specific provider."""
-        from dspy_integration.providers import get_provider_by_name
+        from dspy_helm.providers import get_provider_by_name
 
         provider = get_provider_by_name("opencode_zen")
         assert provider is not None
 
     def test_get_unknown_provider(self):
         """Test getting unknown provider raises error."""
-        from dspy_integration.providers import get_provider_by_name
+        from dspy_helm.providers import get_provider_by_name
 
         with pytest.raises(ValueError) as exc_info:
             get_provider_by_name("unknown_provider")
@@ -153,7 +153,7 @@ class TestOpenCodeZenProvider:
 
     def test_init(self):
         """Test provider initialization."""
-        from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
+        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
         provider = OpenCodeZenProvider(model="grok-code")
         assert provider.name == "OpenCode Zen (Grok Code Fast)"
@@ -162,7 +162,7 @@ class TestOpenCodeZenProvider:
 
     def test_init_with_custom_model(self):
         """Test initialization with custom model."""
-        from dspy_integration.providers.opencode_zen import OpenCodeZenProvider
+        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
         provider = OpenCodeZenProvider(model="minimax-m2.1-free")
         assert provider.model == "minimax-m2.1-free"

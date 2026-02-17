@@ -1,0 +1,111 @@
+"""
+Provider module for DSPy-HELM.
+
+Provides unified interface for:
+- Groq (FREE tier - fast inference!)
+- HuggingFace Inference API (FREE tier - no API key needed!)
+- Puter.js (truly FREE but browser-only)
+- OpenCode Zen (requires API key - paid)
+- OpenRouter (requires API key)
+- Google Gemini (requires API key)
+
+Priority: Groq → HuggingFace → OpenRouter → Gemini (all with free tiers!)
+"""
+
+from .base import BaseProvider, ProviderResponse, RateLimitConfig, ProviderChain
+from .groq import GroqProvider
+from .huggingface import HuggingFaceProvider
+from .puter import PuterFreeProvider
+from .opencode_zen import OpenCodeZenProvider
+from .openrouter import OpenRouterProvider
+from .gemini import GeminiProvider
+
+
+def create_provider_chain() -> ProviderChain:
+    """
+    Create provider chain with default providers.
+
+    Order: Groq → HuggingFace → OpenRouter → Gemini (all with free tiers!)
+    All using FREE tier - total cost: $0
+
+    Returns:
+        ProviderChain with all providers configured
+    """
+    providers = [
+        # Primary: Groq - FAST, free tier available!
+        GroqProvider(
+            model="llama-3.3-70b-versatile",
+            rate_limit=RateLimitConfig(enabled=True, max_retries=3, backoff_factor=1.0),
+        ),
+        # Fallback 1: HuggingFace - FREE, no API key needed!
+        HuggingFaceProvider(
+            model="meta-llama/Llama-3.2-3B-Instruct",
+            rate_limit=RateLimitConfig(enabled=True, max_retries=3, backoff_factor=1.0),
+        ),
+        # Fallback 2: OpenRouter (requires API key)
+        OpenRouterProvider(
+            model="x-ai/grok-4.1-fast:free",
+            rate_limit=RateLimitConfig(enabled=True, max_retries=3, backoff_factor=1.0),
+        ),
+        # Fallback 3: Gemini (requires API key)
+        GeminiProvider(
+            model="gemini-1.5-flash",
+            rate_limit=RateLimitConfig(enabled=True, max_retries=3, backoff_factor=2.0),
+        ),
+    ]
+
+    return ProviderChain(providers)
+
+
+def get_default_provider() -> GroqProvider:
+    """Get the default (primary) provider - Groq (fast, free tier available)."""
+    return GroqProvider(
+        model="llama-3.3-70b-versatile",
+        rate_limit=RateLimitConfig(enabled=True, max_retries=3, backoff_factor=1.0),
+    )
+
+
+def get_provider_by_name(name: str) -> BaseProvider:
+    """
+    Get a specific provider by name.
+
+    Args:
+        name: Provider name (groq, huggingface, puter, opencode_zen, openrouter, google)
+
+    Returns:
+        Provider instance
+
+    Raises:
+        ValueError: If provider not found
+    """
+    providers = {
+        "groq": GroqProvider,
+        "huggingface": HuggingFaceProvider,
+        "puter": PuterFreeProvider,
+        "opencode_zen": OpenCodeZenProvider,
+        "openrouter": OpenRouterProvider,
+        "google": GeminiProvider,
+    }
+
+    if name not in providers:
+        available = ", ".join(providers.keys())
+        raise ValueError(f"Unknown provider: '{name}'. Available: {available}")
+
+    return providers[name]()
+
+
+__all__ = [
+    "BaseProvider",
+    "ProviderResponse",
+    "RateLimitConfig",
+    "ProviderChain",
+    "GroqProvider",
+    "HuggingFaceProvider",
+    "PuterFreeProvider",
+    "OpenCodeZenProvider",
+    "OpenRouterProvider",
+    "GeminiProvider",
+    "create_provider_chain",
+    "get_default_provider",
+    "get_provider_by_name",
+]

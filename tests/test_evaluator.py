@@ -11,7 +11,7 @@ class TestEvaluator:
 
     def test_evaluator_init(self):
         """Test evaluator initialization."""
-        from dspy_integration.eval import Evaluator
+        from dspy_helm.eval import Evaluator
 
         mock_metric = MagicMock()
         evaluator = Evaluator(metric=mock_metric)
@@ -23,7 +23,7 @@ class TestEvaluator:
 
     def test_evaluator_custom_init(self):
         """Test evaluator with custom values."""
-        from dspy_integration.eval import Evaluator
+        from dspy_helm.eval import Evaluator
 
         mock_metric = MagicMock()
         evaluator = Evaluator(
@@ -39,7 +39,7 @@ class TestEvaluator:
 
     def test_evaluator_has_evaluator(self):
         """Test that evaluator has internal _evaluator."""
-        from dspy_integration.eval import Evaluator
+        from dspy_helm.eval import Evaluator
 
         mock_metric = MagicMock()
         evaluator = Evaluator(metric=mock_metric)
@@ -57,7 +57,7 @@ class TestEvaluatorEvaluate:
     @patch("dspy_helm.eval.evaluate.dspy")
     def test_evaluate_basic(self, mock_dspy):
         """Test basic evaluation."""
-        from dspy_integration.eval import Evaluator
+        from dspy_helm.eval import Evaluator
 
         mock_dspy.Evaluate.return_value = MagicMock()
         mock_dspy.Evaluate.return_value.return_value = 0.85
@@ -81,7 +81,7 @@ class TestEvaluatorEvaluate:
     @patch("dspy_helm.eval.evaluate.dspy")
     def test_evaluate_with_return_outputs(self, mock_dspy):
         """Test evaluation with return_outputs=True."""
-        from dspy_integration.eval import Evaluator
+        from dspy_helm.eval import Evaluator
 
         mock_dspy.Evaluate.return_value = MagicMock()
         mock_dspy.utils.parallelizer.ParallelExecutor.return_value = MagicMock()
@@ -116,7 +116,7 @@ class TestEvaluatorEvaluate:
     @patch("dspy_helm.eval.evaluate.dspy")
     def test_evaluate_empty_devset(self, mock_dspy):
         """Test evaluation with empty devset."""
-        from dspy_integration.eval import Evaluator
+        from dspy_helm.eval import Evaluator
 
         mock_dspy.Evaluate.return_value = MagicMock()
         mock_dspy.Evaluate.return_value.return_value = 0.0
@@ -135,7 +135,7 @@ class TestEvaluatorExport:
 
     def test_export_results(self, tmp_path):
         """Test exporting results to JSON."""
-        from dspy_integration.eval import Evaluator
+        from dspy_helm.eval import Evaluator
         import json
 
         mock_metric = MagicMock()
@@ -160,7 +160,7 @@ class TestEvaluatorExport:
 
     def test_export_creates_parent_dirs(self, tmp_path):
         """Test that export creates parent directories."""
-        from dspy_integration.eval import Evaluator
+        from dspy_helm.eval import Evaluator
 
         mock_metric = MagicMock()
         evaluator = Evaluator(metric=mock_metric)
@@ -181,7 +181,7 @@ class TestEvaluatorIntegration:
     )
     def test_metric_function_called(self):
         """Test that metric function is called during evaluation."""
-        from dspy_integration.eval import Evaluator
+        from dspy_helm.eval import Evaluator
         import dspy
 
         # Create a simple metric

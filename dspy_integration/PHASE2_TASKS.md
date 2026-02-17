@@ -1,7 +1,6 @@
 # Phase 2: Framework Consolidation + Dispatcher
 
 **Status**: NOT STARTED  
-# TODO: Update status of tasks to reflect completion of framework consolidation and dispatcher refactor progress.
 **Started**: -  
 **Completed**: -  
 **Duration Estimate**: 2-3 days
@@ -48,7 +47,7 @@ PARALLEL TRACK D: Consolidation
 
 #### 2.1.1 Create framework/__init__.py
 ```
-Status: COMPLETED
+Status: PENDING
 Priority: HIGH
 Depends: None
 Assign: -
@@ -64,7 +63,7 @@ Create framework/__init__.py with exports:
 
 #### 2.1.2 Create framework/providers/
 ```
-Status: COMPLETED
+Status: PENDING
 Priority: MEDIUM
 Depends: None
 Assign: -
@@ -85,7 +84,7 @@ Copy from dspy_helm/providers/:
 
 #### 2.1.3 Create framework/optimizers/
 ```
-Status: COMPLETED
+Status: PENDING
 Priority: MEDIUM
 Depends: None
 Assign: -
@@ -100,7 +99,7 @@ Copy from dspy_helm/optimizers/:
 
 #### 2.1.4 Create framework/evaluation/
 ```
-Status: COMPLETED
+Status: PENDING
 Priority: MEDIUM
 Depends: None
 Assign: -
@@ -223,7 +222,7 @@ Complete these methods in DSPyIntegrationCLI:
 
 #### 2.4.1 Move dspy_helm/providers → framework/
 ```
-Status: COMPLETED
+Status: PENDING
 Priority: MEDIUM
 Depends: None
 Assign: -
@@ -235,7 +234,7 @@ git mv dspy_helm/providers framework/
 
 #### 2.4.2 Move dspy_helm/optimizers → framework/
 ```
-Status: COMPLETED
+Status: PENDING
 Priority: MEDIUM
 Depends: None
 Assign: -
@@ -247,7 +246,7 @@ git mv dspy_helm/optimizers framework/
 
 #### 2.4.3 Move dspy_helm/evaluation → framework/
 ```
-Status: COMPLETED
+Status: PENDING
 Priority: MEDIUM
 Depends: None
 Assign: -
@@ -259,7 +258,7 @@ git mv dspy_helm/evaluation framework/
 
 #### 2.4.4 Move dspy_helm/scenarios → framework/
 ```
-Status: COMPLETED
+Status: PENDING
 Priority: MEDIUM
 Depends: None
 Assign: -
@@ -271,7 +270,7 @@ git mv dspy_helm/scenarios framework/
 
 #### 2.4.5 Move dspy_helm/data → framework/
 ```
-Status: COMPLETED
+Status: PENDING
 Priority: MEDIUM
 Depends: None
 Assign: -
@@ -283,7 +282,7 @@ git mv dspy_helm/data framework/
 
 #### 2.4.6 Update imports across codebase
 ```
-Status: COMPLETED
+Status: PENDING
 Priority: HIGH
 Depends: ALL 2.4.1-2.4.5
 Assign: -

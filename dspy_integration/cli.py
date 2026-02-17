@@ -1,10 +1,6 @@
 import argparse
 from dspy_integration.framework.dispatcher import dispatch
 
-# TODO [High Priority]: Implement full CLI args parsing (argparse/click).
-# See JOBS_FOR_JULES.md for requirements (forgiving parsing, robot mode).
-# TODO: Add robot mode and smart dispatch integration.
-# parser.add_argument("--robot", action="store_true", help="Enable robot/AI mode")
 
 def main():
     parser = argparse.ArgumentParser(
@@ -19,7 +15,9 @@ def main():
 
     if recommended_command:
         # Format the command for display
-        command_name = f'/{recommended_command.category}:{recommended_command.name}'
+        command_name = (
+            f'/{recommended_command["category"]}:{recommended_command["name"]}'
+        )
 
         # Create a placeholder for arguments based on the user input
         placeholder_args = f'--prompt "{args.user_input}"'

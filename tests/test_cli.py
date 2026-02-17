@@ -12,9 +12,9 @@ class TestCLI:
 
     def test_cli_help(self, capsys):
         """Test CLI help output."""
-        from dspy_integration.framework.cli import main
+        from dspy_helm.cli import main
 
-        with patch.object(sys, "argv", ["dspy_integration.framework.cli", "--help"]):
+        with patch.object(sys, "argv", ["dspy_helm.cli", "--help"]):
             with pytest.raises(SystemExit) as exc_info:
                 main()
             # Help should exit with code 0
@@ -22,9 +22,9 @@ class TestCLI:
 
     def test_cli_list_scenarios(self, capsys):
         """Test listing scenarios."""
-        from dspy_integration.framework.cli import main
+        from dspy_helm.cli import main
 
-        with patch.object(sys, "argv", ["dspy_integration.framework.cli", "--list-scenarios"]):
+        with patch.object(sys, "argv", ["dspy_helm.cli", "--list-scenarios"]):
             with pytest.raises(SystemExit) as exit_err:
                 main()
             # Should exit after printing
@@ -32,17 +32,17 @@ class TestCLI:
             assert "Available scenarios" in captured.out
             assert "security_review" in captured.out
 
-    @patch("dspy_integration.framework.cli.run_evaluation")
+    @patch("dspy_helm.cli.run_evaluation")
     def test_cli_evaluate_only(self, mock_run, capsys):
         """Test evaluation without optimization."""
-        from dspy_integration.framework.cli import main
+        from dspy_helm.cli import main
 
         mock_run.return_value = {"score": 0.85}
 
         with patch.object(
             sys,
             "argv",
-            ["dspy_integration.framework.cli", "--scenario", "security_review", "--evaluate-only"],
+            ["dspy_helm.cli", "--scenario", "security_review", "--evaluate-only"],
         ):
             try:
                 main()
@@ -58,10 +58,10 @@ class TestCLI:
 class TestSetupDSPyLM:
     """Test LM configuration."""
 
-    @patch("dspy_integration.framework.providers.get_provider_by_name")
+    @patch("dspy_helm.providers.get_provider_by_name")
     def test_setup_dspy_lm(self, mock_get_provider):
         """Test LM setup."""
-        from dspy_integration.framework.cli import setup_dspy_lm
+        from dspy_helm.cli import setup_dspy_lm
 
         mock_provider = MagicMock()
         mock_provider.api_key = "test-key"

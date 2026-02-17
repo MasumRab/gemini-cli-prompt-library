@@ -1,107 +1,36 @@
-"""
-Intelligent Dispatcher for routing user requests to commands.
-
-This module provides the logic to interpret natural language user requests
-and dispatch them to the most appropriate command in the registry.
-"""
-
-from typing import Optional, Set
-from .registry import CommandRegistry, Command, get_command
+from dspy_integration.framework.manifest import get_commands
 
 
-class IntelligentDispatcher:
-    """
-    Intelligent dispatcher that routes natural language requests to appropriate commands.
-    """
+def dispatch(user_input):
+    commands = get_commands()
+    user_input = user_input.lower()
 
-    def __init__(self, registry: Optional[CommandRegistry] = None):
-        self.registry = registry or CommandRegistry()
-        # Use cached commands from registry
-        self.commands = self.registry.commands
+    best_match = None
+    max_score = 0
 
-    def dispatch(self, user_input: str) -> Optional[Command]:
-        """
-        Dispatch user input to the best matching command.
-
-        Args:
-            user_input: Natural language request
-
-        Returns:
-            Best matching Command object or None
-        """
-        user_input = user_input.lower()
-        best_match = None
-        max_score = 0
-
-        for command in self.commands.values():
-            score = self._calculate_match_score(user_input, command)
-
-            if score > max_score:
-                max_score = score
-                best_match = command
-
-        return best_match if max_score > 0 else None
-
-    def _calculate_match_score(self, user_input: str, command: Command) -> float:
-        """Calculate how well a command matches the user input."""
+    for command in commands:
         score = 0
+        name_tokens = set(command["name"].lower().replace("-", " ").split())
+        description_tokens = set(command["description"].lower().split())
 
-        # Normalize inputs
-        user_tokens = set(user_input.split())
+        # Prioritize exact matches in the name
+        if command["name"].replace("-", " ") in user_input:
+            score += 10
 
-        # Helper to get tokens
-        def get_tokens(text: str) -> Set[str]:
-            return set(text.lower().replace("-", " ").split())
+        # Prioritize longer matches
+        name_match_len = len(name_tokens.intersection(user_input.split()))
+        description_match_len = len(description_tokens.intersection(user_input.split()))
 
-        name_tokens = get_tokens(command.name)
-        desc_tokens = get_tokens(command.description)
-        tag_tokens = set()
-        if command.tags:
-            for tag in command.tags:
-                tag_tokens.update(get_tokens(tag))
+        score += (name_match_len * 5) + description_match_len
 
-        # 1. Exact Name Match (Highest Priority)
-        # Check if the command name appears in the input (handling hyphens as spaces)
-        normalized_name = command.name.replace("-", " ")
-        if normalized_name in user_input:
-            score += 20  # Very strong signal
+        if score > max_score:
+            max_score = score
+            best_match = command
 
-        # 2. Token Overlap
-        name_overlap = len(name_tokens.intersection(user_tokens))
-        desc_overlap = len(desc_tokens.intersection(user_tokens))
-        tag_overlap = len(tag_tokens.intersection(user_tokens))
-
-        score += (name_overlap * 5)      # Name words are important
-        score += (tag_overlap * 3)       # Tags are significant
-        score += (desc_overlap * 1)      # Description is supporting
-
-        return score
-
-
-# Global instance for convenience
-_dispatcher = None
-
-
-def get_dispatcher() -> IntelligentDispatcher:
-    """Get or create the singleton IntelligentDispatcher instance."""
-    global _dispatcher
-    if _dispatcher is None:
-        _dispatcher = IntelligentDispatcher()
-    return _dispatcher
-
-
-def dispatch(user_input: str) -> Optional[Command]:
-    """
-    Dispatch user input to the best matching command using the IntelligentDispatcher.
-    """
-    dispatcher = get_dispatcher()
-    return dispatcher.dispatch(user_input)
+    return best_match
 
 
 if __name__ == "__main__":
-    test_input = "fix my code"
+    test_input = "my test is broken"
     recommended_command = dispatch(test_input)
-    if recommended_command:
-        print(f"Recommended: {recommended_command.name} (Score: {recommended_command.category})")
-    else:
-        print("No recommendation found.")
+    print(recommended_command)

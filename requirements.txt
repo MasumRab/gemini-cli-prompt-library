@@ -1,5 +1,11 @@
-requests
+requests==2.32.3
 dspy-ai
-pyyaml
-openai
-pytest
+dspy>=3.1.2
+datasets==4.1.1
+urllib3==2.3.0
+cloudpickle==3.1.0
+pyyaml>=6.0
+toml>=0.10.2
+tomli>=2.0.1
+pytest>=7.0.0
+pytest-asyncio>=0.21.0

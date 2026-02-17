@@ -16,13 +16,13 @@ def test_registry():
         from dspy_integration.framework.registry import CommandRegistry
 
         registry = CommandRegistry()
-        commands = registry.commands
+        commands = registry._commands
         print(f"✅ Registry loaded: {len(commands)} commands")
 
         # Test getting a command
         improve_cmd = registry.get_command("improve")
         if improve_cmd:
-            print(f"✅ Found 'improve' command: {improve_cmd.category}")
+            print(f"✅ Found 'improve' command: {improve_cmd['category']}")
         else:
             print("❌ 'improve' command not found")
 

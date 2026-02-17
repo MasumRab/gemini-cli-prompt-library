@@ -1,5 +1,3 @@
-import dspy
-
 """
 BootstrapFewShot Optimizers.
 """

@@ -1,9 +1,8 @@
 """
-Gemini CLI Provider.
+Qwen Code CLI Provider.
 
-Adapter for Gemini CLI tool with support for:
-- gemini-1.5-flash (FREE tier)
-- gemini-1.5-pro
+Adapter for Qwen Code CLI tool with support for:
+- qwen2.5-coder:32b (code-optimized, self-hosted, FREE)
 """
 
 from typing import Optional
@@ -12,24 +11,24 @@ import time
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
 
 
-class GeminiProvider(BaseProvider):
-    """Provider for Gemini CLI (free tier available)."""
+class QwenCodeProvider(BaseProvider):
+    """Provider for Qwen Code CLI (self-hosted, free)."""
 
     def __init__(
         self,
-        model: str = "gemini-1.5-flash",
+        model: str = "qwen2.5-coder:32b",
         rate_limit: Optional[RateLimitConfig] = None,
     ):
         """
-        Initialize Gemini provider.
+        Initialize Qwen Code provider.
 
         Args:
-            model: Model to use (default: gemini-1.5-flash free tier)
+            model: Model to use
             rate_limit: Rate limiting configuration
         """
         super().__init__(
-            name="Gemini CLI",
-            command="gemini",
+            name="Qwen Code CLI",
+            command="qwen-code",
             subcommand="ask",
             model=model,
             rate_limit=rate_limit,
@@ -37,7 +36,7 @@ class GeminiProvider(BaseProvider):
 
     def _execute_cli(self, prompt: str, **kwargs) -> ProviderResponse:
         """
-        Execute prompt via Gemini CLI.
+        Execute prompt via Qwen Code CLI.
 
         Args:
             prompt: Prompt to send
@@ -50,7 +49,10 @@ class GeminiProvider(BaseProvider):
 
         try:
             result = subprocess.run(
-                ["gemini", "ask", prompt], capture_output=True, text=True, timeout=120
+                ["qwen-code", "ask", prompt],
+                capture_output=True,
+                text=True,
+                timeout=120,
             )
 
             latency = time.time() - start_time
@@ -100,8 +102,8 @@ class GeminiProvider(BaseProvider):
             "rate limit",
             "too many requests",
             "429",
-            "quota exceeded",
-            "user rate limit",
+            "busy",
+            "try again",
         ]
 
         output_lower = output.lower()

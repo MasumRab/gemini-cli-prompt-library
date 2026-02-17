@@ -1,35 +1,35 @@
 """
-Gemini CLI Provider.
+OpenCode CLI Provider.
 
-Adapter for Gemini CLI tool with support for:
-- gemini-1.5-flash (FREE tier)
-- gemini-1.5-pro
+Adapter for OpenCode CLI tool with support for:
+- gpt-4o-mini (OpenAI FREE tier)
 """
 
 from typing import Optional
 import subprocess
-import time
+import json
+import logging
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
 
+logger = logging.getLogger(__name__)
 
-class GeminiProvider(BaseProvider):
-    """Provider for Gemini CLI (free tier available)."""
+
+class OpenCodeProvider(BaseProvider):
+    """Provider for OpenCode CLI using OpenAI free tier."""
 
     def __init__(
-        self,
-        model: str = "gemini-1.5-flash",
-        rate_limit: Optional[RateLimitConfig] = None,
+        self, model: str = "gpt-4o-mini", rate_limit: Optional[RateLimitConfig] = None
     ):
         """
-        Initialize Gemini provider.
+        Initialize OpenCode provider (OpenAI FREE tier).
 
         Args:
-            model: Model to use (default: gemini-1.5-flash free tier)
+            model: Model to use (gpt-4o-mini)
             rate_limit: Rate limiting configuration
         """
         super().__init__(
-            name="Gemini CLI",
-            command="gemini",
+            name="OpenCode CLI (OpenAI Free)",
+            command="opencode",
             subcommand="ask",
             model=model,
             rate_limit=rate_limit,
@@ -37,26 +37,29 @@ class GeminiProvider(BaseProvider):
 
     def _execute_cli(self, prompt: str, **kwargs) -> ProviderResponse:
         """
-        Execute prompt via Gemini CLI.
+        Execute prompt via OpenCode CLI.
 
         Args:
             prompt: Prompt to send
-            **kwargs: Additional arguments
+            **kwargs: Additional arguments (ignored)
 
         Returns:
             ProviderResponse with result
         """
+        import time
+
         start_time = time.time()
 
         try:
             result = subprocess.run(
-                ["gemini", "ask", prompt], capture_output=True, text=True, timeout=120
+                ["opencode", "ask", prompt], capture_output=True, text=True, timeout=120
             )
 
             latency = time.time() - start_time
 
             if result.returncode != 0:
                 error_output = result.stderr or result.stdout
+
                 rate_limited = self._is_rate_limited(error_output)
 
                 return ProviderResponse(
@@ -95,13 +98,24 @@ class GeminiProvider(BaseProvider):
             )
 
     def _is_rate_limited(self, output: str) -> bool:
-        """Detect rate limiting indicators."""
+        """
+        Detect if output indicates rate limiting.
+
+        Args:
+            output: CLI output or error message
+
+        Returns:
+            True if rate limited
+        """
         rate_limit_indicators = [
             "rate limit",
+            "rate_limit",
             "too many requests",
             "429",
-            "quota exceeded",
-            "user rate limit",
+            "exceeded quota",
+            "capacity",
+            "try again later",
+            "free tier",
         ]
 
         output_lower = output.lower()
