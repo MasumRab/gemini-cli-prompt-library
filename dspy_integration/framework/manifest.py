@@ -1,33 +1,39 @@
-"""
-Updated manifest module that uses the command registry.
-
-This addresses the duplication between registry.py and manifest.py by using
-the unified command registry implementation.
-"""
-
-# TODO [Low Priority]: Deprecate this module in favor of registry.py.
-# Reason: manifest.py is now a simple wrapper around registry.py.
-
-from .registry import CommandRegistry
+import os
+import tomli
+import logging
 
 
 def get_commands():
-    """
-    Get commands using the registry for consistency.
-
-    This replaces the duplicate implementation with the unified approach.
-    Returns a list of dicts for backward compatibility.
-    """
-    registry = CommandRegistry()
-    return [
-        {
-            "name": cmd.name,
-            "category": cmd.category,
-            "description": cmd.description,
-            "examples": cmd.examples or []
-        }
-        for cmd in registry.commands.values()
-    ]
+    commands = []
+    for root, dirs, files in os.walk("commands"):
+        for file in files:
+            if file.endswith(".toml"):
+                filepath = os.path.join(root, file)
+                try:
+                    with open(filepath, "rb") as f:
+                        data = tomli.load(f)
+                        prompt = data.get("prompt", "")
+                        prompt_lines = prompt.strip().split("\n")
+                        description = ""
+                        for line in prompt_lines:
+                            cleaned_line = line.strip()
+                            if cleaned_line and cleaned_line.startswith("#"):
+                                description = cleaned_line.strip("# ").strip()
+                                if description:
+                                    break
+                        name = os.path.splitext(file)[0]
+                        category = os.path.basename(root)
+                        commands.append(
+                            {
+                                "name": name,
+                                "category": category,
+                                "description": description,
+                                "examples": [],  # Placeholder for examples
+                            }
+                        )
+                except Exception as e:
+                    logging.warning(f"Error parsing {filepath}: {e}")
+    return commands
 
 
 if __name__ == "__main__":

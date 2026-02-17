@@ -13,7 +13,7 @@ class TestScenarioDataLoading:
 
     def test_security_review_data_format(self):
         """Test security review data has correct format."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")()
         trainset, valset = scenario.load_data()
@@ -30,7 +30,7 @@ class TestScenarioDataLoading:
 
     def test_unit_test_data_format(self):
         """Test unit test data has correct format."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("unit_test")()
         trainset, valset = scenario.load_data()
@@ -46,7 +46,7 @@ class TestScenarioDataLoading:
 
     def test_documentation_data_format(self):
         """Test documentation data has correct format."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("documentation")()
         trainset, valset = scenario.load_data()
@@ -62,7 +62,7 @@ class TestScenarioDataLoading:
 
     def test_api_design_data_format(self):
         """Test API design data has correct format."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("api_design")()
         trainset, valset = scenario.load_data()
@@ -82,23 +82,23 @@ class TestPromptToScenarioMapping:
 
     def test_default_mappings_exist(self):
         """Test that default mappings are defined."""
-        from dspy_integration.prompts import DEFAULT_MAPPINGS
+        from dspy_helm.prompts import DEFAULT_MAPPINGS
 
         assert len(DEFAULT_MAPPINGS) > 0
 
     def test_mapping_to_registered_scenarios(self):
         """Test that all mapped scenarios are registered."""
-        from dspy_integration.prompts import DEFAULT_MAPPINGS
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.prompts import DEFAULT_MAPPINGS
+        from dspy_helm.scenarios import ScenarioRegistry
 
         for toml_name, scenario_name in DEFAULT_MAPPINGS.items():
-            assert scenario_name in ScenarioRegistry.list(), (
-                f"Scenario '{scenario_name}' from mapping '{toml_name}' is not registered"
-            )
+            assert (
+                scenario_name in ScenarioRegistry.list()
+            ), f"Scenario '{scenario_name}' from mapping '{toml_name}' is not registered"
 
     def test_prompt_registry_has_mappings(self):
         """Test that prompt registry has the mappings."""
-        from dspy_integration.prompts import (
+        from dspy_helm.prompts import (
             PromptRegistry,
             DEFAULT_MAPPINGS,
             initialize_prompt_registry,
@@ -109,9 +109,9 @@ class TestPromptToScenarioMapping:
 
         for toml_name, scenario_name in DEFAULT_MAPPINGS.items():
             registered = PromptRegistry.get_dspy_module(toml_name)
-            assert registered == scenario_name, (
-                f"Mapping for '{toml_name}' not found in registry"
-            )
+            assert (
+                registered == scenario_name
+            ), f"Mapping for '{toml_name}' not found in registry"
 
 
 class TestPromptRendering:
@@ -119,7 +119,7 @@ class TestPromptRendering:
 
     def test_security_review_prompt_contains_code(self):
         """Test that security review prompt contains code placeholder."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")()
         prompt = scenario.make_prompt(
@@ -131,7 +131,7 @@ class TestPromptRendering:
 
     def test_unit_test_prompt_contains_function(self):
         """Test that unit test prompt contains function placeholder."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("unit_test")()
         prompt = scenario.make_prompt(
@@ -143,7 +143,7 @@ class TestPromptRendering:
 
     def test_documentation_prompt_contains_project(self):
         """Test that documentation prompt contains project placeholder."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("documentation")()
         prompt = scenario.make_prompt(
@@ -155,7 +155,7 @@ class TestPromptRendering:
 
     def test_api_design_prompt_contains_requirements(self):
         """Test that API design prompt contains requirements placeholder."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("api_design")()
         prompt = scenario.make_prompt(
@@ -171,7 +171,7 @@ class TestMetricEvaluation:
 
     def test_security_review_metric_high_score(self):
         """Test security review metric with matching prediction."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")()
 
@@ -186,7 +186,7 @@ class TestMetricEvaluation:
 
     def test_security_review_metric_low_score(self):
         """Test security review metric with non-matching prediction."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")()
 
@@ -201,7 +201,7 @@ class TestMetricEvaluation:
 
     def test_unit_test_metric(self):
         """Test unit test metric."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("unit_test")()
 
@@ -220,7 +220,7 @@ class TestProviderFailover:
 
     def test_provider_chain_order(self):
         """Test that provider chain has correct order."""
-        from dspy_integration.providers import create_provider_chain
+        from dspy_helm.providers import create_provider_chain
 
         chain = create_provider_chain()
         providers = [p.name for p in chain.providers]
@@ -230,7 +230,7 @@ class TestProviderFailover:
 
     def test_provider_chain_add(self):
         """Test adding provider to chain."""
-        from dspy_integration.providers.base import (
+        from dspy_helm.providers.base import (
             ProviderChain,
             BaseProvider,
             ProviderResponse,
@@ -258,7 +258,7 @@ class TestScenarioPromptVariability:
 
     def test_all_scenarios_have_different_prompts(self):
         """Test that each scenario generates different prompts."""
-        from dspy_integration.scenarios import ScenarioRegistry
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenarios = ["security_review", "unit_test", "documentation", "api_design"]
         prompts = {}
@@ -271,9 +271,9 @@ class TestScenarioPromptVariability:
 
         # All prompts should be different
         prompt_set = set(prompts.values())
-        assert len(prompt_set) == len(prompts), (
-            "Some scenarios generate identical prompts"
-        )
+        assert len(prompt_set) == len(
+            prompts
+        ), "Some scenarios generate identical prompts"
 
 
 class TestJSONLDataConsistency:
@@ -321,7 +321,7 @@ class TestCLIScenarioSelection:
 
     def test_cli_with_valid_scenario(self):
         """Test CLI with valid scenario name."""
-        from dspy_integration.cli import main
+        from dspy_helm.cli import main
         import sys
 
         with patch.object(
@@ -339,7 +339,7 @@ class TestCLIScenarioSelection:
 
     def test_cli_with_optimizer(self):
         """Test CLI with optimizer selection."""
-        from dspy_integration.cli import main
+        from dspy_helm.cli import main
         import sys
 
         with patch.object(

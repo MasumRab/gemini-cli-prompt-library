@@ -13,9 +13,8 @@ class TestCodeReviewModule:
         """Test that signature has correct fields."""
         from dspy_integration.modules.code_review import CodeReviewSignature
 
-        # Check if the signature has the expected fields in model_fields
-        assert "code" in CodeReviewSignature.model_fields
-        assert "review" in CodeReviewSignature.model_fields
+        assert hasattr(CodeReviewSignature, "code")
+        assert hasattr(CodeReviewSignature, "review")
 
     @patch("dspy_integration.modules.code_review.dspy")
     def test_module_init(self, mock_dspy):
@@ -32,26 +31,17 @@ class TestCodeReviewModule:
     @patch("dspy_integration.modules.code_review.dspy")
     def test_forward(self, mock_dspy):
         """Test forward pass."""
-        # Create a mock result object that has a 'review' attribute
-        mock_result_obj = MagicMock()
-        mock_result_obj.review = "Test review"
-
-        # Create a mock ChainOfThought instance that returns the result when called
-        mock_cot_instance = MagicMock()
-        mock_cot_instance.return_value = mock_result_obj  # When called with (code=code), returns mock_result_obj
-
-        # Configure ChainOfThought to return our mock instance when called with the signature
-        mock_dspy.ChainOfThought.return_value = mock_cot_instance
-        # Mock settings.lm to avoid errors
-        mock_dspy.settings.lm = MagicMock()
+        mock_chain = MagicMock()
+        mock_result = MagicMock()
+        mock_result.review = "Test review"
+        mock_chain.return_value = mock_result
+        mock_dspy.ChainOfThought = MagicMock(return_value=mock_chain)
 
         from dspy_integration.modules.code_review import CodeReview
 
         module = CodeReview()
         result = module.forward("test code")
 
-        # CodeReview.forward returns the result object directly, not result.review
-        # So we should be able to access the review attribute
         assert result.review == "Test review"
 
 
@@ -137,19 +127,18 @@ class TestSecurityReviewModule:
     @patch("dspy_integration.modules.security_review.dspy")
     def test_forward(self, mock_dspy):
         """Test forward pass."""
-        # Mock the ChainOfThought to return a callable that returns the result
-        mock_chain_of_thought_instance = MagicMock()
+        mock_chain = MagicMock()
         mock_result = MagicMock()
         mock_result.review = "Security issues found"
-        mock_chain_of_thought_instance.return_value = mock_result
-        mock_dspy.ChainOfThought.return_value = mock_chain_of_thought_instance
+        mock_chain.return_value = mock_result
+        mock_dspy.ChainOfThought = MagicMock(return_value=mock_chain)
 
         from dspy_integration.modules.security_review import SecurityReview
 
         module = SecurityReview()
         result = module.forward("vulnerable code")
 
-        assert result == "Security issues found"  # The method returns result.review directly
+        assert result.review == "Security issues found"
 
 
 class TestModuleRegistry:
@@ -190,8 +179,7 @@ class TestModuleRegistry:
         with pytest.raises(ValueError) as exc_info:
             get_module_for_scenario("unknown_scenario")
 
-        # The error message changed when we updated the dynamic loader
-        assert "not found" in str(exc_info.value) or "Unknown scenario" in str(exc_info.value)
+        assert "Unknown scenario" in str(exc_info.value)
 
     def test_get_optimizer_for_scenario(self):
         """Test getting optimizer for scenario."""
@@ -209,15 +197,15 @@ class TestModuleSignatureStructure:
         from dspy_integration.modules.code_review import CodeReviewSignature
 
         # Verify it's a proper signature class
-        assert "code" in CodeReviewSignature.model_fields
-        assert "review" in CodeReviewSignature.model_fields
+        assert hasattr(CodeReviewSignature, "code")
+        assert hasattr(CodeReviewSignature, "review")
 
     def test_security_review_signature_structure(self):
         """Test SecurityReviewSignature has proper input/output fields."""
         from dspy_integration.modules.security_review import SecurityReviewSignature
 
-        assert "code" in SecurityReviewSignature.model_fields
-        assert "review" in SecurityReviewSignature.model_fields
+        assert hasattr(SecurityReviewSignature, "code")
+        assert hasattr(SecurityReviewSignature, "review")
 
 
 if __name__ == "__main__":

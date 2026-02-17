@@ -68,6 +68,13 @@ This extension provides a curated library of high-quality prompts for common dev
 - **workflows-smart-refactor**: Intelligent refactoring workflow
 - **workflows-comprehensive-test**: Comprehensive testing workflow
 
+### 10. Jules Agent
+- **jules-create-session**: Create a new interactive session
+- **jules-list-sessions**: List available sessions
+- **jules-pull-session**: Pull a session context
+- **jules-teleport-session**: Teleport session to a new context
+- **jules-view-session**: View session details
+
 ## How to Use Prompts
 
 When a user runs a prompt command (e.g., `/prompts:code-review-security`), you should:

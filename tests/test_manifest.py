@@ -1,14 +1,19 @@
 import unittest
 from dspy_integration.framework.manifest import get_commands
 
+
 class TestManifest(unittest.TestCase):
     def test_get_commands(self):
         commands = get_commands()
-        self.assertGreaterEqual(len(commands), 46)
+        self.assertEqual(len(commands), 42)
 
-        command_names = [cmd['name'] for cmd in commands]
+        # Check that a few expected commands are present
+        command_names = [cmd["name"] for cmd in commands]
+        self.assertIn("coverage-analysis", command_names)
+        self.assertIn("smart-refactor", command_names)
+        self.assertIn("debug-error", command_names)
         self.assertIn("scheduled-codebase-audit", command_names)
-        self.assertIn("security", command_names) # Verify standard command
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

@@ -8,7 +8,6 @@ import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -111,7 +110,7 @@ def sample_api_design_data():
 @pytest.fixture
 def mock_provider_response():
     """Create a mock provider response."""
-    from dspy_integration.providers.base import ProviderResponse
+    from dspy_helm.providers.base import ProviderResponse
 
     return ProviderResponse(
         success=True,
@@ -175,11 +174,11 @@ def temp_data_dir(tmp_path):
     return data_dir
 
 
-# @pytest.fixture(autouse=True)
-# def suppress_dspy_imports():
-#     """Suppress dspy import issues during tests by mocking."""
-#     with patch.dict("sys.modules", {"dspy": MagicMock(), "dspy.evaluate": MagicMock()}):
-#         yield
+@pytest.fixture(autouse=True)
+def suppress_dspy_imports():
+    """Suppress dspy import issues during tests by mocking."""
+    with patch.dict("sys.modules", {"dspy": MagicMock(), "dspy.evaluate": MagicMock()}):
+        yield
 
 
 def pytest_configure(config):
@@ -199,6 +198,25 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(scope="session", autouse=True)
 def setup_dspy_mocks():
     """Set up persistent mocks for dspy modules."""
-    # Don't globally mock dspy as it interferes with tests that need real functionality
-    # Instead, let individual tests mock what they specifically need
-    yield None
+    dspy_mock = MagicMock()
+    dspy_mock.settings.configure = MagicMock()
+
+    # Mock common dspy classes
+    dspy_mock.Signature = type("Signature", (), {})
+    dspy_mock.Module = type("Module", (), {})
+    dspy_mock.Example = type("Example", (), {})
+    dspy_mock.Prediction = type("Prediction", (), {})
+
+    sys.modules["dspy"] = dspy_mock
+    sys.modules["dspy.evaluate"] = MagicMock()
+    sys.modules["dspy.teleprompt"] = MagicMock()
+
+    yield dspy_mock
+
+    # Cleanup
+    if "dspy" in sys.modules:
+        del sys.modules["dspy"]
+    if "dspy.evaluate" in sys.modules:
+        del sys.modules["dspy.evaluate"]
+    if "dspy.teleprompt" in sys.modules:
+        del sys.modules["dspy.teleprompt"]

@@ -1,3 +1,5 @@
+import dspy
+
 """
 BootstrapFewShot Optimizers.
 """
