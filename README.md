@@ -175,11 +175,11 @@ The DSPy integration provides intelligent command routing and prompt optimizatio
 
 ### Prerequisites
 - Python 3.11+
-- `pip install dspy-ai rich tomli`
+- `pip install dspy rich>=13.0 tomli`
 
 ### Installation
 ```bash
-cd /home/masum/github/gemini-cli-prompt-library
+cd .
 pip install -e .
 ```
 
