@@ -20,17 +20,38 @@ from .opencode_zen import OpenCodeZenProvider
 from .openrouter import OpenRouterProvider
 from .gemini import GeminiProvider
 
+# Import configuration
+try:
+    from ..config import get_dspy_config
+except ImportError:
+    # Fallback if config module not found or import error (e.g. during tests if path issues)
+    def get_dspy_config():
+        return {"provider": None}
+
 
 def create_provider_chain() -> ProviderChain:
     """
-    Create provider chain with default providers.
+    Create provider chain based on configuration.
 
-    Order: Groq → HuggingFace → OpenRouter → Gemini (all with free tiers!)
-    All using FREE tier - total cost: $0
+    If specific provider is configured in ~/.dspy_tuning/config.yaml, uses that.
+    Otherwise defaults to: Groq → HuggingFace → OpenRouter → Gemini (all with free tiers!)
 
     Returns:
-        ProviderChain with all providers configured
+        ProviderChain with configured providers
     """
+    config = get_dspy_config()
+    forced_provider = config.get("provider")
+
+    # If user explicitly sets a provider, use only that one
+    if forced_provider and forced_provider.lower() not in ["auto", "none", "null"]:
+        try:
+            provider = get_provider_by_name(forced_provider.lower())
+            return ProviderChain([provider])
+        except ValueError as e:
+            print(f"Warning: Configured provider '{forced_provider}' not found. Falling back to default chain. Error: {e}")
+            # Fall through to default chain
+
+    # Default Chain
     providers = [
         # Primary: Groq - FAST, free tier available!
         GroqProvider(
@@ -57,8 +78,20 @@ def create_provider_chain() -> ProviderChain:
     return ProviderChain(providers)
 
 
-def get_default_provider() -> GroqProvider:
-    """Get the default (primary) provider - Groq (fast, free tier available)."""
+def get_default_provider() -> BaseProvider:
+    """
+    Get the default (primary) provider based on config.
+    If no config, returns Groq (fast, free tier available).
+    """
+    config = get_dspy_config()
+    forced_provider = config.get("provider")
+
+    if forced_provider and forced_provider.lower() not in ["auto", "none", "null"]:
+        try:
+            return get_provider_by_name(forced_provider.lower())
+        except ValueError:
+            pass
+
     return GroqProvider(
         model="llama-3.3-70b-versatile",
         rate_limit=RateLimitConfig(enabled=True, max_retries=3, backoff_factor=1.0),

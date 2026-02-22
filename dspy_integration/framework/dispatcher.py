@@ -2,6 +2,13 @@ from dspy_integration.framework.manifest import get_commands
 
 
 def dispatch(user_input):
+    # TODO [Phase 3 - CASS Integration]: Replace this simple keyword matching with Hybrid Search.
+    # 1. Semantic Search (HashEmbedder): Calculate cosine similarity between input and command embeddings (Task 3.2.1).
+    # 2. Lexical Search (EdgeNGram): Fast prefix matching for typos/partial words (Task 3.2.2).
+    # 3. Hybrid RRF: Combine scores using Reciprocal Rank Fusion (Task 3.2.4).
+    #
+    # Current implementation: Basic keyword token overlap.
+
     commands = get_commands()
     user_input = user_input.lower()
 
