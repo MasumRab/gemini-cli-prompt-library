@@ -1,0 +1,9 @@
+{
+  "name": "gemini-cli-prompt-library",
+  "version": "1.0.0",
+  "description": "Python project for Gemini CLI Prompt Library",
+  "scripts": {
+    "postinstall": "pip3 install -r requirements.txt",
+    "start": "python3 scripts/perform_audit.py"
+  }
+}
