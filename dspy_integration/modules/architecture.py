@@ -27,6 +27,8 @@ class Architecture(dspy.Module):
 
 
 class ArchitectureOptimizer(dspy.Module):
+    # TODO [Low Priority]: Optimize this module using dspy.MIPROv2
+    # or BootstrapFewShot for better prompt performance.
     """Optimized architecture module."""
 
     def __init__(self):

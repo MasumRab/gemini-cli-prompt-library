@@ -2,6 +2,8 @@ from dspy_integration.framework.manifest import get_commands
 
 
 def dispatch(user_input):
+    # TODO [Medium Priority]: Integrate `IntelligentDispatcher`
+    # for better routing logic.
     commands = get_commands()
     user_input = user_input.lower()
 
@@ -19,7 +21,9 @@ def dispatch(user_input):
 
         # Prioritize longer matches
         name_match_len = len(name_tokens.intersection(user_input.split()))
-        description_match_len = len(description_tokens.intersection(user_input.split()))
+        description_match_len = len(
+            description_tokens.intersection(user_input.split())
+        )
 
         score += (name_match_len * 5) + description_match_len
 
