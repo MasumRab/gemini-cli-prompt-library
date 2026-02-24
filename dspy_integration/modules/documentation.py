@@ -25,6 +25,8 @@ class Documentation(dspy.Module):
 
 
 class DocumentationOptimizer(dspy.Module):
+    # TODO [Low Priority]: Optimize this module using dspy.MIPROv2
+    # or BootstrapFewShot for better prompt performance.
     def __init__(self):
         super().__init__()
         self.untested_documentation = Documentation()
