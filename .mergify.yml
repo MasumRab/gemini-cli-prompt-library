@@ -17,7 +17,7 @@ pull_request_rules:
     actions:
       rebase:
   - name: Ping PR author when conflicting
-    description: Warn the pull request author when their PR are conflicting
+    description: Warn the pull request author when their PR has conflicts
     conditions:
       - conflict
       - -closed
