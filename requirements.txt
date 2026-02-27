@@ -6,6 +6,4 @@ cloudpickle==3.1.0
 pyyaml>=6.0
 toml>=0.10.2
 tomli>=2.0.1
-pytest>=7.0.0
-pytest-asyncio>=0.21.0
 rich>=13.0
