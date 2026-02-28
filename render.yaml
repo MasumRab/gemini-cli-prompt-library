@@ -1,9 +1,14 @@
 services:
+  - type: worker
+    name: dspy-integration-worker
+    env: python
+    buildCommand: python3 -m pip install -r requirements.txt
+    startCommand: python -m dspy_integration.cli
   - type: cron
     name: scheduled-codebase-audit
     env: python
     region: oregon
-    plan: free
-    buildCommand: pip install -r requirements.txt
+    plan: starter
+    buildCommand: python3 -m pip install -r requirements.txt
     startCommand: python3 scripts/perform_audit.py
     schedule: "0 0 * * 0" # Weekly on Sunday at midnight

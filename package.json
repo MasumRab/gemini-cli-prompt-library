@@ -1,9 +1,13 @@
 {
-  "name": "gemini-cli-prompt-library",
+  "name": "gemini-cli-dspy-integration",
   "version": "1.0.0",
-  "description": "Python project for Gemini CLI Prompt Library",
+  "private": true,
+  "description": "DSPy Integration Adapter for Render Node.js Runtime (DO NOT DELETE - required for deployment fallback)",
   "scripts": {
-    "postinstall": "pip3 install -r requirements.txt",
-    "start": "python3 scripts/perform_audit.py"
-  }
+    "build": "pip install -r requirements.txt",
+    "start": "python -m dspy_integration.cli",
+    "audit": "python3 scripts/perform_audit.py"
+  },
+  "dependencies": {},
+  "devDependencies": {}
 }
