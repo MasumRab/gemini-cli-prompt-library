@@ -19,7 +19,7 @@ def main():
 
     if recommended_command:
         # Format the command for display
-        command_name = f"/{recommended_command.category}:{recommended_command.name}"
+        command_name = f'/{recommended_command.category}:{recommended_command.name}'
 
         # Create a placeholder for arguments based on the user input
         placeholder_args = f'--prompt "{args.user_input}"'

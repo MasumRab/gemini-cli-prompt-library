@@ -2,6 +2,7 @@ import os
 import subprocess
 import requests
 import re
+import shutil
 from typing import List, Dict, Any
 
 
@@ -10,11 +11,16 @@ def get_repository() -> str:
     if repo:
         return repo
     try:
+        git_executable = shutil.which("git")
+        if not git_executable:
+            return ""
+
         result = subprocess.run(
-            ["git", "config", "--get", "remote.origin.url"],
+            [git_executable, "config", "--get", "remote.origin.url"],
             capture_output=True,
             text=True,
             check=True,
+            shell=False,
         )
         url = result.stdout.strip()
         # Parse git@github.com:owner/repo.git or https://github.com/owner/repo.git safely
@@ -31,7 +37,8 @@ def fetch_paginated(
 ) -> List[Dict[str, Any]]:
     results = []
     while url:
-        response = requests.get(url, headers=headers, timeout=timeout)
+        # Enforce SSL verification explicitly for security tools
+        response = requests.get(url, headers=headers, timeout=timeout, verify=True)
         response.raise_for_status()
         results.extend(response.json())
 
