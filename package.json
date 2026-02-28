@@ -1,10 +1,12 @@
 {
-  "name": "gemini-cli-prompt-library-dummy",
+  "name": "gemini-cli-dspy-integration",
   "version": "1.0.0",
   "private": true,
-  "description": "Dummy package.json to prevent Render deployment failures for Python project.",
+  "description": "DSPy Integration Adapter for Render Node.js Runtime (DO NOT DELETE - required for deployment fallback)",
   "scripts": {
-    "build": "echo \"No build required\"",
-    "start": "echo \"No start required\""
-  }
+    "build": "pip install -r requirements.txt",
+    "start": "python -m dspy_integration.cli"
+  },
+  "dependencies": {},
+  "devDependencies": {}
 }
