@@ -1,1 +1,10 @@
-{"name": "gemini-cli-prompt-library-dummy", "version": "1.0.0", "description": "Dummy package.json to prevent Render deployment failures for Python project.", "scripts": {"build": "echo \"No build required\"", "start": "echo \"No start required\""}}
+{
+  "name": "gemini-cli-prompt-library-dummy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dummy package.json to prevent Render deployment failures for Python project.",
+  "scripts": {
+    "build": "echo \"No build required\"",
+    "start": "echo \"No start required\""
+  }
+}
