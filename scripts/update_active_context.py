@@ -4,6 +4,7 @@ import requests
 import re
 from typing import List, Dict, Any
 
+
 def get_repository() -> str:
     repo = os.environ.get("GITHUB_REPOSITORY")
     if repo:
@@ -13,18 +14,21 @@ def get_repository() -> str:
             ["git", "config", "--get", "remote.origin.url"],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
         url = result.stdout.strip()
-        # Parse git@github.com:owner/repo.git or https://github.com/owner/repo.git
-        match = re.search(r"github\.com[:/](.+?/.+?)(\.git)?$", url)
+        # Parse git@github.com:owner/repo.git or https://github.com/owner/repo.git safely
+        match = re.search(r"github\.com[:/]([^/]+/[^/]+?)(?:\.git)?$", url)
         if match:
             return match.group(1)
-    except Exception:
+    except subprocess.SubprocessError:
         pass
     return ""
 
-def fetch_paginated(url: str, headers: Dict[str, str], timeout: int = 10) -> List[Dict[str, Any]]:
+
+def fetch_paginated(
+    url: str, headers: Dict[str, str], timeout: int = 10
+) -> List[Dict[str, Any]]:
     results = []
     while url:
         response = requests.get(url, headers=headers, timeout=timeout)
@@ -39,10 +43,11 @@ def fetch_paginated(url: str, headers: Dict[str, str], timeout: int = 10) -> Lis
             for link in links:
                 parts = link.split(";")
                 if len(parts) == 2 and 'rel="next"' in parts[1]:
-                    next_url = parts[0].strip()[1:-1] # Remove < and >
+                    next_url = parts[0].strip()[1:-1]  # Remove < and >
                     break
         url = next_url
     return results
+
 
 def main():
     docs_dir = os.path.join(os.getcwd(), "docs")
@@ -64,7 +69,7 @@ def main():
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github.v3+json",
-        "X-GitHub-Api-Version": "2022-11-28"
+        "X-GitHub-Api-Version": "2022-11-28",
     }
 
     try:
@@ -78,18 +83,24 @@ def main():
             files = fetch_paginated(files_url, headers)
             file_names = [f["filename"] for f in files]
 
-            pr_data.append({
-                "number": pr_number,
-                "title": pr["title"],
-                "url": pr["html_url"],
-                "author": pr["user"]["login"],
-                "files": file_names
-            })
+            pr_data.append(
+                {
+                    "number": pr_number,
+                    "title": pr["title"],
+                    "url": pr["html_url"],
+                    "author": pr["user"]["login"],
+                    "files": file_names,
+                }
+            )
 
         with open(output_file, "w") as f:
             f.write("# Active GitHub Context\n\n")
-            f.write("The following Pull Requests are currently open. The files listed below are **locked**.\n")
-            f.write("Do NOT modify these files to avoid merge conflicts or duplicating work.\n\n")
+            f.write(
+                "The following Pull Requests are currently open. The files listed below are **locked**.\n"
+            )
+            f.write(
+                "Do NOT modify these files to avoid merge conflicts or duplicating work.\n\n"
+            )
 
             if not pr_data:
                 f.write("*No open Pull Requests found.*\n")
@@ -98,12 +109,14 @@ def main():
                 f.write("|---|---|---|---|\n")
                 for pr in pr_data:
                     files_list = "<br>".join([f"`{file}`" for file in pr["files"]])
-                    f.write(f"| [#{pr['number']}]({pr['url']}) | {pr['title']} | @{pr['author']} | {files_list} |\n")
+                    f.write(
+                        f"| [#{pr['number']}]({pr['url']}) | {pr['title']} | @{pr['author']} | {files_list} |\n"
+                    )
 
-    except requests.RequestException as e:
+    except requests.RequestException:
         with open(output_file, "w") as f:
             f.write("*GitHub API request failed - Context unavailable*\n")
-            # f.write(f"<!-- Error: {e} -->\n")
+
 
 if __name__ == "__main__":
     main()

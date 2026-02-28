@@ -1,0 +1,12 @@
+{
+  "name": "gemini-cli-prompt-library",
+  "version": "1.0.0",
+  "description": "Render deployment fallback to run Python",
+  "scripts": {
+    "build": "pip install -r requirements.txt",
+    "start": "make dev"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
