@@ -27,9 +27,9 @@ def get_repository() -> str:
             logger.error("Git executable not found in PATH.")
             return ""
 
-        # sourcery skip: command-injection
         result = subprocess.run(
-            [git_executable, "config", "--get", "remote.origin.url"],
+            ["git", "config", "--get", "remote.origin.url"],
+            executable=git_executable,
             capture_output=True,
             text=True,
             check=True,
