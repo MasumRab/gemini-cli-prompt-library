@@ -4,12 +4,17 @@ import subprocess
 import requests
 import re
 import logging
+import shutil
+from pathlib import Path
 from typing import List, Dict, Any
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.WARNING)
 
-MAX_PR_PROCESS = int(os.environ.get("MAX_PR_PROCESS", "50"))
+try:
+    MAX_PR_PROCESS = int(os.environ.get("MAX_PR_PROCESS", "50"))
+except ValueError:
+    MAX_PR_PROCESS = 50
 
 
 def get_repository() -> str:
@@ -17,8 +22,13 @@ def get_repository() -> str:
     if repo:
         return repo
     try:
+        git_executable = shutil.which("git")
+        if not git_executable:
+            logger.error("Git executable not found in PATH.")
+            return ""
+
         result = subprocess.run(
-            ["git", "config", "--get", "remote.origin.url"],
+            [git_executable, "config", "--get", "remote.origin.url"],
             capture_output=True,
             text=True,
             check=True,
@@ -62,10 +72,18 @@ def fetch_paginated(
     return results
 
 
+def sanitize_markdown(text: str) -> str:
+    if not isinstance(text, str):
+        return str(text)
+    # Escape pipe characters for markdown tables and replace newlines
+    return text.replace("|", "&#124;").replace("\n", " ").replace("\r", "")
+
+
 def main():
-    docs_dir = os.path.join(os.getcwd(), "docs")
-    os.makedirs(docs_dir, exist_ok=True)
-    output_file = os.path.join(docs_dir, "ACTIVE_CONTEXT.md")
+    repo_root = Path(__file__).resolve().parent.parent
+    docs_dir = repo_root / "docs"
+    docs_dir.mkdir(parents=True, exist_ok=True)
+    output_file = docs_dir / "ACTIVE_CONTEXT.md"
 
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
@@ -105,10 +123,10 @@ def main():
             pr_data.append(
                 {
                     "number": pr_number,
-                    "title": pr["title"],
+                    "title": sanitize_markdown(pr["title"]),
                     "url": pr["html_url"],
-                    "author": pr["user"]["login"],
-                    "files": file_names,
+                    "author": sanitize_markdown(pr["user"]["login"]),
+                    "files": [sanitize_markdown(f) for f in file_names],
                 }
             )
 

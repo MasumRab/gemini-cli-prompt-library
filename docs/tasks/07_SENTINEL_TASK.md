@@ -16,7 +16,7 @@
    - Identify the files you intend to audit or refactor.
 
 2. **Execute Code Quality and Security Audit**
-   - Run tests (`pytest tests/`), linters (`flake8`, `black --check`), and any necessary security scans (e.g., `CodeQL`).
+   - Run tests (`pytest tests/`), linters (`flake8`, `black --check`), and any necessary security scans (e.g., `codeql`).
    - Refactor or fix code where necessary to meet best practices.
    - Ensure the `dspy_integration` module logic is optimized and robust.
 

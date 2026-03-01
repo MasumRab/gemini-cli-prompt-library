@@ -29,7 +29,7 @@
    - Log the timestamp, the UI/Doc enhancements completed, the files modified, and **explicitly state if you had to skip a task due to locked files found in the Knowledge Check.**
 
 ## Success Criteria
-- The documentation and CLI interface are significantly improved and user-friendly.
+- The documentation and CLI are significantly improved and user-friendly.
 - The `rich` library formatting is properly applied to outputs.
 - Zero merge conflicts are created with currently open PRs.
 - `.jules/palette.md` accurately reflects the work done and any task pivots.
