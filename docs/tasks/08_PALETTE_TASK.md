@@ -1,7 +1,7 @@
 # Palette Task: User Interface and Documentation Improvements
 
 **Persona:** Palette
-**Goal:** Enhance the user experience, CLI interfaces, and documentation to be intuitive and visually appealing.
+**Goal:** Enhance the user experience, command-line interfaces, and documentation to be intuitive and visually appealing.
 **Execution Context:** `gemini-cli-prompt-library` repository, primarily targeting `docs/`, `commands/workflows/`, `README.md`, and any user-facing command outputs or rich UI components.
 
 ## Daily Process

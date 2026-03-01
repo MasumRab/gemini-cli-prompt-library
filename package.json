@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Render deployment fallback to run Python",
   "scripts": {
+    "postinstall": "pip install -r requirements.txt",
     "build": "pip install -r requirements.txt",
     "start": "make dev"
   },

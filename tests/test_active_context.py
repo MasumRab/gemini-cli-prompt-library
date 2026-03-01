@@ -15,12 +15,12 @@ from scripts.update_active_context import (  # noqa: E402
 
 
 class TestActiveContextUpdater(unittest.TestCase):
-    @patch("os.environ.get")
+    @patch("scripts.update_active_context.os.environ.get")
     def test_get_repository_env_var(self, mock_env_get):
         mock_env_get.return_value = "owner/repo"
         self.assertEqual(get_repository(), "owner/repo")
 
-    @patch("os.environ.get")
+    @patch("scripts.update_active_context.os.environ.get")
     @patch("subprocess.run")
     def test_get_repository_git_config_https(self, mock_run, mock_env_get):
         mock_env_get.return_value = None
@@ -29,7 +29,7 @@ class TestActiveContextUpdater(unittest.TestCase):
         mock_run.return_value = mock_process
         self.assertEqual(get_repository(), "test-owner/test-repo")
 
-    @patch("os.environ.get")
+    @patch("scripts.update_active_context.os.environ.get")
     @patch("subprocess.run")
     def test_get_repository_git_config_ssh(self, mock_run, mock_env_get):
         mock_env_get.return_value = None
@@ -68,13 +68,10 @@ class TestActiveContextUpdater(unittest.TestCase):
         self.assertEqual(results[1]["id"], 2)
         self.assertEqual(mock_get.call_count, 2)
 
-    @patch("os.environ.get")
+    @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.fetch_paginated")
-    @patch("scripts.update_active_context.get_repository")
     @patch("builtins.open", new_callable=unittest.mock.mock_open)
-    def test_main_missing_token(
-        self, mock_file, mock_get_repo, mock_fetch, mock_env_get
-    ):
+    def test_main_missing_token(self, mock_file, mock_fetch, mock_env_get):
         mock_env_get.return_value = None
         main()
 
@@ -84,7 +81,7 @@ class TestActiveContextUpdater(unittest.TestCase):
         )
         mock_fetch.assert_not_called()
 
-    @patch("os.environ.get")
+    @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
     @patch("builtins.open", new_callable=unittest.mock.mock_open)
     def test_main_missing_repo(self, mock_file, mock_get_repo, mock_env_get):
@@ -97,7 +94,7 @@ class TestActiveContextUpdater(unittest.TestCase):
             "*Repository cannot be determined - Context unavailable*\n"
         )
 
-    @patch("os.environ.get")
+    @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
     @patch("scripts.update_active_context.fetch_paginated")
     @patch("builtins.open", new_callable=unittest.mock.mock_open)
@@ -136,7 +133,7 @@ class TestActiveContextUpdater(unittest.TestCase):
         )
         self.assertEqual(mock_fetch.call_count, 2)
 
-    @patch("os.environ.get")
+    @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
     @patch("scripts.update_active_context.fetch_paginated")
     @patch("builtins.open", new_callable=unittest.mock.mock_open)

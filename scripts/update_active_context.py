@@ -1,9 +1,15 @@
+#!/usr/bin/env python3
 import os
 import subprocess
 import requests
 import re
-import shutil
+import logging
 from typing import List, Dict, Any
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.WARNING)
+
+MAX_PR_PROCESS = int(os.environ.get("MAX_PR_PROCESS", "50"))
 
 
 def get_repository() -> str:
@@ -11,24 +17,24 @@ def get_repository() -> str:
     if repo:
         return repo
     try:
-        git_executable = shutil.which("git")
-        if not git_executable:
-            return ""
-
         result = subprocess.run(
-            [git_executable, "config", "--get", "remote.origin.url"],
+            ["git", "config", "--get", "remote.origin.url"],
             capture_output=True,
             text=True,
             check=True,
-            shell=False,
+            timeout=10,
         )
         url = result.stdout.strip()
         # Parse git@github.com:owner/repo.git or https://github.com/owner/repo.git safely
         match = re.search(r"github\.com[:/]([^/]+/[^/]+?)(?:\.git)?$", url)
         if match:
             return match.group(1)
-    except subprocess.SubprocessError:
-        pass
+    except (
+        subprocess.CalledProcessError,
+        FileNotFoundError,
+        subprocess.SubprocessError,
+    ) as e:
+        logger.error(f"Failed to get repository from git config: {e}", exc_info=True)
     return ""
 
 
@@ -83,6 +89,12 @@ def main():
         prs_url = f"https://api.github.com/repos/{repo}/pulls?state=open&per_page=100"
         prs = fetch_paginated(prs_url, headers)
 
+        if len(prs) > MAX_PR_PROCESS:
+            logger.warning(
+                f"Total PRs ({len(prs)}) exceeds MAX_PR_PROCESS ({MAX_PR_PROCESS}). Only processing the first {MAX_PR_PROCESS}."
+            )
+            prs = prs[:MAX_PR_PROCESS]
+
         pr_data = []
         for pr in prs:
             pr_number = pr["number"]
@@ -120,9 +132,10 @@ def main():
                         f"| [#{pr['number']}]({pr['url']}) | {pr['title']} | @{pr['author']} | {files_list} |\n"
                     )
 
-    except requests.RequestException:
+    except requests.RequestException as e:
         with open(output_file, "w") as f:
             f.write("*GitHub API request failed - Context unavailable*\n")
+            f.write(f"<!-- Error: {e} -->\n")
 
 
 if __name__ == "__main__":
