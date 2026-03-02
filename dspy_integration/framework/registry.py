@@ -41,6 +41,8 @@ class CommandRegistry:
                                 tags=data.get("tags", []),
                             )
                         except Exception as e:
+                            # TODO [Security - Low Priority]: Refine exception handling. Catch specific exceptions instead of generic Exception to pass CI checks.
+                            # Reason: Broad exception handling masks unexpected errors and fails SonarCloud analysis.
                             print(f"Error loading command {command_name}: {e}")
         return commands
 
@@ -71,6 +73,8 @@ class CommandRegistry:
 
 def get_command(name):
     """Convenience function to get a command from the default registry."""
+    # TODO [Performance - High Priority]: Optimise CommandRegistry instantiation.
+    # Reason: Instantiating a new CommandRegistry on every call reads all .toml files, causing severe performance degradation. Cache the instance or results.
     registry = CommandRegistry()
     return registry.get_command(name)
 
