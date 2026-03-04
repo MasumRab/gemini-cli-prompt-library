@@ -208,7 +208,7 @@ class TestMetricEvaluation:
 
         example = dspy.Example(
             function="def add(a, b): return a + b",
-            tests="testing basic, edge, and negative cases"
+            tests="testing basic, edge, and negative cases",
         ).with_inputs("function")
         score = scenario.metric(
             example, dspy.Prediction(tests="Testing basic, edge, and negative cases")
