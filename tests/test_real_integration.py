@@ -239,8 +239,6 @@ class TestScenarioIntegration:
 
             if not response.success and "Not Found</h1>" in str(response.error):
                 pytest.skip("OpenCode Zen endpoint is returning 404")
-            if not response.success and "Not Found</h1>" in str(response.error):
-                pytest.skip("OpenCode Zen endpoint is returning 404")
             assert response.success is True
             assert (
                 "test" in response.content.lower()

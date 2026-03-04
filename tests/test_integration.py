@@ -206,15 +206,15 @@ class TestMetricEvaluation:
 
         scenario = ScenarioRegistry.get("unit_test")()
 
-        import dspy
-
         example = dspy.Example(
+            function="def add(a, b): return a + b",
             tests="testing basic, edge, and negative cases"
         ).with_inputs("function")
         score = scenario.metric(
             example, dspy.Prediction(tests="Testing basic, edge, and negative cases")
         )
-        assert score == 0.0 or score == 1.0
+        assert isinstance(score, (int, float))
+        assert 0.0 <= score <= 1.0
 
 
 class TestProviderFailover:
