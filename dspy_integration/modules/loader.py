@@ -127,8 +127,8 @@ class DynamicModuleLoader:
         Returns:
             String in PascalCase format
         """
-        parts = snake_case.split('_')
-        return ''.join(part.capitalize() for part in parts)
+        parts = snake_case.split("_")
+        return "".join(part.capitalize() for part in parts)
 
     def _get_available_modules(self) -> list:
         """

@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 from dspy_integration.framework.manifest import get_commands
 
+
 @dataclass
 class Command:
     name: str
     category: str
     description: str
+
 
 def dispatch(user_input):
     # TODO [Phase 3 - CASS Integration]: Replace this simple keyword matching with Hybrid Search.
@@ -40,10 +42,13 @@ def dispatch(user_input):
     if best_match:
         return Command(
             name=best_match["name"],
-            category=best_match.get("category", "unknown"), # Handle missing category safely
-            description=best_match["description"]
+            category=best_match.get(
+                "category", "unknown"
+            ),  # Handle missing category safely
+            description=best_match["description"],
         )
     return None
+
 
 if __name__ == "__main__":
     test_input = "my test is broken"
