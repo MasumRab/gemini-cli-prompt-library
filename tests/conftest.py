@@ -8,6 +8,43 @@ import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+# CRITICAL: Mock problematic modules BEFORE any other imports
+# This must happen at the very beginning to prevent Bus errors with tokenizers
+# and litellm issues
+_mock_modules = {
+    'tokenizers': MagicMock(),
+    'tokenizers.models': MagicMock(),
+    'tokenizers.decoders': MagicMock(),
+    'tokenizers.normalizers': MagicMock(),
+    'tokenizers.pre_tokenizers': MagicMock(),
+    'tokenizers.trainers': MagicMock(),
+    'tokenizers.implementations': MagicMock(),
+    'litellm': MagicMock(),
+    'litellm._logging': MagicMock(),
+    'litellm.main': MagicMock(),
+    'litellm.utils': MagicMock(),
+    'litellm.utils.py': MagicMock(),
+    'litellm.utils.py.httpx': MagicMock(),
+    'litellm.llms': MagicMock(),
+    'litellm.llms.custom_httpx': MagicMock(),
+    'litellm.completion': MagicMock(),
+    'litellm.embedding': MagicMock(),
+    'litellm.aiosettings': MagicMock(),
+    'httpx': MagicMock(),
+    'httpx._client': MagicMock(),
+    'httpx._transports': MagicMock(),
+    'httpx._transports.default': MagicMock(),
+    'httpx._urls': MagicMock(),
+    'httpx._auth': MagicMock(),
+    'anyio': MagicMock(),
+    'jinja2': MagicMock(),
+    'yaml': MagicMock(),
+}
+
+for mod_name, mock in _mock_modules.items():
+    if mod_name not in sys.modules:
+        sys.modules[mod_name] = mock
+
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -174,13 +211,6 @@ def temp_data_dir(tmp_path):
     return data_dir
 
 
-@pytest.fixture(autouse=True)
-def suppress_dspy_imports():
-    """Suppress dspy import issues during tests by mocking."""
-    with patch.dict("sys.modules", {"dspy": MagicMock(), "dspy.evaluate": MagicMock()}):
-        yield
-
-
 def pytest_configure(config):
     """Configure pytest."""
     config.addinivalue_line("markers", "integration: mark test as integration test")
@@ -192,31 +222,3 @@ def pytest_collection_modifyitems(config, items):
     """Modify test collection."""
     # Sort tests by module for better organization
     items.sort(key=lambda item: (item.fspath, item.name))
-
-
-# Error handling for lazy dspy imports
-@pytest.fixture(scope="session", autouse=True)
-def setup_dspy_mocks():
-    """Set up persistent mocks for dspy modules."""
-    dspy_mock = MagicMock()
-    dspy_mock.settings.configure = MagicMock()
-
-    # Mock common dspy classes
-    dspy_mock.Signature = type("Signature", (), {})
-    dspy_mock.Module = type("Module", (), {})
-    dspy_mock.Example = type("Example", (), {})
-    dspy_mock.Prediction = type("Prediction", (), {})
-
-    sys.modules["dspy"] = dspy_mock
-    sys.modules["dspy.evaluate"] = MagicMock()
-    sys.modules["dspy.teleprompt"] = MagicMock()
-
-    yield dspy_mock
-
-    # Cleanup
-    if "dspy" in sys.modules:
-        del sys.modules["dspy"]
-    if "dspy.evaluate" in sys.modules:
-        del sys.modules["dspy.evaluate"]
-    if "dspy.teleprompt" in sys.modules:
-        del sys.modules["dspy.teleprompt"]
