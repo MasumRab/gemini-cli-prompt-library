@@ -11,7 +11,77 @@ from unittest.mock import MagicMock, patch
 # CRITICAL: Mock problematic modules BEFORE any other imports
 # This must happen at the very beginning to prevent Bus errors with tokenizers
 # and litellm issues
+
+# Create a mock for dspy first - before any imports that depend on it
+_dspy_mock = MagicMock()
+_dspy_mock.settings = MagicMock()
+_dspy_mock.settings.lm = None
+_dspy_mock.settings.configure = MagicMock()
+
+class MockExample:
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+    def with_inputs(self, *fields):
+        return self
+    def inputs(self):
+        return {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
+
+class MockPrediction:
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+class MockField:
+    def __init__(self, **kwargs):
+        pass
+
+class MockSignature:
+    __fields__ = {'code': MockField(), 'review': MockField()}
+
+_dspy_mock.Signature = MockSignature
+_dspy_mock.Module = type("Module", (), {})
+_dspy_mock.Module.__init__ = lambda self: None
+_dspy_mock.Module.forward = lambda self, *args, **kwargs: MagicMock()
+_dspy_mock.Example = MockExample
+_dspy_mock.Prediction = MockPrediction
+_dspy_mock.ChainOfThought = MagicMock(return_value=MagicMock())
+_dspy_mock.Predict = MagicMock(return_value=MagicMock())
+_dspy_mock.CoT = _dspy_mock.ChainOfThought
+_dspy_mock.Evaluate = MagicMock()
+_dspy_mock.evaluate = MagicMock()
+_dspy_mock.teleprompt = MagicMock()
+_dspy_mock.teleprompt.BootstrapFewShot = MagicMock()
+_dspy_mock.teleprompt.MIPROv2 = MagicMock()
+_dspy_mock.functional = MagicMock()
+_dspy_mock.InputField = MockField
+_dspy_mock.OutputField = MockField
+
+# Insert dspy mock before any other imports
+sys.modules['dspy'] = _dspy_mock
+sys.modules['dspy.predict'] = MagicMock()
+sys.modules['dspy.evaluate'] = MagicMock()
+sys.modules['dspy.teleprompt'] = MagicMock()
+sys.modules['dspy.functional'] = MagicMock()
+sys.modules['dspy.primitives'] = MagicMock()
+sys.modules['dspy.primitives.module'] = MagicMock()
+sys.modules['dspy.primitives.base_module'] = MagicMock()
+sys.modules['dspy.utils'] = MagicMock()
+sys.modules['dspy.utils.saving'] = MagicMock()
+sys.modules['dspy.streaming'] = MagicMock()
+sys.modules['dspy.streaming.messages'] = MagicMock()
+sys.modules['dspy.streaming.streamify'] = MagicMock()
+sys.modules['dspy.streaming.streaming_listener'] = MagicMock()
+sys.modules['dspy.adapters'] = MagicMock()
+sys.modules['dspy.adapters.chat_adapter'] = MagicMock()
+sys.modules['dspy.clients'] = MagicMock()
+sys.modules['dspy.clients.lm'] = MagicMock()
+sys.modules['dspy.predict.aggregation'] = MagicMock()
+sys.modules['dspy.predict.chain_of_thought'] = MagicMock()
+sys.modules['dspy.evaluate.auto_evaluation'] = MagicMock()
+
 _mock_modules = {
+    'requests': MagicMock(),
     'tokenizers': MagicMock(),
     'tokenizers.models': MagicMock(),
     'tokenizers.decoders': MagicMock(),
@@ -39,6 +109,11 @@ _mock_modules = {
     'anyio': MagicMock(),
     'jinja2': MagicMock(),
     'yaml': MagicMock(),
+    'openai': MagicMock(),
+    'openai.types': MagicMock(),
+    'openai.types.batch': MagicMock(),
+    'openai._models': MagicMock(),
+    'openai._compat': MagicMock(),
 }
 
 for mod_name, mock in _mock_modules.items():
