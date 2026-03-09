@@ -18,26 +18,33 @@ _dspy_mock.settings = MagicMock()
 _dspy_mock.settings.lm = None
 _dspy_mock.settings.configure = MagicMock()
 
+
 class MockExample:
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
+
     def with_inputs(self, *fields):
         return self
+
     def inputs(self):
         return {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
+
 
 class MockPrediction:
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
+
 class MockField:
     def __init__(self, **kwargs):
         pass
 
+
 class MockSignature:
-    __fields__ = {'code': MockField(), 'review': MockField()}
+    __fields__ = {"code": MockField(), "review": MockField()}
+
 
 _dspy_mock.Signature = MockSignature
 _dspy_mock.Module = type("Module", (), {})
@@ -58,62 +65,62 @@ _dspy_mock.InputField = MockField
 _dspy_mock.OutputField = MockField
 
 # Insert dspy mock before any other imports
-sys.modules['dspy'] = _dspy_mock
-sys.modules['dspy.predict'] = MagicMock()
-sys.modules['dspy.evaluate'] = MagicMock()
-sys.modules['dspy.teleprompt'] = MagicMock()
-sys.modules['dspy.functional'] = MagicMock()
-sys.modules['dspy.primitives'] = MagicMock()
-sys.modules['dspy.primitives.module'] = MagicMock()
-sys.modules['dspy.primitives.base_module'] = MagicMock()
-sys.modules['dspy.utils'] = MagicMock()
-sys.modules['dspy.utils.saving'] = MagicMock()
-sys.modules['dspy.streaming'] = MagicMock()
-sys.modules['dspy.streaming.messages'] = MagicMock()
-sys.modules['dspy.streaming.streamify'] = MagicMock()
-sys.modules['dspy.streaming.streaming_listener'] = MagicMock()
-sys.modules['dspy.adapters'] = MagicMock()
-sys.modules['dspy.adapters.chat_adapter'] = MagicMock()
-sys.modules['dspy.clients'] = MagicMock()
-sys.modules['dspy.clients.lm'] = MagicMock()
-sys.modules['dspy.predict.aggregation'] = MagicMock()
-sys.modules['dspy.predict.chain_of_thought'] = MagicMock()
-sys.modules['dspy.evaluate.auto_evaluation'] = MagicMock()
+sys.modules["dspy"] = _dspy_mock
+sys.modules["dspy.predict"] = MagicMock()
+sys.modules["dspy.evaluate"] = MagicMock()
+sys.modules["dspy.teleprompt"] = MagicMock()
+sys.modules["dspy.functional"] = MagicMock()
+sys.modules["dspy.primitives"] = MagicMock()
+sys.modules["dspy.primitives.module"] = MagicMock()
+sys.modules["dspy.primitives.base_module"] = MagicMock()
+sys.modules["dspy.utils"] = MagicMock()
+sys.modules["dspy.utils.saving"] = MagicMock()
+sys.modules["dspy.streaming"] = MagicMock()
+sys.modules["dspy.streaming.messages"] = MagicMock()
+sys.modules["dspy.streaming.streamify"] = MagicMock()
+sys.modules["dspy.streaming.streaming_listener"] = MagicMock()
+sys.modules["dspy.adapters"] = MagicMock()
+sys.modules["dspy.adapters.chat_adapter"] = MagicMock()
+sys.modules["dspy.clients"] = MagicMock()
+sys.modules["dspy.clients.lm"] = MagicMock()
+sys.modules["dspy.predict.aggregation"] = MagicMock()
+sys.modules["dspy.predict.chain_of_thought"] = MagicMock()
+sys.modules["dspy.evaluate.auto_evaluation"] = MagicMock()
 
 _mock_modules = {
-    'requests': MagicMock(),
-    'tokenizers': MagicMock(),
-    'tokenizers.models': MagicMock(),
-    'tokenizers.decoders': MagicMock(),
-    'tokenizers.normalizers': MagicMock(),
-    'tokenizers.pre_tokenizers': MagicMock(),
-    'tokenizers.trainers': MagicMock(),
-    'tokenizers.implementations': MagicMock(),
-    'litellm': MagicMock(),
-    'litellm._logging': MagicMock(),
-    'litellm.main': MagicMock(),
-    'litellm.utils': MagicMock(),
-    'litellm.utils.py': MagicMock(),
-    'litellm.utils.py.httpx': MagicMock(),
-    'litellm.llms': MagicMock(),
-    'litellm.llms.custom_httpx': MagicMock(),
-    'litellm.completion': MagicMock(),
-    'litellm.embedding': MagicMock(),
-    'litellm.aiosettings': MagicMock(),
-    'httpx': MagicMock(),
-    'httpx._client': MagicMock(),
-    'httpx._transports': MagicMock(),
-    'httpx._transports.default': MagicMock(),
-    'httpx._urls': MagicMock(),
-    'httpx._auth': MagicMock(),
-    'anyio': MagicMock(),
-    'jinja2': MagicMock(),
-    'yaml': MagicMock(),
-    'openai': MagicMock(),
-    'openai.types': MagicMock(),
-    'openai.types.batch': MagicMock(),
-    'openai._models': MagicMock(),
-    'openai._compat': MagicMock(),
+    "requests": MagicMock(),
+    "tokenizers": MagicMock(),
+    "tokenizers.models": MagicMock(),
+    "tokenizers.decoders": MagicMock(),
+    "tokenizers.normalizers": MagicMock(),
+    "tokenizers.pre_tokenizers": MagicMock(),
+    "tokenizers.trainers": MagicMock(),
+    "tokenizers.implementations": MagicMock(),
+    "litellm": MagicMock(),
+    "litellm._logging": MagicMock(),
+    "litellm.main": MagicMock(),
+    "litellm.utils": MagicMock(),
+    "litellm.utils.py": MagicMock(),
+    "litellm.utils.py.httpx": MagicMock(),
+    "litellm.llms": MagicMock(),
+    "litellm.llms.custom_httpx": MagicMock(),
+    "litellm.completion": MagicMock(),
+    "litellm.embedding": MagicMock(),
+    "litellm.aiosettings": MagicMock(),
+    "httpx": MagicMock(),
+    "httpx._client": MagicMock(),
+    "httpx._transports": MagicMock(),
+    "httpx._transports.default": MagicMock(),
+    "httpx._urls": MagicMock(),
+    "httpx._auth": MagicMock(),
+    "anyio": MagicMock(),
+    "jinja2": MagicMock(),
+    "yaml": MagicMock(),
+    "openai": MagicMock(),
+    "openai.types": MagicMock(),
+    "openai.types.batch": MagicMock(),
+    "openai._models": MagicMock(),
+    "openai._compat": MagicMock(),
 }
 
 for mod_name, mock in _mock_modules.items():
