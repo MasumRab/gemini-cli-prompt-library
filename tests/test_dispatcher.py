@@ -7,12 +7,13 @@ class TestDispatcher(unittest.TestCase):
         # Test that a specific input returns the expected command
         user_input = "my test is broken"
         recommended_command = dispatch(user_input)
-        self.assertEqual(recommended_command["name"], "test-case")
+        # Command is a dataclass, use attribute access not subscript
+        self.assertEqual(recommended_command.name, "test-case")
 
         # Test another input
         user_input = "refactor my code"
         recommended_command = dispatch(user_input)
-        self.assertEqual(recommended_command["name"], "refactor")
+        self.assertEqual(recommended_command.name, "refactor")
 
 
 if __name__ == "__main__":
