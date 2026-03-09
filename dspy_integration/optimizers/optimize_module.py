@@ -1,3 +1,4 @@
+# TODO [Medium Priority]: Add module-level docstrings detailing optimizer selection logic.
 import dspy
 from dspy.teleprompt import BootstrapFewShot
 
