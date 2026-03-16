@@ -10,11 +10,12 @@ DEFAULT_CONFIG = {
     "dspy": {
         "enabled": True,
         "provider": None,  # None means use the default free-tier chain
-        "fallback_to_keyword": True
+        "fallback_to_keyword": True,
     }
 }
 
 logger = logging.getLogger(__name__)
+
 
 def load_config() -> Dict[str, Any]:
     """
@@ -41,6 +42,7 @@ def load_config() -> Dict[str, Any]:
     except (yaml.YAMLError, OSError) as e:
         logger.warning(f"Failed to load config from {CONFIG_PATH}: {e}")
         return copy.deepcopy(DEFAULT_CONFIG)
+
 
 def get_dspy_config() -> Dict[str, Any]:
     """Get the 'dspy' section of the configuration."""

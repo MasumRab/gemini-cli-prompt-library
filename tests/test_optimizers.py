@@ -15,7 +15,7 @@ class TestBaseOptimizer:
         from dspy_integration.framework.optimizers.base import BaseOptimizer
 
         mock_metric = MagicMock()
-        
+
         # Skip if BaseOptimizer is abstract
         try:
             optimizer = BaseOptimizer(metric=mock_metric)
@@ -32,7 +32,7 @@ class TestBaseOptimizer:
         from dspy_integration.framework.optimizers.base import BaseOptimizer
 
         mock_metric = MagicMock()
-        
+
         try:
             optimizer = BaseOptimizer(
                 metric=mock_metric,
@@ -52,7 +52,7 @@ class TestBaseOptimizer:
         from dspy_integration.framework.optimizers.base import BaseOptimizer
 
         mock_metric = MagicMock()
-        
+
         try:
             optimizer = BaseOptimizer(metric=mock_metric)
 
@@ -68,7 +68,7 @@ class TestBaseOptimizer:
         from dspy_integration.framework.optimizers.base import BaseOptimizer
 
         mock_metric = MagicMock()
-        
+
         try:
             optimizer = BaseOptimizer(metric=mock_metric)
             with pytest.raises(NotImplementedError):
@@ -173,7 +173,9 @@ class TestBootstrapFewShotRandomSearchOptimizer:
         )
 
         # Skip - requires local import inside method, complex to mock
-        pytest.skip("BootstrapFewShotRandomSearch teleprompter test requires real dspy library")
+        pytest.skip(
+            "BootstrapFewShotRandomSearch teleprompter test requires real dspy library"
+        )
 
 
 class TestOptimizerRegistry:

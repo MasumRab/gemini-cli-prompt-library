@@ -26,7 +26,7 @@ class TypedImprove(dspy.Module):
         result = self.improve(original_prompt=original_prompt)
         return ImprovedPrompt(
             improved_prompt=result.improved_prompt,
-            changes_summary=result.changes_summary
+            changes_summary=result.changes_summary,
         )
 
 
