@@ -20,8 +20,7 @@ from typing import Optional
 
 # Skip all tests in this file unless API keys are present
 pytestmark = pytest.mark.skipif(
-    not os.environ.get("OPENCODE_API_KEY"),
-    reason="Requires API keys"
+    not os.environ.get("OPENCODE_API_KEY"), reason="Requires API keys"
 )
 
 # Add project root to path

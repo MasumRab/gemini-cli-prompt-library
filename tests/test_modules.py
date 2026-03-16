@@ -131,10 +131,10 @@ class TestSecurityReviewModule:
         """Test forward pass."""
         mock_result = MagicMock()
         mock_result.review = "Security issues found"
-        
+
         mock_chain = MagicMock()
         mock_chain.return_value = mock_result
-        
+
         mock_cot = MagicMock(return_value=mock_chain)
         mock_dspy.ChainOfThought = mock_cot
 

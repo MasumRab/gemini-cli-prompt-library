@@ -6,14 +6,14 @@ from unittest.mock import MagicMock
 
 # CRITICAL: Mock problematic modules BEFORE pytest loads
 _mock_modules = {
-    'tokenizers': MagicMock(),
-    'litellm': MagicMock(),
-    'litellm.utils': MagicMock(),
-    'litellm.utils.py.httpx': MagicMock(),
-    'litellm.main': MagicMock(),
-    'httpx': MagicMock(),
-    'httpx._transports': MagicMock(),
-    'httpx._transports.default': MagicMock(),
+    "tokenizers": MagicMock(),
+    "litellm": MagicMock(),
+    "litellm.utils": MagicMock(),
+    "litellm.utils.py.httpx": MagicMock(),
+    "litellm.main": MagicMock(),
+    "httpx": MagicMock(),
+    "httpx._transports": MagicMock(),
+    "httpx._transports.default": MagicMock(),
 }
 
 for mod_name, mock in _mock_modules.items():
@@ -22,9 +22,14 @@ for mod_name, mock in _mock_modules.items():
 
 # Now run pytest
 import pytest
-sys.exit(pytest.main([
-    'tests/',
-    '-v',
-    '--tb=short',
-    '-x',  # Stop on first failure
-]))
+
+sys.exit(
+    pytest.main(
+        [
+            "tests/",
+            "-v",
+            "--tb=short",
+            "-x",  # Stop on first failure
+        ]
+    )
+)

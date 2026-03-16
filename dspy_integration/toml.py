@@ -79,7 +79,16 @@ class TOMLPrompt:
         output_fields = {}
 
         # Known input variable names
-        INPUT_VARS = {"args", "code", "input", "requirements", "project", "question", "text", "prompt"}
+        INPUT_VARS = {
+            "args",
+            "code",
+            "input",
+            "requirements",
+            "project",
+            "question",
+            "text",
+            "prompt",
+        }
 
         for var in self.variables:
             if var in INPUT_VARS:
