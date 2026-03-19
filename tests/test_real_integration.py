@@ -14,8 +14,14 @@ Run with: pytest tests/test_real_integration.py -v
 
 import pytest
 import sys
+import os
 from pathlib import Path
 from typing import Optional
+
+# Skip all tests in this file unless API keys are present
+pytestmark = pytest.mark.skipif(
+    not os.environ.get("OPENCODE_API_KEY"), reason="Requires API keys"
+)
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -67,8 +73,6 @@ class TestOpenCodeZenProvider:
 
         response = provider.call("Say 'Hello, World!' in exactly 5 words.")
 
-        if not response.success and "Not Found</h1>" in str(response.error):
-            pytest.skip("OpenCode Zen endpoint is returning 404")
         assert response.success is True
         assert len(response.content) > 0
         assert response.provider == "OpenCode Zen (Grok Code Fast)"
@@ -87,8 +91,6 @@ class TestOpenCodeZenProvider:
 
         response = provider.call(prompt)
 
-        if not response.success and "Not Found</h1>" in str(response.error):
-            pytest.skip("OpenCode Zen endpoint is returning 404")
         assert response.success is True
         content_lower = response.content.lower()
         assert "sql" in content_lower or "injection" in content_lower
@@ -104,8 +106,6 @@ class TestOpenCodeZenProvider:
             provider = OpenCodeZenProvider(model=model)
             response = provider.call("What is 2+2?")
 
-            if not response.success and "Not Found</h1>" in str(response.error):
-                pytest.skip("OpenCode Zen endpoint is returning 404")
             assert response.success is True, f"Model {model} failed"
             assert response.model == model
 
@@ -120,8 +120,6 @@ class TestOpenCodeZenProvider:
 
         response = provider.call("What is 2+2?")
 
-        if not response.success and "Not Found</h1>" in str(response.error):
-            pytest.skip("OpenCode Zen endpoint is returning 404")
         assert response.success is True
         assert response.rate_limited is False
 
@@ -164,8 +162,6 @@ class TestProviderChainIntegration:
 
         response = chain.call("What is the capital of France?")
 
-        if not response.success:
-            pytest.skip(f"Provider chain failed: {response.error}")
         assert response.success is True
         assert "Paris" in response.content or "paris" in response.content.lower()
 
@@ -182,8 +178,6 @@ class TestProviderChainIntegration:
         response = chain.call("Calculate 15 + 27.")
         elapsed = time.time() - start
 
-        if not response.success:
-            pytest.skip(f"Provider chain failed: {response.error}")
         assert response.success is True
         assert "42" in response.content
         assert elapsed < 120, f"Response took {elapsed}s, expected < 120s"
@@ -213,8 +207,6 @@ class TestScenarioIntegration:
 
             response = provider.call(prompt)
 
-            if not response.success and "Not Found</h1>" in str(response.error):
-                pytest.skip("OpenCode Zen endpoint is returning 404")
             assert response.success is True
             assert len(response.content) > 50
 
@@ -237,8 +229,6 @@ class TestScenarioIntegration:
 
             response = provider.call(prompt)
 
-            if not response.success and "Not Found</h1>" in str(response.error):
-                pytest.skip("OpenCode Zen endpoint is returning 404")
             assert response.success is True
             assert (
                 "test" in response.content.lower()
@@ -264,8 +254,6 @@ class TestScenarioIntegration:
 
             response = provider.call(prompt)
 
-            if not response.success:
-                pytest.skip(f"Provider failed: {response.error}")
             assert response.success is True
 
     @require_any_provider
@@ -290,8 +278,6 @@ class TestScenarioIntegration:
 
             response = provider.call(prompt)
 
-            if not response.success:
-                pytest.skip(f"Provider failed: {response.error}")
             assert response.success is True
 
 
@@ -303,21 +289,20 @@ class TestMetricIntegration:
         """Test security review metric with real prediction."""
         from dspy_helm.scenarios import ScenarioRegistry
         from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
-        import dspy
 
         scenario = ScenarioRegistry.get("security_review")()
-        raw_data = scenario._load_raw_data()[0]
-        example_data = dspy.Example(**raw_data).with_inputs("code")
+        example_data = scenario._load_raw_data()[0]
 
-        prompt = scenario.make_prompt(raw_data)
+        prompt = scenario.make_prompt(example_data)
         provider = OpenCodeZenProvider(model="grok-code")
         response = provider.call(prompt)
 
         # Create a prediction with the real response
-        if not response.success:
-            pytest.skip(f"Provider failed: {response.error}")
+        class MockPred:
+            def __init__(self, review):
+                self.review = review
 
-        pred = dspy.Prediction(review=response.content)
+        pred = MockPred(response.content)
         score = scenario.metric(example_data, pred)
 
         assert isinstance(score, float)
@@ -361,8 +346,6 @@ class TestPerformanceIntegration:
         response = provider.call("What is 1+1?")
         elapsed = time.time() - start
 
-        if not response.success and "Not Found</h1>" in str(response.error):
-            pytest.skip("OpenCode Zen endpoint is returning 404")
         assert response.success is True
         assert elapsed < 60, f"Response took {elapsed}s, expected < 60s"
 
@@ -376,8 +359,6 @@ class TestPerformanceIntegration:
         results = []
         for i in range(3):
             response = provider.call(f"What is {i} + {i}?")
-            if not response.success and "Not Found</h1>" in str(response.error):
-                pytest.skip("OpenCode Zen endpoint is returning 404")
             results.append(response)
 
         assert all(r.success for r in results)
