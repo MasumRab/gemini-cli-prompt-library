@@ -14,8 +14,14 @@ Run with: pytest tests/test_real_integration.py -v
 
 import pytest
 import sys
+import os
 from pathlib import Path
 from typing import Optional
+
+# Skip all tests in this file unless API keys are present
+pytestmark = pytest.mark.skipif(
+    not os.environ.get("OPENCODE_API_KEY"), reason="Requires API keys"
+)
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent

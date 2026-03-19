@@ -1,5 +1,11 @@
+"""
+DSPy module optimization utilities.
+
+Provides functions for optimizing DSPy modules using BootstrapFewShot and MIPROv2 optimizers.
+"""
+
 import dspy
-from dspy.teleprompt import BootstrapFewShot
+from dspy.teleprompt import BootstrapFewShot, MIPROv2
 
 
 def optimize_module(module_class, trainset, metric=None):
@@ -44,6 +50,34 @@ def optimize_module(module_class, trainset, metric=None):
     print(f"Optimization complete for {module_class.__name__}.")
 
     return compiled_module
+
+
+def optimize_with_mipro(module_class, trainset, valset, metric=None):
+    """
+    Optimize using MIPROv2 for better prompts.
+
+    Args:
+        module_class: The DSPy Module class to optimize.
+        trainset: A list of dspy.Example objects for training.
+        valset: A list of dspy.Example objects for validation.
+        metric: A function that evaluates the output. Defaults to a simple check if None.
+
+    Returns:
+        optimized: The optimized module compiled with MIPROv2.
+    """
+    if metric is None:
+
+        def simple_metric(example, pred, trace=None):
+            return bool(pred and any(pred.values()))
+
+        metric = simple_metric
+
+    teleprompter = MIPROv2(metric=metric, num_trials=20)
+
+    module = module_class()
+    optimized = teleprompter.compile(module, trainset=trainset, valset=valset)
+
+    return optimized
 
 
 if __name__ == "__main__":
