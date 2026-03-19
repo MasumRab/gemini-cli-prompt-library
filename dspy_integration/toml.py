@@ -71,9 +71,38 @@ class TOMLPrompt:
         Convert TOML prompt to DSPy Signature class.
 
         Returns:
-            DSPy Signature class
+            DSPy Signature class with InputField and OutputField
         """
-        pass
+        import dspy
+
+        input_fields = {}
+        output_fields = {}
+
+        # Known input variable names
+        INPUT_VARS = {
+            "args",
+            "code",
+            "input",
+            "requirements",
+            "project",
+            "question",
+            "text",
+            "prompt",
+        }
+
+        for var in self.variables:
+            if var in INPUT_VARS:
+                input_fields[var] = dspy.InputField(desc=f"Input: {var}")
+            else:
+                input_fields[var] = dspy.InputField(desc=f"Input parameter: {var}")
+
+        # Add default output field
+        output_fields["output"] = dspy.OutputField(desc="Generated output")
+
+        signature_name = "".join(word.capitalize() for word in self.name.split("_"))
+        signature_name = f"{signature_name}Signature"
+
+        return type(signature_name, (), {**input_fields, **output_fields})
 
 
 class TOMLManager:
