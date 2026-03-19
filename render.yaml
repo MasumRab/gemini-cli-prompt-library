@@ -1,6 +1,6 @@
 services:
   - type: worker
-    name: gemini-cli-worker
+    name: dspy-integration-worker
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: make dev
+    startCommand: python -m dspy_integration.cli

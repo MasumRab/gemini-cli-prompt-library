@@ -168,6 +168,48 @@ function calculateDiscount(price, discountPercent) {
 
 **Output:** Complete REST API design with endpoints, data models, authentication, and OpenAPI documentation.
 
+
+## 🧠 DSPy Integration (Optional Enhancement)
+
+The DSPy integration provides intelligent command routing and prompt optimization.
+
+### Prerequisites
+- Python 3.11+
+- `pip install dspy rich>=13.0 tomli`
+
+### Installation
+```bash
+cd .
+pip install -e .
+```
+
+### Usage with Gemini CLI
+
+**1. Get command suggestion**
+```bash
+python -m dspy_integration "fix my login bug"
+# Output: [1] /workflows:debug-and-fix --error "login test is failing..."
+```
+
+**2. Copy the suggested command to Gemini CLI**
+```bash
+/workflows:debug-and-fix --error "login test is failing..."
+```
+
+**3. Execution**
+Gemini executes the workflow with parameters optimized by the intelligent dispatcher.
+
+### Configuration
+Create `~/.dspy_tuning/config.yaml`:
+
+```yaml
+dspy:
+  enabled: true
+  provider: groq  # or gemini, openrouter, huggingface
+  fallback_to_keyword: true
+```
+
+
 ## 🎯 Why Use This Extension?
 
 ### Save Time

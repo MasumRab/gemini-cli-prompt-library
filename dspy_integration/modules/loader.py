@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Type
 
 
+# TODO [Medium Priority]: Convert file loading operations to async to prevent blocking.
 class DynamicModuleLoader:
     """
     Dynamic module loader that discovers and loads DSPy modules based on scenario names.
@@ -127,8 +128,8 @@ class DynamicModuleLoader:
         Returns:
             String in PascalCase format
         """
-        parts = snake_case.split('_')
-        return ''.join(part.capitalize() for part in parts)
+        parts = snake_case.split("_")
+        return "".join(part.capitalize() for part in parts)
 
     def _get_available_modules(self) -> list:
         """

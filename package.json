@@ -1,13 +1,12 @@
 {
-  "name": "gemini-cli-prompt-library",
+  "name": "gemini-cli-dspy-integration",
   "version": "1.0.0",
-  "description": "Render deployment fallback to run Python",
+  "private": true,
+  "description": "DSPy Integration Adapter for Render Node.js Runtime (DO NOT DELETE - required for deployment fallback)",
   "scripts": {
-    "postinstall": "pip install -r requirements.txt",
     "build": "pip install -r requirements.txt",
-    "start": "make dev"
+    "start": "python -m dspy_integration.cli"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }

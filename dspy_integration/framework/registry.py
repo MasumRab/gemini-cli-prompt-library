@@ -71,6 +71,7 @@ class CommandRegistry:
 
 def get_command(name):
     """Convenience function to get a command from the default registry."""
+    # TODO [High Priority]: Refactor get_command to use a singleton or cached registry to avoid re-instantiation overhead.
     registry = CommandRegistry()
     return registry.get_command(name)
 
