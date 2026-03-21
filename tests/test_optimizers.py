@@ -21,6 +21,8 @@ class TestBaseOptimizer:
 
     def test_base_optimizer_init(self):
         """Test base optimizer initialization."""
+        from dspy_integration.framework.optimizers.base import BaseOptimizer
+
         DummyOptimizer = self._get_dummy_optimizer()
 
         mock_metric = MagicMock()
@@ -39,6 +41,8 @@ class TestBaseOptimizer:
 
     def test_base_optimizer_custom_values(self):
         """Test base optimizer with custom values."""
+        from dspy_integration.framework.optimizers.base import BaseOptimizer
+
         DummyOptimizer = self._get_dummy_optimizer()
 
         mock_metric = MagicMock()

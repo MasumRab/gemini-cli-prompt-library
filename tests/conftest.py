@@ -44,6 +44,7 @@ class MockField:
 
 class MockSignature:
     __fields__ = {"code": MockField(), "review": MockField()}
+    model_fields = {"code": MockField(), "review": MockField()}
 
 
 _dspy_mock.Signature = MockSignature
