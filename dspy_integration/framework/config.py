@@ -16,6 +16,7 @@ DEFAULT_CONFIG = {
 
 logger = logging.getLogger(__name__)
 
+
 def load_config() -> Dict[str, Any]:
     """
     Load configuration from ~/.dspy_tuning/config.yaml.
@@ -41,6 +42,7 @@ def load_config() -> Dict[str, Any]:
     except (yaml.YAMLError, OSError) as e:
         logger.warning(f"Failed to load config from {CONFIG_PATH}: {e}")
         return copy.deepcopy(DEFAULT_CONFIG)
+
 
 def get_dspy_config() -> Dict[str, Any]:
     """Get the 'dspy' section of the configuration."""

@@ -173,7 +173,9 @@ class TestBootstrapFewShotRandomSearchOptimizer:
         )
 
         # Skip - requires local import inside method, complex to mock
-        pytest.skip("BootstrapFewShotRandomSearch teleprompter test requires real dspy library")
+        pytest.skip(
+            "BootstrapFewShotRandomSearch teleprompter test requires real dspy library"
+        )
 
 
 class TestOptimizerRegistry:
