@@ -120,7 +120,6 @@ class TestSecurityReviewModule:
         from dspy_integration.modules.security_review import SecurityReview
 
         module = SecurityReview()
-        mock_chain = MagicMock()
         mock_result = MagicMock()
         mock_result.review = "Security issues found"
 

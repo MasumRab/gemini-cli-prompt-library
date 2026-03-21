@@ -228,9 +228,9 @@ class TestOptimizerCompile:
         mock_dspy.settings.lm = None
         mock_dspy.settings.configure = MagicMock()
 
-        mock_metric = MagicMock()
-        with pytest.raises(ValueError) as exc_info:
-            MIPROv2Optimizer(metric=mock_metric)
+        # Test that passing None as metric raises ValueError
+        with pytest.raises(ValueError, match="metric is required"):
+            MIPROv2Optimizer(metric=None)
 
 
 if __name__ == "__main__":

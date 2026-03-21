@@ -12,6 +12,7 @@ from typing import Dict, Type, Optional, Any, List, TYPE_CHECKING
 from pathlib import Path
 import re
 import tomli
+import dspy
 
 if TYPE_CHECKING:
     import dspy
@@ -59,7 +60,7 @@ class TOMLPrompt:
         signature_name = "".join(word.capitalize() for word in self.name.split("_"))
         signature_name = f"{signature_name}Signature"
 
-        return type(signature_name, (), {**input_fields, **output_fields})
+        return type(signature_name, (dspy.Signature,), {**input_fields, **output_fields})
 
     def __repr__(self) -> str:
         return f"TOMLPrompt(name={self.name}, category={self.category}, vars={self.variables})"

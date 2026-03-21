@@ -5,7 +5,7 @@ Provides functions for optimizing DSPy modules using BootstrapFewShot and MIPROv
 """
 
 import dspy
-from dspy.teleprompt import BootstrapFewShot, MIPROv2
+from dspy.teleprompt import BootstrapFewShot
 
 
 def optimize_module(module_class, trainset, metric=None):
@@ -72,6 +72,7 @@ def optimize_with_mipro(module_class, trainset, valset, metric=None):
 
         metric = simple_metric
 
+    from dspy.teleprompt import MIPROv2
     teleprompter = MIPROv2(metric=metric, num_trials=20)
 
     module = module_class()

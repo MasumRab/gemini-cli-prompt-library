@@ -47,7 +47,7 @@ Updated Coverage Matrix (after adding new tests):
 Test Files:
 - test_scenarios.py        : Scenario and registry tests
 - test_providers.py        : Provider and chain tests
-- test_cli.py              : CLI interface tests
+- test_cli.py              : CLI tests
 - test_prompts.py          : TOML prompt abstraction tests
 - test_optimizers.py       : Optimizer tests
 - test_evaluator.py        : Evaluator tests

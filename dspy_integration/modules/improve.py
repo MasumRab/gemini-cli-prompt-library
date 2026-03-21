@@ -18,12 +18,22 @@ class ImprovedPrompt(BaseModel):
 class TypedImprove(dspy.Module):
     """Improve with typed output using pydantic."""
 
-    def __init__(self):
+    def __init__(self, model: Optional[dspy.LM] = None):
         super().__init__()
+        self.model = model
         self.improve = dspy.TypedPredictor(ImproveSignature)
 
     def forward(self, original_prompt: str) -> ImprovedPrompt:
-        result = self.improve(original_prompt=original_prompt)
+        if self.model is not None:
+            with dspy.context(lm=self.model):
+                result = self.improve(original_prompt=original_prompt)
+        else:
+            if not dspy.settings.lm:
+                raise ValueError(
+                    "No DSPy LM configured. Call dspy.settings.configure(lm=...) "
+                    "or pass model=... to TypedImprove."
+                )
+            result = self.improve(original_prompt=original_prompt)
         return ImprovedPrompt(
             improved_prompt=result.improved_prompt,
             changes_summary=result.changes_summary,
