@@ -123,6 +123,8 @@ class TestSecurityReviewModule:
         mock_chain = MagicMock()
         mock_result = MagicMock()
         mock_result.review = "Security issues found"
+
+        mock_chain = MagicMock()
         mock_chain.return_value = mock_result
         module.review_code = mock_chain
 
@@ -185,14 +187,19 @@ class TestModuleSignatureStructure:
     def test_code_review_signature_structure(self):
         """Test CodeReviewSignature has proper input/output fields."""
         from dspy_integration.modules.code_review import CodeReviewSignature
+        import dspy
 
         # Verify it's a proper signature class
         assert "code" in CodeReviewSignature.model_fields
         assert "review" in CodeReviewSignature.model_fields
+        # DSPy signatures are subclasses of Signature
+        # Check that it's a proper class with expected behavior
+        assert issubclass(CodeReviewSignature, dspy.Signature)
 
     def test_security_review_signature_structure(self):
         """Test SecurityReviewSignature has proper input/output fields."""
         from dspy_integration.modules.security_review import SecurityReviewSignature
+        import dspy
 
         assert "code" in SecurityReviewSignature.model_fields
         assert "review" in SecurityReviewSignature.model_fields
