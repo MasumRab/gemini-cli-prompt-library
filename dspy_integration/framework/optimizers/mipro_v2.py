@@ -22,7 +22,8 @@ class MIPROv2Optimizer(BaseOptimizer):
         task_model=None,
     ):
         if metric is None:
-            raise ValueError("metric is required for MIPROv2Optimizer")
+            raise ValueError("metric is required")
+
         super().__init__(
             metric=metric,
             max_bootstrapped_demos=max_bootstrapped_demos,
