@@ -147,24 +147,24 @@ class TestActiveContextUpdater(unittest.TestCase):
 
         # Save reference to real exception class BEFORE any mocking
         RealRequestException = requests.RequestException
-        
+
         # Use a lambda to raise the exception - this avoids the side_effect issue with mocked requests
         def raise_api_error(*args, **kwargs):
             raise RealRequestException("API timeout")
-        
+
         mock_fetch = MagicMock(side_effect=raise_api_error)
-        
+
         # Replace with our mock
         import scripts.update_active_context as update_module
-        
+
         # Patch at the right location - in the module where main is defined
-        with patch.object(update_module, 'fetch_paginated', mock_fetch):
+        with patch.object(update_module, "fetch_paginated", mock_fetch):
             update_module.main()
 
         written_content = "".join(
             [call.args[0] for call in mock_file().write.call_args_list]
         )
-        
+
         # Verify the error message is written
         self.assertIn(
             "*GitHub API request failed - Context unavailable*", written_content
