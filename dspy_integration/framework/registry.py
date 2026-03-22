@@ -40,16 +40,12 @@ class CommandRegistry:
                                 author=data.get("author", ""),
                                 tags=data.get("tags", []),
                             )
-                        except Exception as e:
-                            # TODO [Security - Low Priority]: Refine exception handling. Catch specific exceptions instead of generic Exception to pass CI checks.
-                            # Reason: Broad exception handling masks unexpected errors and fails SonarCloud analysis.
+                        except (OSError, ValueError, KeyError) as e:
                             print(f"Error loading command {command_name}: {e}")
         return commands
 
     def search(self, keyword):
-        """
-        Search for commands by keyword in name, description, or tags.
-        """
+        """Search for commands by keyword in name, description, or tags."""
         results = []
         for command in self.commands.values():
             if (
@@ -73,18 +69,20 @@ class CommandRegistry:
         return self.commands.get(name)
 
 
+_DEFAULT_REGISTRY = None
+
+
 def get_command(name):
     """Convenience function to get a command from the default registry."""
-    # TODO [Performance - High Priority]: Optimise CommandRegistry instantiation.
-    # Reason: Instantiating a new CommandRegistry on every call reads all .toml files, causing severe performance degradation. Cache the instance or results.
-    registry = CommandRegistry()
-    return registry.get_command(name)
+    global _DEFAULT_REGISTRY
+    if _DEFAULT_REGISTRY is None:
+        _DEFAULT_REGISTRY = CommandRegistry()
+    return _DEFAULT_REGISTRY.get_command(name)
 
 
 class IntelligentDispatcher:
     """
-    Intelligent dispatcher that routes natural language requests to
-    appropriate commands.
+    Intelligent dispatcher that routes natural language requests to appropriate commands.
     """
 
     def __init__(self, registry: Optional[CommandRegistry] = None):
@@ -113,12 +111,8 @@ class IntelligentDispatcher:
 
         return best_match if max_score > 0 else None
 
-    def _calculate_match_score(
-        self, user_input: str, command: Command
-    ) -> float:
-        """
-        Calculate how well a command matches the user input.
-        """
+    def _calculate_match_score(self, user_input: str, command: Command) -> float:
+        """Calculate how well a command matches the user input."""
         score = 0
 
         # Tokenize inputs
