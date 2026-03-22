@@ -1,0 +1,237 @@
+prompt = """
+# Enhanced Unit Test Generation with DSPy Reasoning
+
+Please create comprehensive unit tests for the following code using advanced reasoning techniques:
+
+{{args}}
+
+## 1. Chain of Thought Analysis
+First, analyze the code systematically:
+- Identify the function/method types and their purposes
+- Determine the input/output contracts
+- Recognize potential edge cases and error conditions
+- Understand the dependencies and side effects
+
+## 2. Test Framework Considerations
+
+Adapt to the appropriate testing framework:
+- JavaScript/TypeScript: Jest, Vitest, Mocha
+- Python: pytest, unittest
+- Java: JUnit
+- C#: xUnit, NUnit
+- Go: testing package
+- Ruby: RSpec
+- PHP: PHPUnit
+
+## 3. Test Structure
+
+### 1. Test Organization
+
+```
+describe('FunctionName' or 'ClassName', () => {
+  describe('methodName', () => {
+    it('should handle normal case', () => {});
+    it('should handle edge case', () => {});
+    it('should throw error for invalid input', () => {});
+  });
+});
+```
+
+### 2. Comprehensive Test Coverage Areas
+
+#### Happy Path Tests
+Test normal, expected behavior:
+- Valid inputs with expected outputs
+- Common use cases
+- Typical workflows
+
+#### Edge Cases (Based on Code Analysis)
+Test boundary conditions identified through systematic analysis:
+- Empty inputs (null, undefined, empty string, empty array)
+- Zero values
+- Negative numbers
+- Very large numbers
+- Maximum/minimum values
+- Single element collections
+- Boundary values specific to the code logic
+
+#### Error Cases (Based on Code Analysis)
+Test error handling identified through systematic analysis:
+- Invalid inputs
+- Type mismatches
+- Out of range values
+- Missing required parameters
+- Malformed data
+- Exception scenarios specific to the code
+
+#### Boundary Conditions (Based on Code Analysis)
+- First and last elements
+- Off-by-one scenarios
+- Limits and thresholds
+- Code-specific boundary conditions
+
+### 3. Test Patterns
+
+#### Arrange-Act-Assert (AAA)
+```javascript
+it('should calculate total with discount', () => {
+  // Arrange
+  const price = 100;
+  const discount = 0.2;
+
+  // Act
+  const result = calculateTotal(price, discount);
+
+  // Assert
+  expect(result).toBe(80);
+});
+```
+
+#### Given-When-Then (BDD style)
+```javascript
+it('should calculate total with discount', () => {
+  // Given
+  const price = 100;
+  const discount = 0.2;
+
+  // When
+  const result = calculateTotal(price, discount);
+
+  // Then
+  expect(result).toBe(80);
+});
+```
+
+### 4. Test Types to Include
+
+#### Basic Functionality Tests
+```javascript
+it('should return correct value for valid input', () => {
+  expect(add(2, 3)).toBe(5);
+});
+```
+
+#### Parameterized Tests
+```javascript
+it.each([
+  [2, 3, 5],
+  [0, 0, 0],
+  [-1, 1, 0],
+  [100, 200, 300]
+])('should add %i and %i to equal %i', (a, b, expected) => {
+  expect(add(a, b)).toBe(expected);
+});
+```
+
+#### Async Tests
+```javascript
+it('should fetch user data', async () => {
+  const user = await fetchUser(1);
+  expect(user.id).toBe(1);
+});
+```
+
+#### Mock/Stub Tests
+```javascript
+it('should call API with correct parameters', () => {
+  const mockApi = jest.fn();
+  service.setApi(mockApi);
+  service.fetchData(123);
+  expect(mockApi).toHaveBeenCalledWith(123);
+});
+```
+
+#### State Tests
+```javascript
+it('should update state correctly', () => {
+  const obj = new MyClass();
+  obj.setValue(10);
+  expect(obj.getValue()).toBe(10);
+});
+```
+
+### 5. Setup and Teardown
+
+```javascript
+describe('Database operations', () => {
+  beforeAll(() => {
+    // Setup before all tests
+  });
+
+  beforeEach(() => {
+    // Setup before each test
+  });
+
+  afterEach(() => {
+    // Cleanup after each test
+  });
+
+  afterAll(() => {
+    // Cleanup after all tests
+  });
+});
+```
+
+### 6. Test Naming
+
+Use descriptive names that explain:
+- What is being tested
+- Under what conditions
+- What the expected result is
+
+**Good names**:
+- `should return empty array when no items match filter`
+- `should throw error when input is negative`
+- `should call callback with correct parameters`
+
+**Bad names**:
+- `test1`
+- `it works`
+- `should work correctly`
+
+## 4. Multi-Step Verification
+For each test case, verify:
+- The test covers the intended functionality
+- The test is independent of other tests
+- The test has clear arrange, act, and assert phases
+- The test name accurately describes what is being tested
+
+## 5. Confidence Assessment
+Rate the confidence in test coverage:
+- High: All major code paths covered
+- Medium: Most code paths covered with some gaps
+- Low: Significant portions of code not tested
+
+## 6. Test Quality Guidelines
+
+1. **Independence**: Tests should not depend on each other
+2. **Repeatability**: Tests should produce same results every time
+3. **Fast**: Unit tests should run quickly
+4. **Isolated**: Use mocks/stubs for external dependencies
+5. **Clear**: Test intent should be obvious
+6. **Comprehensive**: Cover all code paths identified through analysis
+7. **Maintainable**: Easy to update when code changes
+
+## 7. Coverage Goals
+
+Aim to test:
+- All public methods/functions
+- All branches (if/else) identified through code analysis
+- All error paths identified through code analysis
+- All edge cases identified through code analysis
+- All important combinations identified through code analysis
+
+## 8. Output Format
+
+Provide:
+1. Complete test suite with all necessary imports
+2. Setup/teardown if needed
+3. Mock configurations
+4. Clear test descriptions
+5. Comments explaining complex test scenarios
+6. Assertion explanations where helpful
+7. Confidence rating for test coverage
+8. Suggestions for additional tests that might be needed
+
+Generate a complete, production-ready test suite following these best practices with DSPy-enhanced reasoning.
+"""

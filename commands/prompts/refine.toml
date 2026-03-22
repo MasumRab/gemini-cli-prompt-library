@@ -1,0 +1,53 @@
+description = "Refine an existing prompt based on feedback and requirements"
+args = "prompt_text_and_requirements"
+prompt = """
+# Refine Prompt
+
+Act as a Senior Prompt Engineer. Your task is to refine and improve the following prompt based on the provided feedback or requirements.
+
+## Input Data
+**Original Prompt & Requirements:**
+```
+{{prompt_text_and_requirements}}
+```
+
+*(Note: If no specific requirements are provided, focus on improving Clarity, Specificity, and Structure).*
+
+## Refinement Goals
+1. **Clarify Objectives:** Ensure the prompt's goal is instantly understandable.
+2. **Strengthen Constraints:** Add necessary boundaries to prevent hallucination or off-topic responses.
+3. **Enhance Structure:** Use Markdown headers, bullet points, and code blocks for readability.
+4. ** incorporate Feedback:** Address any specific feedback or "Flaws" mentioned in the input.
+
+## Output Format
+
+Provide the refined prompt in a code block below, followed by a summary of changes.
+
+### Refined Prompt Version:
+```markdown
+[Role/Context]
+...
+
+[Objective]
+...
+
+[Instructions/Requirements]
+...
+
+[Output Format]
+...
+
+[Examples]
+...
+```
+
+### Summary of Improvements
+- **Change 1:** [Explanation]
+- **Change 2:** [Explanation]
+- **Change 3:** [Explanation]
+
+## Next Steps
+After reviewing this refined version, consider running:
+- `/prompt/evaluate` to re-score this new version.
+- `/prompt/test-case` to generate test cases.
+"""

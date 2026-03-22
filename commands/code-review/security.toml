@@ -1,0 +1,81 @@
+prompt = """
+# Enhanced Security Code Review with DSPy Reasoning
+
+Please perform a comprehensive security analysis of the following code using advanced reasoning techniques:
+
+```
+{{args}}
+```
+
+## 1. Chain of Thought Analysis
+Approach the security review systematically, explaining your reasoning at each step:
+- First, identify the application type and architecture
+- Then, analyze the data flow and trust boundaries
+- Finally, assess specific security controls
+
+## 2. Focus Areas
+
+### Input Validation & Sanitization
+- Are all user inputs properly validated?
+- Is input sanitized before use in queries, commands, or rendering?
+- Are there risks of injection attacks (SQL, XSS, command injection)?
+- What are the input sources and trust levels?
+
+### Authentication & Authorization
+- Are authentication mechanisms secure?
+- Is authorization properly enforced?
+- Are credentials handled securely?
+- Is session management secure?
+
+### Data Protection
+- Is sensitive data encrypted at rest and in transit?
+- Are secrets and API keys properly managed?
+- Is PII (Personally Identifiable Information) handled correctly?
+
+### Common Vulnerabilities
+- Check for OWASP Top 10 vulnerabilities
+- Look for race conditions and TOCTOU issues
+- Identify potential buffer overflows or memory issues
+- Check for insecure dependencies
+
+### Error Handling & Logging
+- Are errors handled without exposing sensitive information?
+- Is logging done securely without leaking secrets?
+- Are stack traces exposed in production?
+
+### Access Control
+- Are file permissions appropriate?
+- Is path traversal prevented?
+- Are resources properly scoped and isolated?
+
+## 3. Multi-Step Verification
+For each identified vulnerability, verify:
+- The existence of the vulnerability
+- The potential impact
+- The recommended remediation
+- The likelihood of exploitation
+
+## 4. Confidence Assessment
+Rate your confidence in each finding:
+- High: Clear evidence of vulnerability
+- Medium: Likely vulnerability based on patterns
+- Low: Potential issue requiring further investigation
+
+## 5. Output Format
+Provide:
+1. **Executive Summary**: High-level security posture
+2. **Critical Issues**: Vulnerabilities that must be fixed immediately
+3. **High Priority**: Significant security concerns
+4. **Medium Priority**: Security improvements
+5. **Low Priority**: General security recommendations
+6. **Risk Assessment**: Overall risk level and confidence ratings
+7. **Remediation Steps**: Detailed steps to address each issue
+8. **Secure Code Examples**: Show secure alternatives for each issue
+
+For each issue, explain:
+- What the vulnerability is
+- Why it's dangerous
+- How to fix it
+- Example of secure code
+- Confidence level in the finding
+"""

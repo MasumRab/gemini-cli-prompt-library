@@ -1,0 +1,77 @@
+# Provider Configuration for DSPy-HELM
+# Uses OpenCode Zen gateway for FREE models
+# TOTAL COST: $0 (all models free)
+
+providers:
+  # Primary Provider - OpenCode Zen with Grok Code Fast (FREE)
+  opencode_zen:
+    name: "OpenCode Zen (Grok Code Fast)"
+    type: "openai_compatible"
+    base_url: "https://opencode.ai/zen/v1/chat/completions"
+    api_key: "not-required"  # Free model, no key needed
+    models:
+      default: "grok-code"
+      available:
+        - "grok-code"           # Grok Code Fast 1 - FREE
+        - "minimax-m2.1-free"   # MiniMax M2.1 - FREE
+        - "glm-4.7-free"        # GLM 4.7 - FREE
+        - "big-pickle"          # Big Pickle - FREE
+        - "gpt-5-nano"          # GPT 5 Nano - FREE
+    rate_limit:
+      enabled: true
+      max_retries: 3
+      backoff_factor: 1.0
+    cost_per_1k_tokens: 0.0  # FREE
+    priority: 1
+
+  # Secondary Provider - OpenRouter with Grok (FREE)
+  openrouter:
+    name: "OpenRouter (Grok)"
+    type: "openai_compatible"
+    base_url: "https://openrouter.ai/api/v1"
+    api_key: "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"
+    models:
+      default: "x-ai/grok-4.1-fast:free"
+      available:
+        - "x-ai/grok-4.1-fast:free"
+        - "prime-intellect/intellect-3"
+    rate_limit:
+      enabled: true
+      max_retries: 3
+      backoff_factor: 1.0
+    cost_per_1k_tokens: 0.0  # FREE
+    priority: 2
+
+  # Tertiary Provider - Google Gemini (FREE tier)
+  google:
+    name: "Google Gemini (Free Tier)"
+    type: "google"
+    api_key: "AIzaSyBDj5II4dr0sCwm8hADE2xGheP1ysZj2hc"
+    models:
+      default: "gemini-1.5-flash"
+      available:
+        - "gemini-1.5-flash"
+        - "gemini-1.5-pro"
+    rate_limit:
+      enabled: true
+      max_retries: 3
+      backoff_factor: 2.0
+    cost_per_1k_tokens: 0.0  # Free tier
+    priority: 3
+
+# Execution Configuration
+execution:
+  mode: "sequential"  # Sequential failover, not parallel
+  fallback_chain:
+    - opencode
+    - qwen
+    - gemini
+  timeout_seconds: 120
+  default_provider: opencode
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  log_requests: true
+  log_responses: false

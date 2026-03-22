@@ -1,0 +1,190 @@
+# Mergify Configuration for gemini-cli-prompt-library
+# https://docs.mergify.io/
+
+pull_request_rules:
+  # 1. Automatic merge when requirements are met
+  #    - CI passes, at least 1 approval, no conflicts
+  #    - During office hours OR hotfix label
+  - name: Automatic merge during office hours + hotfix support
+    description: >
+      Merge when PR passes all branch protection during office hours,
+      except for hotfix bypasses the schedule.
+    conditions:
+      - or:
+          - schedule = Mon-Fri 09:00-17:00[America/Los_Angeles]
+          - label = hotfix
+      - "#approved-reviews-by >= 1"
+      - "-draft"
+      - "-conflict"
+      - "#commits-behind = 0"
+    actions:
+      merge:
+        method: squash
+
+  # 2. Auto-rebase when PR is behind base branch
+  #    - Only when significantly behind (>5 commits)
+  #    - Avoids constant rebasing for minor differences
+  - name: Auto-rebase when significantly behind base
+    description: Automatically rebases PRs that are behind by 5+ commits
+    conditions:
+      - "#commits-behind >= 5"
+    actions:
+      rebase:
+        bot_account: Mergify
+        straight_to_parent: false
+
+  # 3. Conflict notification - send to correct bot creator
+  #    - Detect bot type from branch name pattern
+  #    - Include detailed resolution info
+  - name: Ping bot creator on conflict (not repo owner)
+    description: >
+      Notify the correct bot (jules/cto.new/openhands) when PR has conflicts,
+      NOT the repo owner. Include actionable conflict info.
+    conditions:
+      - conflict
+      - -closed
+      - -draft
+    actions:
+      comment:
+        message: |
+          ⚠️ **Conflict detected on PR** 
+
+          **This PR needs to be updated before merging.**
+
+          {% if author == "MasumRabbit" %}
+          {% if branch matches "^scheduled-codebase-audit" %}
+          👤 **Ping**: @jules 
+          💡 This appears to be a scheduled audit PR created by Jules.
+          {% elif branch matches "^fix/" or branch matches "^cto/" %}
+          👤 **Ping**: @cto.new
+          💡 This appears to be a fix/feature branch from cto.new.
+          {% elif branch matches "^openhands" %}
+          👤 **Ping**: @openhands
+          💡 This appears to be an OpenHands agent session.
+          {% else %}
+          👤 **Ping**: @jules (fallback - please verify correct owner)
+          {% endif %}
+          {% else %}
+          👤 **Ping**: @{{author}}
+          {% endif %}
+
+          ---
+          
+          ### 📋 Conflict Details
+          {% if base_sha %}
+          • **Base commit**: `{{base_sha}}` (last updated base)
+          {% endif %}
+          • **Conflicting files**: [View conflicts in Files tab](#files)
+          
+          ---
+          
+          ### ✅ Suggested Resolution Steps
+
+          1. **Update your branch**:
+             ```bash
+             git fetch origin
+             git checkout {{head_ref}}
+             git rebase origin/{{base_ref}}
+             ```
+
+          2. **Resolve conflicts** - edit the marked files, then:
+             ```bash
+             git add <resolved-files>
+             git rebase --continue
+             ```
+
+          3. **Force push** to trigger CI re-run:
+             ```bash
+             git push --force-with-lease
+             ```
+
+          4. **Verify** - ensure all CI checks pass
+
+          ---
+          
+          💡 **Tip**: Run `git log origin/{{base_ref}}..HEAD` to see your commits.
+          Once resolved, Mergify will automatically merge if conditions are met.
+
+  # 4. Label management for bot-created PRs
+  - name: Label bot-created PRs appropriately
+    description: Auto-label PRs based on branch naming patterns
+    conditions:
+      - -label
+      - or:
+          - branch matches "^scheduled-codebase-audit"
+          - branch matches "^fix/"
+          - branch matches "^cto/"
+          - branch matches "^openhands"
+    actions:
+      label:
+        add:
+          - bot-created
+
+  # 5. Handle failed CI with helpful message
+  - name: Notify on CI failure
+    description: Post helpful message when CI checks fail
+    conditions:
+      - "#check-failure > 0"
+      - -draft
+      - -label = ignore-ci-failure
+    actions:
+      comment:
+        message: |
+          ❌ **CI Check(s) Failed**
+
+          {% for check in check_failure %}
+          • **{{check.name}}**: {{check.conclusion}}
+          {% endfor %}
+
+          ---
+
+          **Next steps**:
+          1. Review the failure details in the Checks tab
+          2. Fix the issues and push new commits
+          3. CI will re-run automatically
+          
+          If you need to bypass CI failures for urgent fixes, add the `ignore-ci-failure` label.
+
+  # 6. Draft PR handling
+  - name: Remove from queue if converted to draft
+    description: Cancel merge attempts for draft PRs
+    conditions:
+      - draft
+      - -status-success
+    actions:
+      queue:
+        action: cancel
+
+  # 7. Stale PR notification
+  - name: Notify on stale PRs
+    description: Ping when PR hasn't been updated in 7 days
+    conditions:
+      - -updated-at > 7 days
+      - -draft
+      - -conflict
+      - -status-success
+    actions:
+      comment:
+        message: |
+          ⏰ **This PR has been stale for 7+ days**
+
+          {% if author == "MasumRabbit" %}
+          {% if branch matches "^scheduled-" %}
+          👤 **Assigned to**: @jules
+          {% elif branch matches "^cto/" %}
+          👤 **Assigned to**: @cto.new
+          {% elif branch matches "^openhands" %}
+          👤 **Assigned to**: @openhands
+          {% else %}
+          👤 **Assigned to**: @jules
+          {% endif %}
+          {% else %}
+          👤 **Assigned to**: @{{author}}
+          {% endif %}
+
+          Please review and either:
+          • Update the PR with latest changes
+          • Mark as draft if work in progress
+          • Close if no longer needed
+
+          Mergify will auto-merge once all requirements are met.

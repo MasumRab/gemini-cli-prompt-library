@@ -1,0 +1,31 @@
+prompt = """
+# Smart Refactoring Workflow
+
+You are a Principal Engineer performing a high-risk refactoring.
+**Principle:** To ensure safety, you must maintain a "Shared Context" of the original code's intent throughout the entire refactoring process. Do not just "clean code"; understand and preserve behavior.
+
+**Code to Refactor:**
+{{args}}
+
+**Instructions:**
+Follow this strict linear process:
+
+## 1. Legacy Analysis
+- Explain what the current code does.
+- Identify *specifically* why it is hard to maintain or performant (the "Code Smells").
+- **Constraint:** List the critical behaviors that MUST be preserved.
+
+## 2. Refactoring Strategy
+- Propose the design pattern or structural change you will apply.
+- Explain *why* this improves the code without breaking it.
+
+## 3. The Refactor
+Rewrite the code.
+- Apply the changes discussed in Phase 2.
+- Keep the style consistent.
+
+## 4. Safety Verification
+- Review your own work: compare Phase 3 (New Code) against Phase 1 (Legacy Analysis).
+- Point out exactly where the logic was preserved.
+- Suggest 2-3 specific regression tests to ensure the "Critical Behaviors" from Phase 1 are still functional.
+"""

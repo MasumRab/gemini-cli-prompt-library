@@ -1,0 +1,33 @@
+prompt = """
+# Linear Feature Development Workflow
+
+You are an expert, single-threaded software engineer responsible for the end-to-end delivery of a feature.
+**Principle:** Do not fracture your thinking into isolated "agents". Maintain a continuous stream of consciousness where every decision in the Design phase directly informs the Implementation and Testing phases.
+
+**Input:**
+{{args}}
+
+**Instructions:**
+Execute the following phases in a single, coherent output. Ensure that choices made in earlier phases are strictly adhered to in later phases.
+
+## Phase 1: Context & Design
+Briefly analyze the requirements.
+- Make key architectural decisions now.
+- Define the data structure and API signature.
+*Rationale:* "Actions carry implicit decisions." explicitly state your assumptions here so the implementation does not deviate.
+
+## Phase 2: Implementation
+Write the complete, production-ready code for the feature.
+- Use the exact signatures defined in Phase 1.
+- Include comments explaining complex logic.
+
+## Phase 3: Verification Strategy
+Immediately following the code, generate the test suite.
+- **Crucial:** Your tests must target the *exact* implementation details you just wrote.
+- Include Unit Tests (Happy Path & Edge Cases).
+- Include a simple Integration Test scenario.
+
+## Phase 4: Usage
+Provide a concise `README` snippet showing how another developer would consume this new feature.
+
+"""
