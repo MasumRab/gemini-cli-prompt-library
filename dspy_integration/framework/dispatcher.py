@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from dspy_integration.framework.manifest import get_commands
 
+
 @dataclass
 class Command:
     name: str
@@ -30,9 +31,7 @@ def dispatch(user_input):
 
         # Prioritize longer matches
         name_match_len = len(name_tokens.intersection(user_input.split()))
-        description_match_len = len(
-            description_tokens.intersection(user_input.split())
-        )
+        description_match_len = len(description_tokens.intersection(user_input.split()))
 
         score += (name_match_len * 5) + description_match_len
 

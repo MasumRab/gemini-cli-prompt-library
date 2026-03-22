@@ -10,7 +10,7 @@ DEFAULT_CONFIG = {
     "dspy": {
         "enabled": True,
         "provider": None,  # None means use the default free-tier chain
-        "fallback_to_keyword": True
+        "fallback_to_keyword": True,
     }
 }
 
