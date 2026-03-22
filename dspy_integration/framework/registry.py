@@ -47,7 +47,9 @@ class CommandRegistry:
         return commands
 
     def search(self, keyword):
-        """Search for commands by keyword in name, description, or tags."""
+        """
+        Search for commands by keyword in name, description, or tags.
+        """
         results = []
         for command in self.commands.values():
             if (
@@ -81,7 +83,8 @@ def get_command(name):
 
 class IntelligentDispatcher:
     """
-    Intelligent dispatcher that routes natural language requests to appropriate commands.
+    Intelligent dispatcher that routes natural language requests to
+    appropriate commands.
     """
 
     def __init__(self, registry: Optional[CommandRegistry] = None):
@@ -110,8 +113,12 @@ class IntelligentDispatcher:
 
         return best_match if max_score > 0 else None
 
-    def _calculate_match_score(self, user_input: str, command: Command) -> float:
-        """Calculate how well a command matches the user input."""
+    def _calculate_match_score(
+        self, user_input: str, command: Command
+    ) -> float:
+        """
+        Calculate how well a command matches the user input.
+        """
         score = 0
 
         # Tokenize inputs
