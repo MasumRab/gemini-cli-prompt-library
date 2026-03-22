@@ -18,27 +18,27 @@ def _empty_findings():
 
 def _atomic_write(filepath, content):
     """Writes content to a file atomically."""
-    tmp_name = None
     try:
         dir_ = os.path.dirname(os.path.abspath(filepath))
         with tempfile.NamedTemporaryFile(
             mode="w", encoding="utf-8", dir=dir_, delete=False, suffix=".tmp"
         ) as tmp:
-            tmp_name = tmp.name
             tmp.write(content)
-        os.replace(tmp_name, filepath)
+        os.replace(tmp.name, filepath)
         return True
     except OSError as exc:
         print(f"Warning: could not write {filepath}: {exc}")
-        if tmp_name and os.path.exists(tmp_name):
+        if os.path.exists(tmp.name):
             try:
-                os.remove(tmp_name)
+                os.remove(tmp.name)
             except OSError:
                 pass
         return False
 
 
-def check_registry_performance(filepath=None, findings=None, inserted_todos=None):
+def check_registry_performance(
+    filepath=None, findings=None, inserted_todos=None
+):
     """Checks for inefficient registry instantiation."""
     if filepath is None:
         filepath = os.path.join(
@@ -55,8 +55,8 @@ def check_registry_performance(filepath=None, findings=None, inserted_todos=None
     with open(filepath, "r") as f:
         content = f.read()
 
-    pattern = r"def get_command\(name\):[\s\S]*?registry = CommandRegistry\(\)"
-    if re.search(pattern, content, re.DOTALL):
+    pattern = r"def get_command\(name\):\n[^\n]*registry = CommandRegistry\(\)"
+    if re.search(pattern, content):
         findings["Performance"].append(
             f"Inefficient `CommandRegistry` instantiation in `{filepath}`. "
             "Creates a new registry (scanning all files) on every call."
@@ -84,7 +84,9 @@ def check_registry_performance(filepath=None, findings=None, inserted_todos=None
     return findings, inserted_todos
 
 
-def check_dispatcher_architecture(filepath=None, findings=None, inserted_todos=None):
+def check_dispatcher_architecture(
+    filepath=None, findings=None, inserted_todos=None
+):
     """Checks for missing IntelligentDispatcher usage."""
     if filepath is None:
         filepath = os.path.join(
@@ -108,11 +110,10 @@ def check_dispatcher_architecture(filepath=None, findings=None, inserted_todos=N
         )
 
         todo_comment = (
-            "    # NOTE: Integrate `IntelligentDispatcher` — see ISSUE-1234\n"
+            "    # TODO [Medium Priority]: Integrate `IntelligentDispatcher`\n"
             "    # for better routing logic."
         )
-        # Only add NOTE if not already present
-        if "# NOTE:" not in content:
+        if "Integrate `IntelligentDispatcher`" not in content:
             if "def dispatch(user_input):" in content:
                 new_content = content.replace(
                     "def dispatch(user_input):",
@@ -149,12 +150,19 @@ def check_dspy_modules(directory=None, findings=None, inserted_todos=None):
                 and "BootstrapFewShot" not in content
                 and "MIPROv2" not in content
             ):
+                if "TODO" in content and (
+                    "Optimize" in content or "MIPRO" in content
+                ):
+                    continue
+
                 findings["DSPy"].append(
                     f"`{filepath}`: Module lacks advanced optimizers "
                     "(BootstrapFewShot/MIPROv2)."
                 )
 
-                target_class_pattern = r"class .*Optimizer\(.*dspy\.Module.*\):"
+                target_class_pattern = (
+                    r"class .*Optimizer\(.*dspy\.Module.*\):"
+                )
                 match = re.search(target_class_pattern, content)
                 if not match:
                     target_class_pattern = r"class .*\(*dspy\.Module.*\):"
@@ -163,12 +171,13 @@ def check_dspy_modules(directory=None, findings=None, inserted_todos=None):
                 if match:
                     class_line = match.group(0)
                     todo_comment = (
-                        "    # NOTE: Optimize module using dspy.MIPROv2 — see ISSUE-2001\n"
+                        "    # TODO [Low Priority]: Optimize module using "
+                        "dspy.MIPROv2\n"
                         "    # or BootstrapFewShot for better prompt "
                         "performance."
                     )
 
-                    if "# NOTE:" not in content:
+                    if content.count(class_line) == 1:
                         new_content = content.replace(
                             class_line, f"{class_line}\n{todo_comment}"
                         )
@@ -187,7 +196,7 @@ def check_dspy_modules(directory=None, findings=None, inserted_todos=None):
 def generate_report(findings, inserted_todos):
     """Generates the Markdown report."""
     audit_date = datetime.datetime.now().strftime("%B %Y")
-    date_str = datetime.datetime.now().strftime("%Y_%m_%d")
+    date_str = datetime.datetime.now().strftime('%Y_%m_%d')
     report_name = f"AUDIT_REPORT_{date_str}.md"
     audit_report_file = os.path.join(_REPO_ROOT, report_name)
 

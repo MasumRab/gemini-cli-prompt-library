@@ -1,13 +1,11 @@
 import os
 import sys
 import unittest
-from typing import NoReturn
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import patch, MagicMock
 
 # Add the project root to the sys.path so we can import scripts
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-import requests  # noqa: E402
 from scripts.update_active_context import (  # noqa: E402
     get_repository,
     fetch_paginated,
@@ -75,7 +73,7 @@ class TestActiveContextUpdater(unittest.TestCase):
 
     @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.fetch_paginated")
-    @patch("builtins.open", new_callable=mock_open)
+    @patch("builtins.open", new_callable=unittest.mock.mock_open)
     def test_main_missing_token(self, mock_file, mock_fetch, mock_env_get):
         mock_env_get.return_value = None
         main()
@@ -88,7 +86,7 @@ class TestActiveContextUpdater(unittest.TestCase):
 
     @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
-    @patch("builtins.open", new_callable=mock_open)
+    @patch("builtins.open", new_callable=unittest.mock.mock_open)
     def test_main_missing_repo(self, mock_file, mock_get_repo, mock_env_get):
         mock_env_get.return_value = "fake_token"
         mock_get_repo.return_value = ""
@@ -102,7 +100,7 @@ class TestActiveContextUpdater(unittest.TestCase):
     @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
     @patch("scripts.update_active_context.fetch_paginated")
-    @patch("builtins.open", new_callable=mock_open)
+    @patch("builtins.open", new_callable=unittest.mock.mock_open)
     def test_main_success_with_prs(
         self, mock_file, mock_fetch, mock_get_repo, mock_env_get
     ):
@@ -138,32 +136,34 @@ class TestActiveContextUpdater(unittest.TestCase):
         )
         self.assertEqual(mock_fetch.call_count, 2)
 
-    @patch("scripts.update_active_context.requests")
     @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
     @patch("scripts.update_active_context.fetch_paginated")
-    @patch("builtins.open", new_callable=mock_open)
-    def test_main_api_failure(
-        self, mock_file, mock_fetch, mock_get_repo, mock_env_get, mock_requests
-    ):
+    @patch("builtins.open", new_callable=unittest.mock.mock_open)
+    def test_main_api_failure(self, mock_file, mock_fetch, mock_get_repo, mock_env_get):
         mock_env_get.return_value = "fake_token"
         mock_get_repo.return_value = "owner/repo"
 
-        # Simulate API timeout/failure using the mocked requests module
-        mock_requests.RequestException = requests.RequestException
+        # Simulate API timeout/failure
+        # Use Exception if requests is fully mocked, or un-mocked requests.RequestException
+        class MockRequestException(Exception):
+            pass
 
-        # Need to make the mock raise BEFORE the first real call is made
-        # Use side_effect as a function to ensure it raises each time
-        def raise_error(*args, **kwargs) -> NoReturn:
-            raise mock_requests.RequestException("API timeout")
+        import scripts.update_active_context
+        # Temporarily replace the exception caught in the script so the test catches it
+        original_exc = scripts.update_active_context.requests.RequestException
+        scripts.update_active_context.requests.RequestException = MockRequestException
 
-        mock_fetch.side_effect = raise_error
+        mock_fetch.side_effect = MockRequestException("API timeout")
 
-        main()
+        try:
+            main()
+        finally:
+            scripts.update_active_context.requests.RequestException = original_exc
 
-        # Get all write calls
-        handle = mock_file()
-        written_content = "".join([call.args[0] for call in handle.write.call_args_list])
+        written_content = "".join(
+            [call.args[0] for call in mock_file().write.call_args_list]
+        )
         self.assertIn(
             "*GitHub API request failed - Context unavailable*", written_content
         )
@@ -171,7 +171,7 @@ class TestActiveContextUpdater(unittest.TestCase):
     @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
     @patch("scripts.update_active_context.fetch_paginated")
-    @patch("builtins.open", new_callable=mock_open)
+    @patch("builtins.open", new_callable=unittest.mock.mock_open)
     def test_main_invalid_max_pr_process(
         self, mock_file, mock_fetch, mock_get_repo, mock_env_get
     ):
@@ -227,7 +227,7 @@ class TestActiveContextUpdater(unittest.TestCase):
     @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
     @patch("scripts.update_active_context.fetch_paginated")
-    @patch("builtins.open", new_callable=mock_open)
+    @patch("builtins.open", new_callable=unittest.mock.mock_open)
     def test_main_markdown_sanitization(
         self, mock_file, mock_fetch, mock_get_repo, mock_env_get
     ):

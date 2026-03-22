@@ -73,7 +73,7 @@ class CommandRegistry:
 
 def get_command(name):
     """Convenience function to get a command from the default registry."""
-    # NOTE: Implement singleton/caching for CommandRegistry — see ADR-001
+    # TODO [High Priority]: Implement singleton/caching for CommandRegistry
     # to avoid O(N) re-parsing.
     registry = CommandRegistry()
     return registry.get_command(name)
@@ -111,7 +111,9 @@ class IntelligentDispatcher:
 
         return best_match if max_score > 0 else None
 
-    def _calculate_match_score(self, user_input: str, command: Command) -> float:
+    def _calculate_match_score(
+        self, user_input: str, command: Command
+    ) -> float:
         """
         Calculate how well a command matches the user input.
         """

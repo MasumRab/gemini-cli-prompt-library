@@ -34,7 +34,7 @@ class FeatureDev(dspy.Module):
 
 
 class FeatureDevOptimizer(dspy.Module):
-    # NOTE: Optimize this module using dspy.MIPROv2 — see ISSUE-2001
+    # TODO [Low Priority]: Optimize this module using dspy.MIPROv2
     # or BootstrapFewShot for better prompt performance.
     """Optimized feature development module."""
 
