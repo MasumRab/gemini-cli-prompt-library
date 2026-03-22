@@ -138,7 +138,6 @@ class TestActiveContextUpdater(unittest.TestCase):
         )
         self.assertEqual(mock_fetch.call_count, 2)
 
-    @unittest.skip("Skipping - mocking complexity with module caching in pytest")
     @patch("scripts.update_active_context.requests")
     @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
