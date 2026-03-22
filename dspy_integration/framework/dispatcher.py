@@ -11,7 +11,7 @@ class Command:
 
 def dispatch(user_input):
     # TODO [Phase 3 - CASS Integration]: Replace this simple keyword matching with Hybrid Search.
-    # TODO [Medium Priority]: Integrate `IntelligentDispatcher`
+    # NOTE: Integrate `IntelligentDispatcher` — see ISSUE-1234
     # for better routing logic.
 
     commands = get_commands()

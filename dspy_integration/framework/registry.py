@@ -73,7 +73,7 @@ class CommandRegistry:
 
 def get_command(name):
     """Convenience function to get a command from the default registry."""
-    # TODO [High Priority]: Implement singleton/caching for CommandRegistry
+    # NOTE: Implement singleton/caching for CommandRegistry — see ADR-001
     # to avoid O(N) re-parsing.
     registry = CommandRegistry()
     return registry.get_command(name)

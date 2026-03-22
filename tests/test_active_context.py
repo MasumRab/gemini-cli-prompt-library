@@ -1,6 +1,7 @@
 import os
 import sys
 import unittest
+from typing import NoReturn
 from unittest.mock import patch, MagicMock, mock_open
 
 # Add the project root to the sys.path so we can import scripts
@@ -154,7 +155,7 @@ class TestActiveContextUpdater(unittest.TestCase):
 
         # Need to make the mock raise BEFORE the first real call is made
         # Use side_effect as a function to ensure it raises each time
-        def raise_error(*args, **kwargs):
+        def raise_error(*args, **kwargs) -> NoReturn:
             raise mock_requests.RequestException("API timeout")
 
         mock_fetch.side_effect = raise_error
@@ -163,7 +164,7 @@ class TestActiveContextUpdater(unittest.TestCase):
 
         # Get all write calls
         handle = mock_file()
-        written_content = "".join([call[0][0] for call in handle.write.call_args_list])
+        written_content = "".join([call.args[0] for call in handle.write.call_args_list])
         self.assertIn(
             "*GitHub API request failed - Context unavailable*", written_content
         )

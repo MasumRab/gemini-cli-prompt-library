@@ -18,19 +18,21 @@ def _empty_findings():
 
 def _atomic_write(filepath, content):
     """Writes content to a file atomically."""
+    tmp_name = None
     try:
         dir_ = os.path.dirname(os.path.abspath(filepath))
         with tempfile.NamedTemporaryFile(
             mode="w", encoding="utf-8", dir=dir_, delete=False, suffix=".tmp"
         ) as tmp:
+            tmp_name = tmp.name
             tmp.write(content)
-        os.replace(tmp.name, filepath)
+        os.replace(tmp_name, filepath)
         return True
     except OSError as exc:
         print(f"Warning: could not write {filepath}: {exc}")
-        if os.path.exists(tmp.name):
+        if tmp_name and os.path.exists(tmp_name):
             try:
-                os.remove(tmp.name)
+                os.remove(tmp_name)
             except OSError:
                 pass
         return False
@@ -53,8 +55,8 @@ def check_registry_performance(filepath=None, findings=None, inserted_todos=None
     with open(filepath, "r") as f:
         content = f.read()
 
-    pattern = r"def get_command\(name\):\n[^\n]*registry = CommandRegistry\(\)"
-    if re.search(pattern, content):
+    pattern = r"def get_command\(name\):[\s\S]*?registry = CommandRegistry\(\)"
+    if re.search(pattern, content, re.DOTALL):
         findings["Performance"].append(
             f"Inefficient `CommandRegistry` instantiation in `{filepath}`. "
             "Creates a new registry (scanning all files) on every call."
@@ -146,9 +148,6 @@ def check_dspy_modules(directory=None, findings=None, inserted_todos=None):
                 and "BootstrapFewShot" not in content
                 and "MIPROv2" not in content
             ):
-                if "TODO" in content and ("Optimize" in content or "MIPRO" in content):
-                    continue
-
                 findings["DSPy"].append(
                     f"`{filepath}`: Module lacks advanced optimizers "
                     "(BootstrapFewShot/MIPROv2)."
