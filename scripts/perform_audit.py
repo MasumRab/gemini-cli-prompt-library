@@ -108,10 +108,11 @@ def check_dispatcher_architecture(filepath=None, findings=None, inserted_todos=N
         )
 
         todo_comment = (
-            "    # TODO [Medium Priority]: Integrate `IntelligentDispatcher`\n"
+            "    # NOTE: Integrate `IntelligentDispatcher` — see ISSUE-1234\n"
             "    # for better routing logic."
         )
-        if "Integrate `IntelligentDispatcher`" not in content:
+        # Only add NOTE if not already present
+        if "# NOTE:" not in content:
             if "def dispatch(user_input):" in content:
                 new_content = content.replace(
                     "def dispatch(user_input):",
@@ -162,13 +163,12 @@ def check_dspy_modules(directory=None, findings=None, inserted_todos=None):
                 if match:
                     class_line = match.group(0)
                     todo_comment = (
-                        "    # TODO [Low Priority]: Optimize module using "
-                        "dspy.MIPROv2\n"
+                        "    # NOTE: Optimize module using dspy.MIPROv2 — see ISSUE-2001\n"
                         "    # or BootstrapFewShot for better prompt "
                         "performance."
                     )
 
-                    if content.count(class_line) == 1:
+                    if "# NOTE:" not in content:
                         new_content = content.replace(
                             class_line, f"{class_line}\n{todo_comment}"
                         )

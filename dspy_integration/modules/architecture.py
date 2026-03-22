@@ -27,7 +27,7 @@ class Architecture(dspy.Module):
 
 
 class ArchitectureOptimizer(dspy.Module):
-    # TODO [Low Priority]: Optimize this module using dspy.MIPROv2
+    # NOTE: Optimize this module using dspy.MIPROv2 — see ISSUE-2001
     # or BootstrapFewShot for better prompt performance.
     """Optimized architecture module."""
 
