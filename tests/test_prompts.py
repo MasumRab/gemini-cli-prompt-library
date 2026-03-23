@@ -202,7 +202,9 @@ class TestTOMLToDSPyConverter:
             config = TOMLToDSPyConverter.convert(prompt)
         except TypeError as e:
             if "metaclass conflict" in str(e):
-                pytest.skip("DSPy 3.1.3 signature metaclass issue requires further configuration")
+                pytest.skip(
+                    "DSPy 3.1.3 signature metaclass issue requires further configuration"
+                )
             raise
 
         assert "signature" in config
@@ -251,7 +253,9 @@ class TestTOMLToDSPyConverter:
             ModuleClass = TOMLToDSPyConverter.create_module(prompt)
         except TypeError as e:
             if "metaclass conflict" in str(e):
-                pytest.skip("DSPy 3.1.3 signature metaclass issue requires further configuration")
+                pytest.skip(
+                    "DSPy 3.1.3 signature metaclass issue requires further configuration"
+                )
             raise
 
         assert (
