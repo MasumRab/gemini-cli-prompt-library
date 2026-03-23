@@ -13,8 +13,7 @@ from pathlib import Path
 import re
 import tomli
 
-if TYPE_CHECKING:
-    import dspy
+import dspy
 
 
 class TOMLPrompt:
@@ -42,8 +41,6 @@ class TOMLPrompt:
 
     def to_dspy_signature(self) -> type:
         """Convert TOML prompt to DSPy Signature class."""
-        import dspy
-
         input_fields = {}
         output_fields = {}
 
@@ -138,8 +135,6 @@ class TOMLToDSPyConverter:
     @staticmethod
     def create_module(toml_prompt: TOMLPrompt, module_class_name: Optional[str] = None):
         """Create a DSPy module from a TOML prompt."""
-        import dspy
-
         config = TOMLToDSPyConverter.convert(toml_prompt)
         signature = config["signature"]
 

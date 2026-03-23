@@ -204,9 +204,8 @@ class TestOptimizerRegistry:
         from dspy_integration.framework.optimizers import OptimizerRegistry
 
         mock_metric = MagicMock()
-        with pytest.raises(ValueError) as exc_info:
+        with pytest.raises(ValueError, match="Unknown optimizer"):
             OptimizerRegistry.create("UnknownOptimizer", metric=mock_metric)
-        assert "Unknown optimizer" in str(exc_info.value)
 
 
 class TestOptimizerCompile:
