@@ -37,7 +37,13 @@ class BaseOptimizer(ABC):
         self.num_threads = num_threads
 
     @abstractmethod
-    def _create_teleprompter(self): ...
+    def _create_teleprompter(self):
+        """Create and return a teleprompter for prompt optimization.
+        
+        This is a stub implementation required to satisfy the abstract method
+        requirement. Subclasses should override this method.
+        """
+        ...
 
     def compile(
         self,
