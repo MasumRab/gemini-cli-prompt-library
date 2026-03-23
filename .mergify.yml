@@ -30,4 +30,4 @@ pull_request_rules:
     actions:
       comment:
         message: >
-          👋 {{author}} your PR is conflicting and needs to be updated to be merged
+          👋 {{author}} your PR has conflicts and needs to be updated to be merged
