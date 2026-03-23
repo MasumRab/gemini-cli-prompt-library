@@ -138,7 +138,6 @@ class TestActiveContextUpdater(unittest.TestCase):
         )
         self.assertEqual(mock_fetch.call_count, 2)
 
-    @pytest.mark.skip(reason="Complex mocking issues with API failure")
     @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
     @patch("scripts.update_active_context.fetch_paginated")

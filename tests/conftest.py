@@ -6,6 +6,7 @@ import pytest
 import sys
 import os
 from pathlib import Path
+from types import MappingProxyType
 from unittest.mock import MagicMock, patch
 
 # CRITICAL: Mock problematic modules BEFORE any other imports
@@ -43,8 +44,8 @@ class MockField:
 
 
 class MockSignature:
-    __fields__ = {"code": MockField(), "review": MockField()}
-    model_fields = {"code": MockField(), "review": MockField()}
+    __fields__ = MappingProxyType({"code": MockField(), "review": MockField()})
+    model_fields = MappingProxyType({"code": MockField(), "review": MockField()})
 
 
 _dspy_mock.Signature = MockSignature

@@ -23,8 +23,8 @@
 ## Roadmap for Phased Improvements
 
 ### Short-Term
-*   Implement caching for `CommandRegistry` instantiation to immediately resolve the performance bottleneck.
 *   Refine exception handling in `dspy_integration/framework/registry.py` to catch specific errors.
+*   Implement caching for `CommandRegistry` instantiation to immediately resolve the performance bottleneck.
 
 ### Medium-Term
 *   Integrate `IntelligentDispatcher` into `dspy_integration/framework/dispatcher.py` to unify the dispatching logic.
