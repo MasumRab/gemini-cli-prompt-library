@@ -1,23 +1,27 @@
 pull_request_rules:
-  - name: Automatic merge during office hours + hotfix support
-    description: Merge when PR passes all branch protection during office hours,
-      except for hotfix. Requires both approval AND all review threads resolved.
+  - name: Automatic merge during office hours
+    description: Merge when PR passes all branch protection during office hours. Requires both approval AND all review threads resolved.
     conditions:
-      - or:
-          - schedule = Mon-Fri 09:00-17:00[America/Los_Angeles]
-          - label = hotfix
+      - schedule = Mon-Fri 09:00-17:00[America/Los_Angeles]
       - "#approved-reviews-by >= 1"
       - "#review-threads-resolved = #review-threads"
     actions:
       merge:
+
+  - name: Hotfix merge (no review required)
+    description: Allow hotfix PRs to merge without approval or thread resolution
+    conditions:
+      - label = hotfix
+    actions:
+      merge:
+
   - name: Make sure PRs are up to date before merging with rebase
-    description: This automatically rebases PRs when they are out-of-date with the
-      base branch to avoid semantic conflicts (next step is to switch to merge
-      queue).
+    description: This automatically rebases PRs when they are out-of-date with the base branch to avoid semantic conflicts (next step is to switch to merge queue).
     conditions:
       - "#commits-behind >= 10"
     actions:
       rebase:
+
   - name: Ping PR author when conflicting
     description: Warn the pull request author when their PR has conflicts
     conditions:
@@ -26,5 +30,4 @@ pull_request_rules:
     actions:
       comment:
         message: >
-          👋 {{author}} your PR is conflicting and needs to be updated to be
-          merged
+          👋 {{author}} your PR is conflicting and needs to be updated to be merged
