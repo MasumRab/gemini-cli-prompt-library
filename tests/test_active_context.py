@@ -6,6 +6,8 @@ from unittest.mock import patch, MagicMock
 # Add the project root to the sys.path so we can import scripts
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+import requests  # noqa: E402
+
 from scripts.update_active_context import (  # noqa: E402
     get_repository,
     fetch_paginated,

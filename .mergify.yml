@@ -1,11 +1,13 @@
 pull_request_rules:
   - name: Automatic merge during office hours + hotfix support
     description: Merge when PR passes all branch protection during office hours,
-      except for hotfix
+      except for hotfix. Requires both approval AND all review threads resolved.
     conditions:
       - or:
           - schedule = Mon-Fri 09:00-17:00[America/Los_Angeles]
           - label = hotfix
+      - "#approved-reviews-by >= 1"
+      - "#review-threads-resolved = #review-threads"
     actions:
       merge:
   - name: Make sure PRs are up to date before merging with rebase
