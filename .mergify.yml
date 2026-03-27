@@ -1,11 +1,8 @@
 pull_request_rules:
-  - name: Automatic merge during office hours + hotfix support
-    description: Merge when PR passes all branch protection during office hours,
-      except for hotfix
+  - name: Automatic merge
+    description: Merge when PR passes all branch protection
     conditions:
-      - or:
-          - schedule = Mon-Fri 09:00-17:00[America/Los_Angeles]
-          - label = hotfix
+      - base=main
     actions:
       merge:
   - name: Make sure PRs are up to date before merging with rebase
