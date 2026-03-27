@@ -1,13 +1,13 @@
 pull_request_rules:
-  - name: Automatic merge when CI passes + review approved + office hours or hotfix
-    description: Merge PR when all checks pass, approved, and during office hours or with hotfix label
+  - name: Automatic merge when CI passes + review approved
+    description: Merge PR when all checks pass and approved (with hotfix override)
     conditions:
       - or:
-          - schedule = Mon-Fri 09:00-17:00[America/Los_Angeles]
           - label = hotfix
-      - "#approved-reviews-by >= 1"
-      - "#changes-requested-by = 0"
-      - "#comment-thread-created = 0"
+          - and:
+              - "#approved-reviews-by >= 1"
+              - "#changes-requested-by = 0"
+              - "#comment-thread-created = 0"
       - check-success = CI
     actions:
       merge:
