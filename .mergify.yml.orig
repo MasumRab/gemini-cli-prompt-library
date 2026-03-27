@@ -8,7 +8,6 @@ pull_request_rules:
           - label = hotfix
     actions:
       merge:
-        method: merge
   - name: Make sure PRs are up to date before merging with rebase
     description: This automatically rebases PRs when they are out-of-date with the
       base branch to avoid semantic conflicts (next step is to switch to merge
