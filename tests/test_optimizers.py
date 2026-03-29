@@ -10,71 +10,29 @@ from unittest import skipUnless
 class TestBaseOptimizer:
     """Test base optimizer functionality."""
 
-    def test_base_optimizer_init(self):
-        """Test base optimizer initialization."""
+    def test_base_optimizer_abstract_class(self):
+        """Test that BaseOptimizer is abstract and cannot be instantiated directly."""
+        from dspy_integration.framework.optimizers.base import BaseOptimizer
+        from abc import ABC
+
+        # BaseOptimizer should be an abstract class
+        assert issubclass(BaseOptimizer, ABC), "BaseOptimizer should be abstract"
+        
+        # Attempting to instantiate should raise TypeError
+        mock_metric = MagicMock()
+        with pytest.raises(TypeError):
+            BaseOptimizer(metric=mock_metric)
+
+    def test_base_optimizer_methods_abstract(self):
+        """Test that BaseOptimizer has abstract methods."""
         from dspy_integration.framework.optimizers.base import BaseOptimizer
 
-        mock_metric = MagicMock()
-
-        # Skip if BaseOptimizer is abstract
-        try:
-            optimizer = BaseOptimizer(metric=mock_metric)
-            assert optimizer.metric is mock_metric
-            assert optimizer.max_bootstrapped_demos == 3
-            assert optimizer.max_labeled_demos == 3
-            assert optimizer.num_threads == 16
-        except TypeError:
-            # BaseOptimizer is abstract - that's fine, skip this test
-            pytest.skip("BaseOptimizer is abstract")
-
-    def test_base_optimizer_custom_values(self):
-        """Test base optimizer with custom values."""
-        from dspy_integration.framework.optimizers.base import BaseOptimizer
-
-        mock_metric = MagicMock()
-
-        try:
-            optimizer = BaseOptimizer(
-                metric=mock_metric,
-                max_bootstrapped_demos=5,
-                max_labeled_demos=4,
-                num_threads=8,
-            )
-
-            assert optimizer.max_bootstrapped_demos == 5
-            assert optimizer.max_labeled_demos == 4
-            assert optimizer.num_threads == 8
-        except TypeError:
-            pytest.skip("BaseOptimizer is abstract")
-
-    def test_base_optimizer_repr(self):
-        """Test base optimizer string representation."""
-        from dspy_integration.framework.optimizers.base import BaseOptimizer
-
-        mock_metric = MagicMock()
-
-        try:
-            optimizer = BaseOptimizer(metric=mock_metric)
-
-            repr_str = repr(optimizer)
-            assert "BaseOptimizer" in repr_str
-            assert "max_bootstrapped=3" in repr_str
-            assert "max_labeled=3" in repr_str
-        except TypeError:
-            pytest.skip("BaseOptimizer is abstract")
-
-    def test_base_optimizer_abstract_create_teleprompter(self):
-        """Test that _create_teleprompter is abstract."""
-        from dspy_integration.framework.optimizers.base import BaseOptimizer
-
-        mock_metric = MagicMock()
-
-        try:
-            optimizer = BaseOptimizer(metric=mock_metric)
-            with pytest.raises(NotImplementedError):
-                optimizer._create_teleprompter()
-        except TypeError:
-            pytest.skip("BaseOptimizer is abstract")
+        # The class should define abstract methods
+        import inspect
+        abstract_methods = [name for name, method in inspect.getmembers(BaseOptimizer) 
+                           if getattr(method, '__isabstractmethod__', False)]
+        assert len(abstract_methods) > 0, "BaseOptimizer should have abstract methods"
+        assert "_create_teleprompter" in abstract_methods, "_create_teleprompter should be abstract"
 
 
 class TestMIPROv2Optimizer:
@@ -110,12 +68,19 @@ class TestMIPROv2Optimizer:
         assert optimizer.prompt_model == "gpt-4"
         assert optimizer.task_model == "gpt-3.5-turbo"
 
-    def test_create_teleprompter(self):
+    @patch("dspy.teleprompt.MIPROv2")
+    def test_create_teleprompter(self, mock_mipro):
         """Test creating MIPROv2 teleprompter."""
         from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
 
-        # Skip - requires local import inside method, complex to mock
-        pytest.skip("MIPROv2 teleprompter test requires real dspy library")
+        mock_mipro.return_value = MagicMock()
+
+        mock_metric = MagicMock()
+        optimizer = MIPROv2Optimizer(metric=mock_metric)
+
+        teleprompter = optimizer._create_teleprompter()
+        assert teleprompter is not None
+        mock_mipro.assert_called_once()
 
 
 class TestBootstrapFewShotOptimizer:
@@ -166,16 +131,21 @@ class TestBootstrapFewShotRandomSearchOptimizer:
         assert optimizer.metric is mock_metric
         assert optimizer.num_candidate_programs == 15
 
-    def test_create_teleprompter(self):
+    @patch("dspy.teleprompt.BootstrapFewShotWithRandomSearch")
+    def test_create_teleprompter(self, mock_bsrs):
         """Test creating teleprompter with random search."""
         from dspy_integration.framework.optimizers.bootstrap import (
             BootstrapFewShotRandomSearchOptimizer,
         )
 
-        # Skip - requires local import inside method, complex to mock
-        pytest.skip(
-            "BootstrapFewShotRandomSearch teleprompter test requires real dspy library"
-        )
+        mock_bsrs.return_value = MagicMock()
+
+        mock_metric = MagicMock()
+        optimizer = BootstrapFewShotRandomSearchOptimizer(metric=mock_metric)
+
+        teleprompter = optimizer._create_teleprompter()
+        assert teleprompter is not None
+        mock_bsrs.assert_called_once()
 
 
 class TestOptimizerRegistry:

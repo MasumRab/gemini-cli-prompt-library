@@ -208,15 +208,8 @@ class TestTOMLToDSPyConverter:
         assert "code" in config["input_fields"]
         assert "output" in config["output_fields"]
 
-    @pytest.mark.skip(
-        reason="Requires real dspy module - skipped in mocked test environment"
-    )
     def test_create_module(self):
-        """Test creating a DSPy module from TOML prompt.
-
-        Note: This test requires real dspy module and may not work with mocked dspy.
-        """
-        import dspy
+        """Test creating a DSPy module from TOML prompt."""
         from dspy_helm.prompts import TOMLPrompt, TOMLToDSPyConverter
 
         prompt = TOMLPrompt(
@@ -228,9 +221,10 @@ class TestTOMLToDSPyConverter:
         ModuleClass = TOMLToDSPyConverter.create_module(prompt, "SecurityReviewModule")
 
         assert ModuleClass.__name__ == "SecurityReviewModule"
-        # Check it's a proper class with forward method
         assert isinstance(ModuleClass, type)
         assert hasattr(ModuleClass, "forward")
+        # Verify the module has the expected structure
+        assert "generate" in dir(ModuleClass) or hasattr(ModuleClass, "forward")
 
     def test_create_module_default_name(self):
         """Test creating module with auto-generated name."""
