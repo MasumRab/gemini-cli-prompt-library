@@ -85,6 +85,48 @@ class TestActiveContextUpdater(unittest.TestCase):
         )
         mock_fetch.assert_not_called()
 
+    @patch("scripts.update_active_context.get_repository")
+    @patch("scripts.update_active_context.fetch_paginated")
+    @patch("builtins.open", new_callable=unittest.mock.mock_open)
+    def test_main_uses_gh_token_fallback(
+        self, mock_file, mock_fetch, mock_get_repo
+    ):
+        mock_get_repo.return_value = "owner/repo"
+
+        # Mock PRs
+        mock_prs = [
+            {
+                "number": 101,
+                "title": "Fix bug",
+                "html_url": "https://github.com/owner/repo/pull/101",
+                "user": {"login": "dev1"},
+            }
+        ]
+
+        # Mock Files
+        mock_files = [{"filename": "src/main.py"}]
+
+        mock_fetch.side_effect = [mock_prs, mock_files]
+
+        with patch("os.environ.get") as mock_env_get:
+            def mock_get(key, default=None):
+                if key == "GH_TOKEN":
+                    return "gh_fake_token"
+                return default
+            mock_env_get.side_effect = mock_get
+            main()
+
+        # Check headers passed to fetch_paginated
+        expected_headers = {
+            "Authorization": "Bearer gh_fake_token",
+            "Accept": "application/vnd.github.v3+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        }
+        mock_fetch.assert_any_call(
+            "https://api.github.com/repos/owner/repo/pulls?state=open&per_page=100",
+            expected_headers
+        )
+
     @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
     @patch("builtins.open", new_callable=unittest.mock.mock_open)
@@ -136,34 +178,6 @@ class TestActiveContextUpdater(unittest.TestCase):
             written_content,
         )
         self.assertEqual(mock_fetch.call_count, 2)
-
-    @patch("scripts.update_active_context.get_repository")
-    @patch("scripts.update_active_context.fetch_paginated")
-    @patch("builtins.open", new_callable=unittest.mock.mock_open)
-    def test_main_uses_gh_token_fallback(
-        self, mock_file, mock_fetch, mock_get_repo
-    ):
-        """Test that GH_TOKEN is used as fallback when GITHUB_TOKEN is not set."""
-        # Track what environment variable is requested
-        env_requests = []
-
-        def env_get(key, default=None):
-            env_requests.append(key)
-            if key == "GITHUB_TOKEN":
-                return None  # GITHUB_TOKEN not set
-            elif key == "GH_TOKEN":
-                return "gh_fallback_token"  # GH_TOKEN is set
-            return default
-
-        with patch("scripts.update_active_context.os.environ.get", side_effect=env_get):
-            mock_get_repo.return_value = "owner/repo"
-            mock_fetch.side_effect = [[], []]  # No PRs, no files
-
-            main()
-
-        # Verify GH_TOKEN was requested as fallback
-        self.assertIn("GITHUB_TOKEN", env_requests)
-        self.assertIn("GH_TOKEN", env_requests)
 
     @unittest.skip("Skipping due to complex mocking issues - test needs redesign")
     @patch("scripts.update_active_context.os.environ.get")
