@@ -44,7 +44,7 @@ qwen-code extensions link .
 
 After installation, restart your CLI and start using prompts:
 
-> **Note:** For Windows, Linux, and specific integrations (like Goose or Claude), see our [Advanced Installation & Integrations](#-advanced-installation--integrations) section.
+> **Note:** For Windows, Linux, and specific integrations (like Goose or Claude), see our [Advanced Installation & Integrations](#-advanced-installation--integrations) section for more details.
 
 ```bash
 # Review code for security issues
@@ -179,7 +179,6 @@ The DSPy integration provides intelligent command routing and prompt optimizatio
 
 ### Installation
 ```bash
-cd .
 pip install -e .
 ```
 
@@ -272,7 +271,7 @@ Expand the reach of this library beyond the standard `gemini-cli`:
 Based on the prompts in this library, here are key principles:
 
 ### 1. **Be Specific**
-```
+```text
 ❌ "Review this code"
 ✅ "Perform a security analysis focusing on input validation, SQL injection, and XSS vulnerabilities"
 ```
@@ -319,7 +318,7 @@ For more information about Gemini CLI extensions:
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - see the [repository](https://github.com/MasumRab/gemini-cli-prompt-library) for details.
 
 ## 🙏 Acknowledgments
 
@@ -345,7 +344,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-## About me
+## 👤 About me
 My name is Harish Garg. I am a solo developer. I write at my blog [here](https://harishgarg.com/).
 
 I also maintain a [MCP Resources Directory](https://www.mcpstack.org/) & a [coding ai tools directory](https://www.codeaidirectory.com/)
