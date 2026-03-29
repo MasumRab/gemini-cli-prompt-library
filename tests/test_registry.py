@@ -12,34 +12,25 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 def test_registry():
     """Test the command registry."""
-    try:
-        from dspy_integration.framework.registry import CommandRegistry
+    from dspy_integration.framework.registry import CommandRegistry
 
-        registry = CommandRegistry()
-        commands = registry._commands
-        print(f"✅ Registry loaded: {len(commands)} commands")
+    registry = CommandRegistry()
+    commands = registry.commands
+    assert len(commands) > 0, "Registry should have commands"
+    print(f"✅ Registry loaded: {len(commands)} commands")
 
-        # Test getting a command
-        improve_cmd = registry.get_command("improve")
-        if improve_cmd:
-            print(f"✅ Found 'improve' command: {improve_cmd['category']}")
-        else:
-            print("❌ 'improve' command not found")
+    # Test getting a command
+    improve_cmd = registry.get_command("improve")
+    assert improve_cmd is not None, "'improve' command should be found"
+    assert hasattr(improve_cmd, 'category'), "'improve' command should have category attribute"
+    print(f"✅ Found 'improve' command: {improve_cmd.category}")
 
-        # Test search
-        results = registry.search("test")
-        print(f"✅ Search 'test' found {len(results)} results")
-
-        return True
-
-    except Exception as e:
-        print(f"❌ Registry test failed: {e}")
-        import traceback
-
-        traceback.print_exc()
-        return False
+    # Test search
+    results = registry.search("test")
+    assert isinstance(results, list), "Search should return a list"
+    print(f"✅ Search 'test' found {len(results)} results")
 
 
 if __name__ == "__main__":
-    success = test_registry()
-    sys.exit(0 if success else 1)
+    test_registry()
+    print("All tests passed!")
