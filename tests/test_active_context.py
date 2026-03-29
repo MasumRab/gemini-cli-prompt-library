@@ -106,14 +106,7 @@ class TestActiveContextUpdater(unittest.TestCase):
 
         mock_fetch.side_effect = [mock_prs, mock_files]
 
-        with patch("os.environ.get") as mock_env_get:
-
-            def mock_get(key, default=None):
-                if key == "GH_TOKEN":
-                    return "gh_fake_token"
-                return default
-
-            mock_env_get.side_effect = mock_get
+        with patch.dict(os.environ, {"GH_TOKEN": "gh_fake_token"}, clear=True):
             main()
 
         # Check headers passed to fetch_paginated
@@ -178,30 +171,6 @@ class TestActiveContextUpdater(unittest.TestCase):
             written_content,
         )
         self.assertEqual(mock_fetch.call_count, 2)
-
-    @patch("scripts.update_active_context.get_repository")
-    @patch("scripts.update_active_context.fetch_paginated")
-    @patch("builtins.open", new_callable=unittest.mock.mock_open)
-    def test_main_uses_gh_token_fallback(self, mock_file, mock_fetch, mock_get_repo):
-        """Test that GH_TOKEN is used as fallback when GITHUB_TOKEN is not set."""
-        env_requests = []
-
-        def env_get(key, default=None):
-            env_requests.append(key)
-            if key == "GITHUB_TOKEN":
-                return None
-            elif key == "GH_TOKEN":
-                return "gh_fallback_token"
-            return default
-
-        with patch("scripts.update_active_context.os.environ.get", side_effect=env_get):
-            mock_get_repo.return_value = "owner/repo"
-            mock_fetch.side_effect = [[], []]
-
-            main()
-
-        self.assertIn("GITHUB_TOKEN", env_requests)
-        self.assertIn("GH_TOKEN", env_requests)
 
     @unittest.skip("Skipping due to complex mocking issues - test needs redesign")
     @patch("scripts.update_active_context.os.environ.get")
