@@ -45,7 +45,7 @@ class TestCodeReviewModule:
 
         result = module.forward("test code")
 
-        assert result.review == "Test review"
+        assert result == "Test review"
 
 
 class TestArchitectureModule:
