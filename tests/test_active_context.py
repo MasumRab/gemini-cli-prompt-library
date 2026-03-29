@@ -137,6 +137,34 @@ class TestActiveContextUpdater(unittest.TestCase):
         )
         self.assertEqual(mock_fetch.call_count, 2)
 
+    @patch("scripts.update_active_context.get_repository")
+    @patch("scripts.update_active_context.fetch_paginated")
+    @patch("builtins.open", new_callable=unittest.mock.mock_open)
+    def test_main_uses_gh_token_fallback(
+        self, mock_file, mock_fetch, mock_get_repo
+    ):
+        """Test that GH_TOKEN is used as fallback when GITHUB_TOKEN is not set."""
+        # Track what environment variable is requested
+        env_requests = []
+
+        def env_get(key, default=None):
+            env_requests.append(key)
+            if key == "GITHUB_TOKEN":
+                return None  # GITHUB_TOKEN not set
+            elif key == "GH_TOKEN":
+                return "gh_fallback_token"  # GH_TOKEN is set
+            return default
+
+        with patch("scripts.update_active_context.os.environ.get", side_effect=env_get):
+            mock_get_repo.return_value = "owner/repo"
+            mock_fetch.side_effect = [[], []]  # No PRs, no files
+
+            main()
+
+        # Verify GH_TOKEN was requested as fallback
+        self.assertIn("GITHUB_TOKEN", env_requests)
+        self.assertIn("GH_TOKEN", env_requests)
+
     @unittest.skip("Skipping due to complex mocking issues - test needs redesign")
     @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
