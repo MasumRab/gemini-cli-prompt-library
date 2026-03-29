@@ -22,9 +22,8 @@ class CodeReview(dspy.Module):
         self.model = model or dspy.settings.lm
         self.review_code = dspy.ChainOfThought(CodeReviewSignature)
 
-    def forward(self, code: str) -> str:
-        result = self.review_code(code=code)
-        return result.review
+    def forward(self, code: str):
+        return self.review_code(code=code)
 
 
 class CodeReviewOptimizer(dspy.Module):

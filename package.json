@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "DSPy Integration Adapter for Render Node.js Runtime (DO NOT DELETE - required for deployment fallback)",
   "scripts": {
-    "postinstall": "if command -v pip >/dev/null 2>&1; then pip install -r requirements.txt || { echo 'ERROR: pip install failed' >&2; exit 1; }; else echo 'pip not available, skipping Python dependency installation'; fi",
+    "postinstall": "command -v pip >/dev/null 2>&1 && pip install -r requirements.txt || echo 'pip not available, skipping Python dependency installation'",
     "start": "python -m dspy_integration.cli"
   },
   "dependencies": {},

@@ -38,6 +38,7 @@
   "/debugging:performance-profile": "Performance Profiling & Optimization",
   "/learning:eli5": "Explain Like I'm 5 (ELI5)",
   "/learning:compare-tech": "Enhanced Technology Comparison with DSPy Multi-Faceted Analysis",
+  "/learning:explain_concept": "Explain Technical Concept",
   "/learning:roadmap": "Create Learning Roadmap",
   "/learning:explain-concept": "Explain Technical Concept"
 }

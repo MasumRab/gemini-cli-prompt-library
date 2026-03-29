@@ -24,12 +24,18 @@ class TestCodeReviewModule:
 
         assert hasattr(module, "review_code")
 
+    @patch.object(
+        __import__(
+            "dspy_integration.modules.code_review", fromlist=["CodeReview"]
+        ).CodeReview,
+        "__init__",
+        lambda self, model=None: None,
+    )
     def test_forward(self):
         """Test forward pass."""
         from dspy_integration.modules.code_review import CodeReview
 
-        with patch.object(CodeReview, "__init__", lambda self, model=None: None):
-            module = CodeReview()
+        module = CodeReview()
         # Mock the internal chain of thought
         mock_chain = MagicMock()
         mock_result = MagicMock()
@@ -39,7 +45,7 @@ class TestCodeReviewModule:
 
         result = module.forward("test code")
 
-        assert result == "Test review"
+        assert result.review == "Test review"
 
 
 class TestArchitectureModule:
