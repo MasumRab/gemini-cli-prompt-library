@@ -1,12 +1,10 @@
 {
   "name": "gemini-cli-dspy-integration",
   "version": "1.0.0",
-  "private": true,
   "description": "DSPy Integration Adapter for Render Node.js Runtime (DO NOT DELETE - required for deployment fallback)",
   "scripts": {
-    "build": "pip install -r requirements.txt",
-    "start": "python -m dspy_integration.cli",
-    "audit": "python3 scripts/perform_audit.py"
+    "postinstall": "command -v pip >/dev/null 2>&1 && pip install -r requirements.txt || echo 'pip not available, skipping Python dependency installation'",
+    "start": "python -m dspy_integration.cli"
   },
   "dependencies": {},
   "devDependencies": {}
