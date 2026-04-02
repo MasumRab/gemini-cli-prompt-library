@@ -346,7 +346,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-## About me
+## 👤 About me
 My name is Harish Garg. I am a solo developer. I write at my blog [here](https://harishgarg.com/).
 
 I also maintain a [MCP Resources Directory](https://www.mcpstack.org/) & a [coding ai tools directory](https://www.codeaidirectory.com/)
