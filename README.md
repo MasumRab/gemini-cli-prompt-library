@@ -272,7 +272,8 @@ Expand the reach of this library beyond the standard `gemini-cli`:
 Based on the prompts in this library, here are key principles:
 
 ### 1. **Be Specific**
-```
+
+```text
 ❌ "Review this code"
 ✅ "Perform a security analysis focusing on input validation, SQL injection, and XSS vulnerabilities"
 ```
