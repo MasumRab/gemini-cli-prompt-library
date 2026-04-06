@@ -46,7 +46,7 @@ Your goal is to analyze a user's request and a list of available commands, and t
   "/code-review:refactor": "Enhanced Code Refactoring Suggestions with DSPy Reasoning",
   "/code-review:security": "Enhanced Security Code Review with DSPy Reasoning",
   "/code-review:performance": "Enhanced Performance Code Review with DSPy Reasoning",
-  "/code-review:scheduled-codebase-audit": "Scheduled codebase audit and issue prediction",
+  "/code-review:scheduled-codebase-audit": "Scheduled codebase audit",
   "/code-review:best-practices": "Enhanced Best Practices Code Review with DSPy Best Practice Enforcement",
   "/testing:edge-cases": "Enhanced Edge Case Identification with DSPy Reasoning",
   "/testing:generate-e2e-tests": "Enhanced End-to-End Test Generation with DSPy Reasoning",
