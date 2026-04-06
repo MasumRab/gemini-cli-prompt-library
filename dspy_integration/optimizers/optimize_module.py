@@ -93,7 +93,7 @@ if __name__ == "__main__":
         import os
 
         sys.path.append(os.getcwd())
-        from dspy_integration.modules.feature_dev import (
+        from dspy_integration.modules.feature_dev import (  # noqa: F401
             FeatureDevModule,
             FeatureDevSignature,
         )

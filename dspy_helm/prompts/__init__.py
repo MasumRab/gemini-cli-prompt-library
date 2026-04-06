@@ -8,13 +8,13 @@ This module provides:
 - Bidirectional sync between TOML and DSPy
 """
 
-from typing import Dict, Type, Optional, Any, List, TYPE_CHECKING
+from typing import Dict, Type, Optional, Any, List, TYPE_CHECKING  # noqa: F401
 from pathlib import Path
 import re
 import tomli
 
 if TYPE_CHECKING:
-    import dspy
+    import dspy  # noqa: F401
 
 
 class TOMLPrompt:
@@ -42,7 +42,7 @@ class TOMLPrompt:
 
     def to_dspy_signature(self) -> type:
         """Convert TOML prompt to DSPy Signature class."""
-        import dspy
+        import dspy  # noqa: F811
 
         input_fields = {}
         output_fields = {}
@@ -136,7 +136,7 @@ class TOMLToDSPyConverter:
     @staticmethod
     def create_module(toml_prompt: TOMLPrompt, module_class_name: Optional[str] = None):
         """Create a DSPy module from a TOML prompt."""
-        import dspy
+        import dspy  # noqa: F811
 
         config = TOMLToDSPyConverter.convert(toml_prompt)
         signature = config["signature"]

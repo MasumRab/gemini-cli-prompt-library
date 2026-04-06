@@ -25,7 +25,7 @@ class TestCLI:
         from dspy_helm.cli import main
 
         with patch.object(sys, "argv", ["dspy_helm.cli", "--list-scenarios"]):
-            with pytest.raises(SystemExit) as exit_err:
+            with pytest.raises(SystemExit) as exit_err:  # noqa: F841
                 main()
             # Should exit after printing
             captured = capsys.readouterr()

@@ -4,7 +4,7 @@ Pytest configuration and fixtures for DSPy-HELM tests.
 
 import pytest
 import sys
-import os
+import os  # noqa: F401
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 

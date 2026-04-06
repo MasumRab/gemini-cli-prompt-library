@@ -3,8 +3,8 @@ Tests for DSPy-HELM optimizers.
 """
 
 import pytest
-from unittest.mock import MagicMock, patch, PropertyMock
-from unittest import skipUnless
+from unittest.mock import MagicMock, patch, PropertyMock  # noqa: F401
+from unittest import skipUnless  # noqa: F401
 
 
 class TestBaseOptimizer:
@@ -112,7 +112,7 @@ class TestMIPROv2Optimizer:
 
     def test_create_teleprompter(self):
         """Test creating MIPROv2 teleprompter."""
-        from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
+        from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer  # noqa: F401
 
         # Skip - requires local import inside method, complex to mock
         pytest.skip("MIPROv2 teleprompter test requires real dspy library")
@@ -168,7 +168,7 @@ class TestBootstrapFewShotRandomSearchOptimizer:
 
     def test_create_teleprompter(self):
         """Test creating teleprompter with random search."""
-        from dspy_integration.framework.optimizers.bootstrap import (
+        from dspy_integration.framework.optimizers.bootstrap import (  # noqa: F401
             BootstrapFewShotRandomSearchOptimizer,
         )
 

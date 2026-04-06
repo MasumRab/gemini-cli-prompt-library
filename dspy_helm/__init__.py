@@ -55,7 +55,7 @@ from .optimizers import (
 
 from .eval import Evaluator
 
-from .prompts import (
+from .prompts import (  # noqa: F401
     TOMLPrompt,
     PromptRegistry,
     TOMLToDSPyConverter,

@@ -99,7 +99,7 @@ class HuggingFaceProvider(BaseProvider):
                     content = data[0].get("generated_text", "")
                     # Remove the input prompt from response if included
                     if content.startswith(prompt):
-                        content = content[len(prompt) :].strip()
+                        content = content[len(prompt) :].strip()  # noqa: E203
                     return ProviderResponse(
                         success=True,
                         content=content,

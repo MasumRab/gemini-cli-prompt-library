@@ -58,7 +58,7 @@ class Evaluator:
                     pred = program(**example.inputs())
                     score = self.metric(example, pred)
                     return (example, pred, score)
-                except Exception as e:
+                except Exception as e:  # noqa: F841
                     return (example, None, 0.0)
 
             raw_results = executor.execute(process_item, devset)

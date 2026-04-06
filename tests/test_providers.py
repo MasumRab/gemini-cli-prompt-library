@@ -3,7 +3,7 @@ Tests for DSPy-HELM providers.
 """
 
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock  # noqa: F401
 
 
 class TestBaseProvider:
@@ -11,7 +11,7 @@ class TestBaseProvider:
 
     def test_provider_response_dataclass(self):
         """Test ProviderResponse dataclass."""
-        from dspy_helm.providers.base import ProviderResponse, RateLimitConfig
+        from dspy_helm.providers.base import ProviderResponse, RateLimitConfig  # noqa: F401
 
         response = ProviderResponse(
             success=True,

@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 def test_prompt_abstraction():
     """Test TOML prompt abstraction layer."""
     print("\n[1/6] Testing Prompt Abstraction...")
-    from dspy_helm.prompts import TOMLPrompt, PromptRegistry
+    from dspy_helm.prompts import TOMLPrompt, PromptRegistry  # noqa: F401
 
     # Create test prompt
     prompt = TOMLPrompt(
@@ -117,7 +117,7 @@ def test_metrics():
 def test_jsonl_data():
     """Test JSONL data files."""
     print("\n[5/6] Testing JSONL Data Files...")
-    import json
+    import json  # noqa: F401
     from pathlib import Path
 
     data_dir = Path(__file__).parent / "dspy_helm" / "data"

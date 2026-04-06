@@ -4,7 +4,7 @@ Tests for the Prompt Abstraction Layer (TOML-DSPy integration).
 
 import pytest
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock  # noqa: F401
 
 
 class TestTOMLPrompt:
@@ -216,7 +216,7 @@ class TestTOMLToDSPyConverter:
 
         Note: This test requires real dspy module and may not work with mocked dspy.
         """
-        import dspy
+        import dspy  # noqa: F401
         from dspy_helm.prompts import TOMLPrompt, TOMLToDSPyConverter
 
         prompt = TOMLPrompt(

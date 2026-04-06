@@ -4,7 +4,7 @@ These tests verify end-to-end functionality.
 """
 
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch  # noqa: F401
 import json
 
 

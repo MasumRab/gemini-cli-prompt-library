@@ -141,7 +141,7 @@ class TestSecurityReviewModule:
         from dspy_integration.modules.security_review import SecurityReview
 
         module = SecurityReview()
-        result = module.forward("vulnerable code")
+        result = module.forward("vulnerable code")  # noqa: F841
 
         # SecurityReview.forward returns the review attribute from result
         assert mock_cot.called

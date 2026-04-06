@@ -45,7 +45,7 @@ class BaseOptimizer(ABC):
         trainset: List["dspy.Example"],
         valset: List["dspy.Example"],
     ) -> "dspy.Module":
-        import dspy
+        import dspy  # noqa: F401
 
         teleprompter = self._create_teleprompter()
         return teleprompter.compile(program, trainset=trainset, valset=valset)

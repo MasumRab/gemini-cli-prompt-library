@@ -132,7 +132,7 @@ class TestGoogleGeminiProvider:
         """Test basic completion with Gemini 1.5 Flash (free tier)."""
         from dspy_helm.providers.gemini import GeminiProvider
 
-        api_key = get_gemini_api_key()
+        api_key = get_gemini_api_key()  # noqa: F841
         # Gemini provider uses subprocess to call gemini CLI
         provider = GeminiProvider(model="gemini-1.5-flash")
 
