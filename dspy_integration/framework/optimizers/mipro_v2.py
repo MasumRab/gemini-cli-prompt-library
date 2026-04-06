@@ -1,4 +1,4 @@
-import dspy  # noqa: F401
+import dspy  # noqa: F401, F811  # noqa: F401
 
 """
 MIPROv2 Optimizer Implementation.
@@ -45,7 +45,7 @@ class MIPROv2Optimizer(BaseOptimizer):
         )
 
     def compile(self, program, trainset, valset):
-        import dspy  # noqa: F811
+        import dspy  # noqa: F811  # noqa: F401
 
         if not dspy.settings.lm:
             raise RuntimeError("No LM configured. Call dspy.configure(lm=...) first.")

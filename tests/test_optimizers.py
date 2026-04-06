@@ -82,7 +82,9 @@ class TestMIPROv2Optimizer:
 
     def test_init(self):
         """Test MIPROv2 optimizer initialization."""
-        from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
+        from dspy_integration.framework.optimizers.mipro_v2 import (  # noqa: F401
+            MIPROv2Optimizer,
+        )
 
         mock_metric = MagicMock()
         optimizer = MIPROv2Optimizer(metric=mock_metric)
@@ -92,7 +94,9 @@ class TestMIPROv2Optimizer:
 
     def test_init_custom_values(self):
         """Test MIPROv2 with custom values."""
-        from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
+        from dspy_integration.framework.optimizers.mipro_v2 import (  # noqa: F401
+            MIPROv2Optimizer,
+        )
 
         mock_metric = MagicMock()
         optimizer = MIPROv2Optimizer(
@@ -112,7 +116,9 @@ class TestMIPROv2Optimizer:
 
     def test_create_teleprompter(self):
         """Test creating MIPROv2 teleprompter."""
-        from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer  # noqa: F401
+        from dspy_integration.framework.optimizers.mipro_v2 import (  # noqa: F401
+            MIPROv2Optimizer,
+        )
 
         # Skip - requires local import inside method, complex to mock
         pytest.skip("MIPROv2 teleprompter test requires real dspy library")
@@ -213,7 +219,9 @@ class TestOptimizerCompile:
     @patch("dspy_integration.framework.optimizers.mipro_v2.dspy")
     def test_compile_requires_lm(self, mock_dspy):
         """Test that compile requires LM to be configured."""
-        from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
+        from dspy_integration.framework.optimizers.mipro_v2 import (  # noqa: F401
+            MIPROv2Optimizer,
+        )
 
         mock_dspy.settings.lm = None
         mock_dspy.settings.configure = MagicMock()

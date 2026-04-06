@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from typing import List, Protocol, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    import dspy
+    import dspy  # noqa: F401
 
 
 class IOptimizer(Protocol):
