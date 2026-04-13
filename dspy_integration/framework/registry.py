@@ -111,9 +111,7 @@ class IntelligentDispatcher:
 
         return best_match if max_score > 0 else None
 
-    def _calculate_match_score(
-        self, user_input: str, command: Command
-    ) -> float:
+    def _calculate_match_score(self, user_input: str, command: Command) -> float:
         """
         Calculate how well a command matches the user input.
         """

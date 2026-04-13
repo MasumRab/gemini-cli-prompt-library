@@ -36,9 +36,7 @@ def _atomic_write(filepath, content):
         return False
 
 
-def check_registry_performance(
-    filepath=None, findings=None, inserted_todos=None
-):
+def check_registry_performance(filepath=None, findings=None, inserted_todos=None):
     """Checks for inefficient registry instantiation."""
     if filepath is None:
         filepath = os.path.join(
@@ -84,9 +82,7 @@ def check_registry_performance(
     return findings, inserted_todos
 
 
-def check_dispatcher_architecture(
-    filepath=None, findings=None, inserted_todos=None
-):
+def check_dispatcher_architecture(filepath=None, findings=None, inserted_todos=None):
     """Checks for missing IntelligentDispatcher usage."""
     if filepath is None:
         filepath = os.path.join(
@@ -150,9 +146,7 @@ def check_dspy_modules(directory=None, findings=None, inserted_todos=None):
                 and "BootstrapFewShot" not in content
                 and "MIPROv2" not in content
             ):
-                if "TODO" in content and (
-                    "Optimize" in content or "MIPRO" in content
-                ):
+                if "TODO" in content and ("Optimize" in content or "MIPRO" in content):
                     continue
 
                 findings["DSPy"].append(
@@ -160,9 +154,7 @@ def check_dspy_modules(directory=None, findings=None, inserted_todos=None):
                     "(BootstrapFewShot/MIPROv2)."
                 )
 
-                target_class_pattern = (
-                    r"class .*Optimizer\(.*dspy\.Module.*\):"
-                )
+                target_class_pattern = r"class .*Optimizer\(.*dspy\.Module.*\):"
                 match = re.search(target_class_pattern, content)
                 if not match:
                     target_class_pattern = r"class .*\(*dspy\.Module.*\):"
@@ -196,7 +188,7 @@ def check_dspy_modules(directory=None, findings=None, inserted_todos=None):
 def generate_report(findings, inserted_todos):
     """Generates the Markdown report."""
     audit_date = datetime.datetime.now().strftime("%B %Y")
-    date_str = datetime.datetime.now().strftime('%Y_%m_%d')
+    date_str = datetime.datetime.now().strftime("%Y_%m_%d")
     report_name = f"AUDIT_REPORT_{date_str}.md"
     audit_report_file = os.path.join(_REPO_ROOT, report_name)
 
