@@ -7,9 +7,8 @@ updating registry entries manually.
 """
 
 import importlib
-import os
 from pathlib import Path
-from typing import Any, Dict, Optional, Type
+from typing import Any, Optional, Type
 
 
 # TODO [Medium Priority]: Convert file loading operations to async to prevent blocking.
