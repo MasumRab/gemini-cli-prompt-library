@@ -1,5 +1,6 @@
 import os
 import tomllib
+import threading
 from dataclasses import dataclass, field
 from typing import List, Optional
 
@@ -45,9 +46,6 @@ class CommandRegistry:
         return commands
 
     def search(self, keyword):
-        """
-        Search for commands by keyword in name, description, or tags.
-        """
         results = []
         for command in self.commands.values():
             if (
@@ -59,7 +57,6 @@ class CommandRegistry:
         return results
 
     def list_by_category(self, category):
-        """List all commands in a given category."""
         return [
             command
             for command in self.commands.values()
@@ -67,73 +64,73 @@ class CommandRegistry:
         ]
 
     def get_command(self, name):
-        """Get a command by its name."""
         return self.commands.get(name)
 
 
-def get_command(name):
+# Singleton registry instance
+_registry_instance: Optional[CommandRegistry] = None
+_registry_lock = threading.Lock()
+
+
+def _get_registry_instance() -> CommandRegistry:
+    """Get or create a singleton registry instance."""
+    global _registry_instance
+    with _registry_lock:
+        if _registry_instance is None:
+            _registry_instance = CommandRegistry()
+        return _registry_instance
+
+
+def reset_registry() -> None:
+    """Reset the singleton registry (for testing)."""
+    global _registry_instance
+    with _registry_lock:
+        _registry_instance = None
+
+
+def set_registry(registry: CommandRegistry) -> None:
+    """Set a custom registry instance (for testing or custom configs)."""
+    global _registry_instance
+    with _registry_lock:
+        _registry_instance = registry
+
+
+def get_command(name: str) -> Command:
     """Convenience function to get a command from the default registry."""
-    # TODO [High Priority]: Implement singleton/caching for CommandRegistry
-    # to avoid O(N) re-parsing.
-    registry = CommandRegistry()
+    registry = _get_registry_instance()
     return registry.get_command(name)
 
 
 class IntelligentDispatcher:
-    """
-    Intelligent dispatcher that routes natural language requests to
-    appropriate commands.
-    """
-
     def __init__(self, registry: Optional[CommandRegistry] = None):
         self.registry = registry or CommandRegistry()
 
     def dispatch(self, user_input: str) -> Optional[Command]:
-        """
-        Dispatch user input to the best matching command.
-
-        Args:
-            user_input: Natural language request
-
-        Returns:
-            Best matching Command object
-        """
         user_input = user_input.lower()
         best_match = None
         max_score = 0
 
         for command in self.registry.commands.values():
             score = self._calculate_match_score(user_input, command)
-
             if score > max_score:
                 max_score = score
                 best_match = command
 
         return best_match if max_score > 0 else None
 
-    def _calculate_match_score(
-        self, user_input: str, command: Command
-    ) -> float:
-        """
-        Calculate how well a command matches the user input.
-        """
+    def _calculate_match_score(self, user_input: str, command: Command) -> float:
         score = 0
-
-        # Tokenize inputs
         user_tokens = set(user_input.split())
         name_tokens = set(command.name.lower().replace("-", " ").split())
         desc_tokens = set(command.description.lower().split())
         tag_tokens = set(command.tags or [])
 
-        # Exact name match gets high score
         if command.name.replace("-", " ") in user_input:
             score += 10
 
-        # Count token overlaps
         name_overlap = len(name_tokens.intersection(user_tokens))
         desc_overlap = len(desc_tokens.intersection(user_tokens))
         tag_overlap = len(tag_tokens.intersection(user_tokens))
 
         score += (name_overlap * 5) + desc_overlap + (tag_overlap * 3)
-
         return score
