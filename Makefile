@@ -1,7 +1,4 @@
-.PHONY: dev audit
+.PHONY: dev
 
 dev:
 	python -m dspy_integration.cli
-
-audit:
-	python3 scripts/perform_audit.py

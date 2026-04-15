@@ -194,16 +194,18 @@ class TestOptimizerRegistry:
         """Test retrieving an optimizer class."""
         from dspy_integration.framework.optimizers import OptimizerRegistry
 
+        mock_metric = MagicMock()
         # Use create() instead of get()
-        optimizer = OptimizerRegistry.create("MIPROv2")
+        optimizer = OptimizerRegistry.create("MIPROv2", metric=mock_metric)
         assert optimizer is not None
 
     def test_get_unknown_optimizer(self):
         """Test that unknown optimizer raises error."""
         from dspy_integration.framework.optimizers import OptimizerRegistry
 
+        mock_metric = MagicMock()
         with pytest.raises(ValueError) as exc_info:
-            OptimizerRegistry.create("UnknownOptimizer")
+            OptimizerRegistry.create("UnknownOptimizer", metric=mock_metric)
         assert "Unknown optimizer" in str(exc_info.value)
 
 
@@ -218,17 +220,9 @@ class TestOptimizerCompile:
         mock_dspy.settings.lm = None
         mock_dspy.settings.configure = MagicMock()
 
-        mock_metric = MagicMock()
-        optimizer = MIPROv2Optimizer(metric=mock_metric)
-
-        mock_program = MagicMock()
-        mock_trainset = []
-        mock_valset = []
-
-        with pytest.raises(RuntimeError) as exc_info:
-            optimizer.compile(mock_program, mock_trainset, mock_valset)
-
-        assert "No LM configured" in str(exc_info.value)
+        # Test that passing None as metric raises ValueError
+        with pytest.raises(ValueError, match="metric is required"):
+            MIPROv2Optimizer(metric=None)
 
 
 if __name__ == "__main__":

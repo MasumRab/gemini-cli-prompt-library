@@ -7,13 +7,11 @@ class TestDispatcher(unittest.TestCase):
         # Test that a specific input returns the expected command
         user_input = "my test is broken"
         recommended_command = dispatch(user_input)
-        self.assertIsNotNone(recommended_command)
         self.assertEqual(recommended_command.name, "test-case")
 
         # Test another input
         user_input = "refactor my code"
         recommended_command = dispatch(user_input)
-        self.assertIsNotNone(recommended_command)
         self.assertEqual(recommended_command.name, "refactor")
 
 

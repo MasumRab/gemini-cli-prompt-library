@@ -35,8 +35,6 @@ _SCENARIOS_TO_MODULES = {
     "documentation": ("Documentation", "DocumentationOptimizer"),
     "security_review": ("SecurityReview", "SecurityReviewOptimizer"),
     "improve": ("Improve", "ImproveOptimizer"),  # NEW
-    # Add api_design as an alias for architecture
-    "api_design": ("Architecture", "ArchitectureOptimizer"),
 }
 
 

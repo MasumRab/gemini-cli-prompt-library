@@ -11,8 +11,8 @@ class Command:
 
 def dispatch(user_input):
     # TODO [Phase 3 - CASS Integration]: Replace this simple keyword matching with Hybrid Search.
-    # TODO [Medium Priority]: Integrate `IntelligentDispatcher`
-    # for better routing logic.
+    # TODO [Architecture - Medium Priority]: Integrate `IntelligentDispatcher` instead of redundant logic.
+    # Reason: The `IntelligentDispatcher` in registry.py is not being used here, leading to duplicated and less robust matching logic.
 
     commands = get_commands()
     user_input = user_input.lower()
