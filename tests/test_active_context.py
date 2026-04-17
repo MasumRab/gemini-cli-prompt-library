@@ -1,6 +1,7 @@
 import os
 import sys
 import unittest
+import requests
 from unittest.mock import patch, MagicMock
 
 # Add the project root to the sys.path so we can import scripts
