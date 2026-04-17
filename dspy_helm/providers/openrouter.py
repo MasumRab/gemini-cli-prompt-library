@@ -87,10 +87,14 @@ class OpenRouterProvider(BaseProvider):
                 latency_seconds=time.time() - start_time,
             )
 
-        except Exception as e:
+        except (
+            openai.APIConnectionError,
+            openai.AuthenticationError,
+            openai.APIError,
+        ) as e:
             return ProviderResponse(
                 success=False,
-                error=str(e),
+                error=f"{type(e).__name__}: {str(e)}",
                 provider=self.name,
                 model=self.model,
                 latency_seconds=time.time() - start_time,
