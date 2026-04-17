@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from dspy_integration.framework.manifest import get_commands
+import re
 
 
 @dataclass
@@ -15,7 +16,7 @@ def dispatch(user_input):
     # for better routing logic.
 
     commands = get_commands()
-    user_input = user_input.lower()
+    user_input_normalized = re.sub(r"[^\w\s]", "", user_input).lower()
 
     best_match = None
     max_score = 0
@@ -26,14 +27,13 @@ def dispatch(user_input):
         description_tokens = set(command["description"].lower().split())
 
         # Prioritize exact matches in the name
-        if command["name"].replace("-", " ") in user_input:
+        if command["name"].replace("-", " ") in user_input_normalized:
             score += 10
 
         # Prioritize longer matches
-        name_match_len = len(name_tokens.intersection(user_input.split()))
-        description_match_len = len(
-            description_tokens.intersection(user_input.split())
-        )
+        user_tokens = set(user_input_normalized.split())
+        name_match_len = len(name_tokens.intersection(user_tokens))
+        description_match_len = len(description_tokens.intersection(user_tokens))
 
         score += (name_match_len * 5) + description_match_len
 
