@@ -145,6 +145,7 @@ class TestActiveContextUpdater(unittest.TestCase):
         mock_get_repo.return_value = "owner/repo"
 
         # Save reference to real exception class BEFORE any mocking
+        import requests
         RealRequestException = requests.RequestException
 
         # Use a lambda to raise the exception - this avoids the side_effect issue with mocked requests
