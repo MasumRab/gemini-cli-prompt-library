@@ -4,7 +4,6 @@ Pytest configuration and fixtures for DSPy-HELM tests.
 
 import pytest
 import sys
-import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 

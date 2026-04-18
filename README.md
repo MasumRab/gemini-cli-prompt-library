@@ -178,10 +178,15 @@ The DSPy integration provides intelligent command routing and prompt optimizatio
 - `pip install dspy rich>=13.0 tomli`
 
 ### Installation
+
+To make the `dspy-integration` Python tool available globally across your machine:
+
+**1. Request the Install Script**
 ```bash
-cd .
-pip install -e .
+/prompts:dspy-install "install"
 ```
+
+**2. Run the generated script**, which uses `uv` to safely install the tool without polluting your system Python.
 
 ### Usage with Gemini CLI
 
