@@ -32,11 +32,12 @@ def load_config() -> Dict[str, Any]:
         # Deep copy defaults to avoid mutation
         config = copy.deepcopy(DEFAULT_CONFIG)
 
-        if user_config and "dspy" in user_config:
-            # We want to update only the keys present in user_config["dspy"]
-            # but preserve structure. Since dspy config is shallow (one level deep dict),
-            # a simple update works fine on the copy.
+        if isinstance(user_config, dict) and isinstance(user_config.get("dspy"), dict):
             config["dspy"].update(user_config["dspy"])
+        elif user_config is not None and not isinstance(user_config, dict):
+            logger.warning(
+                f"Invalid config shape in {CONFIG_PATH}: expected mapping at root."
+            )
 
         return config
     except (yaml.YAMLError, OSError) as e:

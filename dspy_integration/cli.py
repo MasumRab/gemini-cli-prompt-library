@@ -3,7 +3,6 @@ from dspy_integration.framework.dispatcher import dispatch
 
 
 def main():
-    # TODO [Low Priority]: Verify all subprocess calls use absolute paths to prevent command injection.
     # TODO [High Priority]: Implement full CLI args parsing (argparse/click).
     # See JOBS_FOR_JULES.md for requirements (forgiving parsing, robot mode).
 

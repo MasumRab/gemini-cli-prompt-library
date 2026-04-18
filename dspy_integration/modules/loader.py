@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Type
 
 
-# TODO [Medium Priority]: Convert file loading operations to async to prevent blocking.
 class DynamicModuleLoader:
     """
     Dynamic module loader that discovers and loads DSPy modules based on scenario names.
@@ -198,8 +197,8 @@ def scenario_exists(scenario_name: str) -> bool:
 
 
 __all__ = [
+    "DynamicModuleLoader",
     "get_module_for_scenario",
     "get_optimizer_for_scenario",
     "scenario_exists",
-    "DynamicModuleLoader",
 ]
