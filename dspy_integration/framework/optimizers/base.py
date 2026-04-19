@@ -21,8 +21,8 @@ class IOptimizer(Protocol):
     ) -> "dspy.Module": ...
 
 
-class BaseOptimizer(ABC):
-    """Abstract base class for optimizers."""
+class BaseOptimizer:
+    """Base class for optimizers with default implementation."""
 
     def __init__(
         self,
@@ -36,8 +36,9 @@ class BaseOptimizer(ABC):
         self.max_labeled_demos = max_labeled_demos
         self.num_threads = num_threads
 
-    @abstractmethod
-    def _create_teleprompter(self): ...
+    def _create_teleprompter(self):
+        """Create teleprompter. Override in subclasses for custom behavior."""
+        return None
 
     def compile(
         self,
@@ -47,7 +48,12 @@ class BaseOptimizer(ABC):
     ) -> "dspy.Module":
         import dspy
 
+        if not dspy.settings.lm:
+            raise RuntimeError("No LM configured. Call dspy.configure(lm=...) first.")
+
         teleprompter = self._create_teleprompter()
+        if teleprompter is None:
+            raise NotImplementedError("Subclass must implement _create_teleprompter")
         return teleprompter.compile(program, trainset=trainset, valset=valset)
 
     def __repr__(self) -> str:
@@ -77,3 +83,11 @@ class OptimizerRegistry:
     @classmethod
     def list(cls) -> List[str]:
         return list(cls._optimizers.keys())
+
+    @classmethod
+    def get(cls, name: str) -> Type[BaseOptimizer]:
+        """Get optimizer class by name."""
+        if name not in cls._optimizers:
+            available = ", ".join(cls._optimizers.keys())
+            raise ValueError(f"Unknown optimizer: '{name}'. Available: {available}")
+        return cls._optimizers[name]

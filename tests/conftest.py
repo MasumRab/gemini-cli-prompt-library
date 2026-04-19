@@ -4,7 +4,6 @@ Pytest configuration and fixtures for DSPy-HELM tests.
 
 import pytest
 import sys
-import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -269,6 +268,28 @@ def mock_prediction():
                 setattr(self, key, value)
 
     return MockPrediction
+
+
+@pytest.fixture
+def mock_scenario_classes():
+    """Factory for creating mock example/prediction for scenario testing."""
+
+    class MockExample:
+        def __init__(self, expected="test"):
+            self.expected = expected
+
+        def inputs(self):
+            return {"input": "test input"}
+
+    class MockPred:
+        def __init__(self, **kwargs):
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+
+    def create(example_expected="test", pred_output="test output"):
+        return MockExample(expected=example_expected), MockPred(review=pred_output)
+
+    return create
 
 
 @pytest.fixture
