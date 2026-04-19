@@ -149,6 +149,7 @@ class ProviderChain:
         """
         self.providers = providers
         self._current_index = 0
+        # TODO [High Priority]: Implement exponential backoff for provider failover to mitigate rate limits.
 
     def call(self, prompt: str, **kwargs) -> ProviderResponse:
         """

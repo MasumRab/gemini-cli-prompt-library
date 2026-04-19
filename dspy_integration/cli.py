@@ -3,6 +3,7 @@ from dspy_integration.framework.dispatcher import dispatch
 
 
 def main():
+    # TODO [Low Priority]: Verify all subprocess calls use absolute paths to prevent command injection.
     # TODO [High Priority]: Implement full CLI args parsing (argparse/click).
     # See JOBS_FOR_JULES.md for requirements (forgiving parsing, robot mode).
 
@@ -31,7 +32,7 @@ def main():
 
     if recommended_command:
         # Format the command for display
-        command_name = f'/{recommended_command.category}:{recommended_command.name}'
+        command_name = f"/{recommended_command.category}:{recommended_command.name}"
 
         # Create a placeholder for arguments based on the user input
         placeholder_args = f'--prompt "{args.user_input}"'

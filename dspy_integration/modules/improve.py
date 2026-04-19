@@ -4,8 +4,30 @@ DSPy module for prompt improvement.
 This module provides a ChainOfThought-based approach to improving prompts.
 """
 
-from typing import Optional, Dict, Any, Dict, Any
+from typing import Optional, Dict, Any
 import dspy
+
+from pydantic import BaseModel, Field
+
+
+class ImprovedPrompt(BaseModel):
+    improved_prompt: str = Field(description="The improved version")
+    changes_summary: str = Field(description="Summary of changes")
+
+
+class TypedImprove(dspy.Module):
+    """Improve with typed output using pydantic."""
+
+    def __init__(self):
+        super().__init__()
+        self.improve = dspy.TypedPredictor(ImproveSignature)
+
+    def forward(self, original_prompt: str) -> ImprovedPrompt:
+        result = self.improve(original_prompt=original_prompt)
+        return ImprovedPrompt(
+            improved_prompt=result.improved_prompt,
+            changes_summary=result.changes_summary,
+        )
 
 
 class ImproveSignature(dspy.Signature):
