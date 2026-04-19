@@ -30,11 +30,12 @@ if False:
 _SCENARIOS_TO_MODULES = {
     "code_review": ("CodeReview", "CodeReviewOptimizer"),
     "architecture": ("Architecture", "ArchitectureOptimizer"),
+    "api_design": ("Architecture", "ArchitectureOptimizer"),
     "feature_dev": ("FeatureDev", "FeatureDevOptimizer"),
     "unit_test": ("UnitTest", "UnitTestOptimizer"),
     "documentation": ("Documentation", "DocumentationOptimizer"),
     "security_review": ("SecurityReview", "SecurityReviewOptimizer"),
-    "improve": ("Improve", "ImproveOptimizer"),  # NEW
+    "improve": ("Improve", "ImproveOptimizer"),
 }
 
 
