@@ -53,7 +53,7 @@ This extension provides a curated library of high-quality prompts for common dev
 - **improve**: Improve existing prompts
 - **create-template**: Create reusable prompt templates
 - **best-practices**: Learn prompt engineering tips
-- **dspy-install**: Output a bash script to globally install the Python DSPy integration
+- **dspy-install**: Output a bash script to globally install the python DSPy integration
 - **dspy-convert**: Convert TOML prompts to DSPy modules
 - **dspy-qa**: QA reviewer for DSPy code
 - **dspy-refine**: Refine DSPy modules

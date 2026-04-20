@@ -277,7 +277,8 @@ Expand the reach of this library beyond the standard `gemini-cli`:
 Based on the prompts in this library, here are key principles:
 
 ### 1. **Be Specific**
-```
+
+```text
 ❌ "Review this code"
 ✅ "Perform a security analysis focusing on input validation, SQL injection, and XSS vulnerabilities"
 ```
@@ -350,7 +351,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-## About me
+## 👤 About me
 My name is Harish Garg. I am a solo developer. I write at my blog [here](https://harishgarg.com/).
 
 I also maintain a [MCP Resources Directory](https://www.mcpstack.org/) & a [coding ai tools directory](https://www.codeaidirectory.com/)

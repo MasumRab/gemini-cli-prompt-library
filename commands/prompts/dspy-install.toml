@@ -20,6 +20,8 @@ Output Example:
 
 To enable the full DSPy integration on your local machine, run the following script from the root of this cloned repository. This script uses `uv`, a fast modern Python package manager, which automatically creates an isolated global executable without requiring admin permissions or polluting your system Python.
 
+```shell
+echo "Installing DSPy Integration using uv..."
 
 # Check if uv is installed, if not, install it
 if ! command -v uv > /dev/null 2>&1; then
