@@ -187,8 +187,8 @@ def check_dspy_modules(directory=None, findings=None, inserted_todos=None):
 
 def generate_report(findings, inserted_todos):
     """Generates the Markdown report."""
-    audit_date = datetime.datetime.now().strftime("%B %Y")
-    date_str = datetime.datetime.now().strftime("%Y_%m_%d")
+    audit_date = datetime.datetime.now(datetime.timezone.utc).strftime("%B %Y")
+    date_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y_%m_%d")
     report_name = f"AUDIT_REPORT_{date_str}.md"
     audit_report_file = os.path.join(_REPO_ROOT, report_name)
 
