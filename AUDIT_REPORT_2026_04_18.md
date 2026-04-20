@@ -8,8 +8,7 @@ This audit identifies several areas for improvement.
 
 ## 2. Findings
 
-## 4. Recommendations & Roadmap
-
+## 3. Recommendations & Roadmap
 ### Short-Term (Immediate Fixes)
 * **Fix Linting**: Address minor style issues.
 
