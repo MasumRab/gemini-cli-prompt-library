@@ -141,6 +141,8 @@ class TestActiveContextUpdater(unittest.TestCase):
     @patch("scripts.update_active_context.get_repository")
     @patch("builtins.open", new_callable=unittest.mock.mock_open)
     def test_main_api_failure(self, mock_file, mock_get_repo, mock_env_get):
+        import requests
+
         mock_env_get.return_value = "fake_token"
         mock_get_repo.return_value = "owner/repo"
 
