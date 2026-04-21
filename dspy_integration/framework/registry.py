@@ -1,4 +1,5 @@
 import os
+import re
 import tomllib
 from dataclasses import dataclass, field
 from typing import List, Optional
@@ -98,12 +99,12 @@ class IntelligentDispatcher:
         Returns:
             Best matching Command object
         """
-        user_input = user_input.lower()
+        user_input_normalized = re.sub(r"[^\w\s]", "", user_input).lower()
         best_match = None
         max_score = 0
 
         for command in self.registry.commands.values():
-            score = self._calculate_match_score(user_input, command)
+            score = self._calculate_match_score(user_input_normalized, command)
 
             if score > max_score:
                 max_score = score
