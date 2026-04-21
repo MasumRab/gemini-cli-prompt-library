@@ -21,7 +21,7 @@ for mod_name, mock in _mock_modules.items():
         sys.modules[mod_name] = mock
 
 # Now run pytest
-import pytest
+import pytest  # noqa: E402
 
 sys.exit(
     pytest.main(

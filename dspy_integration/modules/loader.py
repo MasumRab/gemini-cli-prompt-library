@@ -7,9 +7,9 @@ updating registry entries manually.
 """
 
 import importlib
-import os
+import os  # noqa: F401
 from pathlib import Path
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict, Optional, Type  # noqa: F401
 
 
 # TODO [Medium Priority]: Convert file loading operations to async to prevent blocking.

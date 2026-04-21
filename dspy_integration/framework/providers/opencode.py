@@ -7,7 +7,7 @@ Adapter for OpenCode CLI tool with support for:
 
 from typing import Optional
 import subprocess
-import json
+import json  # noqa: F401
 import logging
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
 

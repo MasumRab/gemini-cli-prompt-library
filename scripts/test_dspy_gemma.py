@@ -1,10 +1,10 @@
-import dspy
+import dspy  # noqa: F811  # noqa: F811
 import os
 import sys
 
 # Ensure dspy is available (should be from pip install dspy-ai)
 try:
-    import dspy
+    import dspy  # noqa: F811  # noqa: F811
 except ImportError:
     print("Error: dspy not found. Please install with `pip install dspy-ai`")
     sys.exit(1)

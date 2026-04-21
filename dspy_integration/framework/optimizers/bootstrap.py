@@ -1,4 +1,4 @@
-import dspy
+import dspy  # noqa: F401
 
 """
 BootstrapFewShot Optimizers.

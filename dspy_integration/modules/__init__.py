@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type  # noqa: F401
 
 # TODO: Phase 1.4 - Add improve to registry
 # See: OPTIMAL_CONFIG_PLAN.md Part 6, Task 1.4
@@ -18,13 +18,13 @@ from typing import Type
 # Related: OPTIMAL_CONFIG_PLAN.md Part 1.3 (Files to Modify)
 
 if False:
-    from .code_review import CodeReview, CodeReviewOptimizer
-    from .architecture import Architecture, ArchitectureOptimizer
-    from .feature_dev import FeatureDev, FeatureDevOptimizer
-    from .unit_test import UnitTest, UnitTestOptimizer
-    from .documentation import Documentation, DocumentationOptimizer
-    from .security_review import SecurityReview, SecurityReviewOptimizer
-    from .improve import Improve, ImproveOptimizer  # NEW
+    from .code_review import CodeReview  # noqa: F401, CodeReviewOptimizer
+    from .architecture import Architecture  # noqa: F401, ArchitectureOptimizer
+    from .feature_dev import FeatureDev  # noqa: F401, FeatureDevOptimizer
+    from .unit_test import UnitTest  # noqa: F401, UnitTestOptimizer
+    from .documentation import Documentation  # noqa: F401, DocumentationOptimizer
+    from .security_review import SecurityReview  # noqa: F401, SecurityReviewOptimizer
+    from .improve import Improve  # noqa: F401, ImproveOptimizer  # NEW
 
 
 _SCENARIOS_TO_MODULES = {

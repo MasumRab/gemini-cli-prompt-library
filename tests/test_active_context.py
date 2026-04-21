@@ -181,7 +181,7 @@ class TestActiveContextUpdater(unittest.TestCase):
         mock_get_repo.return_value = "owner/repo"
 
         # Save reference to real exception class BEFORE any mocking
-        RealRequestException = requests.RequestException
+        RealRequestException = requests.RequestException  # noqa: F821
 
         # Use a lambda to raise the exception - this avoids the side_effect issue with mocked requests
         def raise_api_error(*args, **kwargs):
