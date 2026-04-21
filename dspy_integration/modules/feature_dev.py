@@ -1,5 +1,6 @@
-import dspy
 from typing import Optional
+
+import dspy
 
 
 class FeatureDevSignature(dspy.Signature):
@@ -9,15 +10,9 @@ class FeatureDevSignature(dspy.Signature):
     """
 
     args = dspy.InputField(desc="Feature requirements and context")
-    context_design = dspy.OutputField(
-        desc="Phase 1: Context & Design. Key architectural decisions and API signatures."
-    )
-    implementation = dspy.OutputField(
-        desc="Phase 2: Implementation. Complete, production-ready code."
-    )
-    verification = dspy.OutputField(
-        desc="Phase 3: Verification Strategy. Unit and integration tests."
-    )
+    context_design = dspy.OutputField(desc="Phase 1: Context & Design. Key architectural decisions and API signatures.")
+    implementation = dspy.OutputField(desc="Phase 2: Implementation. Complete, production-ready code.")
+    verification = dspy.OutputField(desc="Phase 3: Verification Strategy. Unit and integration tests.")
     usage = dspy.OutputField(desc="Phase 4: Usage. concise README snippet.")
 
 

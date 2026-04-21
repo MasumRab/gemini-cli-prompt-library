@@ -2,9 +2,10 @@
 Tests for DSPy-HELM CLI.
 """
 
-import pytest
 import sys
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 class TestCLI:
@@ -25,7 +26,7 @@ class TestCLI:
         from dspy_helm.cli import main
 
         with patch.object(sys, "argv", ["dspy_helm.cli", "--list-scenarios"]):
-            with pytest.raises(SystemExit) as exit_err:
+            with pytest.raises(SystemExit):
                 main()
             # Should exit after printing
             captured = capsys.readouterr()

@@ -5,9 +5,10 @@ Maps to: commands/testing/generate-unit-tests.toml
 Category: Testing
 """
 
+from typing import Any, Dict, List
+
 import dspy
 
-from typing import List, Dict, Any
 from .base import BaseScenario, ScenarioRegistry
 
 
@@ -28,10 +29,7 @@ class UnitTestScenario(BaseScenario):
             with open(data_path, "r") as f:
                 data = [json.loads(line) for line in f if line.strip()]
                 if data and "input" in data[0] and "expected_output" in data[0]:
-                    return [
-                        {"function": item["input"], "tests": item["expected_output"]}
-                        for item in data
-                    ]
+                    return [{"function": item["input"], "tests": item["expected_output"]} for item in data]
                 return data
 
         return [
@@ -167,9 +165,7 @@ Provide production-ready test code with:
 - Edge case coverage comments
 """
 
-    def metric(
-        self, example: "dspy.Example", pred: "dspy.Prediction", trace=None
-    ) -> float:
+    def metric(self, example: "dspy.Example", pred: "dspy.Prediction", trace=None) -> float:
         """Evaluate unit test generation quality."""
         expected = example.tests.lower()
         pred_text = str(pred.tests).lower()

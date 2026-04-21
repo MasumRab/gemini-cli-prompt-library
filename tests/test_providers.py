@@ -3,7 +3,6 @@ Tests for DSPy-HELM providers.
 """
 
 import pytest
-from unittest.mock import patch, MagicMock
 
 
 class TestBaseProvider:
@@ -11,7 +10,7 @@ class TestBaseProvider:
 
     def test_provider_response_dataclass(self):
         """Test ProviderResponse dataclass."""
-        from dspy_helm.providers.base import ProviderResponse, RateLimitConfig
+        from dspy_helm.providers.base import ProviderResponse
 
         response = ProviderResponse(
             success=True,
@@ -44,17 +43,11 @@ class TestBaseProvider:
 
     def test_provider_chain(self):
         """Test ProviderChain."""
-        from dspy_helm.providers.base import (
-            BaseProvider,
-            ProviderChain,
-            ProviderResponse,
-        )
+        from dspy_helm.providers.base import BaseProvider, ProviderChain, ProviderResponse
 
         class MockProvider(BaseProvider):
             def __init__(self, name, fail_count=0):
-                super().__init__(
-                    name=name, command="test", subcommand="test", model="test"
-                )
+                super().__init__(name=name, command="test", subcommand="test", model="test")
                 self.fail_count = fail_count
                 self.call_count = 0
 
@@ -84,11 +77,7 @@ class TestBaseProvider:
 
     def test_provider_chain_all_fail(self):
         """Test ProviderChain when all providers fail."""
-        from dspy_helm.providers.base import (
-            BaseProvider,
-            ProviderChain,
-            ProviderResponse,
-        )
+        from dspy_helm.providers.base import BaseProvider, ProviderChain, ProviderResponse
 
         class FailingProvider(BaseProvider):
             def _execute_cli(self, prompt, **kwargs):
@@ -99,12 +88,8 @@ class TestBaseProvider:
                     model=self.model,
                 )
 
-        provider1 = FailingProvider(
-            name="P1", command="test", subcommand="test", model="test"
-        )
-        provider2 = FailingProvider(
-            name="P2", command="test", subcommand="test", model="test"
-        )
+        provider1 = FailingProvider(name="P1", command="test", subcommand="test", model="test")
+        provider2 = FailingProvider(name="P2", command="test", subcommand="test", model="test")
 
         chain = ProviderChain([provider1, provider2])
         response = chain.call("Test prompt")

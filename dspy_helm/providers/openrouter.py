@@ -6,10 +6,12 @@ Adapter for OpenRouter API with support for:
 - prime-intellect/intellect-3 (free)
 """
 
-from typing import Optional
 import os
-import openai
 import time
+from typing import Optional
+
+import openai
+
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
 
 
@@ -24,7 +26,7 @@ class OpenRouterProvider(BaseProvider):
     ):
         """
         Create an OpenRouter (Grok) provider configured with the chosen model, API key, and optional rate limiting.
-        
+
         Parameters:
             model (str): Model identifier to use (default: "x-ai/grok-4.1-fast:free").
             api_key (Optional[str]): OpenRouter API key; if omitted, the value of the
@@ -44,14 +46,16 @@ class OpenRouterProvider(BaseProvider):
     def _execute_cli(self, prompt: str, **kwargs) -> ProviderResponse:
         """
         Send a chat prompt to the OpenRouter API and return a ProviderResponse summarizing the outcome.
-        
+
         Sends the prompt as a single user message to the configured model and measures round-trip latency.
-        
+
         Parameters:
             prompt (str): The prompt text to send.
-        
+
         Returns:
-            ProviderResponse: On success includes `content` (model output), `provider`, `model`, `latency_seconds`, and `tokens_used` (0 if unavailable). On failure includes `error`, `provider`, and `model`; if the failure is due to rate limiting, `rate_limited` is set to `True`.
+            ProviderResponse: On success includes `content` (model output), `provider`, `model`, `latency_seconds`,
+                and `tokens_used` (0 if unavailable). On failure includes `error`, `provider`, and `model`;
+                if the failure is due to rate limiting, `rate_limited` is set to `True`.
         """
         start_time = time.time()
 

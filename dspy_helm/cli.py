@@ -17,17 +17,14 @@ from typing import Optional
 def setup_dspy_lm(provider: str = "groq", model: str = "llama-3.3-70b-versatile"):
     """Configure DSPy with the specified LM provider."""
     import dspy
+
     from dspy_helm.providers import get_provider_by_name
 
     try:
         provider_instance = get_provider_by_name(provider)
         lm = dspy.OpenAI(
             model=model,
-            api_key=(
-                provider_instance.api_key
-                if hasattr(provider_instance, "api_key")
-                else ""
-            ),
+            api_key=(provider_instance.api_key if hasattr(provider_instance, "api_key") else ""),
             base_url=provider_instance.base_url,
         )
         dspy.settings.configure(lm=lm)
@@ -46,9 +43,7 @@ def list_scenarios():
     print("Available scenarios:")
     for name in scenarios:
         scenario_class = ScenarioRegistry.get(name)
-        print(
-            f"  - {name}: {scenario_class.__doc__.split('.')[0] if scenario_class.__doc__ else 'No description'}"
-        )
+        print(f"  - {name}: {scenario_class.__doc__.split('.')[0] if scenario_class.__doc__ else 'No description'}")
     return scenarios
 
 
@@ -60,9 +55,9 @@ def run_evaluation(
     model: str = "llama-3.3-70b-versatile",
 ):
     """Run evaluation for a scenario."""
-    from dspy_helm.scenarios import ScenarioRegistry
     from dspy_helm.eval import Evaluator
     from dspy_helm.optimizers import OptimizerRegistry
+    from dspy_helm.scenarios import ScenarioRegistry
     from dspy_integration.modules import get_module_for_scenario
 
     print(f"\n{'=' * 60}")
@@ -88,7 +83,7 @@ def run_evaluation(
     setup_dspy_lm(provider, model)
 
     if evaluate_only:
-        print(f"\nEvaluating without optimization...")
+        print("\nEvaluating without optimization...")
         evaluator = Evaluator(metric=scenario.metric)
         results = evaluator.evaluate(program, valset)
         print(f"Score: {results.get('score', 'N/A')}")
@@ -100,7 +95,7 @@ def run_evaluation(
         optimizer = optimizer_class(metric=scenario.metric)
         optimized_program = optimizer.compile(program, trainset, valset)
 
-        print(f"\nEvaluating optimized program...")
+        print("\nEvaluating optimized program...")
         evaluator = Evaluator(metric=scenario.metric)
         results = evaluator.evaluate(optimized_program, valset)
         print(f"Score: {results.get('score', 'N/A')}")
@@ -185,7 +180,7 @@ Examples:
         sys.exit(1)
 
     try:
-        result = run_evaluation(
+        run_evaluation(
             scenario_name=args.scenario,
             optimizer_name=args.optimizer,
             evaluate_only=args.evaluate_only,

@@ -1,4 +1,3 @@
-import dspy
 import os
 import sys
 
@@ -12,15 +11,15 @@ except ImportError:
 # Import our modules
 # Note: we renamed the local dspy folder to dspy_integration to avoid conflict with the installed dspy package
 try:
-    from dspy_integration.modules.feature_dev import FeatureDevModule
-    from dspy_integration.modules.code_review import CodeReviewModule
     from dspy_integration.modules.architecture import SystemDesignModule
+    from dspy_integration.modules.code_review import CodeReviewModule
+    from dspy_integration.modules.feature_dev import FeatureDevModule
 except ImportError:
     # Handle running from root
     sys.path.append(os.getcwd())
-    from dspy_integration.modules.feature_dev import FeatureDevModule
-    from dspy_integration.modules.code_review import CodeReviewModule
     from dspy_integration.modules.architecture import SystemDesignModule
+    from dspy_integration.modules.code_review import CodeReviewModule
+    from dspy_integration.modules.feature_dev import FeatureDevModule
 
 
 def test_feature_dev():
@@ -98,11 +97,7 @@ def test_code_review():
             self.call_count += 1
             return [resp]
 
-    lm = MockLM(
-        [
-            '{"reasoning": "Code is clean", "review": "Code looks good. Suggest adding docstrings."}'
-        ]
-    )
+    lm = MockLM(['{"reasoning": "Code is clean", "review": "Code looks good. Suggest adding docstrings."}'])
     dspy.settings.configure(lm=lm)
 
     try:
@@ -128,9 +123,7 @@ def test_architecture():
             return [resp]
 
     lm = MockLM(
-        [
-            '{"reasoning": "Standard web architecture", "architecture": "High level design: Load Balancer -> Web Server -> DB"}'
-        ]
+        ['{"reasoning": "Standard web architecture", "architecture": "High level design: Load Balancer -> Web Server -> DB"}']
     )
     dspy.settings.configure(lm=lm)
 

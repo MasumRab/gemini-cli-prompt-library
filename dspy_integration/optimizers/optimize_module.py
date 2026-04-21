@@ -37,9 +37,7 @@ def optimize_module(module_class, trainset, metric=None):
 
     # Initialize the optimizer
     # BootstrapFewShot is a good default for getting started
-    teleprompter = BootstrapFewShot(
-        metric=metric, max_bootstrapped_demos=4, max_labeled_demos=4
-    )
+    teleprompter = BootstrapFewShot(metric=metric, max_bootstrapped_demos=4, max_labeled_demos=4)
 
     # Instantiate the module
     student = module_class()
@@ -84,25 +82,17 @@ if __name__ == "__main__":
     # Example usage (mock)
     # Adjusted import for dspy_integration
     try:
-        from dspy_integration.modules.feature_dev import (
-            FeatureDevModule,
-            FeatureDevSignature,
-        )
+        from dspy_integration.modules.feature_dev import FeatureDevModule
     except ImportError:
-        import sys
         import os
+        import sys
 
         sys.path.append(os.getcwd())
-        from dspy_integration.modules.feature_dev import (
-            FeatureDevModule,
-            FeatureDevSignature,
-        )
+        from dspy_integration.modules.feature_dev import FeatureDevModule
 
     # Mock data
     trainset = [
-        dspy.Example(args="Create a simple specific-purpose calculator").with_inputs(
-            "args"
-        ),
+        dspy.Example(args="Create a simple specific-purpose calculator").with_inputs("args"),
         dspy.Example(args="Add a login page to the website").with_inputs("args"),
     ]
 

@@ -2,9 +2,9 @@
 Tests for the Prompt Abstraction Layer (TOML-DSPy integration).
 """
 
-import pytest
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+
+import pytest
 
 
 class TestTOMLPrompt:
@@ -119,12 +119,8 @@ class TestPromptRegistry:
 
         PromptRegistry.clear()
 
-        PromptRegistry._prompts["test/prompt1"] = TOMLPrompt(
-            "p1", Path("/test/1.toml"), {"prompt": "{{a}}"}
-        )
-        PromptRegistry._prompts["test/prompt2"] = TOMLPrompt(
-            "p2", Path("/test/2.toml"), {"prompt": "{{b}}"}
-        )
+        PromptRegistry._prompts["test/prompt1"] = TOMLPrompt("p1", Path("/test/1.toml"), {"prompt": "{{a}}"})
+        PromptRegistry._prompts["test/prompt2"] = TOMLPrompt("p2", Path("/test/2.toml"), {"prompt": "{{b}}"})
 
         prompts = PromptRegistry.list()
         assert len(prompts) == 2
@@ -137,15 +133,11 @@ class TestPromptRegistry:
 
         PromptRegistry.clear()
 
-        PromptRegistry._prompts["code-review/security"] = TOMLPrompt(
-            "security", Path("/test.toml"), {"prompt": "{{code}}"}
-        )
+        PromptRegistry._prompts["code-review/security"] = TOMLPrompt("security", Path("/test.toml"), {"prompt": "{{code}}"})
         PromptRegistry._prompts["code-review/performance"] = TOMLPrompt(
             "performance", Path("/test.toml"), {"prompt": "{{code}}"}
         )
-        PromptRegistry._prompts["testing/unit-test"] = TOMLPrompt(
-            "unit-test", Path("/test.toml"), {"prompt": "{{function}}"}
-        )
+        PromptRegistry._prompts["testing/unit-test"] = TOMLPrompt("unit-test", Path("/test.toml"), {"prompt": "{{function}}"})
 
         code_review = PromptRegistry.list_by_category("code-review")
         assert len(code_review) == 2
@@ -164,9 +156,7 @@ class TestPromptRegistry:
         PromptRegistry.register_dspy_mapping("code-review/security", "security_review")
         PromptRegistry.register_dspy_mapping("testing/unit-test", "unit_test")
 
-        assert (
-            PromptRegistry.get_dspy_module("code-review/security") == "security_review"
-        )
+        assert PromptRegistry.get_dspy_module("code-review/security") == "security_review"
         assert PromptRegistry.get_dspy_module("testing/unit-test") == "unit_test"
         assert PromptRegistry.get_dspy_module("unknown") is None
 
@@ -174,9 +164,7 @@ class TestPromptRegistry:
         """Test clearing the registry."""
         from dspy_helm.prompts import PromptRegistry, TOMLPrompt
 
-        PromptRegistry._prompts["test/prompt"] = TOMLPrompt(
-            "prompt", Path("/test.toml"), {"prompt": "{{x}}"}
-        )
+        PromptRegistry._prompts["test/prompt"] = TOMLPrompt("prompt", Path("/test.toml"), {"prompt": "{{x}}"})
         PromptRegistry._toml_to_dspy["test"] = "module"
 
         PromptRegistry.clear()
@@ -208,15 +196,12 @@ class TestTOMLToDSPyConverter:
         assert "code" in config["input_fields"]
         assert "output" in config["output_fields"]
 
-    @pytest.mark.skip(
-        reason="Requires real dspy module - skipped in mocked test environment"
-    )
+    @pytest.mark.skip(reason="Requires real dspy module - skipped in mocked test environment")
     def test_create_module(self):
         """Test creating a DSPy module from TOML prompt.
 
         Note: This test requires real dspy module and may not work with mocked dspy.
         """
-        import dspy
         from dspy_helm.prompts import TOMLPrompt, TOMLToDSPyConverter
 
         prompt = TOMLPrompt(
@@ -244,9 +229,7 @@ class TestTOMLToDSPyConverter:
 
         ModuleClass = TOMLToDSPyConverter.create_module(prompt)
 
-        assert (
-            "MyTestPrompt" in ModuleClass.__name__ or "Module" in ModuleClass.__name__
-        )
+        assert "MyTestPrompt" in ModuleClass.__name__ or "Module" in ModuleClass.__name__
 
 
 class TestLoadPrompts:

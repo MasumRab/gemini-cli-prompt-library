@@ -12,16 +12,15 @@ OpenCode Zen: No API key needed (all models free)
 Run with: pytest tests/test_real_integration.py -v
 """
 
-import pytest
-import sys
 import os
+import sys
 from pathlib import Path
 from typing import Optional
 
+import pytest
+
 # Skip all tests in this file unless API keys are present
-pytestmark = pytest.mark.skipif(
-    not os.environ.get("OPENCODE_API_KEY"), reason="Requires API keys"
-)
+pytestmark = pytest.mark.skipif(not os.environ.get("OPENCODE_API_KEY"), reason="Requires API keys")
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -52,13 +51,9 @@ def check_api_keys():
 # Global check for skip decorators
 AVAILABLE_PROVIDERS = check_api_keys()
 
-require_gemini = pytest.mark.skipif(
-    not AVAILABLE_PROVIDERS["gemini"], reason="Gemini API key not available"
-)
+require_gemini = pytest.mark.skipif(not AVAILABLE_PROVIDERS["gemini"], reason="Gemini API key not available")
 
-require_any_provider = pytest.mark.skipif(
-    not any(AVAILABLE_PROVIDERS.values()), reason="No API providers available"
-)
+require_any_provider = pytest.mark.skipif(not any(AVAILABLE_PROVIDERS.values()), reason="No API providers available")
 
 
 class TestOpenCodeZenProvider:
@@ -112,8 +107,8 @@ class TestOpenCodeZenProvider:
     @require_any_provider
     def test_opencode_zen_rate_limit_config(self):
         """Test provider with rate limiting config."""
-        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
         from dspy_helm.providers.base import RateLimitConfig
+        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
         config = RateLimitConfig(enabled=True, max_retries=2, backoff_factor=0.5)
         provider = OpenCodeZenProvider(model="grok-code", rate_limit=config)
@@ -132,7 +127,6 @@ class TestGoogleGeminiProvider:
         """Test basic completion with Gemini 1.5 Flash (free tier)."""
         from dspy_helm.providers.gemini import GeminiProvider
 
-        api_key = get_gemini_api_key()
         # Gemini provider uses subprocess to call gemini CLI
         provider = GeminiProvider(model="gemini-1.5-flash")
 
@@ -230,10 +224,7 @@ class TestScenarioIntegration:
             response = provider.call(prompt)
 
             assert response.success is True
-            assert (
-                "test" in response.content.lower()
-                or "assert" in response.content.lower()
-            )
+            assert "test" in response.content.lower() or "assert" in response.content.lower()
 
     @require_any_provider
     def test_documentation_scenario_full(self):
@@ -287,8 +278,8 @@ class TestMetricIntegration:
     @require_any_provider
     def test_security_review_metric_real(self):
         """Test security review metric with real prediction."""
-        from dspy_helm.scenarios import ScenarioRegistry
         from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
+        from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")()
         example_data = scenario._load_raw_data()[0]
@@ -337,8 +328,9 @@ class TestPerformanceIntegration:
     @require_any_provider
     def test_response_time_under_60s(self):
         """Test that responses complete within 60 seconds."""
-        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
         import time
+
+        from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
 
         provider = OpenCodeZenProvider(model="grok-code")
 

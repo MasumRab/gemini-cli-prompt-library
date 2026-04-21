@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-import os
-import subprocess
-import requests
-import re
 import logging
+import os
+import re
 import shutil
+import subprocess
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
+import requests
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.WARNING)
@@ -49,9 +50,7 @@ def get_repository() -> str:
     return ""
 
 
-def fetch_paginated(
-    url: str, headers: Dict[str, str], timeout: int = 10
-) -> List[Dict[str, Any]]:
+def fetch_paginated(url: str, headers: Dict[str, str], timeout: int = 10) -> List[Dict[str, Any]]:
     results = []
     while url:
         # Enforce SSL verification explicitly for security tools
@@ -110,7 +109,8 @@ def main():
 
         if len(prs) > MAX_PR_PROCESS:
             logger.warning(
-                f"Total PRs ({len(prs)}) exceeds MAX_PR_PROCESS ({MAX_PR_PROCESS}). Only processing the first {MAX_PR_PROCESS}."
+                f"Total PRs ({len(prs)}) exceeds MAX_PR_PROCESS ({MAX_PR_PROCESS}). "
+                f"Only processing the first {MAX_PR_PROCESS}."
             )
             prs = prs[:MAX_PR_PROCESS]
 
@@ -133,12 +133,8 @@ def main():
 
         with open(output_file, "w") as f:
             f.write("# Active GitHub Context\n\n")
-            f.write(
-                "The following Pull Requests are currently open. The files listed below are **locked**.\n"
-            )
-            f.write(
-                "Do NOT modify these files to avoid merge conflicts or duplicating work.\n\n"
-            )
+            f.write("The following Pull Requests are currently open. The files listed below are **locked**.\n")
+            f.write("Do NOT modify these files to avoid merge conflicts or duplicating work.\n\n")
 
             if not pr_data:
                 f.write("*No open Pull Requests found.*\n")
@@ -147,9 +143,7 @@ def main():
                 f.write("|---|---|---|---|\n")
                 for pr in pr_data:
                     files_list = "<br>".join([f"`{file}`" for file in pr["files"]])
-                    f.write(
-                        f"| [#{pr['number']}]({pr['url']}) | {pr['title']} | @{pr['author']} | {files_list} |\n"
-                    )
+                    f.write(f"| [#{pr['number']}]({pr['url']}) | {pr['title']} | @{pr['author']} | {files_list} |\n")
 
     except Exception as e:
         # Use Exception as base class to avoid mocking issues with requests.RequestException

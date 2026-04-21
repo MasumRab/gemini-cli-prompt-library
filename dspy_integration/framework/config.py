@@ -1,8 +1,9 @@
-import os
-import yaml
 import copy
 import logging
-from typing import Dict, Any
+import os
+from typing import Any, Dict
+
+import yaml
 
 CONFIG_PATH = os.path.expanduser("~/.dspy_tuning/config.yaml")
 

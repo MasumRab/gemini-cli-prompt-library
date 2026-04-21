@@ -5,7 +5,8 @@ Maps to: commands/code-review/security.toml
 Category: Code Review & Analysis
 """
 
-from typing import List, Dict, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List
+
 from .base import BaseScenario, ScenarioRegistry
 
 if TYPE_CHECKING:
@@ -125,9 +126,7 @@ For each vulnerability:
 If no issues found, state: "No security vulnerabilities detected."
 """
 
-    def metric(
-        self, example: "dspy.Example", pred: "dspy.Prediction", trace=None
-    ) -> float:
+    def metric(self, example: "dspy.Example", pred: "dspy.Prediction", trace=None) -> float:
         """Evaluate security review quality."""
         expected_lower = example.expected.lower()
         pred_lower = str(pred.review).lower()
