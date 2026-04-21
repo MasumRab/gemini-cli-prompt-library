@@ -98,6 +98,15 @@ class OpenRouterProvider(BaseProvider):
                 latency_seconds=time.time() - start_time,
             )
 
+        except Exception as e:
+            return ProviderResponse(
+                success=False,
+                error=str(e),
+                provider=self.name,
+                model=self.model,
+                latency_seconds=time.time() - start_time,
+            )
+
     def _is_rate_limited(self, output: str) -> bool:
         """Detect rate limiting indicators."""
         rate_limit_indicators = [
