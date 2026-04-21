@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from dspy_integration.framework.manifest import get_commands
+from dspy_integration.framework.registry import CommandRegistry
+import re
 
 
 @dataclass
@@ -9,29 +10,55 @@ class Command:
     description: str
 
 
+def normalize_text(text: str) -> str:
+    """
+    Normalize text by removing all characters except word characters and whitespace and converting to lowercase.
+    
+    Parameters:
+        text (str): The input string to normalize.
+    
+    Returns:
+        normalized_text (str): The input converted to lowercase with all characters other than letters, digits, underscores, and whitespace removed.
+    """
+    return re.sub(r"[^\w\s]", "", text).lower()
+
+
 def dispatch(user_input):
     # TODO [Phase 3 - CASS Integration]: Replace this simple keyword matching with Hybrid Search.
     # TODO [Medium Priority]: Integrate `IntelligentDispatcher`
     # for better routing logic.
 
-    commands = get_commands()
-    user_input = user_input.lower()
+    """
+    Selects the best-matching command for the provided user input using keyword-based scoring.
+    
+    Parameters:
+        user_input (str): The raw user query to match against available commands.
+    
+    Returns:
+        Command or None: A Command instance representing the best match, or `None` if no command matches.
+    """
+    registry = CommandRegistry()
+    user_input_normalized = normalize_text(user_input)
 
     best_match = None
     max_score = 0
 
-    for command in commands:
+    for command in registry.commands.values():
         score = 0
-        name_tokens = set(command["name"].lower().replace("-", " ").split())
-        description_tokens = set(command["description"].lower().split())
+        normalized_name = normalize_text(command.name.replace("-", " "))
+        normalized_description = normalize_text(command.description)
+
+        name_tokens = set(normalized_name.split())
+        description_tokens = set(normalized_description.split())
 
         # Prioritize exact matches in the name
-        if command["name"].replace("-", " ") in user_input:
+        if normalized_name in user_input_normalized:
             score += 10
 
         # Prioritize longer matches
-        name_match_len = len(name_tokens.intersection(user_input.split()))
-        description_match_len = len(description_tokens.intersection(user_input.split()))
+        user_tokens = set(user_input_normalized.split())
+        name_match_len = len(name_tokens.intersection(user_tokens))
+        description_match_len = len(description_tokens.intersection(user_tokens))
 
         score += (name_match_len * 5) + description_match_len
 
@@ -41,11 +68,9 @@ def dispatch(user_input):
 
     if best_match:
         return Command(
-            name=best_match["name"],
-            category=best_match.get(
-                "category", "unknown"
-            ),  # Handle missing category safely
-            description=best_match["description"],
+            name=best_match.name,
+            category=best_match.category,
+            description=best_match.description,
         )
     return None
 

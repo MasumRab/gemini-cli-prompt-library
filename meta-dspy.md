@@ -20,6 +20,16 @@ New CLI commands are available to help you work with DSPy:
 *   `prompts-dspy-refine`: Refine a DSPy Module based on feedback.
 *   `prompts-dspy-cookbook`: Get suggestions for DSPy patterns.
 
+## Installation
+
+Because the `gemini-cli` extensions installer only downloads markdown and prompt files, the Python code must be installed globally on your machine to use `dspy-integration` commands from anywhere.
+
+To install, run the following command via your Gemini CLI:
+```bash
+/prompts:dspy-install "install it"
+```
+It will provide a script that uses `uv` to safely install the `dspy-integration` CLI tool globally.
+
 ## Getting Started
 
 1.  **Install Requirements**:

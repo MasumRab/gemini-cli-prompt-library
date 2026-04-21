@@ -7,6 +7,7 @@ Adapter for OpenRouter API with support for:
 """
 
 from typing import Optional
+import os
 import openai
 import time
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
@@ -22,12 +23,13 @@ class OpenRouterProvider(BaseProvider):
         rate_limit: Optional[RateLimitConfig] = None,
     ):
         """
-        Initialize OpenRouter provider.
-
-        Args:
-            model: Model to use (default: Grok free)
-            api_key: OpenRouter API key
-            rate_limit: Rate limiting configuration
+        Create an OpenRouter (Grok) provider configured with the chosen model, API key, and optional rate limiting.
+        
+        Parameters:
+            model (str): Model identifier to use (default: "x-ai/grok-4.1-fast:free").
+            api_key (Optional[str]): OpenRouter API key; if omitted, the value of the
+                environment variable OPENROUTER_API_KEY will be used when available.
+            rate_limit (Optional[RateLimitConfig]): Rate limiting configuration for requests.
         """
         super().__init__(
             name="OpenRouter (Grok)",
@@ -36,22 +38,20 @@ class OpenRouterProvider(BaseProvider):
             model=model,
             rate_limit=rate_limit,
         )
-        self.api_key = (
-            api_key
-            or "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"
-        )
+        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY")
         self.base_url = "https://openrouter.ai/api/v1"
 
     def _execute_cli(self, prompt: str, **kwargs) -> ProviderResponse:
         """
-        Execute prompt via OpenRouter API.
-
-        Args:
-            prompt: Prompt to send
-            **kwargs: Additional arguments
-
+        Send a chat prompt to the OpenRouter API and return a ProviderResponse summarizing the outcome.
+        
+        Sends the prompt as a single user message to the configured model and measures round-trip latency.
+        
+        Parameters:
+            prompt (str): The prompt text to send.
+        
         Returns:
-            ProviderResponse with result
+            ProviderResponse: On success includes `content` (model output), `provider`, `model`, `latency_seconds`, and `tokens_used` (0 if unavailable). On failure includes `error`, `provider`, and `model`; if the failure is due to rate limiting, `rate_limited` is set to `True`.
         """
         start_time = time.time()
 
@@ -84,6 +84,19 @@ class OpenRouterProvider(BaseProvider):
                 provider=self.name,
                 model=self.model,
                 rate_limited=True,
+                latency_seconds=time.time() - start_time,
+            )
+
+        except (
+            openai.APIConnectionError,
+            openai.AuthenticationError,
+            openai.APIError,
+        ) as e:
+            return ProviderResponse(
+                success=False,
+                error=f"{type(e).__name__}: {str(e)}",
+                provider=self.name,
+                model=self.model,
                 latency_seconds=time.time() - start_time,
             )
 
