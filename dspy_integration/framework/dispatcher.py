@@ -10,24 +10,32 @@ class Command:
     description: str
 
 
+def normalize_text(text: str) -> str:
+    """Normalize text for matching/scoring (strip punctuation, lowercase)."""
+    return re.sub(r"[^\w\s]", "", text).lower()
+
+
 def dispatch(user_input):
     # TODO [Phase 3 - CASS Integration]: Replace this simple keyword matching with Hybrid Search.
     # TODO [Medium Priority]: Integrate `IntelligentDispatcher`
     # for better routing logic.
 
     commands = get_commands()
-    user_input_normalized = re.sub(r"[^\w\s]", "", user_input).lower()
+    user_input_normalized = normalize_text(user_input)
 
     best_match = None
     max_score = 0
 
     for command in commands:
         score = 0
-        name_tokens = set(command["name"].lower().replace("-", " ").split())
-        description_tokens = set(command["description"].lower().split())
+        normalized_name = normalize_text(command["name"].replace("-", " "))
+        normalized_description = normalize_text(command["description"])
+
+        name_tokens = set(normalized_name.split())
+        description_tokens = set(normalized_description.split())
 
         # Prioritize exact matches in the name
-        if command["name"].replace("-", " ") in user_input_normalized:
+        if normalized_name in user_input_normalized:
             score += 10
 
         # Prioritize longer matches

@@ -15,6 +15,11 @@ class Command:
     tags: Optional[List[str]] = field(default_factory=list)
 
 
+def normalize_text(text: str) -> str:
+    """Normalize text for matching/scoring (strip punctuation, lowercase)."""
+    return re.sub(r"[^\w\s]", "", text).lower()
+
+
 class CommandRegistry:
     def __init__(self, commands_dir="commands"):
         self.commands_dir = commands_dir
@@ -99,7 +104,7 @@ class IntelligentDispatcher:
         Returns:
             Best matching Command object
         """
-        user_input_normalized = re.sub(r"[^\w\s]", "", user_input).lower()
+        user_input_normalized = normalize_text(user_input)
         best_match = None
         max_score = 0
 
@@ -120,12 +125,15 @@ class IntelligentDispatcher:
 
         # Tokenize inputs
         user_tokens = set(user_input.split())
-        name_tokens = set(command.name.lower().replace("-", " ").split())
-        desc_tokens = set(command.description.lower().split())
+        normalized_name = normalize_text(command.name.replace("-", " "))
+        normalized_description = normalize_text(command.description)
+
+        name_tokens = set(normalized_name.split())
+        desc_tokens = set(normalized_description.split())
         tag_tokens = set(command.tags or [])
 
         # Exact name match gets high score
-        if command.name.replace("-", " ") in user_input:
+        if normalized_name in user_input:
             score += 10
 
         # Count token overlaps
