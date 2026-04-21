@@ -356,4 +356,3 @@ I also maintain a [MCP Resources Directory](https://www.mcpstack.org/) & a [codi
 **Made with ❤️ for the Gemini CLI community**
 
 Star ⭐ this repo if you find it useful!
-
