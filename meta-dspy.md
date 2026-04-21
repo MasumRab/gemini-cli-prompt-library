@@ -24,7 +24,7 @@ New CLI commands are available to help you work with DSPy:
 
 Because the `gemini-cli` extensions installer only downloads markdown and prompt files, the Python code must be installed globally on your machine to use `dspy-integration` commands from anywhere.
 
-To install, run the following command via your gemini CLI:
+To install, run the following command via your Gemini CLI:
 ```bash
 /prompts:dspy-install "install it"
 ```
