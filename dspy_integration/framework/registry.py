@@ -38,11 +38,25 @@ class CommandRegistry:
                                 os.path.join(category_path, command_file), "rb"
                             ) as f:
                                 data = tomllib.load(f)
+
+                            prompt = data.get("prompt", "")
+                            description = data.get("description", "")
+
+                            # Fallback: extract first # line from prompt if description is missing
+                            if not description and prompt:
+                                prompt_lines = prompt.strip().split("\n")
+                                for line in prompt_lines:
+                                    cleaned_line = line.strip()
+                                    if cleaned_line and cleaned_line.startswith("#"):
+                                        description = cleaned_line.strip("# ").strip()
+                                        if description:
+                                            break
+
                             commands[command_name] = Command(
                                 name=command_name,
                                 category=category,
-                                description=data.get("description", ""),
-                                prompt=data.get("prompt", ""),
+                                description=description,
+                                prompt=prompt,
                                 author=data.get("author", ""),
                                 tags=data.get("tags", []),
                             )

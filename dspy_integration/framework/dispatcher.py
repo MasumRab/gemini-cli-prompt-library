@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from dspy_integration.framework.manifest import get_commands
+from dspy_integration.framework.registry import CommandRegistry
 import re
 
 
@@ -20,16 +20,16 @@ def dispatch(user_input):
     # TODO [Medium Priority]: Integrate `IntelligentDispatcher`
     # for better routing logic.
 
-    commands = get_commands()
+    registry = CommandRegistry()
     user_input_normalized = normalize_text(user_input)
 
     best_match = None
     max_score = 0
 
-    for command in commands:
+    for command in registry.commands.values():
         score = 0
-        normalized_name = normalize_text(command["name"].replace("-", " "))
-        normalized_description = normalize_text(command["description"])
+        normalized_name = normalize_text(command.name.replace("-", " "))
+        normalized_description = normalize_text(command.description)
 
         name_tokens = set(normalized_name.split())
         description_tokens = set(normalized_description.split())
@@ -51,11 +51,9 @@ def dispatch(user_input):
 
     if best_match:
         return Command(
-            name=best_match["name"],
-            category=best_match.get(
-                "category", "unknown"
-            ),  # Handle missing category safely
-            description=best_match["description"],
+            name=best_match.name,
+            category=best_match.category,
+            description=best_match.description,
         )
     return None
 
