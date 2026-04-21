@@ -16,16 +16,40 @@ class Command:
 
 
 def normalize_text(text: str) -> str:
-    """Normalize text for matching/scoring (strip punctuation, lowercase)."""
+    """
+    Prepare text for matching by removing punctuation and converting to all characters to lowercase.
+    
+    Parameters:
+        text (str): Input string to normalize.
+    
+    Returns:
+        str: The input with punctuation removed (only letters, digits, and whitespace retained) and converted to lowercase.
+    """
     return re.sub(r"[^\w\s]", "", text).lower()
 
 
 class CommandRegistry:
     def __init__(self, commands_dir="commands"):
+        """
+        Initialize the registry and load available commands.
+        
+        Sets the directory to scan for command definition files and loads/caches all discovered commands into self.commands by calling _discover_commands().
+        
+        Parameters:
+            commands_dir (str): Path to the root commands directory to scan for command TOML files. Defaults to "commands".
+        """
         self.commands_dir = commands_dir
         self.commands = self._discover_commands()
 
     def _discover_commands(self):
+        """
+        Discover and load command definitions from the configured commands directory.
+        
+        Scans each subdirectory of self.commands_dir as a command category, parses every `.toml` file found, and constructs a Command for each file. If a TOML file lacks a `description` but has a `prompt`, the first line in `prompt` that begins with `#` is used as the description. Files that fail to load or parse are skipped and an error message is printed.
+        
+        Returns:
+            dict: Mapping of command name (filename without `.toml`) to `Command` instances.
+        """
         commands = {}
         for category in os.listdir(self.commands_dir):
             category_path = os.path.join(self.commands_dir, category)
@@ -110,13 +134,15 @@ class IntelligentDispatcher:
 
     def dispatch(self, user_input: str) -> Optional[Command]:
         """
-        Dispatch user input to the best matching command.
-
-        Args:
-            user_input: Natural language request
-
+        Select the best-matching Command for the given natural-language input.
+        
+        Normalizes the input and selects the command with the highest internal match score; if no command scores above zero, returns None.
+        
+        Parameters:
+            user_input (str): Natural-language request to match against available commands.
+        
         Returns:
-            Best matching Command object
+            Command or None: The matching Command if one is found, `None` otherwise.
         """
         user_input_normalized = normalize_text(user_input)
         best_match = None
@@ -133,7 +159,18 @@ class IntelligentDispatcher:
 
     def _calculate_match_score(self, user_input: str, command: Command) -> float:
         """
-        Calculate how well a command matches the user input.
+        Compute a heuristic relevance score indicating how well `command` matches the (normalized) `user_input`.
+        
+        Parameters:
+            user_input (str): Normalized user input (lowercased, punctuation removed).
+            command (Command): Command metadata to score against.
+        
+        Returns:
+            float: Numeric score where higher means a better match. Scoring components:
+                - +10 if the command name (normalized, with dashes replaced by spaces) appears as a substring in `user_input`.
+                - +5 for each overlapping token between the command name and `user_input`.
+                - +1 for each overlapping token between the command description and `user_input`.
+                - +3 for each overlapping token between the command tags and `user_input`.
         """
         score = 0
 

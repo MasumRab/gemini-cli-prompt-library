@@ -153,14 +153,14 @@ class ProviderChain:
 
     def call(self, prompt: str, **kwargs) -> ProviderResponse:
         """
-        Call providers in sequence with failover.
-
-        Args:
-            prompt: Prompt to send
-            **kwargs: Additional arguments
-
+        Attempt each provider in priority order and return the first successful response.
+        
+        Parameters:
+            prompt (str): The prompt to send to each provider.
+            **kwargs: Additional keyword arguments forwarded to each provider's call.
+        
         Returns:
-            ProviderResponse from first successful provider
+            ProviderResponse: The response from the first provider that succeeds; if all providers fail, a ProviderResponse with `success=False` and `error` summarizing the last provider error.
         """
         last_error = None
 

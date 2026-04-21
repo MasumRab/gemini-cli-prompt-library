@@ -11,7 +11,15 @@ class Command:
 
 
 def normalize_text(text: str) -> str:
-    """Normalize text for matching/scoring (strip punctuation, lowercase)."""
+    """
+    Normalize text by removing all characters except word characters and whitespace and converting to lowercase.
+    
+    Parameters:
+        text (str): The input string to normalize.
+    
+    Returns:
+        normalized_text (str): The input converted to lowercase with all characters other than letters, digits, underscores, and whitespace removed.
+    """
     return re.sub(r"[^\w\s]", "", text).lower()
 
 
@@ -20,6 +28,15 @@ def dispatch(user_input):
     # TODO [Medium Priority]: Integrate `IntelligentDispatcher`
     # for better routing logic.
 
+    """
+    Selects the best-matching command for the provided user input using keyword-based scoring.
+    
+    Parameters:
+        user_input (str): The raw user query to match against available commands.
+    
+    Returns:
+        Command or None: A Command instance representing the best match, or `None` if no command matches.
+    """
     registry = CommandRegistry()
     user_input_normalized = normalize_text(user_input)
 
