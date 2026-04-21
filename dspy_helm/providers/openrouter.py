@@ -37,10 +37,7 @@ class OpenRouterProvider(BaseProvider):
             model=model,
             rate_limit=rate_limit,
         )
-        self.api_key = (
-            api_key
-            or os.getenv("OPENROUTER_API_KEY")
-        )
+        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY")
         self.base_url = "https://openrouter.ai/api/v1"
 
     def _execute_cli(self, prompt: str, **kwargs) -> ProviderResponse:
