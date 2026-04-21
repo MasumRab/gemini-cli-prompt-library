@@ -1,6 +1,6 @@
+import datetime
 import os
 import re
-import datetime
 import tempfile
 
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,9 +20,7 @@ def _atomic_write(filepath, content):
     """Writes content to a file atomically."""
     try:
         dir_ = os.path.dirname(os.path.abspath(filepath))
-        with tempfile.NamedTemporaryFile(
-            mode="w", encoding="utf-8", dir=dir_, delete=False, suffix=".tmp"
-        ) as tmp:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=dir_, delete=False, suffix=".tmp") as tmp:
             tmp.write(content)
         os.replace(tmp.name, filepath)
         return True
@@ -39,9 +37,7 @@ def _atomic_write(filepath, content):
 def check_registry_performance(filepath=None, findings=None, inserted_todos=None):
     """Checks for inefficient registry instantiation."""
     if filepath is None:
-        filepath = os.path.join(
-            _REPO_ROOT, "dspy_integration", "framework", "registry.py"
-        )
+        filepath = os.path.join(_REPO_ROOT, "dspy_integration", "framework", "registry.py")
     if findings is None:
         findings = _empty_findings()
     if inserted_todos is None:
@@ -85,9 +81,7 @@ def check_registry_performance(filepath=None, findings=None, inserted_todos=None
 def check_dispatcher_architecture(filepath=None, findings=None, inserted_todos=None):
     """Checks for missing IntelligentDispatcher usage."""
     if filepath is None:
-        filepath = os.path.join(
-            _REPO_ROOT, "dspy_integration", "framework", "dispatcher.py"
-        )
+        filepath = os.path.join(_REPO_ROOT, "dspy_integration", "framework", "dispatcher.py")
     if findings is None:
         findings = _empty_findings()
     if inserted_todos is None:
@@ -105,10 +99,7 @@ def check_dispatcher_architecture(filepath=None, findings=None, inserted_todos=N
             "`IntelligentDispatcher` class available in the framework."
         )
 
-        todo_comment = (
-            "    # TODO [Medium Priority]: Integrate `IntelligentDispatcher`\n"
-            "    # for better routing logic."
-        )
+        todo_comment = "    # TODO [Medium Priority]: Integrate `IntelligentDispatcher`\n" "    # for better routing logic."
         if "Integrate `IntelligentDispatcher`" not in content:
             if "def dispatch(user_input):" in content:
                 new_content = content.replace(
@@ -116,9 +107,7 @@ def check_dispatcher_architecture(filepath=None, findings=None, inserted_todos=N
                     f"def dispatch(user_input):\n{todo_comment}",
                 )
                 if _atomic_write(filepath, new_content):
-                    inserted_todos.append(
-                        (filepath, "Medium", "Integrate IntelligentDispatcher")
-                    )
+                    inserted_todos.append((filepath, "Medium", "Integrate IntelligentDispatcher"))
 
     return findings, inserted_todos
 
@@ -141,18 +130,11 @@ def check_dspy_modules(directory=None, findings=None, inserted_todos=None):
             with open(filepath, "r") as f:
                 content = f.read()
 
-            if (
-                "dspy.Module" in content
-                and "BootstrapFewShot" not in content
-                and "MIPROv2" not in content
-            ):
+            if "dspy.Module" in content and "BootstrapFewShot" not in content and "MIPROv2" not in content:
                 if "TODO" in content and ("Optimize" in content or "MIPRO" in content):
                     continue
 
-                findings["DSPy"].append(
-                    f"`{filepath}`: Module lacks advanced optimizers "
-                    "(BootstrapFewShot/MIPROv2)."
-                )
+                findings["DSPy"].append(f"`{filepath}`: Module lacks advanced optimizers " "(BootstrapFewShot/MIPROv2).")
 
                 target_class_pattern = r"class .*Optimizer\(.*dspy\.Module.*\):"
                 match = re.search(target_class_pattern, content)
@@ -170,9 +152,7 @@ def check_dspy_modules(directory=None, findings=None, inserted_todos=None):
                     )
 
                     if content.count(class_line) == 1:
-                        new_content = content.replace(
-                            class_line, f"{class_line}\n{todo_comment}"
-                        )
+                        new_content = content.replace(class_line, f"{class_line}\n{todo_comment}")
                         if _atomic_write(filepath, new_content):
                             inserted_todos.append(
                                 (
@@ -201,20 +181,11 @@ def generate_report(findings, inserted_todos):
         f.write("## 1. Executive Summary\n")
         summary = "This audit identifies several areas for improvement. "
         if findings["Performance"]:
-            summary += (
-                f"Critical performance bottlenecks found "
-                f"({len(findings['Performance'])}). "
-            )
+            summary += f"Critical performance bottlenecks found " f"({len(findings['Performance'])}). "
         if findings["Architecture"]:
-            summary += (
-                f"Architectural inconsistencies noted "
-                f"({len(findings['Architecture'])}). "
-            )
+            summary += f"Architectural inconsistencies noted " f"({len(findings['Architecture'])}). "
         if findings["DSPy"]:
-            summary += (
-                f"DSPy optimization opportunities detected in "
-                f"{len(findings['DSPy'])} modules. "
-            )
+            summary += f"DSPy optimization opportunities detected in " f"{len(findings['DSPy'])} modules. "
         f.write(f"{summary}\n\n")
 
         f.write("## 2. Findings\n\n")
@@ -238,45 +209,26 @@ def generate_report(findings, inserted_todos):
 
         f.write("### Short-Term (Immediate Fixes)\n")
         if findings["Performance"]:
-            f.write(
-                "* **Refactor Registry**: Implement singleton pattern/caching "
-                "for `CommandRegistry`.\n"
-            )
+            f.write("* **Refactor Registry**: Implement singleton pattern/caching " "for `CommandRegistry`.\n")
         f.write("* **Fix Linting**: Address minor style issues.\n\n")
 
         f.write("### Medium-Term (Integration)\n")
         if findings["Architecture"]:
-            f.write(
-                "* **Unified Dispatch**: Update `dispatcher.py` to use "
-                "`IntelligentDispatcher`.\n"
-            )
-        f.write(
-            "* **Test Coverage**: Increase test coverage for framework "
-            "components.\n\n"
-        )
+            f.write("* **Unified Dispatch**: Update `dispatcher.py` to use " "`IntelligentDispatcher`.\n")
+        f.write("* **Test Coverage**: Increase test coverage for framework " "components.\n\n")
 
         f.write("### Long-Term (Evolution)\n")
         if findings["DSPy"]:
-            f.write(
-                "* **Optimization Pipeline**: Systematically apply "
-                "`BootstrapFewShot` to all modules.\n"
-            )
-        f.write(
-            "* **Agentic Workflow**: Move towards fully autonomous agent "
-            "workflows.\n"
-        )
+            f.write("* **Optimization Pipeline**: Systematically apply " "`BootstrapFewShot` to all modules.\n")
+        f.write("* **Agentic Workflow**: Move towards fully autonomous agent " "workflows.\n")
     return audit_report_file
 
 
 def main():
     print("Starting audit...")
     findings, inserted_todos = check_registry_performance()
-    findings, inserted_todos = check_dispatcher_architecture(
-        findings=findings, inserted_todos=inserted_todos
-    )
-    findings, inserted_todos = check_dspy_modules(
-        findings=findings, inserted_todos=inserted_todos
-    )
+    findings, inserted_todos = check_dispatcher_architecture(findings=findings, inserted_todos=inserted_todos)
+    findings, inserted_todos = check_dspy_modules(findings=findings, inserted_todos=inserted_todos)
     report_path = generate_report(findings, inserted_todos)
     print(f"Audit complete. Report generated at {report_path}")
 

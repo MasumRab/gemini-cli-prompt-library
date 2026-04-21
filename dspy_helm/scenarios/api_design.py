@@ -5,9 +5,10 @@ Maps to: commands/architecture/design-api.toml
 Category: Architecture & Design
 """
 
+from typing import Any, Dict, List
+
 import dspy
 
-from typing import List, Dict, Any
 from .base import BaseScenario, ScenarioRegistry
 
 
@@ -186,9 +187,7 @@ Provide:
 5. **Error Handling Guide**
 """
 
-    def metric(
-        self, example: "dspy.Example", pred: "dspy.Prediction", trace=None
-    ) -> float:
+    def metric(self, example: "dspy.Example", pred: "dspy.Prediction", trace=None) -> float:
         """Evaluate API design quality."""
         expected = example.design.lower()
         pred_text = str(pred.design).lower()

@@ -5,9 +5,10 @@ Maps to: commands/docs/write-readme.toml
 Category: Documentation
 """
 
+from typing import Any, Dict, List
+
 import dspy
 
-from typing import List, Dict, Any
 from .base import BaseScenario, ScenarioRegistry
 
 
@@ -28,10 +29,7 @@ class DocumentationScenario(BaseScenario):
             with open(data_path, "r") as f:
                 data = [json.loads(line) for line in f if line.strip()]
                 if data and "input" in data[0] and "expected_output" in data[0]:
-                    return [
-                        {"project": item["input"], "readme": item["expected_output"]}
-                        for item in data
-                    ]
+                    return [{"project": item["input"], "readme": item["expected_output"]} for item in data]
                 return data
 
         return [
@@ -167,9 +165,7 @@ Create a comprehensive README.md for:
 Generate complete, production-ready README.md in Markdown format.
 """
 
-    def metric(
-        self, example: "dspy.Example", pred: "dspy.Prediction", trace=None
-    ) -> float:
+    def metric(self, example: "dspy.Example", pred: "dspy.Prediction", trace=None) -> float:
         """Evaluate documentation quality."""
         expected = example.readme.lower()
         pred_text = str(pred.readme).lower()

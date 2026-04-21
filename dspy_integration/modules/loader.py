@@ -7,9 +7,8 @@ updating registry entries manually.
 """
 
 import importlib
-import os
 from pathlib import Path
-from typing import Any, Dict, Optional, Type
+from typing import Any, Optional, Type
 
 
 # TODO [Medium Priority]: Convert file loading operations to async to prevent blocking.
@@ -75,8 +74,7 @@ class DynamicModuleLoader:
         # If we couldn't find the specific module, raise an error
         available_modules = self._get_available_modules()
         raise ValueError(
-            f"Module for scenario '{scenario_name}' not found. "
-            f"Available scenarios: {', '.join(available_modules)}"
+            f"Module for scenario '{scenario_name}' not found. " f"Available scenarios: {', '.join(available_modules)}"
         )
 
     def get_optimizer_for_scenario(self, scenario_name: str) -> Type[Any]:
@@ -103,9 +101,7 @@ class DynamicModuleLoader:
 
             # If not found, try looking for any class ending with "Optimizer"
             for attr_name in dir(module):
-                if attr_name.endswith("Optimizer") and attr_name.startswith(
-                    self._convert_to_pascal_case(scenario_name)
-                ):
+                if attr_name.endswith("Optimizer") and attr_name.startswith(self._convert_to_pascal_case(scenario_name)):
                     return getattr(module, attr_name)
 
         except ImportError:
@@ -114,8 +110,7 @@ class DynamicModuleLoader:
         # If we couldn't find the optimizer, raise an error
         available_modules = self._get_available_modules()
         raise ValueError(
-            f"Optimizer for scenario '{scenario_name}' not found. "
-            f"Available scenarios: {', '.join(available_modules)}"
+            f"Optimizer for scenario '{scenario_name}' not found. " f"Available scenarios: {', '.join(available_modules)}"
         )
 
     def _convert_to_pascal_case(self, snake_case: str) -> str:

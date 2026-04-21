@@ -8,9 +8,11 @@ https://console.groq.com/
 """
 
 import os
-from typing import Optional
-import requests
 import time
+from typing import Optional
+
+import requests
+
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
 
 

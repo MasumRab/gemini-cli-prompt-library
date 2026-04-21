@@ -7,9 +7,9 @@ Available optimizers:
 - BootstrapFewShotWithRandomSearch: Bootstrap with random search
 """
 
-from .base import BaseOptimizer, OptimizerRegistry, IOptimizer
-from .mipro_v2 import MIPROv2Optimizer
+from .base import BaseOptimizer, IOptimizer, OptimizerRegistry
 from .bootstrap import BootstrapFewShotOptimizer, BootstrapFewShotRandomSearchOptimizer
+from .mipro_v2 import MIPROv2Optimizer
 
 __all__ = [
     "BaseOptimizer",

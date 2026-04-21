@@ -1,5 +1,6 @@
-import dspy
 from typing import Optional
+
+import dspy
 
 
 class ArchitectureSignature(dspy.Signature):

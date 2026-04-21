@@ -5,10 +5,10 @@ Adapter for OpenCode CLI tool with support for:
 - gpt-4o-mini (OpenAI FREE tier)
 """
 
-from typing import Optional
-import subprocess
-import json
 import logging
+import subprocess
+from typing import Optional
+
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
 
 logger = logging.getLogger(__name__)
@@ -17,9 +17,7 @@ logger = logging.getLogger(__name__)
 class OpenCodeProvider(BaseProvider):
     """Provider for OpenCode CLI using OpenAI free tier."""
 
-    def __init__(
-        self, model: str = "gpt-4o-mini", rate_limit: Optional[RateLimitConfig] = None
-    ):
+    def __init__(self, model: str = "gpt-4o-mini", rate_limit: Optional[RateLimitConfig] = None):
         """
         Initialize OpenCode provider (OpenAI FREE tier).
 
@@ -51,9 +49,7 @@ class OpenCodeProvider(BaseProvider):
         start_time = time.time()
 
         try:
-            result = subprocess.run(
-                ["opencode", "ask", prompt], capture_output=True, text=True, timeout=120
-            )
+            result = subprocess.run(["opencode", "ask", prompt], capture_output=True, text=True, timeout=120)
 
             latency = time.time() - start_time
 

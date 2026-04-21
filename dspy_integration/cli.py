@@ -1,4 +1,5 @@
 import argparse
+
 from dspy_integration.framework.dispatcher import dispatch
 
 
@@ -15,12 +16,8 @@ def main():
     # - Implement `ui/menu.py` (MenuRenderer) for interactive selection.
     # - Add `--interactive` flag to launch the REPL (Task 3.4.4).
 
-    parser = argparse.ArgumentParser(
-        description="Dispatch a command based on natural language input."
-    )
-    parser.add_argument(
-        "user_input", type=str, help="The natural language input from the user."
-    )
+    parser = argparse.ArgumentParser(description="Dispatch a command based on natural language input.")
+    parser.add_argument("user_input", type=str, help="The natural language input from the user.")
     # TODO: Add robot mode and smart dispatch integration.
     # parser.add_argument("--robot", action="store_true", help="Enable robot/AI mode")
     args = parser.parse_args()

@@ -2,9 +2,9 @@
 Evaluation harness for DSPy programs.
 """
 
-from typing import List, Callable, Dict, Any, TYPE_CHECKING
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, Callable, Dict, List
 
 if TYPE_CHECKING:
     import dspy
@@ -58,7 +58,7 @@ class Evaluator:
                     pred = program(**example.inputs())
                     score = self.metric(example, pred)
                     return (example, pred, score)
-                except Exception as e:
+                except Exception:
                     return (example, None, 0.0)
 
             raw_results = executor.execute(process_item, devset)

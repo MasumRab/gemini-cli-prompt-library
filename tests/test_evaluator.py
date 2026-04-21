@@ -2,8 +2,9 @@
 Tests for DSPy-HELM Evaluator.
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 class TestEvaluator:
@@ -51,9 +52,7 @@ class TestEvaluator:
 class TestEvaluatorEvaluate:
     """Test evaluator evaluate method."""
 
-    @pytest.mark.skip(
-        reason="Requires real dspy module - tests internal dspy integration"
-    )
+    @pytest.mark.skip(reason="Requires real dspy module - tests internal dspy integration")
     @patch("dspy_helm.eval.evaluate.dspy")
     def test_evaluate_basic(self, mock_dspy):
         """Test basic evaluation."""
@@ -75,9 +74,7 @@ class TestEvaluatorEvaluate:
         assert result["score"] == 0.85
         assert result["count"] == 2
 
-    @pytest.mark.skip(
-        reason="Requires real dspy module - tests internal dspy integration"
-    )
+    @pytest.mark.skip(reason="Requires real dspy module - tests internal dspy integration")
     @patch("dspy_helm.eval.evaluate.dspy")
     def test_evaluate_with_return_outputs(self, mock_dspy):
         """Test evaluation with return_outputs=True."""
@@ -90,9 +87,7 @@ class TestEvaluatorEvaluate:
         def mock_execute(fn, items):
             return [fn(item) for item in items]
 
-        mock_dspy.utils.parallelizer.ParallelExecutor.return_value.execute = (
-            mock_execute
-        )
+        mock_dspy.utils.parallelizer.ParallelExecutor.return_value.execute = mock_execute
 
         mock_metric = MagicMock()
         mock_metric.return_value = 1.0
@@ -110,9 +105,7 @@ class TestEvaluatorEvaluate:
         assert "outputs" in result
         assert len(result["outputs"]) == 2
 
-    @pytest.mark.skip(
-        reason="Requires real dspy module - tests internal dspy integration"
-    )
+    @pytest.mark.skip(reason="Requires real dspy module - tests internal dspy integration")
     @patch("dspy_helm.eval.evaluate.dspy")
     def test_evaluate_empty_devset(self, mock_dspy):
         """Test evaluation with empty devset."""
@@ -135,8 +128,9 @@ class TestEvaluatorExport:
 
     def test_export_results(self, tmp_path):
         """Test exporting results to JSON."""
-        from dspy_helm.eval import Evaluator
         import json
+
+        from dspy_helm.eval import Evaluator
 
         mock_metric = MagicMock()
         evaluator = Evaluator(metric=mock_metric)
@@ -176,13 +170,12 @@ class TestEvaluatorExport:
 class TestEvaluatorIntegration:
     """Integration tests for Evaluator."""
 
-    @pytest.mark.skip(
-        reason="Requires real dspy module - tests internal dspy integration"
-    )
+    @pytest.mark.skip(reason="Requires real dspy module - tests internal dspy integration")
     def test_metric_function_called(self):
         """Test that metric function is called during evaluation."""
-        from dspy_helm.eval import Evaluator
         import dspy
+
+        from dspy_helm.eval import Evaluator
 
         # Create a simple metric
         def simple_metric(example, pred, trace=None):

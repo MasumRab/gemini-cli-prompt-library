@@ -2,8 +2,9 @@
 Tests for DSPy integration modules.
 """
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 
 
 class TestCodeReviewModule:
@@ -141,7 +142,7 @@ class TestSecurityReviewModule:
         from dspy_integration.modules.security_review import SecurityReview
 
         module = SecurityReview()
-        result = module.forward("vulnerable code")
+        module.forward("vulnerable code")
 
         # SecurityReview.forward returns the review attribute from result
         assert mock_cot.called
@@ -200,8 +201,9 @@ class TestModuleSignatureStructure:
 
     def test_code_review_signature_structure(self):
         """Test CodeReviewSignature has proper input/output fields."""
-        from dspy_integration.modules.code_review import CodeReviewSignature
         import dspy
+
+        from dspy_integration.modules.code_review import CodeReviewSignature
 
         # DSPy signatures are subclasses of Signature
         # Check that it's a proper class with expected behavior
@@ -209,8 +211,9 @@ class TestModuleSignatureStructure:
 
     def test_security_review_signature_structure(self):
         """Test SecurityReviewSignature has proper input/output fields."""
-        from dspy_integration.modules.security_review import SecurityReviewSignature
         import dspy
+
+        from dspy_integration.modules.security_review import SecurityReviewSignature
 
         assert issubclass(SecurityReviewSignature, dspy.Signature)
 

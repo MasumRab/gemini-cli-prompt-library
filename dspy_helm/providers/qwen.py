@@ -5,9 +5,10 @@ Adapter for Qwen Code CLI tool with support for:
 - qwen2.5-coder:32b (code-optimized, self-hosted, FREE)
 """
 
-from typing import Optional
 import subprocess
 import time
+from typing import Optional
+
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
 
 

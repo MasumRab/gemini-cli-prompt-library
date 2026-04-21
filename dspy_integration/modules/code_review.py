@@ -1,5 +1,6 @@
-import dspy
 from typing import Optional
+
+import dspy
 
 
 class CodeReviewSignature(dspy.Signature):
@@ -10,7 +11,8 @@ class CodeReviewSignature(dspy.Signature):
 
     code = dspy.InputField(desc="Code snippet to review")
     review = dspy.OutputField(
-        desc="Comprehensive review covering style, organization, error handling, testing, maintainability, SOLID principles, etc."
+        desc="Comprehensive review covering style, organization, error handling, testing, "
+        "maintainability, SOLID principles, etc."
     )
 
 

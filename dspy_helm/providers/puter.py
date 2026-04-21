@@ -7,9 +7,11 @@ Access 500+ models including GPT, Claude, Grok, DeepSeek.
 https://developer.puter.com/tutorials/free-llm-api/
 """
 
-from typing import Optional
-import requests
 import time
+from typing import Optional
+
+import requests
+
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
 
 

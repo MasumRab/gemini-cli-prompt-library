@@ -1,17 +1,14 @@
 import os
 import sys
 import unittest
+from unittest.mock import MagicMock, patch
+
 import requests
-from unittest.mock import patch, MagicMock
 
 # Add the project root to the sys.path so we can import scripts
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from scripts.update_active_context import (  # noqa: E402
-    get_repository,
-    fetch_paginated,
-    main,
-)
+from scripts.update_active_context import fetch_paginated, get_repository, main  # noqa: E402
 
 
 class TestActiveContextUpdater(unittest.TestCase):
@@ -80,9 +77,7 @@ class TestActiveContextUpdater(unittest.TestCase):
         main()
 
         # Verify degraded state is written
-        mock_file().write.assert_called_once_with(
-            "*GitHub Token missing - Context unavailable*\n"
-        )
+        mock_file().write.assert_called_once_with("*GitHub Token missing - Context unavailable*\n")
         mock_fetch.assert_not_called()
 
     @patch("scripts.update_active_context.get_repository")
@@ -129,17 +124,13 @@ class TestActiveContextUpdater(unittest.TestCase):
         main()
 
         # Verify degraded state is written
-        mock_file().write.assert_called_once_with(
-            "*Repository cannot be determined - Context unavailable*\n"
-        )
+        mock_file().write.assert_called_once_with("*Repository cannot be determined - Context unavailable*\n")
 
     @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
     @patch("scripts.update_active_context.fetch_paginated")
     @patch("builtins.open", new_callable=unittest.mock.mock_open)
-    def test_main_success_with_prs(
-        self, mock_file, mock_fetch, mock_get_repo, mock_env_get
-    ):
+    def test_main_success_with_prs(self, mock_file, mock_fetch, mock_get_repo, mock_env_get):
         mock_env_get.return_value = "fake_token"
         mock_get_repo.return_value = "owner/repo"
 
@@ -161,9 +152,7 @@ class TestActiveContextUpdater(unittest.TestCase):
         main()
 
         # Collect all writes
-        written_content = "".join(
-            [call.args[0] for call in mock_file().write.call_args_list]
-        )
+        written_content = "".join([call.args[0] for call in mock_file().write.call_args_list])
 
         self.assertIn("# Active GitHub Context", written_content)
         self.assertIn(
@@ -181,8 +170,6 @@ class TestActiveContextUpdater(unittest.TestCase):
         mock_get_repo.return_value = "owner/repo"
 
         # Save reference to real exception class BEFORE any mocking
-        import requests
-
         RealRequestException = requests.RequestException
 
         # Use a lambda to raise the exception - this avoids the side_effect issue with mocked requests
@@ -198,22 +185,16 @@ class TestActiveContextUpdater(unittest.TestCase):
         with patch.object(update_module, "fetch_paginated", mock_fetch):
             update_module.main()
 
-        written_content = "".join(
-            [call.args[0] for call in mock_file().write.call_args_list]
-        )
+        written_content = "".join([call.args[0] for call in mock_file().write.call_args_list])
 
         # Verify the error message is written
-        self.assertIn(
-            "*GitHub API request failed - Context unavailable*", written_content
-        )
+        self.assertIn("*GitHub API request failed - Context unavailable*", written_content)
 
     @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
     @patch("scripts.update_active_context.fetch_paginated")
     @patch("builtins.open", new_callable=unittest.mock.mock_open)
-    def test_main_invalid_max_pr_process(
-        self, mock_file, mock_fetch, mock_get_repo, mock_env_get
-    ):
+    def test_main_invalid_max_pr_process(self, mock_file, mock_fetch, mock_get_repo, mock_env_get):
         # We need to reload the module to trigger the parse of MAX_PR_PROCESS
         # but since that happens at import time, we'll just mock the value directly for the test
         import scripts.update_active_context
@@ -249,16 +230,12 @@ class TestActiveContextUpdater(unittest.TestCase):
 
         main()
 
-        written_content = "".join(
-            [call.args[0] for call in mock_file().write.call_args_list]
-        )
+        written_content = "".join([call.args[0] for call in mock_file().write.call_args_list])
 
         # Only PR 1 should be processed and written
         self.assertIn("PR 1", written_content)
         self.assertNotIn("PR 2", written_content)
-        self.assertEqual(
-            mock_fetch.call_count, 2
-        )  # 1 for PRs list, 1 for the *single* PR's files
+        self.assertEqual(mock_fetch.call_count, 2)  # 1 for PRs list, 1 for the *single* PR's files
 
         # Restore
         scripts.update_active_context.MAX_PR_PROCESS = original_max
@@ -267,9 +244,7 @@ class TestActiveContextUpdater(unittest.TestCase):
     @patch("scripts.update_active_context.get_repository")
     @patch("scripts.update_active_context.fetch_paginated")
     @patch("builtins.open", new_callable=unittest.mock.mock_open)
-    def test_main_markdown_sanitization(
-        self, mock_file, mock_fetch, mock_get_repo, mock_env_get
-    ):
+    def test_main_markdown_sanitization(self, mock_file, mock_fetch, mock_get_repo, mock_env_get):
         mock_env_get.return_value = "fake_token"
         mock_get_repo.return_value = "owner/repo"
 
@@ -289,9 +264,7 @@ class TestActiveContextUpdater(unittest.TestCase):
 
         main()
 
-        written_content = "".join(
-            [call.args[0] for call in mock_file().write.call_args_list]
-        )
+        written_content = "".join([call.args[0] for call in mock_file().write.call_args_list])
 
         # Verify sanitization
         self.assertIn("Fix &#124; critical   bug", written_content)
