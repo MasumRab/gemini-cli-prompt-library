@@ -13,10 +13,10 @@ class Command:
 def normalize_text(text: str) -> str:
     """
     Normalize text by removing all characters except word characters and whitespace and converting to lowercase.
-    
+
     Parameters:
         text (str): The input string to normalize.
-    
+
     Returns:
         normalized_text (str): The input converted to lowercase with all characters other than letters, digits, underscores, and whitespace removed.
     """
@@ -30,10 +30,10 @@ def dispatch(user_input):
 
     """
     Selects the best-matching command for the provided user input using keyword-based scoring.
-    
+
     Parameters:
         user_input (str): The raw user query to match against available commands.
-    
+
     Returns:
         Command or None: A Command instance representing the best match, or `None` if no command matches.
     """

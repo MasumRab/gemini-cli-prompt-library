@@ -262,9 +262,9 @@ def mock_example():
 def mock_prediction():
     """
     Factory that provides a lightweight MockPrediction class for simulating dspy Prediction objects.
-    
+
     The returned class's constructor accepts arbitrary keyword arguments and sets each as an instance attribute, enabling tests to create prediction-like objects with arbitrary fields.
-    
+
     Returns:
         MockPrediction (type): A class whose instances store provided keyword arguments as attributes.
     """
@@ -281,7 +281,7 @@ def mock_prediction():
 def mock_scenario_classes():
     """
     Provide a factory that constructs paired mock Example and Prediction objects for scenario tests.
-    
+
     Returns:
         create (callable): Factory function with signature create(example_expected='test', pred_output='test output') that returns a tuple (MockExample, MockPred). MockExample has an `expected` attribute and an `inputs()` method returning {"input": "test input"}. MockPred is instantiated with any kwargs as attributes (e.g., `review` set to `pred_output`).
     """
@@ -290,7 +290,7 @@ def mock_scenario_classes():
         def __init__(self, expected="test"):
             """
             Initialize the mock example with an expected value used by tests.
-            
+
             Parameters:
                 expected (str): The expected output for the example, stored on the instance as `expected`.
             """
@@ -299,7 +299,7 @@ def mock_scenario_classes():
         def inputs(self):
             """
             Return the example's input mapping.
-            
+
             Returns:
                 dict: A mapping containing the key "input" with the value "test input".
             """
@@ -309,9 +309,9 @@ def mock_scenario_classes():
         def __init__(self, **kwargs):
             """
             Initialize the instance by attaching provided keyword arguments as attributes.
-            
+
             Each key-value pair in `kwargs` is set on the instance (equivalent to `self.<key> = <value>`).
-            
+
             Parameters:
                 **kwargs: Arbitrary attributes to assign to the instance; keys become attribute names.
             """
@@ -321,11 +321,11 @@ def mock_scenario_classes():
     def create(example_expected="test", pred_output="test output"):
         """
         Create a paired mock example and mock prediction for scenario testing.
-        
+
         Parameters:
             example_expected (str): Value to assign to the returned MockExample's `expected` attribute.
             pred_output (str): Value to assign to the returned MockPred's `review` attribute.
-        
+
         Returns:
             tuple: A (MockExample, MockPred) pair where MockExample.expected equals `example_expected` and MockPred.review equals `pred_output`.
         """
@@ -338,11 +338,11 @@ def mock_scenario_classes():
 def temp_data_dir(tmp_path):
     """
     Create a temporary data directory containing sample JSONL files used by tests.
-    
+
     Creates a "data" subdirectory with two files:
     - security_review.jsonl: two JSONL records with `vars.code` and `vars.expected`
     - unit_test.jsonl: one JSONL record with `input` and `expected_output`
-    
+
     Returns:
         pathlib.Path: Path to the created "data" directory.
     """
