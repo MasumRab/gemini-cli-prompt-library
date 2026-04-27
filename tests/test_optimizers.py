@@ -132,7 +132,7 @@ class TestBootstrapFewShotOptimizer:
 
         assert optimizer.metric is mock_metric
 
-    @patch("dspy_integration.framework.optimizers.bootstrap.dspy")
+    @patch("dspy_integration.framework.optimizers.bootstrap.dspy", create=True)
     def test_create_teleprompter(self, mock_dspy):
         """Test creating BootstrapFewShot teleprompter."""
         from dspy_integration.framework.optimizers.bootstrap import (
@@ -210,7 +210,7 @@ class TestOptimizerRegistry:
 class TestOptimizerCompile:
     """Test optimizer compile functionality."""
 
-    @patch("dspy_integration.framework.optimizers.mipro_v2.dspy")
+    @patch("dspy_integration.framework.optimizers.mipro_v2.dspy", create=True)
     def test_compile_requires_lm(self, mock_dspy):
         """Test that compile requires LM to be configured."""
         from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
