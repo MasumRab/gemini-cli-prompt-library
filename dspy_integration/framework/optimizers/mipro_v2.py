@@ -53,7 +53,11 @@ class MIPROv2Optimizer(BaseOptimizer):
 
         if not dspy.settings.lm:
             raise RuntimeError("No LM configured. Call dspy.configure(lm=...) first.")
+<<<<<<< HEAD
 
         teleprompter = self._create_teleprompter()
         return teleprompter.compile(program, trainset=trainset, valset=valset)
 >>>>>>> e2b28dc (Fix CI ruff linting failures across the codebase)
+=======
+__all__ = [MIPROv2Optimizer]
+>>>>>>> 83b2453 (Fix leftover conflict marker in mipro_v2.py)
