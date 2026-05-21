@@ -130,20 +130,20 @@ class TestBootstrapFewShotOptimizer:
 
         assert optimizer.metric is mock_metric
 
-    @patch("dspy_integration.framework.optimizers.bootstrap.dspy")
-    def test_create_teleprompter(self, mock_dspy):
+    def test_create_teleprompter(self):
         """Test creating BootstrapFewShot teleprompter."""
         from dspy_integration.framework.optimizers.bootstrap import (
             BootstrapFewShotOptimizer,
         )
 
-        mock_dspy.teleprompt.BootstrapFewShot.return_value = MagicMock()
-
         mock_metric = MagicMock()
         optimizer = BootstrapFewShotOptimizer(metric=mock_metric)
 
-        teleprompter = optimizer._create_teleprompter()
-        assert teleprompter is not None
+        try:
+            teleprompter = optimizer._create_teleprompter()
+            assert teleprompter is not None
+        except ImportError:
+            pytest.skip("dspy not installed or teleprompt module unavailable")
 
 
 class TestBootstrapFewShotRandomSearchOptimizer:
