@@ -41,9 +41,11 @@ class MockField:
         pass
 
 
+import types
+
 class MockSignature:
-    __fields__ = {"code": MockField(), "review": MockField()}
-    model_fields = {"code": MockField(), "review": MockField()}
+    __fields__ = types.MappingProxyType({"code": MockField(), "review": MockField()})
+    model_fields = types.MappingProxyType({"code": MockField(), "review": MockField()})
 
 
 _dspy_mock.Signature = MockSignature

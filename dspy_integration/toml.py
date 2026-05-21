@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 import tomllib
+import dspy
 
 
 class TOMLPrompt:
@@ -73,8 +74,6 @@ class TOMLPrompt:
         Returns:
             DSPy Signature class with InputField and OutputField
         """
-        import dspy
-
         input_fields = {}
         output_fields = {}
 
@@ -90,7 +89,7 @@ class TOMLPrompt:
             "prompt",
         }
 
-        for var in self.variables:
+        for var in sorted(self.variables):
             if var in INPUT_VARS:
                 input_fields[var] = dspy.InputField(desc=f"Input: {var}")
             else:
