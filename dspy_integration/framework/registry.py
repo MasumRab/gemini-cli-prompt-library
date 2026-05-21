@@ -112,7 +112,24 @@ class IntelligentDispatcher:
         return best_match if max_score > 0 else None
 
     def _calculate_match_score(self, user_input: str, command: Command) -> float:
+<<<<<<< HEAD
         """Calculate how well a command matches the user input."""
+=======
+        """
+        Compute a heuristic relevance score indicating how well `command` matches the (normalized) `user_input`.
+
+        Parameters:
+            user_input (str): Normalized user input (lowercased, punctuation removed).
+            command (Command): Command metadata to score against.
+
+        Returns:
+            float: Numeric score where higher means a better match. Scoring components:
+                - +10 if the command name (normalized, with dashes replaced by spaces) appears as a substring in `user_input`.
+                - +5 for each overlapping token between the command name and `user_input`.
+                - +1 for each overlapping token between the command description and `user_input`.
+                - +3 for each overlapping token between the command tags and `user_input`.
+        """
+>>>>>>> 4e61376 (Fix syntax error in registry.py: correct indentation for _calculate_match_score docstring)
         score = 0
 
         # Tokenize inputs
