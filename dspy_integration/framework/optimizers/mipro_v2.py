@@ -50,8 +50,4 @@ class MIPROv2Optimizer(BaseOptimizer):
 
         if not dspy.settings.lm:
             raise RuntimeError("No LM configured. Call dspy.configure(lm=...) first.")
-=======
-from dspy_helm.optimizers.mipro_v2 import MIPROv2Optimizer
->>>>>>> theirs
-
-__all__ = ["MIPROv2Optimizer"]
+__all__ = [MIPROv2Optimizer]
