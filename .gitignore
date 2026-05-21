@@ -45,6 +45,7 @@ __pycache__/
 *.so
 *.egg
 *.egg-info/
+<<<<<<< HEAD
 venv/
 .venv/
 .pytest_cache/
@@ -72,3 +73,7 @@ htmlcov/
 .opencode/
 .specify/
 .aider*
+=======
+dist/
+build/
+>>>>>>> 29c7a5a (Apply Ruff formatting and Flake8 fixes)

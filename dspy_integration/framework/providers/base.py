@@ -208,4 +208,7 @@ class ProviderChain:
             for name in provider_names
             if name in name_to_provider
         ]
+<<<<<<< HEAD
 >>>>>>> e2b28dc (Fix CI ruff linting failures across the codebase)
+=======
+>>>>>>> 29c7a5a (Apply Ruff formatting and Flake8 fixes)

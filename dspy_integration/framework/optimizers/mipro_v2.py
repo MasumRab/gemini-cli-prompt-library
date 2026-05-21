@@ -1,5 +1,7 @@
+import dspy
+
 """
-MIPROv2 Optimizer.
+MIPROv2 Optimizer Implementation.
 """
 
 from dspy_helm.optimizers.mipro_v2 import MIPROv2Optimizer
@@ -49,10 +51,10 @@ class MIPROv2Optimizer(BaseOptimizer):
         )
 
     def compile(self, program, trainset, valset):
-        import dspy
 
         if not dspy.settings.lm:
             raise RuntimeError("No LM configured. Call dspy.configure(lm=...) first.")
+<<<<<<< HEAD
 <<<<<<< HEAD
 
         teleprompter = self._create_teleprompter()
@@ -61,3 +63,8 @@ class MIPROv2Optimizer(BaseOptimizer):
 =======
 __all__ = [MIPROv2Optimizer]
 >>>>>>> 83b2453 (Fix leftover conflict marker in mipro_v2.py)
+=======
+
+        teleprompter = self._create_teleprompter()
+        return teleprompter.compile(program, trainset=trainset, valset=valset)
+>>>>>>> 29c7a5a (Apply Ruff formatting and Flake8 fixes)

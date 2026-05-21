@@ -113,6 +113,7 @@ class IntelligentDispatcher:
 
     def _calculate_match_score(self, user_input: str, command: Command) -> float:
 <<<<<<< HEAD
+<<<<<<< HEAD
         """Calculate how well a command matches the user input."""
 =======
         """
@@ -130,6 +131,9 @@ class IntelligentDispatcher:
                 - +3 for each overlapping token between the command tags and `user_input`.
         """
 >>>>>>> 4e61376 (Fix syntax error in registry.py: correct indentation for _calculate_match_score docstring)
+=======
+        """Calculate how well a command matches the user input."""
+>>>>>>> 29c7a5a (Apply Ruff formatting and Flake8 fixes)
         score = 0
 
         # Tokenize inputs

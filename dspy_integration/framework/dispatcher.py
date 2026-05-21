@@ -30,8 +30,19 @@ def dispatch(user_input):
             score += 10
 
         # Prioritize longer matches
+<<<<<<< HEAD
+<<<<<<< HEAD
+        user_tokens = set(user_input_normalized.split())
+        name_match_len = len(name_tokens.intersection(user_tokens))
+        description_match_len = len(description_tokens.intersection(user_tokens))
+=======
         name_match_len = len(name_tokens.intersection(user_input.split()))
         description_match_len = len(description_tokens.intersection(user_input.split()))
+>>>>>>> 21bc1e6 (fix: address code review findings - validation, sorting, and test assertions)
+=======
+        name_match_len = len(name_tokens.intersection(user_input.split()))
+        description_match_len = len(description_tokens.intersection(user_input.split()))
+>>>>>>> 29c7a5a (Apply Ruff formatting and Flake8 fixes)
 
         score += (name_match_len * 5) + description_match_len
 
