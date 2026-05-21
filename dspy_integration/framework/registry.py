@@ -1,5 +1,4 @@
 import os
-import re
 import tomllib
 from dataclasses import dataclass, field
 from typing import List, Optional
@@ -15,41 +14,12 @@ class Command:
     tags: Optional[List[str]] = field(default_factory=list)
 
 
-def normalize_text(text: str) -> str:
-    """
-    Prepare text for matching by removing punctuation and converting to all characters to lowercase.
-
-    Parameters:
-        text (str): Input string to normalize.
-
-    Returns:
-        str: The input with punctuation removed (only letters, digits, and whitespace retained) and converted to lowercase.
-    """
-    return re.sub(r"[^\w\s]", "", text).lower()
-
-
 class CommandRegistry:
     def __init__(self, commands_dir="commands"):
-        """
-        Initialize the registry and load available commands.
-
-        Sets the directory to scan for command definition files and loads/caches all discovered commands into self.commands by calling _discover_commands().
-
-        Parameters:
-            commands_dir (str): Path to the root commands directory to scan for command TOML files. Defaults to "commands".
-        """
         self.commands_dir = commands_dir
         self.commands = self._discover_commands()
 
     def _discover_commands(self):
-        """
-        Discover and load command definitions from the configured commands directory.
-
-        Scans each subdirectory of self.commands_dir as a command category, parses every `.toml` file found, and constructs a Command for each file. If a TOML file lacks a `description` but has a `prompt`, the first line in `prompt` that begins with `#` is used as the description. Files that fail to load or parse are skipped and an error message is printed.
-
-        Returns:
-            dict: Mapping of command name (filename without `.toml`) to `Command` instances.
-        """
         commands = {}
         for category in os.listdir(self.commands_dir):
             category_path = os.path.join(self.commands_dir, category)
@@ -62,25 +32,11 @@ class CommandRegistry:
                                 os.path.join(category_path, command_file), "rb"
                             ) as f:
                                 data = tomllib.load(f)
-
-                            prompt = data.get("prompt", "")
-                            description = data.get("description", "")
-
-                            # Fallback: extract first # line from prompt if description is missing
-                            if not description and prompt:
-                                prompt_lines = prompt.strip().split("\n")
-                                for line in prompt_lines:
-                                    cleaned_line = line.strip()
-                                    if cleaned_line and cleaned_line.startswith("#"):
-                                        description = cleaned_line.strip("# ").strip()
-                                        if description:
-                                            break
-
                             commands[command_name] = Command(
                                 name=command_name,
                                 category=category,
-                                description=description,
-                                prompt=prompt,
+                                description=data.get("description", ""),
+                                prompt=data.get("prompt", ""),
                                 author=data.get("author", ""),
                                 tags=data.get("tags", []),
                             )
@@ -134,22 +90,20 @@ class IntelligentDispatcher:
 
     def dispatch(self, user_input: str) -> Optional[Command]:
         """
-        Select the best-matching Command for the given natural-language input.
+        Dispatch user input to the best matching command.
 
-        Normalizes the input and selects the command with the highest internal match score; if no command scores above zero, returns None.
-
-        Parameters:
-            user_input (str): Natural-language request to match against available commands.
+        Args:
+            user_input: Natural language request
 
         Returns:
-            Command or None: The matching Command if one is found, `None` otherwise.
+            Best matching Command object
         """
-        user_input_normalized = normalize_text(user_input)
+        user_input = user_input.lower()
         best_match = None
         max_score = 0
 
         for command in self.registry.commands.values():
-            score = self._calculate_match_score(user_input_normalized, command)
+            score = self._calculate_match_score(user_input, command)
 
             if score > max_score:
                 max_score = score
@@ -158,33 +112,17 @@ class IntelligentDispatcher:
         return best_match if max_score > 0 else None
 
     def _calculate_match_score(self, user_input: str, command: Command) -> float:
-        """
-        Compute a heuristic relevance score indicating how well `command` matches the (normalized) `user_input`.
-
-        Parameters:
-            user_input (str): Normalized user input (lowercased, punctuation removed).
-            command (Command): Command metadata to score against.
-
-        Returns:
-            float: Numeric score where higher means a better match. Scoring components:
-                - +10 if the command name (normalized, with dashes replaced by spaces) appears as a substring in `user_input`.
-                - +5 for each overlapping token between the command name and `user_input`.
-                - +1 for each overlapping token between the command description and `user_input`.
-                - +3 for each overlapping token between the command tags and `user_input`.
-        """
+        """Calculate how well a command matches the user input."""
         score = 0
 
         # Tokenize inputs
         user_tokens = set(user_input.split())
-        normalized_name = normalize_text(command.name.replace("-", " "))
-        normalized_description = normalize_text(command.description)
-
-        name_tokens = set(normalized_name.split())
-        desc_tokens = set(normalized_description.split())
+        name_tokens = set(command.name.lower().replace("-", " ").split())
+        desc_tokens = set(command.description.lower().split())
         tag_tokens = set(command.tags or [])
 
         # Exact name match gets high score
-        if normalized_name in user_input:
+        if command.name.replace("-", " ") in user_input:
             score += 10
 
         # Count token overlaps

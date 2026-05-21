@@ -1,5 +1,7 @@
+import dspy
+
 """
-MIPROv2 Optimizer.
+MIPROv2 Optimizer Implementation.
 """
 
 from .base import BaseOptimizer, OptimizerRegistry
@@ -46,8 +48,9 @@ class MIPROv2Optimizer(BaseOptimizer):
         )
 
     def compile(self, program, trainset, valset):
-        import dspy
 
         if not dspy.settings.lm:
             raise RuntimeError("No LM configured. Call dspy.configure(lm=...) first.")
-__all__ = [MIPROv2Optimizer]
+
+        teleprompter = self._create_teleprompter()
+        return teleprompter.compile(program, trainset=trainset, valset=valset)

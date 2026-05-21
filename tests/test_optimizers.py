@@ -3,8 +3,7 @@ Tests for DSPy-HELM optimizers.
 """
 
 import pytest
-from unittest.mock import MagicMock, patch, PropertyMock
-from unittest import skipUnless
+from unittest.mock import MagicMock, patch
 
 
 class TestBaseOptimizer:
@@ -112,7 +111,6 @@ class TestMIPROv2Optimizer:
 
     def test_create_teleprompter(self):
         """Test creating MIPROv2 teleprompter."""
-        from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
 
         # Skip - requires local import inside method, complex to mock
         pytest.skip("MIPROv2 teleprompter test requires real dspy library")
@@ -132,7 +130,7 @@ class TestBootstrapFewShotOptimizer:
 
         assert optimizer.metric is mock_metric
 
-    @patch("dspy_integration.framework.optimizers.bootstrap.dspy", create=True)
+    @patch("dspy_integration.framework.optimizers.bootstrap.dspy")
     def test_create_teleprompter(self, mock_dspy):
         """Test creating BootstrapFewShot teleprompter."""
         from dspy_integration.framework.optimizers.bootstrap import (
@@ -168,9 +166,6 @@ class TestBootstrapFewShotRandomSearchOptimizer:
 
     def test_create_teleprompter(self):
         """Test creating teleprompter with random search."""
-        from dspy_integration.framework.optimizers.bootstrap import (
-            BootstrapFewShotRandomSearchOptimizer,
-        )
 
         # Skip - requires local import inside method, complex to mock
         pytest.skip(
@@ -212,7 +207,7 @@ class TestOptimizerRegistry:
 class TestOptimizerCompile:
     """Test optimizer compile functionality."""
 
-    @patch("dspy_integration.framework.optimizers.mipro_v2.dspy", create=True)
+    @patch("dspy_integration.framework.optimizers.mipro_v2.dspy")
     def test_compile_requires_lm(self, mock_dspy):
         """Test that compile requires LM to be configured."""
         from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer

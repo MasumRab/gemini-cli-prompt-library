@@ -8,11 +8,13 @@ This module provides:
 - Bidirectional sync between TOML and DSPy
 """
 
-from typing import Dict, Type, Optional, Any, List
+from typing import Dict, Type, Optional, Any, List, TYPE_CHECKING
 from pathlib import Path
 import re
 import tomli
-import dspy
+
+if TYPE_CHECKING:
+    import dspy
 
 
 class TOMLPrompt:

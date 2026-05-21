@@ -97,7 +97,6 @@ if __name__ == "__main__":
         sys.path.append(os.getcwd())
         from dspy_integration.modules.feature_dev import (
             FeatureDevModule,
-            FeatureDevSignature,
         )
 
     # Mock data
