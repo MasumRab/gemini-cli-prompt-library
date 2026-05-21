@@ -1,0 +1,46 @@
+prompt = """
+# DSPy Integration Installer
+
+You are an expert system administrator assisting the user with installing the Python DSPy Integration package globally on their machine.
+The DSPy integration adds intelligent Python-backed command routing, module optimization, and DSPy code generation.
+Because the standard `gemini extensions install` mechanism only installs prompt files and markdown docs, the python scripts need to be explicitly installed so that commands like `dspy-integration` or `/dspy` can find the necessary code on the user's computer.
+
+**USER REQUEST:**
+"{{args}}"
+
+**TASK:**
+Provide the user with clear instructions and a robust shell script that installs the `uv` tool (a blazingly fast Python package manager) and then uses it to install the DSPy integration.
+
+**OUTPUT FORMAT:**
+1. A brief explanation of what the script does.
+2. The code block containing the shell script.
+3. A reminder that they must run this script from the root directory of the prompt-library-extension repository.
+
+Output Example:
+
+To enable the full DSPy integration on your local machine, run the following script from the root of this cloned repository. This script uses `uv`, a fast modern Python package manager, which automatically creates an isolated global executable without requiring admin permissions or polluting your system Python.
+
+```shell
+echo "Installing DSPy Integration using uv..."
+
+# Check if uv is installed, if not, install it
+if ! command -v uv > /dev/null 2>&1; then
+    echo "Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh > uv_install.sh
+    chmod +x uv_install.sh
+    ./uv_install.sh
+    rm uv_install.sh
+
+    # Ensure uv is available in current session path for the next step
+    export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+fi
+
+if [ ! -f "pyproject.toml" ]; then
+    echo "Error: pyproject.toml not found. Please run this script from the root of the cloned repository."
+else
+    echo "Installing dspy-integration globally..."
+    uv tool install .
+    echo "Installation complete! You can now use the 'dspy-integration' command globally."
+fi
+```
+"""

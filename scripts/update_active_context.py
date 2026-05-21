@@ -86,7 +86,7 @@ def main():
     docs_dir.mkdir(parents=True, exist_ok=True)
     output_file = docs_dir / "ACTIVE_CONTEXT.md"
 
-    token = os.environ.get("GITHUB_TOKEN")
+    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if not token:
         with open(output_file, "w") as f:
             f.write("*GitHub Token missing - Context unavailable*\n")

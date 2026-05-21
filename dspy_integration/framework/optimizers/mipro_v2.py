@@ -1,7 +1,5 @@
-import dspy
-
 """
-MIPROv2 Optimizer Implementation.
+MIPROv2 Optimizer.
 """
 
 from .base import BaseOptimizer, OptimizerRegistry
@@ -52,6 +50,8 @@ class MIPROv2Optimizer(BaseOptimizer):
 
         if not dspy.settings.lm:
             raise RuntimeError("No LM configured. Call dspy.configure(lm=...) first.")
+=======
+from dspy_helm.optimizers.mipro_v2 import MIPROv2Optimizer
+>>>>>>> theirs
 
-        teleprompter = self._create_teleprompter()
-        return teleprompter.compile(program, trainset=trainset, valset=valset)
+__all__ = ["MIPROv2Optimizer"]
