@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-"""Update active context script for Gemini CLI."""
-
 import os
 import subprocess
 import requests
@@ -46,8 +44,8 @@ def get_repository() -> str:
         subprocess.CalledProcessError,
         FileNotFoundError,
         subprocess.SubprocessError,
-    ):
-        logger.exception("Failed to get repository from git config")
+    ) as e:
+        logger.error("Failed to get repository from git config: %s", e, exc_info=True)
     return ""
 
 

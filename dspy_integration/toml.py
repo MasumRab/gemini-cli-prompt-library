@@ -90,7 +90,7 @@ class TOMLPrompt:
             "prompt",
         }
 
-        for var in sorted(self.variables):
+        for var in self.variables:
             if var in INPUT_VARS:
                 input_fields[var] = dspy.InputField(desc=f"Input: {var}")
             else:
