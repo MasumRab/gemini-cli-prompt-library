@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Update active context script for Gemini CLI."""
 import os
 import subprocess
 import requests
