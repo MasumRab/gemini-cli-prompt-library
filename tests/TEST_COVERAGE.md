@@ -2,6 +2,7 @@
 Test coverage analysis for DSPy-HELM.
 
 Updated Coverage Matrix (after adding new tests):
+
 | Component               | Tests File         | Status   |
 |-------------------------|--------------------|----------|
 | Providers               |                    |          |

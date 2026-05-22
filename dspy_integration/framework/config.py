@@ -33,10 +33,13 @@ def load_config() -> Dict[str, Any]:
         config = copy.deepcopy(DEFAULT_CONFIG)
 
         if user_config and "dspy" in user_config:
-            # We want to update only the keys present in user_config["dspy"]
-            # but preserve structure. Since dspy config is shallow (one level deep dict),
-            # a simple update works fine on the copy.
-            config["dspy"].update(user_config["dspy"])
+            # Validate types before merging to avoid crashes on invalid YAML
+            if (
+                isinstance(user_config, dict)
+                and isinstance(user_config.get("dspy"), dict)
+                and isinstance(config.get("dspy"), dict)
+            ):
+                config["dspy"].update(user_config["dspy"])
 
         return config
     except (yaml.YAMLError, OSError) as e:
