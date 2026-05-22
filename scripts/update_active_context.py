@@ -44,7 +44,7 @@ def get_repository() -> str:
         subprocess.CalledProcessError,
         FileNotFoundError,
         subprocess.SubprocessError,
-    ) as e:
+    ):
         logger.exception("Failed to get repository from git config")
     return ""
 
