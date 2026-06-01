@@ -27,11 +27,15 @@ def generate_manifest():
                     with open(filepath, "rb") as f:
                         try:
                             data = tomllib.load(f)
-                            explicit_description = (data.get("description") or "").strip()
+                            explicit_description = (
+                                data.get("description") or ""
+                            ).strip()
                             if explicit_description:
                                 description = explicit_description
                             else:
-                                prompt_lines = data.get("prompt", "").strip().split("\n")
+                                prompt_lines = (
+                                    data.get("prompt", "").strip().split("\n")
+                                )
                                 description = "No description available."
                                 for line in prompt_lines:
                                     stripped_line = line.strip()
