@@ -27,19 +27,26 @@ def generate_manifest():
                     with open(filepath, "rb") as f:
                         try:
                             data = tomllib.load(f)
-                            prompt_lines = data.get("prompt", "").strip().split("\n")
-                            description = "No description available."
-                            for line in prompt_lines:
-                                stripped_line = line.strip()
-                                if stripped_line.startswith("#"):
-                                    description = stripped_line[1:].strip()
-                                    break
+                            explicit_description = (data.get("description") or "").strip()
+                            if explicit_description:
+                                description = explicit_description
+                            else:
+                                prompt_lines = data.get("prompt", "").strip().split("\n")
+                                description = "No description available."
+                                for line in prompt_lines:
+                                    stripped_line = line.strip()
+                                    if stripped_line.startswith("#"):
+                                        description = stripped_line[1:].strip()
+                                        break
                             manifest[command_name] = description
                         except tomllib.TOMLDecodeError as e:
                             print(f"Error decoding {filepath}: {e}")
 
     if not manifest:
         print("Warning: No commands found. Manifest will be empty.")
+
+    # Sort the manifest to prevent massive git diffs
+    manifest = dict(sorted(manifest.items()))
 
     # Write the manifest to a JSON file
     output_filename = "commands_manifest.json"
