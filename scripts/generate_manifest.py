@@ -27,7 +27,10 @@ def generate_manifest():
                     with open(filepath, "rb") as f:
                         try:
                             data = tomllib.load(f)
-                            description = (data.get("description") or "").strip()
+                            desc_val = data.get("description")
+                            description = (
+                                desc_val.strip() if isinstance(desc_val, str) else ""
+                            )
                             if not description:
                                 prompt_lines = (
                                     data.get("prompt", "").strip().split("\n")
