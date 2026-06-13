@@ -1,0 +1,17 @@
+{
+  "edges": [
+    {
+      "id": "rel-000001",
+      "from": "string",
+      "to": "string",
+      "edge_type": "string",
+      "classification": "executable|triage_only|blocked|informational",
+      "confidence": "high|medium|low",
+      "root_branch": "string|null",
+      "evidence": [
+        "string"
+      ],
+      "metadata": {}
+    }
+  ]
+}
