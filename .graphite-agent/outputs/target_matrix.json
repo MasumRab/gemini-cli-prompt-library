@@ -1,0 +1,161 @@
+{
+  "branches": {
+    "add-scheduled-audit-prompt-14723155380211979683": {
+      "declared_target": null,
+      "candidate_targets": [
+        {
+          "target": "main",
+          "confidence": "high"
+        }
+      ],
+      "confirmed_targets": [
+        "main"
+      ],
+      "requires_user_decision": false
+    },
+    "cto/apply-remaining-fixes-prs": {
+      "declared_target": null,
+      "candidate_targets": [
+        {
+          "target": "main",
+          "confidence": "high"
+        }
+      ],
+      "confirmed_targets": [
+        "main"
+      ],
+      "requires_user_decision": false
+    },
+    "cto/goalfix-test-failures-complete-dspy-implementation-and-make": {
+      "declared_target": null,
+      "candidate_targets": [],
+      "confirmed_targets": [
+        "main"
+      ],
+      "requires_user_decision": true
+    },
+    "cto/resolve-merge-conflicts-main-prs": {
+      "declared_target": null,
+      "candidate_targets": [
+        {
+          "target": "main",
+          "confidence": "high"
+        }
+      ],
+      "confirmed_targets": [
+        "main"
+      ],
+      "requires_user_decision": false
+    },
+    "fix-scheduled-audit-prompt-17239105722368109484": {
+      "declared_target": null,
+      "candidate_targets": [
+        {
+          "target": "main",
+          "confidence": "high"
+        }
+      ],
+      "confirmed_targets": [
+        "main"
+      ],
+      "requires_user_decision": false
+    },
+    "fix-scheduled-audit-prompt-3469781570069118715": {
+      "declared_target": null,
+      "candidate_targets": [],
+      "confirmed_targets": [
+        "main"
+      ],
+      "requires_user_decision": true
+    },
+    "fix-scheduled-audit-report-7335934676686138146": {
+      "declared_target": null,
+      "candidate_targets": [
+        {
+          "target": "main",
+          "confidence": "high"
+        }
+      ],
+      "confirmed_targets": [
+        "main"
+      ],
+      "requires_user_decision": false
+    },
+    "fix/require-review-comments-resolved": {
+      "declared_target": null,
+      "candidate_targets": [
+        {
+          "target": "main",
+          "confidence": "high"
+        }
+      ],
+      "confirmed_targets": [
+        "main"
+      ],
+      "requires_user_decision": false
+    },
+    "jules-10676858209476425454-9c0f8953": {
+      "declared_target": null,
+      "candidate_targets": [],
+      "confirmed_targets": [
+        "main"
+      ],
+      "requires_user_decision": true
+    },
+    "jules-update-scheduled-codebase-audit-2813482963154963685": {
+      "declared_target": null,
+      "candidate_targets": [
+        {
+          "target": "main",
+          "confidence": "high"
+        }
+      ],
+      "confirmed_targets": [
+        "main"
+      ],
+      "requires_user_decision": false
+    },
+    "update-codebase-audit-prompt-17081734576820252992": {
+      "declared_target": null,
+      "candidate_targets": [],
+      "confirmed_targets": [
+        "main"
+      ],
+      "requires_user_decision": true
+    },
+    "update-scheduled-codebase-audit-16497131777087108224": {
+      "declared_target": null,
+      "candidate_targets": [
+        {
+          "target": "main",
+          "confidence": "high"
+        }
+      ],
+      "confirmed_targets": [
+        "main"
+      ],
+      "requires_user_decision": false
+    },
+    "update-scheduled-codebase-audit-5246643539708228287": {
+      "declared_target": null,
+      "candidate_targets": [],
+      "confirmed_targets": [
+        "main"
+      ],
+      "requires_user_decision": true
+    },
+    "update-scheduled-codebase-audit-prompt-10739178384641310665": {
+      "declared_target": null,
+      "candidate_targets": [
+        {
+          "target": "main",
+          "confidence": "high"
+        }
+      ],
+      "confirmed_targets": [
+        "main"
+      ],
+      "requires_user_decision": false
+    }
+  }
+}

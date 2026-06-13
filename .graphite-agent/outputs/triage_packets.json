@@ -7,7 +7,7 @@
     "primary_reason": "trunk or foreign merge evidence detected",
     "candidate_parents": [],
     "relationship_edges": [],
-    "recommended_action": "manual history inspection; linearise only with human approval",
+    "recommended_action": "manual history inspection; linearise only with human approval; consider rebase against target",
     "detail_refs": {
       "branch_node_ref": "branch_graph.nodes.cto/goalfix-test-failures-complete-dspy-implementation-and-make",
       "pr_ref": "pr_catalog.cto/goalfix-test-failures-complete-dspy-implementation-and-make",

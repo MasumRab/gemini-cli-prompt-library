@@ -100,15 +100,17 @@ def next_id(prefix: str, path: Path) -> str:
     return f"{prefix}-{len(read_jsonl(path))+1:06d}"
 
 
-def status_action(status: str) -> str:
+def status_action(status):
     if status == "blocked_merge_commits":
-        return "manual history inspection; linearise only with human approval"
+        return "manual history inspection; linearise only with human approval; consider rebase against target"
     if status == "cross_root_conflict":
         return "manual review; do not auto-track across roots"
     if status == "unrooted":
         return "ask user to identify intended root or exclude from migration"
     if status == "manual_triage":
         return "inspect relationship evidence and request targeted user decision"
+    if status == "trunk_updates":
+        return "linearise branch against target before Graphite tracking"
     return "no triage required"
 
 
@@ -415,7 +417,18 @@ def query_branch(branch: str) -> Dict[str, Any]:
 def explain_branch(branch: str) -> str:
     q = query_branch(branch)
     node = q["node"]
+    audit = node.get("audit", {})
+    merge = audit.get("merge_analysis", {})
     lines = [f"Branch: {branch}", f"Status: {node.get('status')}", f"Root: {node.get('root_branch')}", f"Declared base: {node.get('declared_base')}", f"Resolved parent: {node.get('resolved_parent')}", "", "Why:", f"- {node.get('reason')}"]
+    # Enhanced explanation for merge cases
+    if merge.get("trunk_updates"):
+        lines.append(f"\nMerge analysis: Branch merged target branch(es) for conflict resolution: {merge['trunk_updates']}")
+        lines.append("This is a same-target conflict-resolution merge, not cross-root contamination.")
+        lines.append("Recommended: Linearise branch against target using rebase before Graphite tracking.")
+    if merge.get("known_pr_merges"):
+        lines.append(f"\nMerge analysis: Contains known PR merges: {merge['known_pr_merges']}")
+    if merge.get("foreign_dag_merges"):
+        lines.append(f"\nMerge analysis: Contains foreign DAG merges: {merge['foreign_dag_merges']}")
     if q.get("relationships"):
         lines.append("\nRelationship evidence:")
         for e in q["relationships"][:10]:

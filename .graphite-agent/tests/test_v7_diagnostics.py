@@ -19,3 +19,21 @@ class V7DiagnosticsTests(unittest.TestCase):
     def test_revise_revoke(self):
         self.core.run_diagnostics(write=True); first=self.core.record_decision('q-000001','feature/triage','parent=main','first'); second=self.core.record_decision('q-000001','feature/triage','parent=feature/safe','revise', supersedes=first['event_id'], event_type='decision_revised'); self.assertEqual(self.core.current_decisions()['feature/triage']['event_id'], second['event_id']); self.core.revoke_decision(second['event_id'],'feature/triage','undo'); self.assertNotIn('feature/triage', self.core.current_decisions())
 if __name__=='__main__': unittest.main()
+
+class V72TargetTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory()
+        self.cwd=Path(self.tmp.name)
+        self.agent=self.cwd/'.graphite-agent'
+        (self.agent/'outputs').mkdir(parents=True)
+        shutil.copy(FIX/'analysis_snapshot.json', self.agent/'analysis_snapshot.json')
+        shutil.copy(FIX/'plan.json', self.agent/'plan.json')
+        self.old=Path.cwd()
+        os.chdir(self.cwd)
+        self.core=load_core()
+    def tearDown(self): os.chdir(self.old); self.tmp.cleanup()
+    def test_target_candidates_generated(self):
+        # Verify target_matrix works
+        self.core.run_diagnostics(write=True)
+        matrix_path = self.agent/'outputs'/'target_matrix.json'
+        self.assertTrue(matrix_path.exists())
