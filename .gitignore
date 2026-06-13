@@ -50,9 +50,8 @@ venv/
 .coverage
 htmlcov/
 
-# Graphite Agent - exclude temporary/backup/output files
+# Graphite Agent - exclude temporary/backup files
 .graphite-agent/backups/
-.graphite-agent/outputs/
 *.zip
 
 # Checkpoint/search artifacts

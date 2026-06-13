@@ -1,0 +1,293 @@
+{
+  "execution_queue": [
+    {
+      "action": "track_and_restack",
+      "branch": "fix-scheduled-audit-report-7335934676686138146",
+      "id": "exec-000001",
+      "intended_topology": {
+        "invariants": {
+          "no_ambiguous_lineage": true,
+          "no_cycles": true,
+          "no_patch_overlap": true,
+          "parent_exists": true,
+          "single_root_owner": true,
+          "topological_valid": true
+        },
+        "parent": "main",
+        "root": "main",
+        "status": "needs_restack"
+      },
+      "preconditions": {
+        "no_ambiguous_lineage": true,
+        "no_cycles": true,
+        "no_patch_overlap": true,
+        "parent_exists": true,
+        "single_root_owner": true,
+        "topological_valid": true
+      },
+      "relationship_edges": [
+        "rel-000001"
+      ],
+      "resolved_parent": "main",
+      "root_branch": "main",
+      "status": "needs_restack"
+    },
+    {
+      "action": "track_and_restack",
+      "branch": "fix/require-review-comments-resolved",
+      "id": "exec-000002",
+      "intended_topology": {
+        "invariants": {
+          "no_ambiguous_lineage": true,
+          "no_cycles": true,
+          "no_patch_overlap": true,
+          "parent_exists": true,
+          "single_root_owner": true,
+          "topological_valid": true
+        },
+        "parent": "main",
+        "root": "main",
+        "status": "needs_restack"
+      },
+      "preconditions": {
+        "no_ambiguous_lineage": true,
+        "no_cycles": true,
+        "no_patch_overlap": true,
+        "parent_exists": true,
+        "single_root_owner": true,
+        "topological_valid": true
+      },
+      "relationship_edges": [
+        "rel-000004"
+      ],
+      "resolved_parent": "main",
+      "root_branch": "main",
+      "status": "needs_restack"
+    },
+    {
+      "action": "track_and_restack",
+      "branch": "update-scheduled-codebase-audit-16497131777087108224",
+      "id": "exec-000003",
+      "intended_topology": {
+        "invariants": {
+          "no_ambiguous_lineage": true,
+          "no_cycles": true,
+          "no_patch_overlap": true,
+          "parent_exists": true,
+          "single_root_owner": true,
+          "topological_valid": true
+        },
+        "parent": "main",
+        "root": "main",
+        "status": "needs_restack"
+      },
+      "preconditions": {
+        "no_ambiguous_lineage": true,
+        "no_cycles": true,
+        "no_patch_overlap": true,
+        "parent_exists": true,
+        "single_root_owner": true,
+        "topological_valid": true
+      },
+      "relationship_edges": [
+        "rel-000005"
+      ],
+      "resolved_parent": "main",
+      "root_branch": "main",
+      "status": "needs_restack"
+    },
+    {
+      "action": "track_and_restack",
+      "branch": "update-scheduled-codebase-audit-prompt-10739178384641310665",
+      "id": "exec-000004",
+      "intended_topology": {
+        "invariants": {
+          "no_ambiguous_lineage": true,
+          "no_cycles": true,
+          "no_patch_overlap": true,
+          "parent_exists": true,
+          "single_root_owner": true,
+          "topological_valid": true
+        },
+        "parent": "main",
+        "root": "main",
+        "status": "needs_restack"
+      },
+      "preconditions": {
+        "no_ambiguous_lineage": true,
+        "no_cycles": true,
+        "no_patch_overlap": true,
+        "parent_exists": true,
+        "single_root_owner": true,
+        "topological_valid": true
+      },
+      "relationship_edges": [
+        "rel-000006"
+      ],
+      "resolved_parent": "main",
+      "root_branch": "main",
+      "status": "needs_restack"
+    },
+    {
+      "action": "track_and_restack",
+      "branch": "cto/apply-remaining-fixes-prs",
+      "id": "exec-000005",
+      "intended_topology": {
+        "invariants": {
+          "no_ambiguous_lineage": true,
+          "no_cycles": true,
+          "no_patch_overlap": true,
+          "parent_exists": true,
+          "single_root_owner": true,
+          "topological_valid": true
+        },
+        "parent": "main",
+        "root": "main",
+        "status": "needs_restack"
+      },
+      "preconditions": {
+        "no_ambiguous_lineage": true,
+        "no_cycles": true,
+        "no_patch_overlap": true,
+        "parent_exists": true,
+        "single_root_owner": true,
+        "topological_valid": true
+      },
+      "relationship_edges": [
+        "rel-000007"
+      ],
+      "resolved_parent": "main",
+      "root_branch": "main",
+      "status": "needs_restack"
+    },
+    {
+      "action": "track_and_restack",
+      "branch": "add-scheduled-audit-prompt-14723155380211979683",
+      "id": "exec-000006",
+      "intended_topology": {
+        "invariants": {
+          "no_ambiguous_lineage": true,
+          "no_cycles": true,
+          "no_patch_overlap": true,
+          "parent_exists": true,
+          "single_root_owner": true,
+          "topological_valid": true
+        },
+        "parent": "main",
+        "root": "main",
+        "status": "needs_restack"
+      },
+      "preconditions": {
+        "no_ambiguous_lineage": true,
+        "no_cycles": true,
+        "no_patch_overlap": true,
+        "parent_exists": true,
+        "single_root_owner": true,
+        "topological_valid": true
+      },
+      "relationship_edges": [
+        "rel-000008"
+      ],
+      "resolved_parent": "main",
+      "root_branch": "main",
+      "status": "needs_restack"
+    },
+    {
+      "action": "track_and_restack",
+      "branch": "cto/resolve-merge-conflicts-main-prs",
+      "id": "exec-000007",
+      "intended_topology": {
+        "invariants": {
+          "no_ambiguous_lineage": true,
+          "no_cycles": true,
+          "no_patch_overlap": true,
+          "parent_exists": true,
+          "single_root_owner": true,
+          "topological_valid": true
+        },
+        "parent": "main",
+        "root": "main",
+        "status": "needs_restack"
+      },
+      "preconditions": {
+        "no_ambiguous_lineage": true,
+        "no_cycles": true,
+        "no_patch_overlap": true,
+        "parent_exists": true,
+        "single_root_owner": true,
+        "topological_valid": true
+      },
+      "relationship_edges": [
+        "rel-000009"
+      ],
+      "resolved_parent": "main",
+      "root_branch": "main",
+      "status": "needs_restack"
+    },
+    {
+      "action": "track_only",
+      "branch": "fix-scheduled-audit-prompt-17239105722368109484",
+      "id": "exec-000008",
+      "intended_topology": {
+        "invariants": {
+          "no_ambiguous_lineage": true,
+          "no_cycles": true,
+          "no_patch_overlap": true,
+          "parent_exists": true,
+          "single_root_owner": true,
+          "topological_valid": true
+        },
+        "parent": "main",
+        "root": "main",
+        "status": "safe"
+      },
+      "preconditions": {
+        "no_ambiguous_lineage": true,
+        "no_cycles": true,
+        "no_patch_overlap": true,
+        "parent_exists": true,
+        "single_root_owner": true,
+        "topological_valid": true
+      },
+      "relationship_edges": [
+        "rel-000010"
+      ],
+      "resolved_parent": "main",
+      "root_branch": "main",
+      "status": "safe"
+    },
+    {
+      "action": "track_only",
+      "branch": "jules-update-scheduled-codebase-audit-2813482963154963685",
+      "id": "exec-000009",
+      "intended_topology": {
+        "invariants": {
+          "no_ambiguous_lineage": true,
+          "no_cycles": true,
+          "no_patch_overlap": true,
+          "parent_exists": true,
+          "single_root_owner": true,
+          "topological_valid": true
+        },
+        "parent": "main",
+        "root": "main",
+        "status": "safe"
+      },
+      "preconditions": {
+        "no_ambiguous_lineage": true,
+        "no_cycles": true,
+        "no_patch_overlap": true,
+        "parent_exists": true,
+        "single_root_owner": true,
+        "topological_valid": true
+      },
+      "relationship_edges": [
+        "rel-000011"
+      ],
+      "resolved_parent": "main",
+      "root_branch": "main",
+      "status": "safe"
+    }
+  ],
+  "schema_version": "6.4"
+}
