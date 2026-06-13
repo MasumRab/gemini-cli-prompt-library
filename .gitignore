@@ -57,3 +57,10 @@ htmlcov/
 
 # Checkpoint/search artifacts
 .ck/
+
+# Agent tool directories
+.entire/
+.gemini/
+.opencode/
+.specify/
+.ckignore
