@@ -1,41 +1,55 @@
+
+# Agent tool directories
+build/
+# Build
+# Checkpoint/search artifacts
+.ck/
+.ckignore
+.coverage
+# Dependencies
+dist/
+.DS_Store
+*.egg
+*.egg-info/
+.entire/
+.entire/logs/
+.entire/metadata/
+.entire/redactors/local/
+# Entire session tracking
+.entire/settings.local.json
+.entire/tmp/
+.env
+# Environment
+.env.local
+# Exclude temporary output files
+.gemini/
 # Gemini-Flow
 .gemini-flow/cache/
 .gemini-flow/logs/
 .gemini-flow/temp/
-*.log
-
-# Dependencies
-node_modules/
-.pnpm-debug.log*
-
-# Environment
-.env
-.env.local
-.env.*.local
-
+.graphite-agent/backups/
+# Graphite Agent - exclude temporary/backup files
+.graphite-agent/outputs/*.tmp
+htmlcov/
 # IDE
-.vscode/
 .idea/
-*.swp
-*.swo
-
+*.log
+node_modules/
+.opencode/
 # OS
-.DS_Store
-Thumbs.db
-
-# Build
-dist/
-build/
-*.tsbuildinfo
-
-# Python
-__pycache__/
+.pnpm-debug.log*
 *.pyc
-*.pyo
+__pycache__/
 *.pyd
-.Python
+*.pyo
+.pytest_cache/
+# Python
 *.so
-*.egg
-*.egg-info/
-dist/
-build/
+.specify/
+*.swo
+*.swp
+Thumbs.db
+*.tsbuildinfo
+venv/
+.vscode/
+*.zip

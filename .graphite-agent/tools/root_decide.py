@@ -4,11 +4,11 @@ import argparse
 import json
 from pathlib import Path
 from datetime import datetime, timezone
-from agent_core import OUTPUTS_DIR, ensure_dirs, write_json, read_jsonl, next_id, append_jsonl
+from agent_core import OUTPUTS_DIR, ensure_dirs, read_json, next_id, append_jsonl
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('--branch')
+    p.add_argument('--branch', required=True)
     p.add_argument('--choice', required=True)
     p.add_argument('--reason', required=True)
     a = p.parse_args()
