@@ -54,6 +54,9 @@ htmlcov/
 .graphite-agent/backups/
 *.zip
 
+# Exclude temporary output files
+.graphite-agent/outputs/*.tmp
+
 # Checkpoint/search artifacts
 .ck/
 

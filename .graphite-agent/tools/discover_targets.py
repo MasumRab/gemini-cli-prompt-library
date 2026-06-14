@@ -4,7 +4,7 @@ import json
 import subprocess
 from pathlib import Path
 from collections import defaultdict
-from agent_core import OUTPUTS_DIR, ensure_dirs, write_json
+from agent_core import OUTPUTS_DIR, ensure_dirs, write_json, read_json
 
 def get_remote_branches():
     """Get all remote branches, filtering out invalid refs."""
@@ -31,30 +31,33 @@ def get_pr_bases():
     except:
         return []
 
-def score_targets(branches, pr_bases):
+def score_targets(branches, pr_bases, configured_roots=None):
     """Score branches as potential targets."""
     scores = defaultdict(lambda: {'signals': [], 'count': 0})
     pr_base_count = defaultdict(int)
     for base in pr_bases:
         pr_base_count[base] += 1
+    standard_trunks = configured_roots or ('main', 'master')
     for b in branches:
         if pr_base_count[b] > 0:
             scores[b]['signals'].append('used_as_pr_base')
             scores[b]['count'] += 10
-        if b in ('main', 'master'):
+        if b in standard_trunks:
             scores[b]['signals'].append('standard_trunk')
             scores[b]['count'] += 50
         scores[b]['confidence'] = 'high' if scores[b]['count'] >= 50 else 'medium' if scores[b]['count'] >= 20 else 'low'
-    return {k: dict(v) for k, v in scores.items() if v['count'] > 0 or k in ('main', 'master')}
+    return {k: dict(v) for k, v in scores.items() if v['count'] > 0 or k in standard_trunks}
 
-def discover_targets():
+def discover_targets(configured_roots=None):
     branches = get_remote_branches()
     pr_bases = get_pr_bases()
-    scored = score_targets(branches, pr_bases)
+    scored = score_targets(branches, pr_bases, configured_roots)
     return {'generated_at_utc': __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(), 'candidates': scored}
 
 if __name__ == '__main__':
     ensure_dirs()
-    targets = discover_targets()
+    snapshot = read_json(OUTPUTS_DIR / 'analysis_snapshot.json', {})
+    configured_roots = snapshot.get('metadata', {}).get('configured_roots')
+    targets = discover_targets(configured_roots)
     write_json(OUTPUTS_DIR / 'target_candidates.json', targets)
     print(json.dumps(targets, indent=2))
