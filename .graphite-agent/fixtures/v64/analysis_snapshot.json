@@ -1,0 +1,45 @@
+{
+  "metadata": {
+    "configured_roots": [
+      "main"
+    ],
+    "default_root": "main"
+  },
+  "branch_graph": {
+    "nodes": {
+      "feature/safe": {
+        "branch": "feature/safe",
+        "status": "safe",
+        "root_branch": "main",
+        "resolved_parent": "main",
+        "declared_base": "main",
+        "reason": "Declared base is an ancestor."
+      },
+      "feature/restack": {
+        "branch": "feature/restack",
+        "status": "needs_restack",
+        "root_branch": "main",
+        "resolved_parent": "feature/safe",
+        "declared_base": "feature/safe",
+        "reason": "Declared base exists but is not an ancestor."
+      },
+      "feature/triage": {
+        "branch": "feature/triage",
+        "status": "manual_triage",
+        "root_branch": "main",
+        "resolved_parent": null,
+        "declared_base": "main",
+        "reason": "Patch-id overlap found without safe ancestry."
+      },
+      "feature/cross": {
+        "branch": "feature/cross",
+        "status": "cross_root_conflict",
+        "root_branch": "main",
+        "resolved_parent": null,
+        "declared_base": "main",
+        "reason": "Contains merged history from release/1.0."
+      }
+    }
+  },
+  "pr_catalog": {}
+}
