@@ -1,0 +1,77 @@
+{
+  "cto/goalfix-test-failures-complete-dspy-implementation-and-make": {
+    "id": "triage-000001",
+    "branch": "cto/goalfix-test-failures-complete-dspy-implementation-and-make",
+    "status": "blocked_merge_commits",
+    "root_branch": "main",
+    "primary_reason": "trunk or foreign merge evidence detected",
+    "candidate_parents": [],
+    "relationship_edges": [],
+    "recommended_action": "manual history inspection; linearise only with human approval",
+    "detail_refs": {
+      "branch_node_ref": "branch_graph.nodes.cto/goalfix-test-failures-complete-dspy-implementation-and-make",
+      "pr_ref": "pr_catalog.cto/goalfix-test-failures-complete-dspy-implementation-and-make",
+      "commit_list_ref": "branch_graph.nodes.cto/goalfix-test-failures-complete-dspy-implementation-and-make.commits"
+    }
+  },
+  "fix-scheduled-audit-prompt-3469781570069118715": {
+    "id": "triage-000002",
+    "branch": "fix-scheduled-audit-prompt-3469781570069118715",
+    "status": "cross_root_conflict",
+    "root_branch": "main",
+    "primary_reason": "distance root ownership ambiguous or missing",
+    "candidate_parents": [],
+    "relationship_edges": [],
+    "recommended_action": "manual review; do not auto-track across roots",
+    "detail_refs": {
+      "branch_node_ref": "branch_graph.nodes.fix-scheduled-audit-prompt-3469781570069118715",
+      "pr_ref": "pr_catalog.fix-scheduled-audit-prompt-3469781570069118715",
+      "commit_list_ref": "branch_graph.nodes.fix-scheduled-audit-prompt-3469781570069118715.commits"
+    }
+  },
+  "jules-10676858209476425454-9c0f8953": {
+    "id": "triage-000003",
+    "branch": "jules-10676858209476425454-9c0f8953",
+    "status": "cross_root_conflict",
+    "root_branch": "main",
+    "primary_reason": "distance root ownership ambiguous or missing",
+    "candidate_parents": [],
+    "relationship_edges": [],
+    "recommended_action": "manual review; do not auto-track across roots",
+    "detail_refs": {
+      "branch_node_ref": "branch_graph.nodes.jules-10676858209476425454-9c0f8953",
+      "pr_ref": "pr_catalog.jules-10676858209476425454-9c0f8953",
+      "commit_list_ref": "branch_graph.nodes.jules-10676858209476425454-9c0f8953.commits"
+    }
+  },
+  "update-codebase-audit-prompt-17081734576820252992": {
+    "id": "triage-000004",
+    "branch": "update-codebase-audit-prompt-17081734576820252992",
+    "status": "cross_root_conflict",
+    "root_branch": "main",
+    "primary_reason": "distance root ownership ambiguous or missing",
+    "candidate_parents": [],
+    "relationship_edges": [],
+    "recommended_action": "manual review; do not auto-track across roots",
+    "detail_refs": {
+      "branch_node_ref": "branch_graph.nodes.update-codebase-audit-prompt-17081734576820252992",
+      "pr_ref": "pr_catalog.update-codebase-audit-prompt-17081734576820252992",
+      "commit_list_ref": "branch_graph.nodes.update-codebase-audit-prompt-17081734576820252992.commits"
+    }
+  },
+  "update-scheduled-codebase-audit-5246643539708228287": {
+    "id": "triage-000005",
+    "branch": "update-scheduled-codebase-audit-5246643539708228287",
+    "status": "cross_root_conflict",
+    "root_branch": "main",
+    "primary_reason": "distance root ownership ambiguous or missing",
+    "candidate_parents": [],
+    "relationship_edges": [],
+    "recommended_action": "manual review; do not auto-track across roots",
+    "detail_refs": {
+      "branch_node_ref": "branch_graph.nodes.update-scheduled-codebase-audit-5246643539708228287",
+      "pr_ref": "pr_catalog.update-scheduled-codebase-audit-5246643539708228287",
+      "commit_list_ref": "branch_graph.nodes.update-scheduled-codebase-audit-5246643539708228287.commits"
+    }
+  }
+}
