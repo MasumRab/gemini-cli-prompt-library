@@ -1,3 +1,9 @@
 from graphite_agent.core import execute
-def main(): execute()
-if __name__=="__main__": main()
+
+
+def main():
+    execute()
+
+
+if __name__ == "__main__":
+    main()
