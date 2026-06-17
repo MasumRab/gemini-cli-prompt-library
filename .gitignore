@@ -50,12 +50,18 @@ venv/
 .coverage
 htmlcov/
 
-# Graphite Agent - exclude temporary/backup files
+# Graphite Agent
 .graphite-agent/backups/
-*.zip
-
-# Exclude temporary output files
+.graphite-agent/outputs/*.json
+.graphite-agent/outputs/*.jsonl
 .graphite-agent/outputs/*.tmp
+.graphite-agent/outputs/*.txt
+.graphite-agent/status_audit.json
+.graphite-agent/__pycache__/
+.graphite-agent/*/ __pycache__/
+*.zip
+*.log
+
 
 # Checkpoint/search artifacts
 .ck/
