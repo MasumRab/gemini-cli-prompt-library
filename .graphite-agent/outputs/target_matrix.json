@@ -1,175 +1,122 @@
 {
+  "generated_at_utc": "2026-06-17T05:55:13.401544+00:00",
   "branches": {
-    "add-scheduled-audit-prompt-14723155380211979683": {
-      "declared_target": null,
+    "feature/safe": {
+      "declared_target": "main",
       "candidate_targets": [
         {
           "target": "main",
-          "confidence": "high"
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        },
+        {
+          "target": "main",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
         }
       ],
-      "confirmed_targets": [
-        "main"
-      ],
-      "diagnostic_category": null,
-      "requires_user_decision": false
+      "confirmed_targets": [],
+      "diagnostic_category": "target_confirmed",
+      "requires_user_decision": false,
+      "question_refs": []
     },
-    "cto/apply-remaining-fixes-prs": {
-      "declared_target": null,
+    "feature/restack": {
+      "declared_target": "feature/safe",
+      "candidate_targets": [
+        {
+          "target": "feature/safe",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        },
+        {
+          "target": "main",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        }
+      ],
+      "confirmed_targets": [],
+      "diagnostic_category": "wrong_pr_target_candidate",
+      "requires_user_decision": true,
+      "question_refs": [
+        "q-target-000001"
+      ]
+    },
+    "feature/triage": {
+      "declared_target": "main",
       "candidate_targets": [
         {
           "target": "main",
-          "confidence": "high"
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        },
+        {
+          "target": "main",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
         }
       ],
-      "confirmed_targets": [
-        "main"
-      ],
-      "diagnostic_category": null,
-      "requires_user_decision": false
+      "confirmed_targets": [],
+      "diagnostic_category": "target_confirmed",
+      "requires_user_decision": false,
+      "question_refs": []
     },
-    "cto/goalfix-test-failures-complete-dspy-implementation-and-make": {
-      "declared_target": null,
-      "candidate_targets": [],
-      "confirmed_targets": [
-        "main"
-      ],
-      "diagnostic_category": "in_target_conflict_resolution_merge",
-      "requires_user_decision": true
-    },
-    "cto/resolve-merge-conflicts-main-prs": {
-      "declared_target": null,
+    "feature/cross": {
+      "declared_target": "main",
       "candidate_targets": [
         {
           "target": "main",
-          "confidence": "high"
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        },
+        {
+          "target": "main",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
         }
       ],
-      "confirmed_targets": [
-        "main"
-      ],
-      "diagnostic_category": null,
-      "requires_user_decision": false
+      "confirmed_targets": [],
+      "diagnostic_category": "target_confirmed",
+      "requires_user_decision": false,
+      "question_refs": []
     },
-    "fix-scheduled-audit-prompt-17239105722368109484": {
-      "declared_target": null,
+    "feature/merge-conflict-resolution": {
+      "declared_target": "main",
       "candidate_targets": [
         {
           "target": "main",
-          "confidence": "high"
-        }
-      ],
-      "confirmed_targets": [
-        "main"
-      ],
-      "diagnostic_category": null,
-      "requires_user_decision": false
-    },
-    "fix-scheduled-audit-prompt-3469781570069118715": {
-      "declared_target": null,
-      "candidate_targets": [],
-      "confirmed_targets": [
-        "main"
-      ],
-      "diagnostic_category": "cross_root_contamination",
-      "requires_user_decision": true
-    },
-    "fix-scheduled-audit-report-7335934676686138146": {
-      "declared_target": null,
-      "candidate_targets": [
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        },
         {
           "target": "main",
-          "confidence": "high"
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
         }
       ],
-      "confirmed_targets": [
-        "main"
-      ],
-      "diagnostic_category": null,
-      "requires_user_decision": false
-    },
-    "fix/require-review-comments-resolved": {
-      "declared_target": null,
-      "candidate_targets": [
-        {
-          "target": "main",
-          "confidence": "high"
-        }
-      ],
-      "confirmed_targets": [
-        "main"
-      ],
-      "diagnostic_category": null,
-      "requires_user_decision": false
-    },
-    "jules-10676858209476425454-9c0f8953": {
-      "declared_target": null,
-      "candidate_targets": [],
-      "confirmed_targets": [
-        "main"
-      ],
-      "diagnostic_category": "cross_root_contamination",
-      "requires_user_decision": true
-    },
-    "jules-update-scheduled-codebase-audit-2813482963154963685": {
-      "declared_target": null,
-      "candidate_targets": [
-        {
-          "target": "main",
-          "confidence": "high"
-        }
-      ],
-      "confirmed_targets": [
-        "main"
-      ],
-      "diagnostic_category": null,
-      "requires_user_decision": false
-    },
-    "update-codebase-audit-prompt-17081734576820252992": {
-      "declared_target": null,
-      "candidate_targets": [],
-      "confirmed_targets": [
-        "main"
-      ],
-      "diagnostic_category": "cross_root_contamination",
-      "requires_user_decision": true
-    },
-    "update-scheduled-codebase-audit-16497131777087108224": {
-      "declared_target": null,
-      "candidate_targets": [
-        {
-          "target": "main",
-          "confidence": "high"
-        }
-      ],
-      "confirmed_targets": [
-        "main"
-      ],
-      "diagnostic_category": null,
-      "requires_user_decision": false
-    },
-    "update-scheduled-codebase-audit-5246643539708228287": {
-      "declared_target": null,
-      "candidate_targets": [],
-      "confirmed_targets": [
-        "main"
-      ],
-      "diagnostic_category": "cross_root_contamination",
-      "requires_user_decision": true
-    },
-    "update-scheduled-codebase-audit-prompt-10739178384641310665": {
-      "declared_target": null,
-      "candidate_targets": [
-        {
-          "target": "main",
-          "confidence": "high"
-        }
-      ],
-      "confirmed_targets": [
-        "main"
-      ],
-      "diagnostic_category": null,
-      "requires_user_decision": false
+      "confirmed_targets": [],
+      "diagnostic_category": "target_confirmed",
+      "requires_user_decision": false,
+      "question_refs": []
     }
   }
 }

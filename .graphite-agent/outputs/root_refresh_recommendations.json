@@ -1,14 +1,13 @@
 {
   "main": {
     "recommended_action": "root_refresh_decision_required",
-    "confidence": "medium",
-    "why": [
-      "cto/goalfix-test-failures-complete-dspy-implementation-and-make has trunk update merge for conflict resolution"
-    ],
-    "affected_branch_count": 1,
     "affected_branches": [
-      "cto/goalfix-test-failures-complete-dspy-implementation-and-make"
+      "feature/safe",
+      "feature/restack",
+      "feature/triage",
+      "feature/cross",
+      "feature/merge-conflict-resolution"
     ],
-    "next_command": "python .graphite-agent/tools/root_decide.py --target main"
+    "next_command": "root_questions.py --target main"
   }
 }

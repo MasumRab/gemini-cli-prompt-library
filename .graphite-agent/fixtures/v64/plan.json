@@ -1,0 +1,43 @@
+{
+  "metadata": {
+    "status": "ready",
+    "configured_roots": [
+      "main",
+      "scientific"
+    ]
+  },
+  "execution_queue": [
+    {
+      "branch": "feature/safe",
+      "root_branch": "main",
+      "resolved_parent": "main",
+      "status": "safe",
+      "action": "track_only"
+    },
+    {
+      "branch": "feature/restack",
+      "root_branch": "main",
+      "resolved_parent": "feature/safe",
+      "status": "needs_restack",
+      "action": "track_and_restack"
+    }
+  ],
+  "manual_triage_queue": [
+    {
+      "branch": "feature/science-a",
+      "root_branch": "scientific",
+      "status": "manual_triage"
+    },
+    {
+      "branch": "feature/science-b",
+      "root_branch": "scientific",
+      "status": "blocked_merge_commits"
+    },
+    {
+      "branch": "feature/cross",
+      "root_branch": "scientific",
+      "status": "cross_root_conflict"
+    }
+  ],
+  "logs": []
+}
