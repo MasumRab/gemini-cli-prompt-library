@@ -2,6 +2,8 @@ name = "scheduled-codebase-audit"
 description = "Analyse all documents in the codebase, predict issues, suggest future improvements, and insert detailed TODOs throughout the code."
 schedule = "weekly"
 prompt = """
+# Scheduled codebase audit and issue prediction
+
 You are an expert software architect and code reviewer. Your task is to perform a comprehensive audit of the entire codebase.
 
 ### Objectives:
