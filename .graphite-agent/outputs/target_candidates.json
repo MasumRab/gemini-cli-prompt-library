@@ -1,0 +1,13 @@
+{
+  "generated_at_utc": "2026-06-13T19:50:07.531284+00:00",
+  "candidates": {
+    "main": {
+      "signals": [
+        "used_as_pr_base",
+        "standard_trunk"
+      ],
+      "count": 60,
+      "confidence": "high"
+    }
+  }
+}

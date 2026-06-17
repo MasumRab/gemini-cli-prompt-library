@@ -1,0 +1,78 @@
+[
+  {
+    "id": "q-target-000001",
+    "branch": "cto/goalfix-test-failures-complete-dspy-implementation-and-make",
+    "question_type": "target_intent",
+    "priority": "high",
+    "reason": "Target intent required for cto/goalfix-test-failures-complete-dspy-implementation-and-make",
+    "question": "This branch has merged its target to resolve conflicts. How should cto/goalfix-test-failures-complete-dspy-implementation-and-make proceed?",
+    "options": [
+      "linearise_and_proceed",
+      "proceed_with_target=main",
+      "leave_triage",
+      "exclude_from_migration"
+    ],
+    "diagnostic_category": "in_target_conflict_resolution_merge",
+    "confidence": "medium"
+  },
+  {
+    "id": "q-target-000002",
+    "branch": "fix-scheduled-audit-prompt-3469781570069118715",
+    "question_type": "target_intent",
+    "priority": "high",
+    "reason": "Target intent required for fix-scheduled-audit-prompt-3469781570069118715",
+    "question": "This branch contains cross-root contamination. Which target should fix-scheduled-audit-prompt-3469781570069118715 use?",
+    "options": [
+      "target=main",
+      "leave_triage",
+      "exclude_from_migration"
+    ],
+    "diagnostic_category": "cross_root_contamination",
+    "confidence": "medium"
+  },
+  {
+    "id": "q-target-000003",
+    "branch": "jules-10676858209476425454-9c0f8953",
+    "question_type": "target_intent",
+    "priority": "high",
+    "reason": "Target intent required for jules-10676858209476425454-9c0f8953",
+    "question": "This branch contains cross-root contamination. Which target should jules-10676858209476425454-9c0f8953 use?",
+    "options": [
+      "target=main",
+      "leave_triage",
+      "exclude_from_migration"
+    ],
+    "diagnostic_category": "cross_root_contamination",
+    "confidence": "medium"
+  },
+  {
+    "id": "q-target-000004",
+    "branch": "update-codebase-audit-prompt-17081734576820252992",
+    "question_type": "target_intent",
+    "priority": "high",
+    "reason": "Target intent required for update-codebase-audit-prompt-17081734576820252992",
+    "question": "This branch contains cross-root contamination. Which target should update-codebase-audit-prompt-17081734576820252992 use?",
+    "options": [
+      "target=main",
+      "leave_triage",
+      "exclude_from_migration"
+    ],
+    "diagnostic_category": "cross_root_contamination",
+    "confidence": "medium"
+  },
+  {
+    "id": "q-target-000005",
+    "branch": "update-scheduled-codebase-audit-5246643539708228287",
+    "question_type": "target_intent",
+    "priority": "high",
+    "reason": "Target intent required for update-scheduled-codebase-audit-5246643539708228287",
+    "question": "This branch contains cross-root contamination. Which target should update-scheduled-codebase-audit-5246643539708228287 use?",
+    "options": [
+      "target=main",
+      "leave_triage",
+      "exclude_from_migration"
+    ],
+    "diagnostic_category": "cross_root_contamination",
+    "confidence": "medium"
+  }
+]

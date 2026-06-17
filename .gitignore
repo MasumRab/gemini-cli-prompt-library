@@ -23,6 +23,13 @@ node_modules/
 .DS_Store
 Thumbs.db
 
+# Entire session tracking
+.entire/tmp/
+.entire/metadata/
+.entire/logs/
+.entire/redactors/local/
+.entire/settings.local.json
+
 # Build
 dist/
 build/
@@ -37,10 +44,31 @@ __pycache__/
 *.so
 *.egg
 *.egg-info/
-dist/
-build/
 venv/
 .venv/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Graphite Agent
+.graphite-agent/backups/
+.graphite-agent/outputs/*.json
+.graphite-agent/outputs/*.jsonl
+.graphite-agent/outputs/*.tmp
+.graphite-agent/outputs/*.txt
+.graphite-agent/status_audit.json
+.graphite-agent/__pycache__/
+.graphite-agent/*/ __pycache__/
+*.zip
+*.log
+
+
+# Checkpoint/search artifacts
+.ck/
+
+# Agent tool directories
+.entire/
+.gemini/
+.opencode/
+.specify/
+.ckignore

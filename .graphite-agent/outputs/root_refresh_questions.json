@@ -1,0 +1,20 @@
+[
+  {
+    "id": "q-root-000001",
+    "target_root": "main",
+    "question_type": "root_refresh_policy",
+    "priority": "high",
+    "question": "Many branches from main appear stale relative to main. How should this target root be handled before stacking dependent branches?",
+    "options": [
+      "target=main",
+      "do_not_refresh_root",
+      "create_clean_integration_base",
+      "leave_affected_branches_triage"
+    ],
+    "recommended_option": "create_clean_integration_base",
+    "confidence": "medium",
+    "affected_branches": [
+      "cto/goalfix-test-failures-complete-dspy-implementation-and-make"
+    ]
+  }
+]
