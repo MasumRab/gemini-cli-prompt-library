@@ -1,0 +1,19 @@
+{
+  "generated_at_utc": "2026-06-13T20:33:37.439896+00:00",
+  "roots": {
+    "main": {
+      "branch": "main",
+      "health": "stale",
+      "relative_to": "main",
+      "diagnostic_category": "shared_root_staleness",
+      "evidence": [
+        "cto/goalfix-test-failures-complete-dspy-implementation-and-make has trunk update merge for conflict resolution"
+      ],
+      "affected_branches": [
+        "cto/goalfix-test-failures-complete-dspy-implementation-and-make"
+      ],
+      "recommended_action": "root_refresh_decision_required",
+      "execution_allowed": false
+    }
+  }
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "q-000001",
+    "branch": "string",
+    "priority": "high|medium|low",
+    "reason": "string",
+    "question": "string",
+    "options": [],
+    "recommended_option": "string",
+    "confidence": "high|medium|low"
+  }
+]
