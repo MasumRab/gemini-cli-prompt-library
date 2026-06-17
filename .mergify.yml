@@ -21,6 +21,7 @@ pull_request_rules:
       - "#commits-behind >= 10"
     actions:
       rebase:
+        bot_account: false
   - name: Ping PR author when conflicting
     description: Warn the pull request author when their PR has conflicts
     conditions:
