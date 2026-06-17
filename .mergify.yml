@@ -19,7 +19,7 @@ pull_request_rules:
     conditions:
       - base = main
       - "#commits-behind >= 10"
-      - -author=google-labs-jules[bot]
+      - author~=^((?!google-labs-jules\[bot\]).)*$
     actions:
       rebase:
   - name: Ping PR author when conflicting
