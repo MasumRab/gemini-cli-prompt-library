@@ -1,110 +1,37 @@
 {
-  "add-scheduled-audit-prompt-14723155380211979683": {
-    "branch": "add-scheduled-audit-prompt-14723155380211979683",
-    "recommended_action": "track_and_restack",
-    "recommended_parent": "main",
-    "confidence": "medium",
-    "requires_user_confirmation": false
-  },
-  "cto/apply-remaining-fixes-prs": {
-    "branch": "cto/apply-remaining-fixes-prs",
-    "recommended_action": "track_and_restack",
-    "recommended_parent": "main",
-    "confidence": "medium",
-    "requires_user_confirmation": false
-  },
-  "cto/goalfix-test-failures-complete-dspy-implementation-and-make": {
-    "branch": "cto/goalfix-test-failures-complete-dspy-implementation-and-make",
-    "recommended_action": "block",
-    "confidence": "medium",
-    "because": [
-      "trunk or foreign merge evidence detected"
-    ],
-    "triage_packet": "triage-000001"
-  },
-  "cto/resolve-merge-conflicts-main-prs": {
-    "branch": "cto/resolve-merge-conflicts-main-prs",
-    "recommended_action": "track_and_restack",
-    "recommended_parent": "main",
-    "confidence": "medium",
-    "requires_user_confirmation": false
-  },
-  "fix-scheduled-audit-prompt-17239105722368109484": {
-    "branch": "fix-scheduled-audit-prompt-17239105722368109484",
+  "feature/safe": {
+    "branch": "feature/safe",
     "recommended_action": "track_only",
-    "recommended_parent": "main",
-    "confidence": "high",
-    "requires_user_confirmation": false
-  },
-  "fix-scheduled-audit-prompt-3469781570069118715": {
-    "branch": "fix-scheduled-audit-prompt-3469781570069118715",
-    "recommended_action": "block",
-    "confidence": "medium",
     "because": [
-      "distance root ownership ambiguous or missing"
-    ],
-    "triage_packet": "triage-000002"
+      "Declared base is an ancestor."
+    ]
   },
-  "fix-scheduled-audit-report-7335934676686138146": {
-    "branch": "fix-scheduled-audit-report-7335934676686138146",
+  "feature/restack": {
+    "branch": "feature/restack",
     "recommended_action": "track_and_restack",
-    "recommended_parent": "main",
-    "confidence": "medium",
-    "requires_user_confirmation": false
-  },
-  "fix/require-review-comments-resolved": {
-    "branch": "fix/require-review-comments-resolved",
-    "recommended_action": "track_and_restack",
-    "recommended_parent": "main",
-    "confidence": "medium",
-    "requires_user_confirmation": false
-  },
-  "jules-10676858209476425454-9c0f8953": {
-    "branch": "jules-10676858209476425454-9c0f8953",
-    "recommended_action": "block",
-    "confidence": "medium",
     "because": [
-      "distance root ownership ambiguous or missing"
-    ],
-    "triage_packet": "triage-000003"
+      "Declared base exists but is not an ancestor."
+    ]
   },
-  "jules-update-scheduled-codebase-audit-2813482963154963685": {
-    "branch": "jules-update-scheduled-codebase-audit-2813482963154963685",
-    "recommended_action": "track_only",
-    "recommended_parent": "main",
-    "confidence": "high",
-    "requires_user_confirmation": false
-  },
-  "update-codebase-audit-prompt-17081734576820252992": {
-    "branch": "update-codebase-audit-prompt-17081734576820252992",
-    "recommended_action": "block",
-    "confidence": "medium",
+  "feature/triage": {
+    "branch": "feature/triage",
+    "recommended_action": "block_or_ask_user",
     "because": [
-      "distance root ownership ambiguous or missing"
-    ],
-    "triage_packet": "triage-000004"
+      "Patch-id overlap found without safe ancestry."
+    ]
   },
-  "update-scheduled-codebase-audit-16497131777087108224": {
-    "branch": "update-scheduled-codebase-audit-16497131777087108224",
-    "recommended_action": "track_and_restack",
-    "recommended_parent": "main",
-    "confidence": "medium",
-    "requires_user_confirmation": false
-  },
-  "update-scheduled-codebase-audit-5246643539708228287": {
-    "branch": "update-scheduled-codebase-audit-5246643539708228287",
-    "recommended_action": "block",
-    "confidence": "medium",
+  "feature/cross": {
+    "branch": "feature/cross",
+    "recommended_action": "block_or_ask_user",
     "because": [
-      "distance root ownership ambiguous or missing"
-    ],
-    "triage_packet": "triage-000005"
+      "Contains merged history from release/1.0."
+    ]
   },
-  "update-scheduled-codebase-audit-prompt-10739178384641310665": {
-    "branch": "update-scheduled-codebase-audit-prompt-10739178384641310665",
-    "recommended_action": "track_and_restack",
-    "recommended_parent": "main",
-    "confidence": "medium",
-    "requires_user_confirmation": false
+  "feature/merge-conflict-resolution": {
+    "branch": "feature/merge-conflict-resolution",
+    "recommended_action": "block_or_ask_user",
+    "because": [
+      "Branch merged target to resolve conflicts."
+    ]
   }
 }

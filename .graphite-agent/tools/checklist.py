@@ -1,4 +1,4 @@
 #!/usr/bin/env python3
 import json
-from agent_core import validation_report
-print(json.dumps(validation_report(), indent=2))
+from agent_core import validate_plan
+print(json.dumps(validate_plan(),indent=2))

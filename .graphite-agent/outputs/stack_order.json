@@ -1,63 +1,11 @@
 {
-  "generated_at_utc": "2026-06-13T20:24:41.620493+00:00",
+  "generated_at_utc": "2026-06-17T05:55:13.792076+00:00",
   "targets": {
     "main": {
       "root_health": "stale",
       "execution_allowed": false,
-      "stacks": [
-        {
-          "stack_id": "stack-main-001",
-          "branches": [
-            {
-              "branch": "fix-scheduled-audit-report-7335934676686138146",
-              "order": 1,
-              "action": "track_and_restack"
-            },
-            {
-              "branch": "fix/require-review-comments-resolved",
-              "order": 2,
-              "action": "track_and_restack"
-            },
-            {
-              "branch": "update-scheduled-codebase-audit-16497131777087108224",
-              "order": 3,
-              "action": "track_and_restack"
-            },
-            {
-              "branch": "update-scheduled-codebase-audit-prompt-10739178384641310665",
-              "order": 4,
-              "action": "track_and_restack"
-            },
-            {
-              "branch": "cto/apply-remaining-fixes-prs",
-              "order": 5,
-              "action": "track_and_restack"
-            },
-            {
-              "branch": "add-scheduled-audit-prompt-14723155380211979683",
-              "order": 6,
-              "action": "track_and_restack"
-            },
-            {
-              "branch": "cto/resolve-merge-conflicts-main-prs",
-              "order": 7,
-              "action": "track_and_restack"
-            },
-            {
-              "branch": "fix-scheduled-audit-prompt-17239105722368109484",
-              "order": 8,
-              "action": "track_only"
-            },
-            {
-              "branch": "jules-update-scheduled-codebase-audit-2813482963154963685",
-              "order": 9,
-              "action": "track_only"
-            }
-          ]
-        }
-      ],
-      "root_decision": null,
-      "blocked_reason": "in_target_conflict_resolution_merge"
+      "blocked_reason": "root_refresh_decision_required",
+      "stacks": []
     }
   }
 }

@@ -1,7 +1,8 @@
 {
   "metadata": {
     "configured_roots": [
-      "main"
+      "main",
+      "scientific"
     ],
     "default_root": "main"
   },
@@ -23,21 +24,29 @@
         "declared_base": "feature/safe",
         "reason": "Declared base exists but is not an ancestor."
       },
-      "feature/triage": {
-        "branch": "feature/triage",
+      "feature/science-a": {
+        "branch": "feature/science-a",
         "status": "manual_triage",
-        "root_branch": "main",
+        "root_branch": "scientific",
         "resolved_parent": null,
-        "declared_base": "main",
+        "declared_base": "scientific",
         "reason": "Patch-id overlap found without safe ancestry."
+      },
+      "feature/science-b": {
+        "branch": "feature/science-b",
+        "status": "blocked_merge_commits",
+        "root_branch": "scientific",
+        "resolved_parent": null,
+        "declared_base": "scientific",
+        "reason": "Contains merge commits; branch appears to have merged target to resolve conflicts."
       },
       "feature/cross": {
         "branch": "feature/cross",
         "status": "cross_root_conflict",
-        "root_branch": "main",
+        "root_branch": "scientific",
         "resolved_parent": null,
-        "declared_base": "main",
-        "reason": "Contains merged history from release/1.0."
+        "declared_base": "scientific",
+        "reason": "Contains merged history from main."
       }
     }
   },

@@ -6,46 +6,36 @@
     "default_root": "main"
   },
   "counts": {
-    "branches_total": 14,
-    "execution_queue": 9,
-    "manual_triage_queue": 0,
-    "open_questions": 0
+    "branches_total": 5,
+    "execution_queue": 2,
+    "manual_triage_queue": 1
   },
   "by_status": {
-    "blocked_merge_commits": 1,
-    "cross_root_conflict": 4,
-    "needs_restack": 7,
-    "safe": 2
+    "safe": 1,
+    "needs_restack": 1,
+    "manual_triage": 1,
+    "cross_root_conflict": 1,
+    "blocked_merge_commits": 1
   },
   "by_root": {
-    "main": 14
+    "main": 5
   },
   "indexes": {
     "safe_branches": [
-      "fix-scheduled-audit-prompt-17239105722368109484",
-      "jules-update-scheduled-codebase-audit-2813482963154963685"
+      "feature/safe"
     ],
     "needs_restack_branches": [
-      "add-scheduled-audit-prompt-14723155380211979683",
-      "cto/apply-remaining-fixes-prs",
-      "cto/resolve-merge-conflicts-main-prs",
-      "fix-scheduled-audit-report-7335934676686138146",
-      "fix/require-review-comments-resolved",
-      "update-scheduled-codebase-audit-16497131777087108224",
-      "update-scheduled-codebase-audit-prompt-10739178384641310665"
+      "feature/restack"
     ],
     "cross_root_branches": [
-      "fix-scheduled-audit-prompt-3469781570069118715",
-      "jules-10676858209476425454-9c0f8953",
-      "update-codebase-audit-prompt-17081734576820252992",
-      "update-scheduled-codebase-audit-5246643539708228287"
+      "feature/cross"
     ],
     "merge_blocked_branches": [
-      "cto/goalfix-test-failures-complete-dspy-implementation-and-make"
+      "feature/merge-conflict-resolution"
     ],
     "unrooted_branches": [],
-    "manual_triage_branches": [],
-    "failed_ci_branches": [],
-    "pending_ci_branches": []
+    "manual_triage_branches": [
+      "feature/triage"
+    ]
   }
 }

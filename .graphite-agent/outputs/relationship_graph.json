@@ -1,200 +1,69 @@
 {
   "edges": [
     {
-      "classification": "executable",
-      "confidence": "medium",
-      "edge_type": "declared_base_mismatch",
-      "evidence": [
-        "main not ancestor of fix-scheduled-audit-report-7335934676686138146"
-      ],
-      "from_ref": "main",
       "id": "rel-000001",
+      "from": "main",
+      "to": "feature/safe",
+      "edge_type": "existing_plan_parent",
+      "classification": "executable",
+      "confidence": "high",
       "root_branch": "main",
-      "status": "needs_restack",
-      "to_ref": "fix-scheduled-audit-report-7335934676686138146"
+      "evidence": [
+        "Declared base is an ancestor."
+      ],
+      "metadata": {}
     },
     {
-      "classification": "executable",
-      "confidence": "medium",
-      "edge_type": "declared_base_mismatch",
-      "evidence": [
-        "main not ancestor of cto/goalfix-test-failures-complete-dspy-implementation-and-make"
-      ],
-      "from_ref": "main",
       "id": "rel-000002",
+      "from": "feature/safe",
+      "to": "feature/restack",
+      "edge_type": "existing_plan_parent",
+      "classification": "executable",
+      "confidence": "medium",
       "root_branch": "main",
-      "status": "needs_restack",
-      "to_ref": "cto/goalfix-test-failures-complete-dspy-implementation-and-make"
+      "evidence": [
+        "Declared base exists but is not an ancestor."
+      ],
+      "metadata": {}
     },
     {
-      "classification": "blocked",
-      "confidence": "high",
-      "edge_type": "trunk_update_merge",
-      "evidence": [
-        "05ffbbf58e69399f495678d6b78e42e33afe59a3",
-        "Merge origin/main into PR #26 branch"
-      ],
-      "from_ref": "main",
       "id": "rel-000003",
+      "from": "main",
+      "to": "feature/triage",
+      "edge_type": "manual_triage",
+      "classification": "triage_only",
+      "confidence": "medium",
       "root_branch": "main",
-      "status": "blocked",
-      "to_ref": "cto/goalfix-test-failures-complete-dspy-implementation-and-make"
+      "evidence": [
+        "Patch-id overlap found without safe ancestry."
+      ],
+      "metadata": {}
     },
     {
-      "classification": "executable",
-      "confidence": "medium",
-      "edge_type": "declared_base_mismatch",
-      "evidence": [
-        "main not ancestor of fix/require-review-comments-resolved"
-      ],
-      "from_ref": "main",
       "id": "rel-000004",
+      "from": "main",
+      "to": "feature/cross",
+      "edge_type": "cross_root_conflict",
+      "classification": "blocked",
+      "confidence": "medium",
       "root_branch": "main",
-      "status": "needs_restack",
-      "to_ref": "fix/require-review-comments-resolved"
+      "evidence": [
+        "Contains merged history from release/1.0."
+      ],
+      "metadata": {}
     },
     {
-      "classification": "executable",
-      "confidence": "medium",
-      "edge_type": "declared_base_mismatch",
-      "evidence": [
-        "main not ancestor of update-scheduled-codebase-audit-16497131777087108224"
-      ],
-      "from_ref": "main",
       "id": "rel-000005",
-      "root_branch": "main",
-      "status": "needs_restack",
-      "to_ref": "update-scheduled-codebase-audit-16497131777087108224"
-    },
-    {
-      "classification": "executable",
+      "from": "main",
+      "to": "feature/merge-conflict-resolution",
+      "edge_type": "blocked_merge_commits",
+      "classification": "blocked",
       "confidence": "medium",
-      "edge_type": "declared_base_mismatch",
-      "evidence": [
-        "main not ancestor of update-scheduled-codebase-audit-prompt-10739178384641310665"
-      ],
-      "from_ref": "main",
-      "id": "rel-000006",
       "root_branch": "main",
-      "status": "needs_restack",
-      "to_ref": "update-scheduled-codebase-audit-prompt-10739178384641310665"
-    },
-    {
-      "classification": "executable",
-      "confidence": "medium",
-      "edge_type": "declared_base_mismatch",
       "evidence": [
-        "main not ancestor of cto/apply-remaining-fixes-prs"
+        "Branch merged target to resolve conflicts."
       ],
-      "from_ref": "main",
-      "id": "rel-000007",
-      "root_branch": "main",
-      "status": "needs_restack",
-      "to_ref": "cto/apply-remaining-fixes-prs"
-    },
-    {
-      "classification": "executable",
-      "confidence": "medium",
-      "edge_type": "declared_base_mismatch",
-      "evidence": [
-        "main not ancestor of add-scheduled-audit-prompt-14723155380211979683"
-      ],
-      "from_ref": "main",
-      "id": "rel-000008",
-      "root_branch": "main",
-      "status": "needs_restack",
-      "to_ref": "add-scheduled-audit-prompt-14723155380211979683"
-    },
-    {
-      "classification": "executable",
-      "confidence": "medium",
-      "edge_type": "declared_base_mismatch",
-      "evidence": [
-        "main not ancestor of cto/resolve-merge-conflicts-main-prs"
-      ],
-      "from_ref": "main",
-      "id": "rel-000009",
-      "root_branch": "main",
-      "status": "needs_restack",
-      "to_ref": "cto/resolve-merge-conflicts-main-prs"
-    },
-    {
-      "classification": "executable",
-      "confidence": "high",
-      "edge_type": "declared_pr_base",
-      "evidence": [
-        "main ancestor of fix-scheduled-audit-prompt-17239105722368109484"
-      ],
-      "from_ref": "main",
-      "id": "rel-000010",
-      "root_branch": "main",
-      "status": "executable",
-      "to_ref": "fix-scheduled-audit-prompt-17239105722368109484"
-    },
-    {
-      "classification": "executable",
-      "confidence": "high",
-      "edge_type": "declared_pr_base",
-      "evidence": [
-        "main ancestor of jules-update-scheduled-codebase-audit-2813482963154963685"
-      ],
-      "from_ref": "main",
-      "id": "rel-000011",
-      "root_branch": "main",
-      "status": "executable",
-      "to_ref": "jules-update-scheduled-codebase-audit-2813482963154963685"
-    },
-    {
-      "classification": "executable",
-      "confidence": "medium",
-      "edge_type": "declared_base_mismatch",
-      "evidence": [
-        "main not ancestor of fix-scheduled-audit-prompt-3469781570069118715"
-      ],
-      "from_ref": "main",
-      "id": "rel-000012",
-      "root_branch": "main",
-      "status": "needs_restack",
-      "to_ref": "fix-scheduled-audit-prompt-3469781570069118715"
-    },
-    {
-      "classification": "executable",
-      "confidence": "medium",
-      "edge_type": "declared_base_mismatch",
-      "evidence": [
-        "main not ancestor of jules-10676858209476425454-9c0f8953"
-      ],
-      "from_ref": "main",
-      "id": "rel-000013",
-      "root_branch": "main",
-      "status": "needs_restack",
-      "to_ref": "jules-10676858209476425454-9c0f8953"
-    },
-    {
-      "classification": "executable",
-      "confidence": "medium",
-      "edge_type": "declared_base_mismatch",
-      "evidence": [
-        "main not ancestor of update-scheduled-codebase-audit-5246643539708228287"
-      ],
-      "from_ref": "main",
-      "id": "rel-000014",
-      "root_branch": "main",
-      "status": "needs_restack",
-      "to_ref": "update-scheduled-codebase-audit-5246643539708228287"
-    },
-    {
-      "classification": "executable",
-      "confidence": "medium",
-      "edge_type": "declared_base_mismatch",
-      "evidence": [
-        "main not ancestor of update-codebase-audit-prompt-17081734576820252992"
-      ],
-      "from_ref": "main",
-      "id": "rel-000015",
-      "root_branch": "main",
-      "status": "needs_restack",
-      "to_ref": "update-codebase-audit-prompt-17081734576820252992"
+      "metadata": {}
     }
   ]
 }

@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 import json
-from pathlib import Path
-from agent_core import OUTPUTS_DIR, read_json
-required=['analysis_summary.json','relationship_graph.json','triage_packets.json','recommendations.json']
-missing=[f for f in required if not (OUTPUTS_DIR/f).exists()]
-report={'status':'blocked' if missing else 'pass','missing':missing}
-print(json.dumps(report, indent=2))
-raise SystemExit(1 if missing else 0)
+from agent_core import OUTPUTS_DIR
+req=['analysis_summary.json','relationship_graph.json','triage_packets.json','recommendations.json']
+miss=[x for x in req if not (OUTPUTS_DIR/x).exists()]
+r={'status':'blocked' if miss else 'pass','missing':miss}; print(json.dumps(r,indent=2)); raise SystemExit(1 if miss else 0)

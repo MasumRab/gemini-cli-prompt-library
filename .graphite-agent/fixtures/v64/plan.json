@@ -2,7 +2,8 @@
   "metadata": {
     "status": "ready",
     "configured_roots": [
-      "main"
+      "main",
+      "scientific"
     ]
   },
   "execution_queue": [
@@ -23,16 +24,19 @@
   ],
   "manual_triage_queue": [
     {
-      "branch": "feature/triage",
-      "root_branch": "main",
-      "status": "manual_triage",
-      "reason": "Patch-id overlap found without safe ancestry."
+      "branch": "feature/science-a",
+      "root_branch": "scientific",
+      "status": "manual_triage"
+    },
+    {
+      "branch": "feature/science-b",
+      "root_branch": "scientific",
+      "status": "blocked_merge_commits"
     },
     {
       "branch": "feature/cross",
-      "root_branch": "main",
-      "status": "cross_root_conflict",
-      "reason": "Contains merged history from release/1.0."
+      "root_branch": "scientific",
+      "status": "cross_root_conflict"
     }
   ],
   "logs": []

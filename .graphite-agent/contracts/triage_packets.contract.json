@@ -1,13 +1,1 @@
-{
-  "branch-name": {
-    "id": "triage-000001",
-    "branch": "string",
-    "status": "string",
-    "root_branch": "string|null",
-    "primary_reason": "string",
-    "candidate_parents": [],
-    "relationship_edges": [],
-    "recommended_action": "string",
-    "detail_refs": {}
-  }
-}
+{}
