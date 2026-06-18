@@ -9,7 +9,7 @@ if str(lib_path) not in sys.path:
     sys.path.insert(0, str(lib_path))
 
 from lib.io import rj, wj, now
-from lib.decisions import append_decision, decisions, current_decisions, nextid
+from lib.decisions import append_decision, decisions, current_decisions, nextid, record_decision
 from lib.relationships import relationship_graph as lib_relationship_graph
 from lib.targets import discover_targets as lib_discover_targets, target_analyse as lib_target_analyse
 from lib.roots import root_health as lib_root_health
@@ -133,7 +133,9 @@ def target_analyse():
     return branches
 
 def root_health():
-    s = snap(); targets = discover_targets()['candidates']; roots, qs, rec = lib_root_health(nodes(s), targets, BLOCKED)
+    s = snap(); targets = discover_targets()['candidates']
+    active_decs = current_decisions()
+    roots, qs, rec = lib_root_health(nodes(s), targets, BLOCKED, active_decs)
     wj(OUTPUTS_DIR / 'root_health.json', {'generated_at_utc': now(), 'roots': roots})
     wj(OUTPUTS_DIR / 'root_refresh_questions.json', qs)
     wj(OUTPUTS_DIR / 'root_refresh_recommendations.json', rec)
