@@ -1,10 +1,22 @@
 #!/usr/bin/env python3
-import argparse,json,subprocess
+import argparse, json, sys, os
 from pathlib import Path
+
+# Ensure the local lib directory is on the path
+lib_path = Path(__file__).parent.resolve()
+if str(lib_path) not in sys.path:
+    sys.path.insert(0, str(lib_path))
+
 from agent_core import analyse_outputs
-p=argparse.ArgumentParser(); p.add_argument('--legacy-analyser'); a=p.parse_args()
+from lib.snapshot import build_snapshot, load_config
+
+p = argparse.ArgumentParser()
+p.add_argument('--legacy-analyser')
+a = p.parse_args()
+
 if a.legacy_analyser:
-    legacy=Path(a.legacy_analyser)
-    if not legacy.exists(): raise SystemExit('legacy analyser not found')
-    subprocess.run(f'python {legacy}',shell=True,check=True)
-print(json.dumps(analyse_outputs(),indent=2))
+    # Generate live git snapshot directly instead of using a legacy wrapper
+    cfg = load_config()
+    build_snapshot(cfg)
+
+print(json.dumps(analyse_outputs(), indent=2))
