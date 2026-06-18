@@ -203,6 +203,7 @@ def build_snapshot(cfg, git=None, prs=None):
         'schema_version': cfg.schema_version,
         'metadata': {'configured_roots': cfg.configured_roots, 'default_root': cfg.default_root},
         'pr_catalog': {p.head_ref_name: p.raw for p in prs},
+        'relationship_graph': {'schema_version': cfg.schema_version, 'edges': [asdict(e) for e in edges]},
         'branch_graph': {
             'nodes': nodes,
             'edges': [{'from': n.resolved_parent, 'to': b, 'status': n.status} for b, n in nodes.items() if n.resolved_parent],
