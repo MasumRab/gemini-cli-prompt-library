@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from .io import rj, wj
+from .io import rj, wj, now
 
 AGENT_DIR = Path('.graphite-agent')
 OUTPUTS_DIR = AGENT_DIR / 'outputs'
@@ -23,7 +23,8 @@ def current_decisions():
     for e in decisions():
         if e.get('supersedes'):
             superseded.add(e['supersedes'])
-        if e.get('event_type') in {'decision_recorded', 'decision_revised'}:
+        # Include all active decision event types
+        if e.get('event_type') in {'decision_recorded', 'decision_revised', 'root_refresh_policy', 'root_decision'}:
             active[e.get('branch') or e.get('target_root')] = e
         if e.get('event_type') == 'decision_revoked':
             revoked.add(e.get('target_decision_id'))
@@ -33,3 +34,21 @@ def current_decisions():
 
 def nextid(prefix):
     return f'{prefix}-{len(decisions()) + 1:06d}'
+
+def record_decision(question_id, branch_or_target, choice, reason, event_type='decision_recorded', supersedes=None):
+    event = {
+        'event_id': nextid('dec'),
+        'event_type': event_type,
+        'question_id': question_id,
+        'choice': choice,
+        'reason': reason,
+        'recorded_at_utc': now()
+    }
+    if 'target=' in choice or event_type in {'root_decision', 'root_refresh_policy'}:
+        event['target_root'] = branch_or_target
+    else:
+        event['branch'] = branch_or_target
+    if supersedes:
+        event['supersedes'] = supersedes
+    append_decision(event)
+    return event

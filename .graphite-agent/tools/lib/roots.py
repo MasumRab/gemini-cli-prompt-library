@@ -1,6 +1,8 @@
 from .io import now
 
-def root_health(nodes, candidate_targets, BLOCKED):
+def root_health(nodes, candidate_targets, BLOCKED, active_decisions=None):
+    if active_decisions is None:
+        active_decisions = {}
     roots = {}
     qs = []
     rec = {}
@@ -8,16 +10,22 @@ def root_health(nodes, candidate_targets, BLOCKED):
     for t in candidate_targets:
         affected = [b for b, n in nodes.items() if n.get('root_branch') == t]
         stale = sum(1 for b in affected if nodes[b].get('status') in BLOCKED) >= 2
+        
+        # Check if a decision overrides the stale state
+        decision_exists = any(d.get('branch') == t or d.get('target_root') == t for d in active_decisions.values())
+        
+        execution_allowed = not stale or decision_exists
+        
         roots[t] = {
             'health': 'stale' if stale else 'current',
             'relative_to': 'unknown',
             'diagnostic_category': 'shared_root_staleness' if stale else 'root_current',
             'evidence': ['multiple blocked/manual branches from this root'] if stale else ['no shared blocker detected'],
             'affected_branches': affected,
-            'recommended_action': 'root_refresh_decision_required' if stale else 'stack_order_allowed',
-            'execution_allowed': not stale
+            'recommended_action': 'stack_order_allowed' if execution_allowed else 'root_refresh_decision_required',
+            'execution_allowed': execution_allowed
         }
-        if stale:
+        if stale and not decision_exists:
             i += 1
             qs.append({
                 'id': f'q-root-{i:06d}',

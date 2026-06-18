@@ -1,13 +1,1 @@
-{
-  "main": {
-    "recommended_action": "root_refresh_decision_required",
-    "affected_branches": [
-      "feature/safe",
-      "feature/restack",
-      "feature/triage",
-      "feature/cross",
-      "feature/merge-conflict-resolution"
-    ],
-    "next_command": "root_questions.py --target main"
-  }
-}
+{}

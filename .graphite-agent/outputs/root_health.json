@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-06-17T05:55:13.124010+00:00",
+  "generated_at_utc": "2026-06-18T12:57:43.829623+00:00",
   "roots": {
     "main": {
       "health": "stale",
@@ -15,8 +15,8 @@
         "feature/cross",
         "feature/merge-conflict-resolution"
       ],
-      "recommended_action": "root_refresh_decision_required",
-      "execution_allowed": false
+      "recommended_action": "stack_order_allowed",
+      "execution_allowed": true
     }
   }
 }
