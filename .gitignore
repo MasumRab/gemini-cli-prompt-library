@@ -72,3 +72,4 @@ htmlcov/
 .opencode/
 .specify/
 .ckignore
+.aider*
