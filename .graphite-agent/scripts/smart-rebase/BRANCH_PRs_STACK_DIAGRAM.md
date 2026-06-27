@@ -526,9 +526,9 @@ For Each Stacked Branch:
    │
    ├─ STEP 1: git checkout cto/apply-remaining-fixes-prs
    ├─ STEP 2: git reset --hard origin/cto/apply-remaining-fixes-prs
-   ├─ STEP 3: ./graphite-agent/scripts/smart-rebase/quick-stack.sh
-   │   └─ Automatically: git rebase --onto main main branch
-   │   └─ If conflicts: Usessmart conflict resolution
+   ├─ STEP 3: .graphite-agent/scripts/smart-rebase/quick-stack.sh
+   │   └─ Automatically: rebase the current branch onto main
+   │   └─ If conflicts: Uses smart conflict resolution
    │   └─ If successful: Branch now stacked on latest main
    │
    ├─ STEP 4: git push --force-with-lease origin cto/apply-remaining...
@@ -801,7 +801,7 @@ PR Comment → Branch Update → Force Push → PR Updates → Review → Approv
 
 ```bash
 # 1. Stack remaining branches
-./graphite-agent/scripts/smart-rebase/quick-stack.sh
+.graphite-agent/scripts/smart-rebase/quick-stack.sh
 
 # 2. Create PRs for branches without PRs
 gt create add-scheduled-audit-prompt-14723155380211979683 --parent main
