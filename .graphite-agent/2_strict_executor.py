@@ -1,3 +1,8 @@
 #!/usr/bin/env python3
 import subprocess
-subprocess.run('python .graphite-agent/tools/execute_approved.py',shell=True,check=True)
+import shutil
+import sys
+
+python_exec = shutil.which("python") or sys.executable
+# sourcery skip: command-injection
+subprocess.run([python_exec, ".graphite-agent/tools/execute_approved.py"], check=True)
