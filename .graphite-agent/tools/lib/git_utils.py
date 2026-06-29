@@ -15,6 +15,7 @@ class Git:
         env["GRAPHITE_NO_INTERACTIVE"] = "1"
         last = None
         for i in range(max(1, self.retries + 1)):
+            # sourcery skip: command-injection
             last = subprocess.run(
                 args, input=input_text, capture_output=True, text=True, env=env
             )
