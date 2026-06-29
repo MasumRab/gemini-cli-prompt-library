@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Optional, List, Dict, Any
 
+
 @dataclass
 class PR:
     number: Optional[int]
@@ -15,6 +16,7 @@ class PR:
     mergeable: Optional[str] = None
     raw: Dict[str, Any] = field(default_factory=dict)
 
+
 @dataclass
 class Edge:
     id: str
@@ -28,6 +30,7 @@ class Edge:
     evidence: List[str]
     metadata: Dict[str, Any] = field(default_factory=dict)
 
+
 @dataclass
 class Audit:
     root_owner: Dict[str, Any] = field(default_factory=dict)
@@ -36,6 +39,7 @@ class Audit:
     triage_reason: List[str] = field(default_factory=list)
     cycle_path: List[str] = field(default_factory=list)
     merge_analysis: Dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
 class Node:
