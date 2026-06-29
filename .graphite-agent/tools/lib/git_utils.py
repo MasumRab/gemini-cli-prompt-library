@@ -14,10 +14,18 @@ class Git:
         env["GIT_TERMINAL_PROMPT"] = "0"
         env["GRAPHITE_NO_INTERACTIVE"] = "1"
         last = None
+        # ensure args is always a list to avoid command injection with shell=True
+        if isinstance(args, str):
+            import shlex
+
+            safe_args = shlex.split(args)
+        else:
+            safe_args = args
+
         for i in range(max(1, self.retries + 1)):
             # sourcery skip: command-injection
             last = subprocess.run(
-                args, input=input_text, capture_output=True, text=True, env=env
+                safe_args, input=input_text, capture_output=True, text=True, env=env
             )
             if last.returncode == 0 or i == self.retries:
                 break
