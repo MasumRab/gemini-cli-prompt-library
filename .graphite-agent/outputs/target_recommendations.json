@@ -1,0 +1,37 @@
+{
+  "feature/safe": {
+    "recommended_action": "keep_declared_target",
+    "confidence": "medium",
+    "because": [
+      "target_confirmed"
+    ]
+  },
+  "feature/restack": {
+    "recommended_action": "resolve_target_intent",
+    "confidence": "medium",
+    "because": [
+      "wrong_pr_target_candidate"
+    ]
+  },
+  "feature/triage": {
+    "recommended_action": "keep_declared_target",
+    "confidence": "medium",
+    "because": [
+      "target_confirmed"
+    ]
+  },
+  "feature/cross": {
+    "recommended_action": "keep_declared_target",
+    "confidence": "medium",
+    "because": [
+      "target_confirmed"
+    ]
+  },
+  "feature/merge-conflict-resolution": {
+    "recommended_action": "keep_declared_target",
+    "confidence": "medium",
+    "because": [
+      "target_confirmed"
+    ]
+  }
+}

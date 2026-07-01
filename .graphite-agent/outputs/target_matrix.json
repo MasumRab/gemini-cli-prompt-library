@@ -1,0 +1,122 @@
+{
+  "generated_at_utc": "2026-06-17T05:55:13.401544+00:00",
+  "branches": {
+    "feature/safe": {
+      "declared_target": "main",
+      "candidate_targets": [
+        {
+          "target": "main",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        },
+        {
+          "target": "main",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        }
+      ],
+      "confirmed_targets": [],
+      "diagnostic_category": "target_confirmed",
+      "requires_user_decision": false,
+      "question_refs": []
+    },
+    "feature/restack": {
+      "declared_target": "feature/safe",
+      "candidate_targets": [
+        {
+          "target": "feature/safe",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        },
+        {
+          "target": "main",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        }
+      ],
+      "confirmed_targets": [],
+      "diagnostic_category": "wrong_pr_target_candidate",
+      "requires_user_decision": true,
+      "question_refs": [
+        "q-target-000001"
+      ]
+    },
+    "feature/triage": {
+      "declared_target": "main",
+      "candidate_targets": [
+        {
+          "target": "main",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        },
+        {
+          "target": "main",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        }
+      ],
+      "confirmed_targets": [],
+      "diagnostic_category": "target_confirmed",
+      "requires_user_decision": false,
+      "question_refs": []
+    },
+    "feature/cross": {
+      "declared_target": "main",
+      "candidate_targets": [
+        {
+          "target": "main",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        },
+        {
+          "target": "main",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        }
+      ],
+      "confirmed_targets": [],
+      "diagnostic_category": "target_confirmed",
+      "requires_user_decision": false,
+      "question_refs": []
+    },
+    "feature/merge-conflict-resolution": {
+      "declared_target": "main",
+      "candidate_targets": [
+        {
+          "target": "main",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        },
+        {
+          "target": "main",
+          "confidence": "medium",
+          "evidence": [
+            "declared/inferred target"
+          ]
+        }
+      ],
+      "confirmed_targets": [],
+      "diagnostic_category": "target_confirmed",
+      "requires_user_decision": false,
+      "question_refs": []
+    }
+  }
+}
