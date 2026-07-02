@@ -23,13 +23,12 @@ class OpenRouterProvider(BaseProvider):
         rate_limit: Optional[RateLimitConfig] = None,
     ):
         """
-        Create an OpenRouter (Grok) provider configured with the chosen model, API key, and optional rate limiting.
+        Initialize OpenRouter provider.
 
-        Parameters:
-            model (str): Model identifier to use (default: "x-ai/grok-4.1-fast:free").
-            api_key (Optional[str]): OpenRouter API key; if omitted, the value of the
-                environment variable OPENROUTER_API_KEY will be used when available.
-            rate_limit (Optional[RateLimitConfig]): Rate limiting configuration for requests.
+        Args:
+            model: Model to use (default: Grok free)
+            api_key: OpenRouter API key
+            rate_limit: Rate limiting configuration
         """
         super().__init__(
             name="OpenRouter (Grok)",
@@ -43,15 +42,14 @@ class OpenRouterProvider(BaseProvider):
 
     def _execute_cli(self, prompt: str, **kwargs) -> ProviderResponse:
         """
-        Send a chat prompt to the OpenRouter API and return a ProviderResponse summarizing the outcome.
+        Execute prompt via OpenRouter API.
 
-        Sends the prompt as a single user message to the configured model and measures round-trip latency.
-
-        Parameters:
-            prompt (str): The prompt text to send.
+        Args:
+            prompt: Prompt to send
+            **kwargs: Additional arguments
 
         Returns:
-            ProviderResponse: On success includes `content` (model output), `provider`, `model`, `latency_seconds`, and `tokens_used` (0 if unavailable). On failure includes `error`, `provider`, and `model`; if the failure is due to rate limiting, `rate_limited` is set to `True`.
+            ProviderResponse with result
         """
         start_time = time.time()
 
@@ -84,19 +82,6 @@ class OpenRouterProvider(BaseProvider):
                 provider=self.name,
                 model=self.model,
                 rate_limited=True,
-                latency_seconds=time.time() - start_time,
-            )
-
-        except (
-            openai.APIConnectionError,
-            openai.AuthenticationError,
-            openai.APIError,
-        ) as e:
-            return ProviderResponse(
-                success=False,
-                error=f"{type(e).__name__}: {str(e)}",
-                provider=self.name,
-                model=self.model,
                 latency_seconds=time.time() - start_time,
             )
 

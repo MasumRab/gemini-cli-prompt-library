@@ -45,7 +45,7 @@ def get_repository() -> str:
         FileNotFoundError,
         subprocess.SubprocessError,
     ) as e:
-        logger.error(f"Failed to get repository from git config: {e}", exc_info=True)
+        logger.error("Failed to get repository from git config: %s", e, exc_info=True)
     return ""
 
 
@@ -86,7 +86,7 @@ def main():
     docs_dir.mkdir(parents=True, exist_ok=True)
     output_file = docs_dir / "ACTIVE_CONTEXT.md"
 
-    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    token = os.environ.get("GITHUB_TOKEN")
     if not token:
         with open(output_file, "w") as f:
             f.write("*GitHub Token missing - Context unavailable*\n")
@@ -151,16 +151,10 @@ def main():
                         f"| [#{pr['number']}]({pr['url']}) | {pr['title']} | @{pr['author']} | {files_list} |\n"
                     )
 
-    except Exception as e:
-        # Use Exception as base class to avoid mocking issues with requests.RequestException
-        # The actual error type raised by fetch_paginated depends on the underlying request library
-        if isinstance(e, requests.RequestException):
-            with open(output_file, "w") as f:
-                f.write("*GitHub API request failed - Context unavailable*\n")
-                f.write(f"<!-- Error: {e} -->\n")
-        else:
-            # Re-raise if it's not a requests exception
-            raise
+    except requests.RequestException as e:
+        with open(output_file, "w") as f:
+            f.write("*GitHub API request failed - Context unavailable*\n")
+            f.write(f"<!-- Error: {e} -->\n")
 
 
 if __name__ == "__main__":

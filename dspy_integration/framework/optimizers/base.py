@@ -1,11 +1,4 @@
-"""
-Base classes for DSPy optimizers.
-"""
+"""Base optimizer classes."""
+from dspy_helm.optimizers.base import BaseOptimizer, OptimizerRegistry
 
-from dspy_helm.optimizers.base import (
-    IOptimizer,
-    BaseOptimizer,
-    OptimizerRegistry,
-)
-
-__all__ = ["IOptimizer", "BaseOptimizer", "OptimizerRegistry"]
+__all__ = ["BaseOptimizer", "OptimizerRegistry"]

@@ -1,7 +1,4 @@
-"""
-MIPROv2 Optimizer.
-"""
-
+"""MIPROv2 optimizer."""
 from dspy_helm.optimizers.mipro_v2 import MIPROv2Optimizer
 
 __all__ = ["MIPROv2Optimizer"]

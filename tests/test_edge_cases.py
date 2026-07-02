@@ -315,27 +315,36 @@ class TestDataLoadingEdgeCases:
 class TestMetricEdgeCases:
     """Test edge cases for metrics."""
 
-    def test_metric_with_none_trace(self, mock_scenario_classes):
+    def test_metric_with_none_trace(self):
         """Test metric handles None trace."""
         from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")()
-        mock_example, mock_pred = mock_scenario_classes(
-            "SQL injection", "SQL injection detected"
-        )
 
-        score = scenario.metric(mock_example, mock_pred, trace=None)
+        class MockExample:
+            expected = "SQL injection"
+
+        class MockPred:
+            review = "SQL injection detected"
+
+        # Should work with trace=None (default)
+        score = scenario.metric(MockExample(), MockPred(), trace=None)
         assert isinstance(score, float)
         assert 0.0 <= score <= 1.0
 
-    def test_metric_with_empty_prediction(self, mock_scenario_classes):
+    def test_metric_with_empty_prediction(self):
         """Test metric handles empty prediction."""
         from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")()
-        mock_example, mock_pred = mock_scenario_classes("SQL injection", "")
 
-        score = scenario.metric(mock_example, mock_pred)
+        class MockExample:
+            expected = "SQL injection"
+
+        class MockPred:
+            review = ""
+
+        score = scenario.metric(MockExample(), MockPred())
         assert isinstance(score, float)
 
 

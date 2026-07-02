@@ -25,8 +25,6 @@ class SecurityReview(dspy.Module):
 
 
 class SecurityReviewOptimizer(dspy.Module):
-    # TODO [Low Priority]: Optimize this module using dspy.MIPROv2
-    # or BootstrapFewShot for better prompt performance.
     """Optimized security review module."""
 
     def __init__(self):

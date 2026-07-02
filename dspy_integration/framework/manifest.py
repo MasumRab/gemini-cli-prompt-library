@@ -1,22 +1,43 @@
-import json
 import os
+import tomli
+import logging
 
 
+# TODO [Low Priority]: Deprecate this module in favor of registry.py
+# This module performs duplicate work to registry.py and is inefficient.
 def get_commands():
-    manifest_path = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-        "commands_manifest.json",
-    )
-    if not os.path.exists(manifest_path):
-        manifest_path = "commands_manifest.json"
+    commands = []
+    for root, dirs, files in os.walk("commands"):
+        for file in files:
+            if file.endswith(".toml"):
+                filepath = os.path.join(root, file)
+                try:
+                    with open(filepath, "rb") as f:
+                        data = tomli.load(f)
+                        prompt = data.get("prompt", "")
+                        prompt_lines = prompt.strip().split("\n")
+                        description = ""
+                        for line in prompt_lines:
+                            cleaned_line = line.strip()
+                            if cleaned_line and cleaned_line.startswith("#"):
+                                description = cleaned_line.strip("# ").strip()
+                                if description:
+                                    break
+                        name = os.path.splitext(file)[0]
+                        category = os.path.basename(root)
+                        commands.append(
+                            {
+                                "name": name,
+                                "category": category,
+                                "description": description,
+                                "examples": [],  # Placeholder for examples
+                            }
+                        )
+                except Exception as e:
+                    logging.warning(f"Error parsing {filepath}: {e}")
+    return commands
 
-    if not os.path.exists(manifest_path):
-        return []
 
-    with open(manifest_path, "r") as f:
-        data = json.load(f)
-
-    return [
-        {"name": k.split(":")[1], "description": v, "category": k.split(":")[0][1:]}
-        for k, v in data.items()
-    ]
+if __name__ == "__main__":
+    commands = get_commands()
+    print(len(commands))

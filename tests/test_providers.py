@@ -3,7 +3,6 @@ Tests for DSPy-HELM providers.
 """
 
 import pytest
-from unittest.mock import patch, MagicMock
 
 
 class TestBaseProvider:
@@ -11,7 +10,7 @@ class TestBaseProvider:
 
     def test_provider_response_dataclass(self):
         """Test ProviderResponse dataclass."""
-        from dspy_helm.providers.base import ProviderResponse, RateLimitConfig
+        from dspy_helm.providers.base import ProviderResponse
 
         response = ProviderResponse(
             success=True,

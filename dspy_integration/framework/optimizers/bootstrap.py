@@ -1,10 +1,4 @@
-"""
-Bootstrap few-shot optimizers.
-"""
+"""BootstrapFewShot optimizer."""
+from dspy_helm.optimizers.bootstrap import BootstrapFewShotOptimizer
 
-from dspy_helm.optimizers.bootstrap import (
-    BootstrapFewShotOptimizer,
-    BootstrapFewShotRandomSearchOptimizer,
-)
-
-__all__ = ["BootstrapFewShotOptimizer", "BootstrapFewShotRandomSearchOptimizer"]
+__all__ = ["BootstrapFewShotOptimizer"]

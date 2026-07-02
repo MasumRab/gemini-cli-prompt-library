@@ -149,18 +149,17 @@ class ProviderChain:
         """
         self.providers = providers
         self._current_index = 0
-        # TODO [High Priority]: Implement exponential backoff for provider failover to mitigate rate limits.
 
     def call(self, prompt: str, **kwargs) -> ProviderResponse:
         """
-        Attempt each provider in priority order and return the first successful response.
+        Call providers in sequence with failover.
 
-        Parameters:
-            prompt (str): The prompt to send to each provider.
-            **kwargs: Additional keyword arguments forwarded to each provider's call.
+        Args:
+            prompt: Prompt to send
+            **kwargs: Additional arguments
 
         Returns:
-            ProviderResponse: The response from the first provider that succeeds; if all providers fail, a ProviderResponse with `success=False` and `error` summarizing the last provider error.
+            ProviderResponse from first successful provider
         """
         last_error = None
 
