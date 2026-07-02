@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Execute approved Graphite commands from the queue."""
+
 import json
 import subprocess
 import sys
@@ -33,11 +34,27 @@ def execute_approved():
                     check=False,
                 )
                 if result.returncode == 0:
-                    executed.append({"branch": branch, "action": action, "status": "success"})
+                    executed.append(
+                        {"branch": branch, "action": action, "status": "success"}
+                    )
                 else:
-                    executed.append({"branch": branch, "action": action, "status": "failed", "error": result.stderr})
+                    executed.append(
+                        {
+                            "branch": branch,
+                            "action": action,
+                            "status": "failed",
+                            "error": result.stderr,
+                        }
+                    )
             except FileNotFoundError:
-                executed.append({"branch": branch, "action": action, "status": "failed", "error": "gt command not found"})
+                executed.append(
+                    {
+                        "branch": branch,
+                        "action": action,
+                        "status": "failed",
+                        "error": "gt command not found",
+                    }
+                )
 
     # Write execution results
     with open(OUTPUTS_DIR / "execution_results.json", "w") as f:
