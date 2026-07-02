@@ -11,7 +11,7 @@ from agent_core import analyse_outputs
 from lib.snapshot import build_snapshot, load_config
 
 p = argparse.ArgumentParser()
-p.add_argument("--legacy-analyser")
+p.add_argument("--legacy-analyser", action="store_true")
 a = p.parse_args()
 
 if a.legacy_analyser:

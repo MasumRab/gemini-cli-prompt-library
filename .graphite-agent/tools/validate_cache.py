@@ -6,6 +6,7 @@ req = [
     "analysis_summary.json",
     "relationship_graph.json",
     "triage_packets.json",
+    "question_queue.json",
     "recommendations.json",
 ]
 miss = [x for x in req if not (OUTPUTS_DIR / x).exists()]

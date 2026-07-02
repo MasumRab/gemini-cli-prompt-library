@@ -28,12 +28,17 @@ class GitHub:
             )
             if not raw:
                 raise RuntimeError("Could not fetch PRs")
-            pd = (
-                json.loads(raw)
-                .get("data", {})
-                .get("repository", {})
-                .get("pullRequests", {})
-            )
+            data = json.loads(raw)
+            # Check for GraphQL errors
+            if "errors" in data:
+                raise RuntimeError(f"GraphQL error: {data['errors']}")
+            # Require repository and pullRequests to be present
+            repository = data.get("data", {}).get("repository")
+            if repository is None:
+                raise RuntimeError("Could not fetch PRs: repository not found")
+            pd = repository.get("pullRequests")
+            if pd is None:
+                raise RuntimeError("Could not fetch PRs: pullRequests not found")
             for p in pd.get("nodes", []):
                 prs.append(
                     PR(
