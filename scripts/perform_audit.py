@@ -251,8 +251,7 @@ def generate_report(findings, inserted_todos):
                 "`IntelligentDispatcher`.\n"
             )
         f.write(
-            "* **Test Coverage**: Increase test coverage for framework "
-            "components.\n\n"
+            "* **Test Coverage**: Increase test coverage for framework components.\n\n"
         )
 
         f.write("### Long-Term (Evolution)\n")
@@ -262,8 +261,7 @@ def generate_report(findings, inserted_todos):
                 "`BootstrapFewShot` to all modules.\n"
             )
         f.write(
-            "* **Agentic Workflow**: Move towards fully autonomous agent "
-            "workflows.\n"
+            "* **Agentic Workflow**: Move towards fully autonomous agent workflows.\n"
         )
     return audit_report_file
 

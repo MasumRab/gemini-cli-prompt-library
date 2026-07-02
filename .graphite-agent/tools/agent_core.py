@@ -256,7 +256,7 @@ def validate_plan():
     return rep
 
 
-def run_diagnostics(write=False):
+def run_diagnostics():
     return analyse_outputs()
 
 
