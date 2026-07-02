@@ -324,8 +324,9 @@ class TopologyAuditEngine:
             u = q.popleft()
             out.append(u)
             for v in adj.get(u, []):
-                indeg.__setitem__(v, indeg[v] - 1)
-                q.append(v) if indeg[v] == 0 else None
+                indeg[v] -= 1
+                if indeg[v] == 0:
+                    q.append(v)
         return len(out) == len(indeg), out
 
     def graph(self, edges):
