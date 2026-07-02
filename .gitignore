@@ -39,22 +39,3 @@ __pycache__/
 *.egg-info/
 dist/
 build/
-venv/
-.venv/
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Graphite Agent - exclude temporary/backup files
-.graphite-agent/backups/
-*.zip
-
-# Checkpoint/search artifacts
-.ck/
-
-# Agent tool directories
-.entire/
-.gemini/
-.opencode/
-.specify/
-.ckignore
