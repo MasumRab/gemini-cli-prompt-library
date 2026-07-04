@@ -345,6 +345,12 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
+## Development
+
+For branch stacking and repository management context, see [Graphite-Agent Stacking Plan](.graphite-agent/README.md) (available when `.graphite-agent/` directory is present).
+
+---
+
 ## About me
 My name is Harish Garg. I am a solo developer. I write at my blog [here](https://harishgarg.com/).
 
