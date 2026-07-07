@@ -1,5 +1,3 @@
-from typing import Type
-
 # TODO: Phase 1.4 - Add improve to registry
 # See: OPTIMAL_CONFIG_PLAN.md Part 6, Task 1.4
 # Changes Required:
@@ -108,4 +106,18 @@ def get_optimizer_for_scenario(scenario_name: str):
 __all__ = [
     "get_module_for_scenario",
     "get_optimizer_for_scenario",
+    "CodeReview",
+    "CodeReviewOptimizer",
+    "Architecture",
+    "ArchitectureOptimizer",
+    "FeatureDev",
+    "FeatureDevOptimizer",
+    "UnitTest",
+    "UnitTestOptimizer",
+    "Documentation",
+    "DocumentationOptimizer",
+    "SecurityReview",
+    "SecurityReviewOptimizer",
+    "Improve",
+    "ImproveOptimizer",
 ]
