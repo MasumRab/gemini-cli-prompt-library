@@ -54,6 +54,7 @@ This extension provides a curated library of high-quality prompts for common dev
 - **create-template**: Create reusable prompt templates
 - **best-practices**: Learn prompt engineering tips
 - **dspy-convert**: Convert TOML prompts to DSPy modules
+- **dspy-install**: DSPy Integration Installer
 - **dspy-qa**: QA reviewer for DSPy code
 - **dspy-refine**: Refine DSPy modules
 - **dspy-cookbook**: Suggest DSPy patterns
