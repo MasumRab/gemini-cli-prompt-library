@@ -1,4 +1,4 @@
-from .io import wj, now
+from .io import now
 
 
 def discover_targets(nodes, configured_roots):

@@ -207,7 +207,7 @@ class TestOptimizerRegistry:
 class TestOptimizerCompile:
     """Test optimizer compile functionality."""
 
-    @patch("dspy_integration.framework.optimizers.mipro_v2.dspy")
+    @patch("dspy_helm.optimizers.mipro_v2.dspy")
     def test_compile_requires_lm(self, mock_dspy):
         """Test that compile requires LM to be configured."""
         from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer

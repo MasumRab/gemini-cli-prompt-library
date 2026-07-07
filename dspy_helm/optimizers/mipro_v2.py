@@ -1,6 +1,7 @@
 """
 MIPROv2 Optimizer Implementation.
 """
+import dspy
 
 from .base import BaseOptimizer, OptimizerRegistry
 
@@ -43,8 +44,6 @@ class MIPROv2Optimizer(BaseOptimizer):
         )
 
     def compile(self, program, trainset, valset):
-        import dspy
-
         if not dspy.settings.lm:
             raise RuntimeError("No LM configured. Call dspy.configure(lm=...) first.")
 

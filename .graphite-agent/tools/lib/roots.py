@@ -1,4 +1,3 @@
-from .io import now
 
 
 def root_health(nodes, candidate_targets, BLOCKED, active_decisions=None):

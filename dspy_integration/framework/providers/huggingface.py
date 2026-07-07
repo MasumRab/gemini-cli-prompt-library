@@ -1,4 +1,4 @@
 """Huggingface provider."""
-from dspy_helm.providers.huggingface import Provider as HuggingfaceProvider
+from dspy_helm.providers.huggingface import HuggingFaceProvider
 
-__all__ = ["HuggingfaceProvider"]
+__all__ = ["HuggingFaceProvider"]
