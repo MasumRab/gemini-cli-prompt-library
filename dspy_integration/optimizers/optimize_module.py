@@ -1,111 +1,110 @@
 """
-DSPy module optimization utilities.
+Script to optimize a DSPy module using specified optimizer and examples.
 
-Provides functions for optimizing DSPy modules using BootstrapFewShot and MIPROv2 optimizers.
+Example:
+    python -m dspy_integration.optimizers.optimize_module \\
+        --scenario feature_dev \\
+        --optimizer bootstrap_few_shot \\
+        --output agents/optimized_feature_dev.json
 """
 
-import dspy
-from dspy.teleprompt import BootstrapFewShot
+import argparse
+import sys
+import os
+from pathlib import Path
+
+# Add the project root to the Python path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+from dspy_integration.framework import get_provider
+from dspy_integration.modules import (
+    get_module_for_scenario,
+    get_optimizer_for_scenario,
+)
 
 
-def optimize_module(module_class, trainset, metric=None):
-    """
-    Generic optimization script for a DSPy module.
+def load_dataset(scenario: str):
+    """Load the dataset for a specific scenario."""
+    # This would typically load from your JSONL files
+    # For now, return a dummy dataset for testing
+    import dspy
 
-    Args:
-        module_class: The DSPy Module class to optimize.
-        trainset: A list of dspy.Example objects for training.
-        metric: A function that evaluates the output. Defaults to a simple length check if None.
+    if scenario == "feature_dev":
+        return [
+            dspy.Example(
+                requirements="Add a login button",
+                project_context="React frontend with Tailwind",
+                code="<nav></nav>",
+                output="<nav><button className='btn'>Login</button></nav>",
+            ).with_inputs("requirements", "project_context", "code")
+        ]
+    return []
 
-    Returns:
-        compiled_module: The optimized module.
-    """
 
-    # Default metric if none provided (placeholder)
-    if metric is None:
-
-        def simple_metric(example, pred, trace=None):
-            # Basic check: output should not be empty
-            # This works for modules with single output or multiple.
-            # We check if any output field is non-empty.
-            for key in pred.keys():
-                if pred[key]:
-                    return True
-            return False
-
-        metric = simple_metric
-
-    # Initialize the optimizer
-    # BootstrapFewShot is a good default for getting started
-    teleprompter = BootstrapFewShot(
-        metric=metric, max_bootstrapped_demos=4, max_labeled_demos=4
+def main():
+    parser = argparse.ArgumentParser(description="Optimize a DSPy module")
+    parser.add_argument(
+        "--scenario", type=str, required=True, help="Scenario to optimize (e.g., feature_dev)"
     )
+    parser.add_argument(
+        "--optimizer",
+        type=str,
+        default="bootstrap_few_shot",
+        choices=["bootstrap_few_shot", "mipro_v2", "random_search"],
+        help="Optimizer to use",
+    )
+    parser.add_argument(
+        "--output", type=str, required=True, help="Path to save the optimized module"
+    )
+    parser.add_argument(
+        "--provider",
+        type=str,
+        default="huggingface",
+        help="Provider to use for LM (default: huggingface)",
+    )
+    args = parser.parse_args()
 
-    # Instantiate the module
-    student = module_class()
+    # Configure DSPy with the specified provider
+    provider = get_provider(args.provider)
+    import dspy
 
-    # Compile the module
-    print(f"Optimizing {module_class.__name__}...")
-    compiled_module = teleprompter.compile(student, trainset=trainset)
-    print(f"Optimization complete for {module_class.__name__}.")
+    dspy.settings.configure(lm=provider.lm)
 
-    return compiled_module
-
-
-def optimize_with_mipro(module_class, trainset, valset, metric=None):
-    """
-    Optimize using MIPROv2 for better prompts.
-
-    Args:
-        module_class: The DSPy Module class to optimize.
-        trainset: A list of dspy.Example objects for training.
-        valset: A list of dspy.Example objects for validation.
-        metric: A function that evaluates the output. Defaults to a simple check if None.
-
-    Returns:
-        optimized: The optimized module compiled with MIPROv2.
-    """
-    if metric is None:
-
-        def simple_metric(example, pred, trace=None):
-            return bool(pred and any(pred.values()))
-
-        metric = simple_metric
-
-    from dspy.teleprompt import MIPROv2
-
-    teleprompter = MIPROv2(metric=metric, num_trials=20)
+    print(f"Loading module for scenario: {args.scenario}")
+    try:
+        module_class = get_module_for_scenario(args.scenario)
+        optimizer_class = get_optimizer_for_scenario(args.scenario)
+    except ValueError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
 
     module = module_class()
-    optimized = teleprompter.compile(module, trainset=trainset, valset=valset)
+    optimizer = optimizer_class()
 
-    return optimized
+    print(f"Loading dataset for scenario: {args.scenario}")
+    dataset = load_dataset(args.scenario)
+
+    if not dataset:
+        print(f"Warning: No dataset found for scenario '{args.scenario}'. Cannot optimize.")
+        sys.exit(1)
+
+    print(f"Running optimizer: {args.optimizer}")
+    if args.optimizer == "bootstrap_few_shot":
+        optimized_module = optimizer.optimize_bootstrap_few_shot(module, dataset)
+    elif args.optimizer == "mipro_v2":
+        optimized_module = optimizer.optimize_mipro_v2(module, dataset, dataset)
+    elif args.optimizer == "random_search":
+        optimized_module = optimizer.optimize_random_search(module, dataset)
+    else:
+        print(f"Unknown optimizer: {args.optimizer}")
+        sys.exit(1)
+
+    print(f"Saving optimized module to {args.output}")
+    # Ensure directory exists
+    os.makedirs(os.path.dirname(args.output), exist_ok=True)
+    optimized_module.save(args.output)
+    print("Optimization complete!")
 
 
 if __name__ == "__main__":
-    # Example usage (mock)
-    # Adjusted import for dspy_integration
-    try:
-        from dspy_integration.modules.feature_dev import (
-            FeatureDevModule,
-            FeatureDevSignature,
-        )
-    except ImportError:
-        import sys
-        import os
-
-        sys.path.append(os.getcwd())
-        from dspy_integration.modules.feature_dev import (
-            FeatureDevModule,
-        )
-
-    # Mock data
-    trainset = [
-        dspy.Example(args="Create a simple specific-purpose calculator").with_inputs(
-            "args"
-        ),
-        dspy.Example(args="Add a login page to the website").with_inputs("args"),
-    ]
-
-    optimized = optimize_module(FeatureDevModule, trainset)
-    # in a real scenario, we would save this: optimized.save("optimized_feature_dev.json")
+    main()
