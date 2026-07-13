@@ -1,11 +1,12 @@
-import dspy
-
 """
-MIPROv2 Optimizer Implementation.
+MIPROv2 Optimizer.
 """
 
-from .base import BaseOptimizer, OptimizerRegistry
+from dspy_helm.optimizers.mipro_v2 import MIPROv2Optimizer
 
+<<<<<<< HEAD
+__all__ = ["MIPROv2Optimizer"]
+=======
 
 @OptimizerRegistry.register("MIPROv2")
 class MIPROv2Optimizer(BaseOptimizer):
@@ -48,9 +49,11 @@ class MIPROv2Optimizer(BaseOptimizer):
         )
 
     def compile(self, program, trainset, valset):
+        import dspy
 
         if not dspy.settings.lm:
             raise RuntimeError("No LM configured. Call dspy.configure(lm=...) first.")
 
         teleprompter = self._create_teleprompter()
         return teleprompter.compile(program, trainset=trainset, valset=valset)
+>>>>>>> e2b28dc (Fix CI ruff linting failures across the codebase)

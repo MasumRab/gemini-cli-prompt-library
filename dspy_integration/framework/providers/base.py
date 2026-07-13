@@ -5,12 +5,21 @@ Provides abstraction layer for different CLI tools
 following the Strategy pattern for provider rotation.
 """
 
-from abc import ABC, abstractmethod
-from typing import Optional, Dict, Any, List
-import time
-import logging
-from dataclasses import dataclass, field
+from dspy_helm.providers.base import (
+    ProviderResponse,
+    RateLimitConfig,
+    BaseProvider,
+    ProviderChain,
+)
 
+<<<<<<< HEAD
+__all__ = [
+    "ProviderResponse",
+    "RateLimitConfig",
+    "BaseProvider",
+    "ProviderChain",
+]
+=======
 logger = logging.getLogger(__name__)
 
 
@@ -199,3 +208,4 @@ class ProviderChain:
             for name in provider_names
             if name in name_to_provider
         ]
+>>>>>>> e2b28dc (Fix CI ruff linting failures across the codebase)

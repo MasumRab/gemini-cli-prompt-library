@@ -1,7 +1,11 @@
 import os
 import sys
 import unittest
+<<<<<<< HEAD
+import requests
+=======
 import pytest
+>>>>>>> e2b28dc (Fix CI ruff linting failures across the codebase)
 from unittest.mock import patch, MagicMock
 
 # Add the project root to the sys.path so we can import scripts
@@ -86,6 +90,41 @@ class TestActiveContextUpdater(unittest.TestCase):
         )
         mock_fetch.assert_not_called()
 
+    @patch("scripts.update_active_context.get_repository")
+    @patch("scripts.update_active_context.fetch_paginated")
+    @patch("builtins.open", new_callable=unittest.mock.mock_open)
+    def test_main_uses_gh_token_fallback(self, mock_file, mock_fetch, mock_get_repo):
+        mock_get_repo.return_value = "owner/repo"
+
+        # Mock PRs
+        mock_prs = [
+            {
+                "number": 101,
+                "title": "Fix bug",
+                "html_url": "https://github.com/owner/repo/pull/101",
+                "user": {"login": "dev1"},
+            }
+        ]
+
+        # Mock Files
+        mock_files = [{"filename": "src/main.py"}]
+
+        mock_fetch.side_effect = [mock_prs, mock_files]
+
+        with patch.dict(os.environ, {"GH_TOKEN": "gh_fake_token"}, clear=True):
+            main()
+
+        # Check headers passed to fetch_paginated
+        expected_headers = {
+            "Authorization": "Bearer gh_fake_token",
+            "Accept": "application/vnd.github.v3+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        }
+        mock_fetch.assert_any_call(
+            "https://api.github.com/repos/owner/repo/pulls?state=open&per_page=100",
+            expected_headers,
+        )
+
     @patch("scripts.update_active_context.os.environ.get")
     @patch("scripts.update_active_context.get_repository")
     @patch("builtins.open", new_callable=unittest.mock.mock_open)
@@ -147,8 +186,15 @@ class TestActiveContextUpdater(unittest.TestCase):
         mock_env_get.return_value = "fake_token"
         mock_get_repo.return_value = "owner/repo"
 
+<<<<<<< HEAD
+        # Save reference to real exception class BEFORE any mocking
+        import requests
+
+        RealRequestException = requests.RequestException
+=======
         # Simulate API timeout/failure
         mock_fetch.side_effect = requests.RequestException("API timeout")
+>>>>>>> e2b28dc (Fix CI ruff linting failures across the codebase)
 
         main()
 
