@@ -56,7 +56,13 @@ def cmd_approve(args):
 
 def cmd_create(args):
     client = JulesAPIClient()
-    source = f"sources/github/{args.repo}"
+    print(f"  Validating source {args.repo}...")
+    try:
+        source = client.resolve_source(args.repo)
+    except RuntimeError as e:
+        print(f"  ERROR: {e}")
+        return
+    print(f"  Source OK, creating session...")
     result = client.create_session(
         prompt=args.prompt,
         source=source,

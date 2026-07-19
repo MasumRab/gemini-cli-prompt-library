@@ -89,6 +89,52 @@ You can start with an empty file and add heuristics over time.  A useful starter
 
 ---
 
+## Current PR Status & Workflow Guidance
+
+> Last updated: 2026-07-20. Run `gh pr list --repo MasumRab/kaggle-notebooks-analysis --state open --json number,title,headRefName,mergeable,createdAt` to refresh.
+
+### MERGEABLE — no conflicts, ready for review
+
+| PR | Title | Label to apply |
+|----|-------|---------------|
+| [#119](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/119) | Fix dtype conformity check (tembo) | `jules-walkthrough` (has architectural changes) or `jules-force-review` |
+| [#107](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/107) | PR Merge Order Assessment | `jules-walkthrough` |
+| [#89](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/89) | Add tests for RegressionGuard methods | `jules-force-review` (has stale Gemini reviews) |
+
+### CONFLICTING — needs conflict resolution
+
+| PR | Title | Branch | Label to apply |
+|----|-------|--------|---------------|
+| [#120](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/120) | Restore Jules API client | `cto/restore-jules-api...` | `jules-resolve` |
+| [#118](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/118) | Original prompt retrieval v3 | `fix/jules-prompt-retrieval-v3` | `jules-resolve` |
+| [#116](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/116) | Fix unclosed file descriptor | `jules-14844...` | `jules-resolve` + `jules-force-review` |
+| [#115](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/115) | Network request timeouts | `fix-network-timeout...` | `jules-resolve` + `jules-force-review` |
+| [#113](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/113) | Validate notebook tests | `testing-improvement...` | `jules-resolve` |
+| [#111](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/111) | Rebase orchestrator refactor | `cto/implement-rebase...` | `jules-resolve` |
+| [#109](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/109) | Original prompt retrieval v1 | `fix/jules-api-prompts` | `jules-resolve` |
+| [#108](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/108) | Sort metrics by ROI | `fix-roi-sorting...` | `jules-resolve` |
+| [#106](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/106) | Diagnostic pipeline fix | `cto/diagnostic-fix...` | `jules-resolve` |
+| [#105](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/105) | Original prompt retrieval | `feature/jules-prompt...` | `jules-resolve` |
+| [#104](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/104) | Original prompt retrieval v2 | `fix-jules-api-prompts-v2` | `jules-resolve` |
+| [#102](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/102) | RegressionGuard range error | `testing-improvement...` | `jules-resolve` |
+| [#95](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/95) | Original prompt retrieval | `cto/fix-jules-api...` | `jules-resolve` |
+| [#91](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/91) | Engine task changes | `cto/implement-jules-tools...` | `jules-resolve` |
+| [#90](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/90) | Jules API key fix | `cto/implement-jules-tools...` | `jules-resolve` |
+| [#88](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/88) | Task b0133363 update | `jules-sessions-status-6146b` | `jules-resolve` |
+| [#87](https://github.com/MasumRab/kaggle-notebooks-analysis/pull/87) | Hardened Infrastructure | `cto/implement-hardened...` | `jules-resolve` |
+
+### Workflow labels and their effect
+
+| Label | Workflow | Session consumption | When to apply |
+|-------|----------|-------------------|---------------|
+| *(none — auto)* | `jules-pr-review.yml` | 1 session per PR sync | Every non-Jules PR open/sync (auto) |
+| `jules-force-review` | `jules-pr-force-review.yml` | 1 session | Force review of any PR (including jules-* branches) |
+| `jules-walkthrough` | `jules-pr-walkthrough.yml` | 1 session | Want architectural narrative + Mermaid diagrams |
+| `jules-auto-fix` | `jules-pr-auto-fix.yml` | 1 session | PR describes a specific fix needed |
+| `jules-resolve` | `jules-pr-resolve-conflicts.yml` | 1 session | PR has merge conflicts |
+
+---
+
 ## Reasoning & Context
 * The **Advanced PR Reviewer** sends only the *changed* diff to Jules on each `synchronize` event, which is essential for notebooks where a full‑repo scan would be prohibitively expensive in tokens and time.
 * Line‑level comments map directly to notebook cells or import statements, making it easy for contributors to see exactly what Jules flagged.

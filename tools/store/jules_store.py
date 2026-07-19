@@ -17,10 +17,13 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-import itertools as _itertools
-
 STORE_DIR = Path.home() / ".jules"
 STORE_DB = STORE_DIR / "store.db"
+
+# Conservative defaults — caller must opt-in for heavy activity fetching
+DEFAULT_ACTIVITY_LIMIT = 0       # sessions to fetch activities for
+DEFAULT_ACTIVITY_MAX = 20        # max activities per session
+DEFAULT_FETCH_THRESHOLD = 20     # skip if known >= this + terminal state
 
 SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS sessions (
@@ -66,6 +69,11 @@ CREATE VIRTUAL TABLE IF NOT EXISTS activities_fts USING fts4(
     activity_type,
     summary
 );
+
+CREATE TABLE IF NOT EXISTS sync_meta (
+    key   TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);
 """
 
 
@@ -90,6 +98,14 @@ def _extract_session_row(s: dict) -> dict:
         pr_url=pr_url,
         repo=repo,
     )
+
+
+def _extract_repo(s: dict) -> str:
+    sc = s.get("sourceContext", {})
+    source = sc.get("source", "")
+    if source.startswith("sources/github/"):
+        return source.replace("sources/github/", "")
+    return ""
 
 
 def _extract_activity_row(session_id: str, a: dict) -> dict:
@@ -453,45 +469,219 @@ class JulesSessionStore:
             return []
 
     # ------------------------------------------------------------------
+    # High-Water Mark — incremental sync stop condition
+    # ------------------------------------------------------------------
+
+    def _get_high_water_mark(self) -> Optional[str]:
+        """Return the newest ``create_time`` in the store, or None if empty."""
+        with self._conn() as conn:
+            row = conn.execute(
+                "SELECT MAX(create_time) AS hwm FROM sessions"
+            ).fetchone()
+        return row["hwm"] if row and row["hwm"] else None
+
+    # ------------------------------------------------------------------
     # Batch sync
     # ------------------------------------------------------------------
+
+    def sync_page(
+        self,
+        client: Any,
+        page_size: int = 100,
+        activity_limit: int = DEFAULT_ACTIVITY_LIMIT,
+        activity_max: int = DEFAULT_ACTIVITY_MAX,
+        page_token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Fetch one page of sessions, upsert, and return a summary.
+
+        Without ``page_token``: fetches page 1 (newest). Uses HWM after each
+        session — once ``create_time <= HWM`` is hit, labels remaining items
+        ``before_hwm`` and sets ``caught_up=True``.
+
+        With ``page_token``: fetches that specific page and upserts every
+        session regardless of HWM (for backfilling older pages).
+
+        Returns:
+            total_on_page  — count of sessions in the API response
+            new_synced     — sessions newly upserted (always 0 with token,
+                             since everything is behind HWM, but upserted anyway)
+            before_hwm     — sessions at or before HWM
+            caught_up      — True if HWM was hit (page 1 only)
+            activities     — count of new activities synced
+            next_page_token — token for fetching next page (or None if exhausted)
+        """
+        hwm = self._get_high_water_mark()
+        params = f"pageSize={page_size}"
+        if page_token:
+            params += f"&pageToken={page_token}"
+        data = client._request(f"sessions?{params}")
+        batch = data.get("sessions", [])
+        if not batch:
+            return {
+                "total_on_page": 0,
+                "new_synced": 0,
+                "before_hwm": 0,
+                "caught_up": True,
+                "activities": 0,
+                "next_page_token": None,
+            }
+
+        new_synced = 0
+        before_hwm = 0
+        caught_up = False
+        activities = 0
+        states: Dict[str, int] = {}
+        repos: Dict[str, int] = {}
+        with_prs = 0
+        # With explicit page_token: upsert everything, don't skip behind HWM
+        skip_old = not page_token
+
+        for session in batch:
+            create_time = session.get("createTime", "")
+            if skip_old and hwm and create_time and create_time <= hwm:
+                caught_up = True
+                before_hwm += 1
+                continue
+
+            self.upsert_session(session)
+            new_synced += 1
+
+            s = session.get("state", "UNKNOWN")
+            states[s] = states.get(s, 0) + 1
+            repo = _extract_repo(session)
+            if repo:
+                repos[repo] = repos.get(repo, 0) + 1
+            for o in session.get("outputs", []):
+                if o.get("pullRequest", {}).get("url"):
+                    with_prs += 1
+                    break
+
+            if activity_limit and new_synced <= activity_limit:
+                sess_id = session.get("name", "").replace("sessions/", "")
+                known = self.get_activity_count(sess_id)
+                if not (known >= activity_max and session.get("state") in (
+                    "COMPLETED", "FAILED", "STATE_UNSPECIFIED",
+                )):
+                    try:
+                        act_list = list(
+                            client.list_activities(
+                                sess_id, page_size=min(activity_max, 50),
+                                max_results=activity_max,
+                            )
+                        )
+                    except RuntimeError as e:
+                        print(f"  [warn] activity fetch failed for {sess_id}: {e}")
+                        act_list = []
+                    if len(act_list) > known:
+                        self.upsert_activities(sess_id, act_list[known:])
+                        activities += len(act_list) - known
+
+        return {
+            "total_on_page": len(batch),
+            "new_synced": new_synced,
+            "before_hwm": before_hwm,
+            "caught_up": caught_up,
+            "activities": activities,
+            "states": states,
+            "repos": repos,
+            "with_prs": with_prs,
+            "next_page_token": data.get("nextPageToken"),
+        }
+
+    def sync_all_sessions(
+        self,
+        client: Any,
+        page_size: int = 100,
+        activity_limit: int = DEFAULT_ACTIVITY_LIMIT,
+        activity_max: int = DEFAULT_ACTIVITY_MAX,
+        max_pages: Optional[int] = None,
+    ) -> Tuple[int, int]:
+        """Sync all pages sequentially, one page at a time.
+
+        Each page is fetched, upserted, summarized, then the next is fetched.
+        Stops when HWM is hit, API is exhausted, or ``max_pages`` is reached.
+
+        Args:
+            client: A JulesAPIClient instance.
+            page_size: API page size.
+            activity_limit: Max sessions to fetch activities for (0 = none).
+            activity_max: Max activities to fetch per session.
+            max_pages: Max pages to fetch (None = until exhausted/caught up).
+        """
+        sessions_synced = 0
+        activities_synced = 0
+        pages = 0
+
+        while True:
+            result = self.sync_page(
+                client,
+                page_size=page_size,
+                activity_limit=activity_limit - sessions_synced
+                if activity_limit else 0,
+                activity_max=activity_max,
+            )
+            sessions_synced += result["new_synced"]
+            activities_synced += result["activities"]
+            pages += 1
+
+            print(
+                f"  Page {pages}: {result['new_synced']} new, "
+                f"{result['before_hwm']} cached, "
+                f"{result['activities']} activities"
+            )
+
+            if result["caught_up"] or not result["next_page_token"]:
+                break
+            if max_pages and pages >= max_pages:
+                break
+
+        return sessions_synced, activities_synced
 
     def sync_from_api(
         self,
         client: Any,
-        limit: int = 30,
+        limit: int = DEFAULT_ACTIVITY_LIMIT,
         max_results: int = 500,
+        activity_max: int = DEFAULT_ACTIVITY_MAX,
     ) -> Tuple[int, int]:
         """Batch sync: fetch sessions from the API and upsert into the store.
 
+        Caps at ``max_results``. Activity sync is opt-in (``limit`` defaults
+        to 0). Pass ``limit=50, activity_max=200`` to hydrate.
+
         Args:
             client: A JulesAPIClient instance.
-            limit: Max sessions to process for activity sync.
+            limit: Max sessions to fetch activities for (0 = none).
             max_results: Max sessions to scan when listing.
-
-        Returns:
-            Tuple of (sessions_synced, activities_synced).
+            activity_max: Max activities to fetch per session.
         """
         sessions_synced = 0
         activities_synced = 0
         for session in client.list_sessions(
-            page_size=min(max(limit, 1), 50), max_results=max_results
+            page_size=min(max_results, 100), max_results=max_results
         ):
             self.upsert_session(session)
             sessions_synced += 1
+            if sessions_synced > limit:
+                continue
             sess_id = session.get("name", "").replace("sessions/", "")
             known = self.get_activity_count(sess_id)
+            if known >= activity_max and session.get("state") in (
+                "COMPLETED", "FAILED", "STATE_UNSPECIFIED",
+            ):
+                continue
             try:
                 activities = list(
-                    _itertools.islice(
-                        client.list_activities(sess_id, page_size=50), 200
+                    client.list_activities(
+                        sess_id, page_size=min(activity_max, 50),
+                        max_results=activity_max,
                     )
                 )
-            except Exception:
+            except RuntimeError as e:
+                print(f"  [warn] activity fetch failed for {sess_id}: {e}")
                 activities = []
             if len(activities) > known:
-                new_acts = activities[known:]
-                inserted = self.upsert_activities(sess_id, new_acts)
+                inserted = self.upsert_activities(sess_id, activities[known:])
                 activities_synced += inserted
         return sessions_synced, activities_synced
 

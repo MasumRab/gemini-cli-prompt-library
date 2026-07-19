@@ -136,25 +136,31 @@ class JulesAPIClient:
     # ------------------------------------------------------------------
 
     def list_sessions(
-        self, page_size: int = 50, max_results: Optional[int] = None
+        self, page_size: int = 50, max_results: Optional[int] = None,
+        page_token: Optional[str] = None,
     ) -> Generator[Dict[str, Any], None, None]:
         """Yield sessions, handling pagination automatically.
 
         When ``max_results`` is provided the generator stops early,
-        preventing unnecessary page fetches.
+        preventing unnecessary page fetches. When ``None`` (default),
+        iterates until the API returns no more pages.
+
+        When ``page_token`` is provided, starts from that page cursor
+        (used for resumable sync checkpointing).
         """
-        page_token = None
-        remaining = max_results if max_results is not None else float("inf")
+        remaining = max_results  # None means no limit
         while True:
-            params = f"?pageSize={min(page_size, int(remaining))}"
+            effective_page = min(page_size, remaining) if remaining is not None else page_size
+            params = f"?pageSize={effective_page}"
             if page_token:
                 params += f"&pageToken={page_token}"
             data = self._request(f"sessions{params}")
             for sess in data.get("sessions", []):
                 yield sess
-                remaining -= 1
-                if remaining <= 0:
-                    return
+                if remaining is not None:
+                    remaining -= 1
+                    if remaining <= 0:
+                        return
             page_token = data.get("nextPageToken")
             if not page_token:
                 break
@@ -246,17 +252,19 @@ class JulesAPIClient:
         if not session_id.startswith("sessions/"):
             session_id = f"sessions/{session_id}"
         page_token = None
-        remaining = max_results if max_results is not None else float("inf")
+        remaining = max_results  # None means no limit
         while True:
-            params = f"?pageSize={min(page_size, int(remaining))}"
+            effective_page = min(page_size, remaining) if remaining is not None else page_size
+            params = f"?pageSize={effective_page}"
             if page_token:
                 params += f"&pageToken={page_token}"
             data = self._request(f"{session_id}/activities{params}")
             for act in data.get("activities", []):
                 yield act
-                remaining -= 1
-                if remaining <= 0:
-                    return
+                if remaining is not None:
+                    remaining -= 1
+                    if remaining <= 0:
+                        return
             page_token = data.get("nextPageToken")
             if not page_token:
                 break
@@ -429,5 +437,26 @@ class JulesAPIClient:
         """Retrieve a specific GitHub source by owner/repo.
 
         Uses GET /v1alpha/sources/github/{owner}/{repo}.
+        Raises RuntimeError on 404 (source not connected).
         """
         return self._request(f"sources/github/{owner}/{repo}")
+
+    def resolve_source(self, owner_repo: str) -> str:
+        """Pre-flight: verify a GitHub source exists and return its resource name.
+
+        Args:
+            owner_repo: ``"owner/repo"`` format.
+
+        Returns:
+            The full resource name (e.g. ``"sources/github/owner/repo"``).
+
+        Raises:
+            RuntimeError: If the source returns 404 (not connected/authorized).
+        """
+        if "/" not in owner_repo:
+            raise ValueError(
+                f"Invalid repo format '{owner_repo}'. Use 'owner/repo'."
+            )
+        owner, repo = owner_repo.split("/", 1)
+        self.get_source(owner, repo)
+        return f"sources/github/{owner_repo}"
