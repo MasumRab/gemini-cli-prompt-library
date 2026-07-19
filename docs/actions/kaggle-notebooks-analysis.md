@@ -1,5 +1,7 @@
 # Jules Action Recommendations – Kaggle Notebooks Analysis
 
+> **Legacy reference:** This file documents the external `kaggle-notebooks-analysis` repo. Current Jules tools are in `tools/` within this repo.
+
 ## Project Overview
 This repository holds Kaggle‑style notebooks, data‑processing scripts, and helper utilities. The primary goals are:
 - Reproducible notebook execution (all cells runnable top‑to‑bottom without hidden state)

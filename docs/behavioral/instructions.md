@@ -1,7 +1,7 @@
 # Instructions for Jules
 
-> This file governs how Jules operates in this repository. Read it fully before
-> making any changes.
+> **Note:** This file was ported from `kaggle-notebooks-analysis`. Some references
+> may be stale — the canonical tool paths are now under `tools/` in this repo.
 
 ---
 

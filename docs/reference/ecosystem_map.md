@@ -116,8 +116,14 @@
 │  ├── MULTI_REPO_TOOLS.md          ← multi-repo tooling                              │
 │  ├── extracted_bolt_role.md        ← extracted Bolt role prompt                     │
 │  ├── extracted_sentinel_role.md    ← extracted Sentinel role prompt                 │
-│  ├── extracted_mcp_schedule.json   ← MCP schedule config (26KB)                     │
-│  ├── extracted_prompts_formatted.txt ← formatted Jules prompts (8.8KB)             │
+│  └── extracted_recovery_payloads.json ← recovery payload templates                 │
+│                                                                                     │
+│  SKILLS REFERENCES (5)                  skills/jules-sessions/references/            │
+│  ├── prompts.md                     ← formatted Jules prompts (8.8KB)               │
+│  ├── response_templates.md          ← response template patterns                     │
+│  ├── sent_responses.md              ← logged sent responses                          │
+│  ├── task_schedule.json             ← MCP schedule config (26KB)                     │
+│  └── wip_analysis.md                ← work-in-progress analysis                      │
 │  └── extracted_recovery_payloads.json ← recovery payload templates                 │
 │                                                                                     │
 │  GENERAL RUNBOOKS (4)                     docs/runbooks/                            │
