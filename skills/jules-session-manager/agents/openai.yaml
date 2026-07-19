@@ -1,0 +1,29 @@
+name: Jules Session Manager
+description: Manage Google Jules AI agent sessions
+version: 1.0.0
+ui:
+  display_name: "Jules Session Manager"
+  icon: "jules"
+  color: "#4285F4"
+  chips:
+    - jules
+    - google
+    - sessions
+    - ai-agents
+  confidence_score: 0.75
+capabilities:
+  - List all Jules sessions
+  - Inspect session activities
+  - Send messages to sessions
+  - Track PR task associations
+  - Fetch session history
+triggers:
+  commands:
+    - /jules-list
+    - /jules-inspect
+    - /jules-send
+  natural_language:
+    - "list jules sessions"
+    - "inspect jules api"
+    - "check jules activities"
+    - "jules session manager"

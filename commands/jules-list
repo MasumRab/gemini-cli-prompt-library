@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+# Active-only shortcut for listing sessions
+
+# Standardize on JULES_API_KEY
+export JULES_API_KEY="${JULES_API_KEY}"
+
+if [ -f "tools/sessions/jules_list_sessions.py" ]; then
+    # List all and filter for non-COMPLETED if possible, or just list with grading
+    uv run python3 -m tools.sessions.jules_list_sessions --sort "$@"
+else
+    echo "ERROR: tools/sessions/jules_list_sessions.py not found." >&2
+    exit 1
+fi

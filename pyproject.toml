@@ -1,0 +1,18 @@
+[project]
+name = "jules-tools"
+version = "0.1.0"
+requires-python = ">=3.12"
+
+[tool.setuptools.packages.find]
+include = ["tools*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tools/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "live: tests that require live API access (deselect with '-m \"not live\"')",
+    "offline: tests that run without any external dependencies",
+]
+addopts = "-v --tb=short"

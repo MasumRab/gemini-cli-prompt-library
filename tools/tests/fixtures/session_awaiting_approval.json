@@ -1,0 +1,9 @@
+{
+  "name": "sessions/test-session-002",
+  "state": "AWAITING_PLAN_APPROVAL",
+  "title": "Add new feature",
+  "repository": "MasumRab/jules",
+  "headBranch": "jules/add-feature",
+  "createdAt": "2026-07-01T12:00:00Z",
+  "updatedAt": "2026-07-01T12:15:00Z"
+}

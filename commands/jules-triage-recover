@@ -1,0 +1,43 @@
+#!/bin/bash
+# Recover a session with given strategy
+set -euo pipefail
+
+BASE_URL="https://jules.googleapis.com/v1alpha"
+
+if [ -z "${JULES_API_KEY:-}" ]; then
+    echo "Error: JULES_API_KEY is not set." >&2
+    exit 1
+fi
+
+SESSION_ID=${1:-}
+STRATEGY=${2:-}
+if [ -z "$SESSION_ID" ] || [ -z "$STRATEGY" ]; then
+    echo "Usage: $0 <session_id> <strategy>" >&2
+    echo "  strategy: approve|retry" >&2
+    exit 1
+fi
+
+# Handle sessions/ prefix
+ID="${SESSION_ID#sessions/}"
+
+if command -v uv &>/dev/null && [ -f "tools/sessions/jules_recovery_manager.py" ]; then
+    exec uv run python -m tools.sessions.jules_recovery_manager "$SESSION_ID" "$STRATEGY"
+elif command -v python3 &>/dev/null && [ -f "tools/sessions/jules_recovery_manager.py" ]; then
+    exec PYTHONPATH=. python3 -m tools.sessions.jules_recovery_manager "$SESSION_ID" "$STRATEGY"
+else
+    echo "Warning: Falling back to curl (minimal recovery)." >&2
+    if [ "$STRATEGY" = "approve" ]; then
+        curl -sf -X POST -H "X-Goog-Api-Key: $JULES_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{}" \
+            "$BASE_URL/sessions/$ID:approvePlan"
+    elif [ "$STRATEGY" = "retry" ]; then
+        curl -sf -X POST -H "X-Goog-Api-Key: $JULES_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"prompt": "Please retry the last step."}' \
+            "$BASE_URL/sessions/$ID:sendMessage"
+    else
+        echo "Error: Minimal curl fallback only supports 'approve' and 'retry' strategies." >&2
+        exit 1
+    fi
+fi

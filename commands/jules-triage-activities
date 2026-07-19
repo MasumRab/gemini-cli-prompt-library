@@ -1,0 +1,28 @@
+#!/bin/bash
+# List activities for a session
+set -euo pipefail
+
+BASE_URL="https://jules.googleapis.com/v1alpha"
+
+if [ -z "${JULES_API_KEY:-}" ]; then
+    echo "Error: JULES_API_KEY is not set." >&2
+    exit 1
+fi
+
+SESSION_ID=${1:-}
+if [ -z "$SESSION_ID" ]; then
+    echo "Usage: $0 <session_id>" >&2
+    exit 1
+fi
+
+# Handle sessions/ prefix
+ID="${SESSION_ID#sessions/}"
+
+if command -v uv &>/dev/null && [ -f "tools/sessions/jules_list_activities.py" ]; then
+    exec uv run python -m tools.sessions.jules_list_activities "$SESSION_ID"
+elif command -v python3 &>/dev/null && [ -f "tools/sessions/jules_list_activities.py" ]; then
+    exec PYTHONPATH=. python3 -m tools.sessions.jules_list_activities "$SESSION_ID"
+else
+    echo "Warning: Falling back to curl." >&2
+    curl -sf -H "X-Goog-Api-Key: $JULES_API_KEY" "$BASE_URL/sessions/$ID/activities"
+fi

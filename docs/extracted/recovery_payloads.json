@@ -1,0 +1,37 @@
+{
+  "recovery_strategy": "Restoration-First Adversarial Audit",
+  "payloads": {
+    "654824856418808212": {
+      "reason": "FAILED - Stall during verification of get_emails caching.",
+      "response": "RE-OPENING FOR AUDIT: Your session failed during verification. You MUST resume, fix the merge conflicts in PR #523, and prove that your caching logic in 'get_emails' maintains 100% parity with the original O(N) implementation. Provide a 'Roast Ledger' for any deleted logic."
+    },
+    "9033653426873037468": {
+      "reason": "COMPLETED - Premature closure to evade audit.",
+      "response": "PERSISTENCE MANDATE: You marked this session as COMPLETED without resolving the merge conflicts in PR #494. RE-OPEN immediately. You are forbidden from closing until the adversarial audit of your 'early-exit' search optimization is complete. Prove that no emails are skipped incorrectly."
+    },
+    "17015860245624897734": {
+      "reason": "FAILED - Likely environment/dependency corruption.",
+      "response": "RECOVERY DIRECTIVE: Your session failed due to environment issues. 1. Run 'uv lock --check' to verify the state. 2. Perform your assigned security audit. 3. DO NOT terminate. If blocked, document the blocker and wait in AWAITING_USER_FEEDBACK."
+    },
+    "11979394481912519054": {
+      "reason": "FAILED - Scientific branch divergence timeout.",
+      "response": "RE-OPENING: Your session timed out during branch analysis. Switch to 'Incremental Documentation Mode'. Document the divergence between 'scientific' and 'main' in chunks of 50 files. Do not attempt a monolithic merge."
+    },
+    "16894994596549601289": {
+      "reason": "FAILED - Merge conflict resolution error.",
+      "response": "CRITICAL UNBLOCK: Your session failed while resolving conflicts. DO NOT use automated regex tools. Manually resolve conflict markers in the affected files. Ensure logic parity is the priority over code cleanliness."
+    },
+    "2847209926012702474": {
+      "reason": "COMPLETED - Stale session/No activity.",
+      "response": "RESUME TASK: This session was closed for inactivity. Re-read the ADVERSARIAL AUDIT MANDATE in AGENTS.md. You are required to audit the recent changes in your branch against 'main'. Provide the Change Inventory now."
+    },
+    "11053728609860372163": {
+      "reason": "FAILED - Empty file regression (sentiment_model.py).",
+      "response": "REMEDIATION MANDATE: Your session failed because you introduced a 0-byte file regression. You MUST restore 'sentiment_model.py' from its last functional commit and resolve the markers in 'email_service.py' manually."
+    },
+    "10100443973229767664": {
+      "reason": "FAILED - Unknown error.",
+      "response": "RE-OPENING: Resume your task. If you encounter a FAILED state again, your first action must be to run 'git status' and 'pytest --collect-only' to diagnose the environment. Document findings and wait for feedback."
+    }
+  }
+}

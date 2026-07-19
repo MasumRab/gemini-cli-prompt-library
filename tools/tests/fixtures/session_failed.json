@@ -1,0 +1,10 @@
+{
+  "name": "sessions/test-session-004",
+  "state": "FAILED",
+  "title": "Fix CI pipeline",
+  "repository": "MasumRab/jules",
+  "headBranch": "jules/fix-ci",
+  "error": "Build failed: missing dependency",
+  "createdAt": "2026-07-01T16:00:00Z",
+  "updatedAt": "2026-07-01T16:45:00Z"
+}

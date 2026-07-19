@@ -18,6 +18,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from tools.api.jules_api_client import jules_request
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 QUEUE_FILE = SCRIPT_DIR.parent.parent / ".jules-rebase-queue.json"
 AUDIT_REPORT = SCRIPT_DIR.parent.parent / "docs" / "jules" / "AUDIT_REPORT.md"
@@ -39,11 +41,6 @@ def save_queue(queue: list):
 
 def resolve_session_pr(session_id: str) -> dict:
     """Resolve a session ID to its PR branch and metadata using Jules API."""
-    _TOOLS_DIR = str(SCRIPT_DIR.parent)
-    if _TOOLS_DIR not in sys.path:
-        sys.path.insert(0, _TOOLS_DIR)
-    from api.jules_api_client import jules_request
-
     if not session_id.startswith("sessions/"):
         session_id = f"sessions/{session_id}"
 

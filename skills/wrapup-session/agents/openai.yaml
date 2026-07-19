@@ -1,0 +1,28 @@
+name: Wrapup Session
+description: Generate session summary reports and wrap-up documentation
+version: 1.0.0
+ui:
+  display_name: "Wrapup Session"
+  icon: "wrapup"
+  color: "#FF9800"
+  chips:
+    - wrapup
+    - summary
+    - report
+    - session
+  confidence_score: 0.80
+capabilities:
+  - Generate session summary reports
+  - Track changed files
+  - Include QA status
+  - Post to PR comment
+  - Export as Markdown or JSON
+triggers:
+  commands:
+    - /wrapup
+    - /session-summary
+  natural_language:
+    - "wrapup this session"
+    - "summarize what we did"
+    - "session report"
+    - "what did we do"

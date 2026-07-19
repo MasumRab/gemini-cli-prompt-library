@@ -1,0 +1,9 @@
+{
+  "name": "sessions/test-session-003",
+  "state": "AWAITING_USER_FEEDBACK",
+  "title": "Refactor database layer",
+  "repository": "MasumRab/jules",
+  "headBranch": "jules/refactor-db",
+  "createdAt": "2026-07-01T14:00:00Z",
+  "updatedAt": "2026-07-01T14:30:00Z"
+}

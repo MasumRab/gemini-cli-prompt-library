@@ -1,0 +1,21 @@
+{
+  "name": "jules-tools",
+  "version": "0.1.0",
+  "description": "Consolidated Jules tooling — Python operational tools + TypeScript SDK integration",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@google/jules-sdk": "^0.2.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.25.76"
+  },
+  "scripts": {
+    "build:mcp": "tsc -p extensions/gemini-cli-jules/mcp-server/tsconfig.json",
+    "build:sdk": "tsc -p tools/sdk/tsconfig.json",
+    "build": "npm run build:mcp && npm run build:sdk",
+    "test": "npm run build && pytest tools/tests/"
+  }
+}

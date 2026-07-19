@@ -1,0 +1,9 @@
+{
+  "name": "sessions/test-session-005",
+  "state": "IN_PROGRESS",
+  "title": "Update documentation",
+  "repository": "MasumRab/jules",
+  "headBranch": "jules/update-docs",
+  "createdAt": "2026-07-01T18:00:00Z",
+  "updatedAt": "2026-07-01T18:30:00Z"
+}

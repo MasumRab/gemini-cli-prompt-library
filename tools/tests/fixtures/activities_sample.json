@@ -1,0 +1,33 @@
+{
+  "activities": [
+    {
+      "type": "agentMessaged",
+      "timestamp": "2026-07-01T10:00:00Z",
+      "content": "Starting work on the authentication bug fix."
+    },
+    {
+      "type": "userMessaged",
+      "timestamp": "2026-07-01T10:05:00Z",
+      "content": "Please focus on the auth module first."
+    },
+    {
+      "type": "progressUpdated",
+      "timestamp": "2026-07-01T10:10:00Z",
+      "content": "50% complete - auth module refactored"
+    },
+    {
+      "type": "planApproved",
+      "timestamp": "2026-07-01T10:15:00Z"
+    },
+    {
+      "type": "agentMessaged",
+      "timestamp": "2026-07-01T11:00:00Z",
+      "content": "All tests passing. Creating PR."
+    },
+    {
+      "type": "sessionFailed",
+      "timestamp": "2026-07-01T11:30:00Z",
+      "content": "Build failed in CI"
+    }
+  ]
+}
