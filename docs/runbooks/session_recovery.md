@@ -44,6 +44,27 @@ Strategies: `retry` (re-send last message), `approve` (approve pending plan)
 ./commands/jules_recover.sh <session_id>
 ```
 
+## Shell Method (curl + jq)
+
+Without Python tools, find sessions needing response using curl:
+
+```bash
+# All sessions needing user action
+curl -sf "https://jules.googleapis.com/v1alpha/sessions?pageSize=50" \
+  -H "X-Goog-Api-Key: $JULES_API_KEY" | \
+  jq -r '.sessions[] | select(.state == "AWAITING_PLAN_APPROVAL" or
+                              .state == "AWAITING_USER_FEEDBACK" or
+                              .state == "FAILED" or
+                              .state == "PAUSED") |
+    "\(.name | split("/")[1])  \(.state)  \(.title)'"
+
+# Count by state
+curl -sf "https://jules.googleapis.com/v1alpha/sessions?pageSize=100" \
+  -H "X-Goog-Api-Key: $JULES_API_KEY" | \
+  jq -r '[.sessions[].state] | group_by(.) | map({state: .[0], count: length}) | .[] |
+    "\(.count)  \(.state)"'
+```
+
 ## Related Tools
 
 | Tool | Purpose |

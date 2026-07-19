@@ -13,6 +13,16 @@ STATE_FAILED = "FAILED"
 STATE_COMPLETED = "COMPLETED"
 STATE_QUEUED = "QUEUED"
 STATE_PLANNING = "PLANNING"
+STATE_PAUSED = "PAUSED"
+STATE_UNSPECIFIED = "STATE_UNSPECIFIED"
+
+# States where the session needs user action
+PENDING_STATES = {
+    STATE_AWAITING_PLAN_APPROVAL,
+    STATE_AWAITING_USER_FEEDBACK,
+    STATE_FAILED,
+    STATE_PAUSED,
+}
 
 # Activity type constants matching the REST API union fields
 ACTIVITY_AGENT_MESSAGED = "agentMessaged"
@@ -133,6 +143,17 @@ def categorize_awaiting_state(
         if not result["details"]:
             result["details"].append("Session failed — no failure activity found")
 
+    elif state == STATE_PAUSED:
+        result["category"] = "paused"
+        result["action"] = "investigate"
+        for act in activities:
+            if ACTIVITY_PROGRESS_UPDATED in act:
+                title = act[ACTIVITY_PROGRESS_UPDATED].get("title", "")
+                result["details"].append(f"Paused during: {title}")
+                break
+        if not result["details"]:
+            result["details"].append("Session paused — review and decide: resume, send guidance, or cancel")
+
     elif state == STATE_IN_PROGRESS:
         result["category"] = "in_progress"
         result["action"] = "monitor"
@@ -144,12 +165,58 @@ def categorize_awaiting_state(
         if not result["details"]:
             result["details"].append("Session is running")
 
+    elif state == STATE_QUEUED:
+        result["category"] = "queued"
+        result["action"] = "none"
+        result["details"].append("Session queued — will start automatically")
+
+    elif state == STATE_PLANNING:
+        result["category"] = "planning"
+        result["action"] = "none"
+        result["details"].append("Agent is creating a plan — wait")
+
+    elif state == STATE_COMPLETED:
+        result["category"] = "completed"
+        result["action"] = "audit"
+        result["details"].append("Session completed — review outputs and PR")
+
+    elif state == STATE_UNSPECIFIED:
+        result["category"] = "unknown_state"
+        result["action"] = "investigate"
+        result["details"].append("Session has unspecified state — check API response")
+
     else:
         result["category"] = f"state_{state.lower()}"
         result["action"] = "none"
         result["details"].append(f"Session in {state} state — no action needed")
 
     return result
+
+
+def find_awaiting_sessions(
+    client: Optional[JulesAPIClient] = None,
+    limit: int = 100,
+) -> List[Dict[str, Any]]:
+    """Scan all sessions and return those needing user action.
+
+    Sessions needing action have states in PENDING_STATES:
+      AWAITING_PLAN_APPROVAL, AWAITING_USER_FEEDBACK, FAILED, PAUSED
+
+    Each result includes the session metadata plus categorization.
+    """
+    client = client or JulesAPIClient()
+    pending = []
+    for session in client.list_sessions(page_size=min(max(limit, 1), 50)):
+        state = session.get("state", "UNKNOWN")
+        if state in PENDING_STATES:
+            cat = categorize_awaiting_state(
+                session.get("name", "").replace("sessions/", ""),
+                client,
+            )
+            pending.append({**session, "_analysis": cat})
+        if len(pending) >= limit:
+            break
+    return pending
 
 
 def analyze_unanswered(session_id: str) -> List[str]:
@@ -174,11 +241,34 @@ def analyze_unanswered(session_id: str) -> List[str]:
 
 def main():
     parser = argparse.ArgumentParser(description="Analyze session awaiting state and recommend action")
-    parser.add_argument("session_id", help="Session ID to analyze")
+    parser.add_argument("session_id", nargs="?", help="Session ID to analyze")
     parser.add_argument("--json", action="store_true", help="Output raw JSON")
+    parser.add_argument("--pending", action="store_true", help="List all sessions needing user action")
     args = parser.parse_args()
 
     client = JulesAPIClient()
+
+    if args.pending:
+        pending = find_awaiting_sessions(client)
+        if args.json:
+            print(json.dumps(pending, indent=2))
+            return
+        if not pending:
+            print("No sessions currently need user action.")
+            return
+        for s in pending:
+            sid = s.get("name", "?").replace("sessions/", "")
+            state = s.get("state", "?")
+            title = s.get("title", "Untitled")[:60]
+            cat = s["_analysis"]["category"].replace("_", " ")
+            act = s["_analysis"]["action"].replace("_", " ")
+            print(f"{sid:<22} {state:<28} {cat:<20} {act:<20} {title}")
+        return
+
+    if not args.session_id:
+        parser.print_help()
+        return
+
     result = categorize_awaiting_state(args.session_id, client)
 
     if args.json:
@@ -191,6 +281,9 @@ def main():
         STATE_IN_PROGRESS: "In Progress",
         STATE_FAILED: "Failed",
         STATE_COMPLETED: "Completed",
+        STATE_PAUSED: "Paused",
+        STATE_QUEUED: "Queued",
+        STATE_PLANNING: "Planning",
     }
     label = state_labels.get(result["state"], result["state"])
 

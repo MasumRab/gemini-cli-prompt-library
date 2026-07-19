@@ -8,6 +8,13 @@ from typing import Any, Dict, List
 
 from tools.api.jules_api_client import JulesAPIClient
 
+PENDING_STATES = {
+    "AWAITING_PLAN_APPROVAL",
+    "AWAITING_USER_FEEDBACK",
+    "FAILED",
+    "PAUSED",
+}
+
 
 def get_session_pr(session: Dict[str, Any]) -> str:
     """Extract PR URL from session outputs if available."""
@@ -48,7 +55,7 @@ def get_latest_activity_summary(session_id: str, client: JulesAPIClient) -> str:
     return f"Activity by {originator}"
 
 
-def list_sessions(active_only=False, limit=20) -> List[Dict[str, Any]]:
+def list_sessions(active_only=False, pending_only=False, limit=20) -> List[Dict[str, Any]]:
     """Fetch sessions from the API with efficient pagination."""
     client = JulesAPIClient()
     sessions = []
@@ -58,6 +65,8 @@ def list_sessions(active_only=False, limit=20) -> List[Dict[str, Any]]:
         state = session.get("state", "UNKNOWN")
 
         if active_only and state == "COMPLETED":
+            continue
+        if pending_only and state not in PENDING_STATES:
             continue
 
         sessions.append(session)
@@ -73,13 +82,17 @@ def main():
     parser.add_argument(
         "--active-only", action="store_true", help="Only show non-completed sessions"
     )
+    parser.add_argument(
+        "--pending", action="store_true",
+        help="Only show sessions needing user action (awaiting plan/feedback, failed, paused)"
+    )
     parser.add_argument("--json", action="store_true", help="Output raw JSON")
     parser.add_argument("--limit", type=int, default=20, help="Max sessions to list")
     parser.add_argument("--with-activity", action="store_true", help="Include latest activity summary (slower)")
     args = parser.parse_args()
 
     client = JulesAPIClient()
-    sessions = list_sessions(active_only=args.active_only, limit=args.limit)
+    sessions = list_sessions(active_only=args.active_only, pending_only=args.pending, limit=args.limit)
 
     if args.json:
         try:

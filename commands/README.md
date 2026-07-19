@@ -14,6 +14,7 @@ Convenience wrappers for common Jules operations. All wrappers auto-detect `uv` 
 | `jules-triage-analyze` | Analyze session state and recommend action |
 | `jules-triage-list` | List sessions (alias for jules-list) |
 | `jules-triage-recover` | Recovery triage wrapper |
+| `jules-pending` | List sessions needing user action (awaiting plan/feedback, failed, paused) |
 | `jules-create <owner/repo> <prompt>` | Create a new Jules session |
 | `jules-ask <session_id> <question>` | Ask a question and wait for agent reply |
 

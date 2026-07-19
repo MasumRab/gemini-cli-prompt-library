@@ -1,0 +1,4 @@
+#!/bin/bash
+set -euo pipefail
+
+uv run python3 -m tools.sessions.jules_list_sessions --pending "$@"
