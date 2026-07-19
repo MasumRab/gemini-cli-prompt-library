@@ -46,23 +46,29 @@ Strategies: `retry` (re-send last message), `approve` (approve pending plan)
 
 ## Shell Method (curl + jq)
 
-Without Python tools, find sessions needing response using curl:
+Without Python tools, query sessions using curl + jq:
 
 ```bash
-# All sessions needing user action
-curl -sf "https://jules.googleapis.com/v1alpha/sessions?pageSize=50" \
-  -H "X-Goog-Api-Key: $JULES_API_KEY" | \
-  jq -r '.sessions[] | select(.state == "AWAITING_PLAN_APPROVAL" or
-                              .state == "AWAITING_USER_FEEDBACK" or
-                              .state == "FAILED" or
-                              .state == "PAUSED") |
-    "\(.name | split("/")[1])  \(.state)  \(.title)'"
-
-# Count by state
+# List all sessions with their states (no filter — see everything)
 curl -sf "https://jules.googleapis.com/v1alpha/sessions?pageSize=100" \
   -H "X-Goog-Api-Key: $JULES_API_KEY" | \
-  jq -r '[.sessions[].state] | group_by(.) | map({state: .[0], count: length}) | .[] |
+  jq -r '.sessions[] | "\(.name | split("/")[1])  \(.state)  \(.title)"'
+
+# Count by state (useful for discovering unexpected state values)
+curl -sf "https://jules.googleapis.com/v1alpha/sessions?pageSize=100" \
+  -H "X-Goog-Api-Key: $JULES_API_KEY" | \
+  jq -r '[.sessions[].state] | group_by(.) | sort_by(-length) | .[] |
     "\(.count)  \(.state)"'
+
+# Sessions NOT in known no-action states (COMPLETED, QUEUED, PLANNING)
+# This surfaces any unknown/future states automatically.
+curl -sf "https://jules.googleapis.com/v1alpha/sessions?pageSize=50" \
+  -H "X-Goog-Api-Key: $JULES_API_KEY" | \
+  jq -r '.sessions[] | select(.state != "COMPLETED" and
+                              .state != "QUEUED" and
+                              .state != "PLANNING" and
+                              .state != "STATE_UNSPECIFIED") |
+    "\(.name | split("/")[1])  \(.state)  \(.title)"'
 ```
 
 ## Related Tools

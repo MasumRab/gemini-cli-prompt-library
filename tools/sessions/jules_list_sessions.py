@@ -4,16 +4,24 @@
 import argparse
 import json
 import sys
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from tools.api.jules_api_client import JulesAPIClient
 
-PENDING_STATES = {
-    "AWAITING_PLAN_APPROVAL",
-    "AWAITING_USER_FEEDBACK",
-    "FAILED",
-    "PAUSED",
-}
+# Known non-action states — these are the only states we treat as definitively
+# not needing user attention. All other states (including unknown/future states)
+# are surfaced so edge cases are visible.
+NO_ACTION_STATES = {"COMPLETED", "QUEUED", "PLANNING", "STATE_UNSPECIFIED"}
+
+
+def likely_pending(state: str) -> bool:
+    """Return True if a state likely needs user attention.
+
+    Only known no-action states return False. Every other state
+    (including unknown or future API states) returns True so the
+    session is surfaced for review.
+    """
+    return state not in NO_ACTION_STATES
 
 
 def get_session_pr(session: Dict[str, Any]) -> str:
@@ -55,18 +63,38 @@ def get_latest_activity_summary(session_id: str, client: JulesAPIClient) -> str:
     return f"Activity by {originator}"
 
 
-def list_sessions(active_only=False, pending_only=False, limit=20) -> List[Dict[str, Any]]:
-    """Fetch sessions from the API with efficient pagination."""
+def list_sessions(
+    active_only: bool = False,
+    pending_only: bool = False,
+    include_states: Optional[List[str]] = None,
+    exclude_states: Optional[List[str]] = None,
+    limit: int = 20,
+) -> List[Dict[str, Any]]:
+    """Fetch sessions from the API with flexible filtering.
+
+    Args:
+        active_only: Exclude COMPLETED sessions.
+        pending_only: Exclude known no-action states (COMPLETED, QUEUED,
+            PLANNING, STATE_UNSPECIFIED). Unknown/future states are kept.
+        include_states: Only include sessions with these states.
+        exclude_states: Exclude sessions with these states.
+        limit: Max sessions to return.
+    """
     client = JulesAPIClient()
     sessions = []
     page_size = min(max(limit, 1), 50)
 
     for session in client.list_sessions(page_size=page_size):
         state = session.get("state", "UNKNOWN")
+        state_upper = state.upper()
 
-        if active_only and state == "COMPLETED":
+        if active_only and state_upper == "COMPLETED":
             continue
-        if pending_only and state not in PENDING_STATES:
+        if pending_only and state_upper in NO_ACTION_STATES:
+            continue
+        if include_states and state_upper not in [s.upper() for s in include_states]:
+            continue
+        if exclude_states and state_upper in [s.upper() for s in exclude_states]:
             continue
 
         sessions.append(session)
@@ -80,11 +108,21 @@ def list_sessions(active_only=False, pending_only=False, limit=20) -> List[Dict[
 def main():
     parser = argparse.ArgumentParser(description="List Jules sessions")
     parser.add_argument(
-        "--active-only", action="store_true", help="Only show non-completed sessions"
+        "--active-only", action="store_true",
+        help="Exclude COMPLETED sessions"
     )
     parser.add_argument(
         "--pending", action="store_true",
-        help="Only show sessions needing user action (awaiting plan/feedback, failed, paused)"
+        help="Show sessions likely needing attention (excludes COMPLETED, QUEUED, PLANNING, STATE_UNSPECIFIED; "
+             "unknown/future states are surfaced)"
+    )
+    parser.add_argument(
+        "--state", dest="include_states", nargs="+",
+        help="Only include these states (case-insensitive, e.g. --state FAILED PAUSED)"
+    )
+    parser.add_argument(
+        "--exclude-state", dest="exclude_states", nargs="+",
+        help="Exclude these states (e.g. --exclude-state COMPLETED QUEUED)"
     )
     parser.add_argument("--json", action="store_true", help="Output raw JSON")
     parser.add_argument("--limit", type=int, default=20, help="Max sessions to list")
@@ -92,7 +130,13 @@ def main():
     args = parser.parse_args()
 
     client = JulesAPIClient()
-    sessions = list_sessions(active_only=args.active_only, pending_only=args.pending, limit=args.limit)
+    sessions = list_sessions(
+        active_only=args.active_only,
+        pending_only=args.pending,
+        include_states=args.include_states,
+        exclude_states=args.exclude_states,
+        limit=args.limit,
+    )
 
     if args.json:
         try:
@@ -102,12 +146,13 @@ def main():
         return
 
     col_widths = [22, 12, 50, 40]
-    header = f"{'Session ID':<{col_widths[0]}} | {'State':<{col_widths[1]}} | {'PR URL':<{col_widths[2]}} | {'Title'}"
+    marker = " " if not args.pending else "!"
+    header = f"{'':1s} | {'Session ID':<{col_widths[0]}} | {'State':<{col_widths[1]}} | {'PR URL':<{col_widths[2]}} | {'Title'}"
     if args.with_activity:
         header += f" | {'Latest Activity'}"
-    
+
     print(header)
-    print("-" * (sum(col_widths) + 20))
+    print("-" * (sum(col_widths) + 26))
 
     for session in sessions:
         state = session.get("state", "UNKNOWN")
@@ -115,13 +160,17 @@ def main():
         session_id = session_name.replace("sessions/", "")
         title = session.get("title", "Untitled")[:50]
         pr_url = get_session_pr(session)
+        marker = " " if not args.pending else ("!" if likely_pending(state) else " ")
 
-        row = f"{session_id:<{col_widths[0]}} | {state:<{col_widths[1]}} | {pr_url:<{col_widths[2]}} | {title}"
+        row = f"{marker:1s} | {session_id:<{col_widths[0]}} | {state:<{col_widths[1]}} | {pr_url:<{col_widths[2]}} | {title}"
         if args.with_activity:
             activity = get_latest_activity_summary(session_name, client)
             row += f" | {activity}"
-        
+
         print(row)
+
+    if args.pending:
+        print(f"\n  !  = likely needs attention | {' ':4s} = no action expected (known states: COMPLETED, QUEUED, PLANNING, STATE_UNSPECIFIED)")
 
 
 if __name__ == "__main__":

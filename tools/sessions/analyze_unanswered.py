@@ -16,13 +16,15 @@ STATE_PLANNING = "PLANNING"
 STATE_PAUSED = "PAUSED"
 STATE_UNSPECIFIED = "STATE_UNSPECIFIED"
 
-# States where the session needs user action
-PENDING_STATES = {
-    STATE_AWAITING_PLAN_APPROVAL,
-    STATE_AWAITING_USER_FEEDBACK,
-    STATE_FAILED,
-    STATE_PAUSED,
-}
+# Known no-action states. Any state NOT in this set (including unknown or
+# future API states) is treated as potentially needing attention, ensuring
+# edge cases are surfaced rather than silently excluded.
+NO_ACTION_STATES = {STATE_COMPLETED, STATE_QUEUED, STATE_PLANNING, STATE_UNSPECIFIED}
+
+
+def likely_pending(state: str) -> bool:
+    """Return True if a state likely needs user attention."""
+    return state not in NO_ACTION_STATES
 
 # Activity type constants matching the REST API union fields
 ACTIVITY_AGENT_MESSAGED = "agentMessaged"
@@ -197,25 +199,27 @@ def find_awaiting_sessions(
     client: Optional[JulesAPIClient] = None,
     limit: int = 100,
 ) -> List[Dict[str, Any]]:
-    """Scan all sessions and return those needing user action.
+    """Scan all sessions and return those potentially needing attention.
 
-    Sessions needing action have states in PENDING_STATES:
-      AWAITING_PLAN_APPROVAL, AWAITING_USER_FEEDBACK, FAILED, PAUSED
+    Uses a permissive heuristic: any session in a state not known to be
+    no-action (COMPLETED, QUEUED, PLANNING, STATE_UNSPECIFIED) is included.
+    Unknown or future API states are surfaced rather than silently excluded.
 
     Each result includes the session metadata plus categorization.
     """
-    client = client or JulesAPIClient()
+    from tools.api.jules_api_client import JulesAPIClient as _JulesAPIClient
+    client = client or _JulesAPIClient()
     pending = []
     for session in client.list_sessions(page_size=min(max(limit, 1), 50)):
         state = session.get("state", "UNKNOWN")
-        if state in PENDING_STATES:
+        if likely_pending(state):
             cat = categorize_awaiting_state(
                 session.get("name", "").replace("sessions/", ""),
                 client,
             )
             pending.append({**session, "_analysis": cat})
-        if len(pending) >= limit:
-            break
+            if len(pending) >= limit:
+                break
     return pending
 
 
@@ -243,7 +247,7 @@ def main():
     parser = argparse.ArgumentParser(description="Analyze session awaiting state and recommend action")
     parser.add_argument("session_id", nargs="?", help="Session ID to analyze")
     parser.add_argument("--json", action="store_true", help="Output raw JSON")
-    parser.add_argument("--pending", action="store_true", help="List all sessions needing user action")
+    parser.add_argument("--pending", action="store_true", help="List sessions likely needing attention (excludes COMPLETED, QUEUED, PLANNING, STATE_UNSPECIFIED; unknown/future states surfaced)")
     args = parser.parse_args()
 
     client = JulesAPIClient()

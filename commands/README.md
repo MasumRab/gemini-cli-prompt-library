@@ -14,7 +14,9 @@ Convenience wrappers for common Jules operations. All wrappers auto-detect `uv` 
 | `jules-triage-analyze` | Analyze session state and recommend action |
 | `jules-triage-list` | List sessions (alias for jules-list) |
 | `jules-triage-recover` | Recovery triage wrapper |
-| `jules-pending` | List sessions needing user action (awaiting plan/feedback, failed, paused) |
+| `jules-pending` | List sessions likely needing attention (annotates with `!`; excludes only COMPLETED, QUEUED, PLANNING — unknown states are surfaced) |
+
+To filter by specific states: `jules-list --state FAILED PAUSED` or `jules-list --exclude-state COMPLETED`.
 | `jules-create <owner/repo> <prompt>` | Create a new Jules session |
 | `jules-ask <session_id> <question>` | Ask a question and wait for agent reply |
 
