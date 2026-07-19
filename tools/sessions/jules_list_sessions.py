@@ -36,7 +36,7 @@ def get_session_pr(session: Dict[str, Any]) -> str:
 
 def get_latest_activity_summary(session_id: str, client: JulesAPIClient) -> str:
     """Fetch the latest activity and return a short summary."""
-    activities = list(client.list_activities(session_id, page_size=1))
+    activities = list(client.list_activities(session_id, page_size=1, max_results=1))
     if not activities:
         return "No activities"
 
@@ -84,7 +84,8 @@ def list_sessions(
     sessions = []
     page_size = min(max(limit, 1), 50)
 
-    for session in client.list_sessions(page_size=page_size):
+    # Cap total scan at 500 sessions to prevent flooding on large accounts.
+    for session in client.list_sessions(page_size=page_size, max_results=500):
         state = session.get("state", "UNKNOWN")
         state_upper = state.upper()
 

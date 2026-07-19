@@ -9,13 +9,15 @@ from tools.api.jules_api_client import JulesAPIClient
 
 
 def list_activities(session_id: str, limit: int = None):
-    """Fetch activities for a given session, optionally limiting the count."""
+    """Fetch activities for a given session, optionally limiting the count.
+
+    Passes ``max_results`` to the API client so the generator stops at
+    ``limit`` items, preventing flood for long-running sessions.
+    """
     client = JulesAPIClient()
-    activities = client.list_activities(session_id)
     if limit is not None:
-        import itertools
-        activities = itertools.islice(activities, limit)
-    return list(activities)
+        return list(client.list_activities(session_id, max_results=limit))
+    return list(client.list_activities(session_id))
 
 
 def format_activity(act: dict) -> str:
@@ -62,12 +64,15 @@ def format_activity(act: dict) -> str:
 def main():
     parser = argparse.ArgumentParser(description="List activities for a Jules session")
     parser.add_argument("session_id", help="The Session ID")
+    parser.add_argument("--limit", type=int, default=50, help="Max activities to fetch (default: 50; use -1 for all)")
+    parser.add_argument("--all", action="store_true", help="Fetch all activities (overrides --limit)")
     parser.add_argument("--raw", action="store_true", help="Output raw JSON")
     args = parser.parse_args()
 
     session_id = args.session_id.replace("sessions/", "")
 
-    activities = list_activities(session_id)
+    limit = None if args.all else args.limit if args.limit > 0 else None
+    activities = list_activities(session_id, limit=limit)
 
     if args.raw:
         try:

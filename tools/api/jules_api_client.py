@@ -4,7 +4,10 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from typing import Any, Dict, Generator, Optional
+from typing import Any, Dict, Generator, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from tools.store.jules_store import JulesSessionStore
 
 JULES_API_BASE_URL = "https://jules.googleapis.com/v1alpha"
 
@@ -19,6 +22,31 @@ def get_api_key() -> str:
         print("ERROR: Jules API key not found. Please set JULES_API_KEY.", file=sys.stderr)
         sys.exit(1)
     return key
+
+
+def _validate_not_placeholder(name: str, value: str) -> None:
+    """Reject placeholder/dummy values before they reach the API.
+
+    Catches common patterns a naive agent or user might copy from docs:
+      - ``YOUR_``, ``CHANGE_ME``, ``<...>``, ``{{...}}``
+      - ``test-key``, ``test_key``, ``your-key-here``
+    """
+    import re as _re
+    placeholders = [
+        _re.compile(r) for r in (
+            r"^YOUR_", r"CHANGE_ME", r"^<.*>$", r"^\{\{.*\}\}$",
+            r"^test[_-]key$", r"^your[_-]key", r"placeholder",
+            r"^xxx+$", r"^dummy$",
+        )
+    ]
+    for pattern in placeholders:
+        if pattern.search(value):
+            print(
+                f"ERROR: {name} value \"{value[:40]}\" looks like a placeholder "
+                f"(matched: {pattern.pattern}). Set the real API key via env var.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
 
 
 def jules_request(
@@ -79,9 +107,17 @@ class JulesAPIClient:
     All methods delegate to jules_request() with the instance's credentials.
     """
 
-    def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        store: Optional["JulesSessionStore"] = None,
+    ):
         self.api_key = api_key or get_api_key()
+        _validate_not_placeholder("JULES_API_KEY", self.api_key)
         self.base_url = (base_url or JULES_API_BASE_URL).rstrip("/")
+        self._store = store
+        self._activity_count_cache: Dict[str, int] = {}
 
     # ------------------------------------------------------------------
     # Internal request helper
@@ -99,24 +135,38 @@ class JulesAPIClient:
     # Sessions
     # ------------------------------------------------------------------
 
-    def list_sessions(self, page_size: int = 50) -> Generator[Dict[str, Any], None, None]:
-        """Yield all sessions, handling pagination automatically."""
+    def list_sessions(
+        self, page_size: int = 50, max_results: Optional[int] = None
+    ) -> Generator[Dict[str, Any], None, None]:
+        """Yield sessions, handling pagination automatically.
+
+        When ``max_results`` is provided the generator stops early,
+        preventing unnecessary page fetches.
+        """
         page_token = None
+        remaining = max_results if max_results is not None else float("inf")
         while True:
-            params = f"?pageSize={page_size}"
+            params = f"?pageSize={min(page_size, int(remaining))}"
             if page_token:
                 params += f"&pageToken={page_token}"
             data = self._request(f"sessions{params}")
-            yield from data.get("sessions", [])
+            for sess in data.get("sessions", []):
+                yield sess
+                remaining -= 1
+                if remaining <= 0:
+                    return
             page_token = data.get("nextPageToken")
             if not page_token:
                 break
 
     def get_session(self, session_id: str) -> Dict[str, Any]:
-        """Retrieve a single session by ID."""
+        """Retrieve a single session by ID. Auto-upserts to store if configured."""
         if not session_id.startswith("sessions/"):
             session_id = f"sessions/{session_id}"
-        return self._request(session_id)
+        data = self._request(session_id)
+        if self._store:
+            self._store.upsert_session(data)
+        return data
 
     def get_session_prompt(self, session_id: str) -> Optional[str]:
         """Retrieve the initial user prompt from a session."""
@@ -184,18 +234,29 @@ class JulesAPIClient:
     # ------------------------------------------------------------------
 
     def list_activities(
-        self, session_id: str, page_size: int = 50
+        self, session_id: str, page_size: int = 50, max_results: Optional[int] = None
     ) -> Generator[Dict[str, Any], None, None]:
-        """Yield all activities for a session, handling pagination automatically."""
+        """Yield activities for a session, handling pagination automatically.
+
+        When ``max_results`` is provided the generator makes at most
+        ``ceil(max_results / page_size)`` API calls by reducing
+        ``pageSize`` on the final request and stopping early. This
+        prevents flooding when a session has thousands of activities.
+        """
         if not session_id.startswith("sessions/"):
             session_id = f"sessions/{session_id}"
         page_token = None
+        remaining = max_results if max_results is not None else float("inf")
         while True:
-            params = f"?pageSize={page_size}"
+            params = f"?pageSize={min(page_size, int(remaining))}"
             if page_token:
                 params += f"&pageToken={page_token}"
             data = self._request(f"{session_id}/activities{params}")
-            yield from data.get("activities", [])
+            for act in data.get("activities", []):
+                yield act
+                remaining -= 1
+                if remaining <= 0:
+                    return
             page_token = data.get("nextPageToken")
             if not page_token:
                 break
@@ -311,15 +372,38 @@ class JulesAPIClient:
         before = _time.monotonic()
         self.send_message(session_id, question)
         deadline = before + timeout
+        known = self._store.get_activity_count(session_id) if self._store else 0
         while _time.monotonic() < deadline:
-            activities = list(self.list_activities(session_id, page_size=10))
-            for act in activities:
+            activities = list(self.list_activities(session_id, page_size=20))
+            if self._store:
+                self._store.upsert_activities(session_id, activities)
+            # Only scan activities we haven't seen before
+            for act in activities[known:]:
                 if "agentMessaged" in act:
                     return act
+            known = len(activities)
             _time.sleep(2)
         raise TimeoutError(
             f"Agent did not reply to {session_id} within {timeout}s"
         )
+
+    def store_activities(self, session_id: str) -> int:
+        """Fetch all activities for a session and upsert them into the store.
+
+        Returns the number of newly inserted activity summary rows.
+        Requires the client to be initialized with ``store=``.
+
+        Raises:
+            RuntimeError: If no store is configured.
+        """
+        if not self._store:
+            raise RuntimeError(
+                "store_activities() requires a JulesSessionStore. "
+                "Pass store= to JulesAPIClient()."
+            )
+        sid = session_id.replace("sessions/", "")
+        activities = list(self.list_activities(session_id, page_size=100, max_results=500))
+        return self._store.upsert_activities(sid, activities)
 
     # ------------------------------------------------------------------
     # Sources

@@ -15,7 +15,7 @@ Procedures for recovering stuck, failed, or awaiting-action Jules sessions.
 | IN_PROGRESS | Wait — agent is working | — |
 | PAUSED | Resume or investigate | Check activities first |
 | COMPLETED | Review PR output | `uv run python3 -m tools.pr.jules_audit_session_pr --session <session_id>` |
-| FAILED | Retry or investigate | `uv run python3 -m tools.sessions.analyze_unanswered <session_id>` |
+| FAILED | Send recovery message, retry, or investigate | `uv run python3 -m tools.sessions.jules_send_message <session_id> "retry the last step"` |
 
 ## Categorizing Awaiting Sessions
 

@@ -42,10 +42,15 @@ def get_session_state(session_id: str, client: JulesAPIClient) -> str:
     return session.get("state", "UNKNOWN")
 
 
-def get_last_activities(session_id: str, client: JulesAPIClient, count: int = 5) -> List[Dict[str, Any]]:
-    """Get the most recent activities for a session."""
-    activities = list(client.list_activities(session_id))
-    return activities[:count]
+def get_last_activities(session_id: str, client: JulesAPIClient, count: int = 20) -> List[Dict[str, Any]]:
+    """Get the most recent activities for a session.
+
+    Passes ``max_results`` to the API client so the generator stops
+    early, preventing unnecessary page fetches.
+    """
+    return list(
+        client.list_activities(session_id, page_size=min(max(count, 1), 100), max_results=count)
+    )
 
 
 def categorize_awaiting_state(
@@ -210,7 +215,11 @@ def find_awaiting_sessions(
     from tools.api.jules_api_client import JulesAPIClient as _JulesAPIClient
     client = client or _JulesAPIClient()
     pending = []
-    for session in client.list_sessions(page_size=min(max(limit, 1), 50)):
+    # Scan up to 500 sessions max to handle accounts with many completed
+    # sessions without server-side filtering.
+    for session in client.list_sessions(
+        page_size=min(max(limit, 1), 50), max_results=500
+    ):
         state = session.get("state", "UNKNOWN")
         if likely_pending(state):
             cat = categorize_awaiting_state(
@@ -223,13 +232,19 @@ def find_awaiting_sessions(
     return pending
 
 
-def analyze_unanswered(session_id: str) -> List[str]:
+def analyze_unanswered(session_id: str, max_activities: int = 50) -> List[str]:
     """
     Legacy wrapper: detect unanswered agent questions.
     Replaced by categorize_awaiting_state() for production use.
+
+    Args:
+        session_id: Jules session ID.
+        max_activities: Max recent activities to scan (prevents flooding).
     """
     client = JulesAPIClient()
-    activities = list(client.list_activities(session_id))
+    activities = list(
+        client.list_activities(session_id, page_size=max_activities, max_results=max_activities)
+    )
     unanswered = []
     for activity in reversed(activities):
         if ACTIVITY_AGENT_MESSAGED in activity:

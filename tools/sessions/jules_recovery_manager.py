@@ -68,7 +68,9 @@ class JulesRecoveryManager:
         Returns priority-aware report.
         """
         session = self.client.get_session(session_id)
-        activities = list(self.client.list_activities(session_id, page_size=10))
+        activities = list(
+            self.client.list_activities(session_id, page_size=20, max_results=20)
+        )
 
         state = session.get("state", "UNKNOWN")
         priority, priority_reason = self.get_session_priority(state)

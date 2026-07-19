@@ -22,7 +22,12 @@ from tools.api.jules_api_client import JulesAPIClient
 
 def cmd_list(args):
     client = JulesAPIClient()
-    sessions = list(client.list_sessions(page_size=min(max(args.page_size, 1), 50)))
+    sessions = list(
+        client.list_sessions(
+            page_size=min(max(args.page_size, 1), 50),
+            max_results=args.limit,
+        )
+    )
     for s in sessions:
         pr = ""
         for o in s.get("outputs", []):
@@ -99,6 +104,7 @@ def main():
 
     p_list = sub.add_parser("list", help="List sessions")
     p_list.add_argument("page_size", nargs="?", type=int, default=20)
+    p_list.add_argument("--limit", type=int, default=100, help="Max sessions to fetch (default: 100)")
 
     p_session = sub.add_parser("session", help="Get session details")
     p_session.add_argument("session_id")

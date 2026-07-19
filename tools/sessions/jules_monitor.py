@@ -37,7 +37,7 @@ def monitor_loop(once=False):
     while True:
         try:
             print(f"[{time.ctime()}] Checking sessions...")
-            for session in client.list_sessions(page_size=10):
+            for session in client.list_sessions(page_size=10, max_results=10):
                 session_id = session["name"]
                 report = manager.analyze_session_state(session_id)
                 if report["action"] in ["retry", "approve", "AUDIT"]:
