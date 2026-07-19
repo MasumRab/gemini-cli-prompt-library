@@ -14,8 +14,8 @@ Convenience wrappers for common Jules operations. All wrappers auto-detect `uv` 
 | `jules-triage-analyze` | Analyze session state and recommend action |
 | `jules-triage-list` | List sessions (alias for jules-list) |
 | `jules-triage-recover` | Recovery triage wrapper |
-| `jules-create <owner/repo> <prompt>` | Start a new Jules task (requires SDK bridge) |
-| `jules-ask <session_id> <question>` | Ask a question and wait for reply (requires SDK bridge) |
+| `jules-create <owner/repo> <prompt>` | Create a new Jules session |
+| `jules-ask <session_id> <question>` | Ask a question and wait for agent reply |
 
 ## Usage
 
@@ -28,7 +28,7 @@ Convenience wrappers for common Jules operations. All wrappers auto-detect `uv` 
 ./commands/jules-ask "sessions/abc123" "What is the status?"
 ```
 
-All commands require `JULES_API_KEY` in the environment. `create` and `ask` additionally require Node.js + `npm install` + `npm run build:sdk`.
+All commands require `JULES_API_KEY` in the environment.
 
 ## Capability Reference
 

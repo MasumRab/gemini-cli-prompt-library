@@ -21,10 +21,10 @@ How each implementation layer maps to user-facing capabilities.
 | Get session | ✅ | ✅ | ✅ | ✅ | `session` | — |
 | Send message | ✅ | ✅ | ✅ | ✅ | `send` | `jules_recover.sh` |
 | Approve plan | ✅ | ✅ | ✅ | ✅ | `approve` | — |
-| **Create task** | **✅** | **✅** | **—** | **✅** | **`create`** | **`jules-create`** |
-| **Ask (sync)** | **✅** | **—** | **—** | **✅** | **`ask`** | **`jules-ask`** |
-| **Wait for state** | **✅** | **—** | **—** | **✅** | **`wait`** | **—** |
-| **Stream activities** | **—** | **—** | **—** | **✅** | **—** | **—** |
+| Create task | ✅ | ✅ | ✅ | ✅ | `create` | `jules-create` |
+| Ask (sync) | ✅ | — | ✅ | ✅ | `ask` | `jules-ask` |
+| Wait for state | ✅ | — | ✅ | ✅ | `wait` | — |
+| Stream activities | — | — | — | ✅ | — | — |
 | Archive/Unarchive | — | — | ✅ | — | `archive` | — |
 | Delete session | — | — | ✅ | — | `delete` | — |
 | List sources | — | — | ✅ | — | — | — |
@@ -39,7 +39,4 @@ How each implementation layer maps to user-facing capabilities.
 |-----------|-----|
 | Are in Gemini CLI | MCP Server (auto via extension) |
 | Want quick shell commands | Shell wrappers (`commands/jules-list`) |
-| Need to script in Python | Python REST (`JulesAPIClient`) |
-| Need sync Q&A or state waiting | SDK Bridge (`JulesSDKBridge`) or Unified CLI (`create`, `ask`, `wait`) |
-| Need archive/delete | Python REST or Unified CLI (`archive`, `delete`) |
-| Don't have Node.js | Python REST (no SDK features) |
+| Need to script in Python | Python REST (`JulesAPIClient`) — all features |

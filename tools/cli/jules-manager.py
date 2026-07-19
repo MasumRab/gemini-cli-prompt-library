@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Unified Jules CLI — delegates to REST API or SDK bridge as needed.
-
-Provides all capabilities from Gemini extension, shell wrappers, and Python tools
-in a single entry point.
+"""Unified Jules CLI — all operations via JulesAPIClient (REST API).
 
 Usage:
     uv run python3 -m tools.cli.jules-manager list [page_size]
@@ -21,15 +18,6 @@ import json
 import sys
 
 from tools.api.jules_api_client import JulesAPIClient
-
-
-def try_bridge():
-    try:
-        from tools.sdk.bridge import JulesSDKBridge
-        bridge = JulesSDKBridge()
-        return bridge
-    except (ImportError, FileNotFoundError):
-        return None
 
 
 def cmd_list(args):
@@ -62,30 +50,35 @@ def cmd_approve(args):
 
 
 def cmd_create(args):
-    bridge = try_bridge()
-    if not bridge:
-        print("SDK bridge not available. Install Node.js and run: npm install && npm run build:sdk")
-        sys.exit(1)
-    result = bridge.run(args.repo, args.branch, args.prompt)
+    client = JulesAPIClient()
+    source = f"sources/github/{args.repo}"
+    result = client.create_session(
+        prompt=args.prompt,
+        source=source,
+        starting_branch=args.branch,
+        title=args.title,
+    )
     print(json.dumps(result, indent=2))
 
 
 def cmd_ask(args):
-    bridge = try_bridge()
-    if not bridge:
-        print("SDK bridge not available.")
+    client = JulesAPIClient()
+    try:
+        reply = client.ask(args.session_id, args.question)
+        print(json.dumps(reply, indent=2))
+    except TimeoutError as e:
+        print(f"Timeout: {e}", file=sys.stderr)
         sys.exit(1)
-    reply = bridge.ask(args.session_id, args.question)
-    print(json.dumps(reply, indent=2))
 
 
 def cmd_wait(args):
-    bridge = try_bridge()
-    if not bridge:
-        print("SDK bridge not available.")
+    client = JulesAPIClient()
+    try:
+        result = client.wait_for_state(args.session_id, args.state)
+        print(json.dumps(result, indent=2))
+    except TimeoutError as e:
+        print(f"Timeout: {e}", file=sys.stderr)
         sys.exit(1)
-    result = bridge.wait_for(args.session_id, args.state)
-    print(json.dumps(result, indent=2))
 
 
 def cmd_archive(args):
@@ -117,16 +110,17 @@ def main():
     p_approve = sub.add_parser("approve", help="Approve plan")
     p_approve.add_argument("session_id")
 
-    p_create = sub.add_parser("create", help="Start a new task (requires SDK bridge)")
+    p_create = sub.add_parser("create", help="Create a new Jules session")
     p_create.add_argument("repo", help="owner/repo")
     p_create.add_argument("prompt")
     p_create.add_argument("--branch", default="main")
+    p_create.add_argument("--title")
 
-    p_ask = sub.add_parser("ask", help="Ask a question and wait for reply (requires SDK bridge)")
+    p_ask = sub.add_parser("ask", help="Send a message and wait for agent reply")
     p_ask.add_argument("session_id")
     p_ask.add_argument("question")
 
-    p_wait = sub.add_parser("wait", help="Wait for session state (requires SDK bridge)")
+    p_wait = sub.add_parser("wait", help="Poll until session reaches a state")
     p_wait.add_argument("session_id")
     p_wait.add_argument("state")
 

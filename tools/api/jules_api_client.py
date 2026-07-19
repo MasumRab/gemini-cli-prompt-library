@@ -253,6 +253,75 @@ class JulesAPIClient:
         return self._request(session_id, method="DELETE")
 
     # ------------------------------------------------------------------
+    # SDK-equivalent features (polling-based, no SDK required)
+    # ------------------------------------------------------------------
+
+    def wait_for_state(
+        self,
+        session_id: str,
+        target_state: str,
+        timeout: float = 300,
+        poll_interval: float = 2,
+    ) -> Dict[str, Any]:
+        """Poll session until it reaches a target state or timeout.
+
+        Args:
+            session_id: The Jules session ID.
+            target_state: Target state (e.g. ``"AWAITING_PLAN_APPROVAL"``,
+                ``"COMPLETED"``, ``"FAILED"``).
+            timeout: Max seconds to wait before raising.
+            poll_interval: Seconds between polls.
+
+        Returns:
+            Session dict at the target state.
+
+        Raises:
+            TimeoutError if the target state is not reached.
+        """
+        import time as _time
+        deadline = _time.monotonic() + timeout
+        while _time.monotonic() < deadline:
+            session = self.get_session(session_id)
+            state = session.get("state", "")
+            if state == target_state:
+                return session
+            if state in ("FAILED", "COMPLETED") and state != target_state:
+                return session
+            _time.sleep(poll_interval)
+        raise TimeoutError(
+            f"Session {session_id} did not reach {target_state} "
+            f"within {timeout}s (last state: {state})"
+        )
+
+    def ask(self, session_id: str, question: str, timeout: float = 120) -> Dict[str, Any]:
+        """Send a message and wait for the agent's reply.
+
+        Polls activities until an ``agentMessaged`` activity appears
+        that was created after our message.
+
+        Args:
+            session_id: The Jules session ID.
+            question: The message to send.
+            timeout: Max seconds to wait for a reply.
+
+        Returns:
+            The agent's reply activity dict.
+        """
+        import time as _time
+        before = _time.monotonic()
+        self.send_message(session_id, question)
+        deadline = before + timeout
+        while _time.monotonic() < deadline:
+            activities = list(self.list_activities(session_id, page_size=10))
+            for act in activities:
+                if "agentMessaged" in act:
+                    return act
+            _time.sleep(2)
+        raise TimeoutError(
+            f"Agent did not reply to {session_id} within {timeout}s"
+        )
+
+    # ------------------------------------------------------------------
     # Sources
     # ------------------------------------------------------------------
 
