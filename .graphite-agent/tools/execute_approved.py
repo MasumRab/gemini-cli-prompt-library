@@ -3,7 +3,6 @@
 
 import json
 import subprocess
-import sys
 from pathlib import Path
 
 AGENT_DIR = Path(__file__).parent.resolve()

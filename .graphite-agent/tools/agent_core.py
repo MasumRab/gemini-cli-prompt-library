@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-import json, subprocess, sys
+import sys
 from pathlib import Path
-from datetime import datetime, timezone
 
 # Ensure the local lib directory is on the path
 lib_path = Path(__file__).parent.resolve()
@@ -10,11 +9,7 @@ if str(lib_path) not in sys.path:
 
 from lib.io import rj, wj, now
 from lib.decisions import (
-    append_decision,
-    decisions,
     current_decisions,
-    nextid,
-    record_decision,
 )
 from lib.relationships import relationship_graph as lib_relationship_graph
 from lib.targets import (

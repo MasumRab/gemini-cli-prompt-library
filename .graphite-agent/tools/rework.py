@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import argparse, json
+import argparse
+import json
 
 p = argparse.ArgumentParser()
 p.add_argument("--branch", required=True)

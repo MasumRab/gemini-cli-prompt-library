@@ -1,4 +1,3 @@
-from .io import rj
 
 
 def relationship_graph(nodes, EXECUTABLE, BLOCKED):

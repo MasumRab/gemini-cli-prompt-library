@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import argparse, json
+import argparse
+import json
 from agent_core import snap, nodes, analyse_outputs, rj, OUTPUTS_DIR
 
 p = argparse.ArgumentParser()

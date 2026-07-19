@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from .io import rj, wj, now
+from .io import wj, now
 
 AGENT_DIR = Path(".graphite-agent")
 OUTPUTS_DIR = AGENT_DIR / "outputs"

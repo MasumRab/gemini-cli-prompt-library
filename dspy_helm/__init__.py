@@ -96,6 +96,12 @@ __all__ = [
     "BootstrapFewShotRandomSearchOptimizer",
     # Evaluation
     "Evaluator",
+    # Prompts
+    "TOMLPrompt",
+    "PromptRegistry",
+    "TOMLToDSPyConverter",
+    "load_commands_prompts",
+    "initialize_prompt_registry",
 ]
 
 

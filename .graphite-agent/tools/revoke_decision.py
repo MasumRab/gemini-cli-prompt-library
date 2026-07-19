@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import argparse, json
+import argparse
+import json
 from agent_core import revoke_decision
 
 p = argparse.ArgumentParser()
