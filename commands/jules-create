@@ -1,0 +1,9 @@
+#!/bin/bash
+set -euo pipefail
+
+if [ -z "${1:-}" ] || [ -z "${2:-}" ]; then
+    echo "Usage: $0 <owner/repo> <prompt> [--branch main]"
+    exit 1
+fi
+
+uv run python3 -m tools.cli.jules-manager create "$@"
