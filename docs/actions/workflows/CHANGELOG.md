@@ -106,3 +106,27 @@
 | `workingBranch` consideration | Not set (undocumented SDK field) | Not set — `startingBranch: baseRef` is sufficient; PR branch communicated via prompt | `workingBranch` has no documented behavior — would risk Jules working on wrong branch |
 
 **Intended outcome**: A conflict resolver that conserves sessions by watching for natural resolution first, re-checks after stability, and self-reconciles with concurrent pushes — all within a single session.
+
+---
+
+## Post-Review Plan Fixes (July 2026)
+
+### Bugs caught by CodeRabbit re-review (2026-07-20)
+
+| Bug | File | Fix |
+|-----|------|-----|
+| Duplicate `const fs` in prepare step | review, force-review, walkthrough | Removed duplicate `require('fs')`; kept the one before rules-loading loop |
+| `fs` used before declaration | force-review, walkthrough | Moved `const fs = require('fs')` before `fs.existsSync()` call |
+| Walkthrough split after verdict parse | review | Moved `mainReview` split logic before verdict regex match |
+| Missing `id: build` on step | address-comments | Added `id: build` to the step referenced by `steps.build.outputs` |
+| `.activities[]` null crash | review, force-review, walkthrough, rebuild | Guarded with `(.activities // [])[]` in jq expression |
+
+**Root cause**: Each edit added code to existing functions without re-verifying the complete function's ordering. Only a full-file review (not diff-based) catches these.
+
+### Workflows added
+
+| Workflow | Date | Purpose |
+|----------|------|---------|
+| `jules-pr-rebuild.yml` | 2026-07-20 | Two-session messy PR salvage: analysis comment + in-place clean |
+| `jules-pr-address-comments.yml` | 2026-07-20 | Auto-posts `@jules` on unresolved review threads for Jules PRs |
+| `jules-pr-automerge-label.yml` | 2026-07-20 | Hourly cron: labels Jules PRs with `automerge` for Mergify |

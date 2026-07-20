@@ -64,7 +64,7 @@ jobs:
               return;
             }
 
-            const { data: files } = await github.rest.pulls.listFiles({
+            const files = await github.paginate(github.rest.pulls.listFiles, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: pr.number,
@@ -118,6 +118,34 @@ jobs:
               } catch (e) { /* file is optional */ }
             }
 
+            // Check for existing walkthrough/summary from any tool
+            const walkthroughMarkers = [
+              '<!-- jules-walkthrough -->',
+              '<!-- walkthrough_start -->',
+              '<!-- This is an auto-generated comment: summarize by',
+              'sourcery-ai',
+              '## Review Guide',
+            ];
+            const hasWalkthrough = issueComments.some(c =>
+              walkthroughMarkers.some(m => c.body?.includes(m))
+            ) || reviewComments.some(c =>
+              walkthroughMarkers.some(m => c.body?.includes(m))
+            );
+
+            // Linked issue analysis
+            let linkedIssue = '';
+            const issueMatch = pr.body?.match(/(?:Fixes|Closes|Resolves|Fix|Close|Resolve)\s+#(\d+)/i);
+            if (issueMatch) {
+              try {
+                const { data: issue } = await github.rest.issues.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: parseInt(issueMatch[1]),
+                });
+                linkedIssue = `## Linked Issue\n\n#${issue.number}: ${issue.title}\n${issue.body?.slice(0, 1000) || ''}`;
+              } catch (e) { /* issue may be private or deleted */ }
+            }
+
             const prompt = [
               `## Code Review Request`,
               ``,
@@ -133,35 +161,106 @@ jobs:
               ...(priorFeedback ? [``, `## Existing PR comments`, priorFeedback] : []),
               ...(priorReviews ? [``, `## Existing review comments`, priorReviews] : []),
               ...(reviewRules ? [``, `## Repository-specific review rules`, reviewRules] : []),
+              ...(linkedIssue ? [``, linkedIssue] : []),
               ``,
               `## Your task`,
+              `This is a read-only code review. Do NOT create any pull requests or modify code.`,
               `Review the code changes using the file-list-first approach:`,
               `1. Review the file list above — identify relevant files`,
-              `2. For each relevant file, run: git diff origin/${baseRef}...HEAD -- <filepath>`,
-              `3. Read existing PR/review comments above — build on prior context`,
-              `4. Examine logic, security, edge cases, and consistency`,
+              `2. Group them by directory or thematic area (e.g., API, Database, Frontend)`,
+              `3. For each relevant file, run: git diff origin/${baseRef}...HEAD -- <filepath>`,
+              `4. Read existing PR/review comments above — build on prior context`,
+              `5. If a linked issue is provided, assess whether this PR addresses it`,
+              `6. Run security analysis using pre-installed tools:`,
+              `   - Python: \`ruff check --select ALL .\` (ruff is pre-installed)`,
+              `   - JavaScript: \`eslint .\` (eslint is pre-installed)`,
+              `   - Include any security findings classified by severity`,
+              `7. Examine logic, edge cases, and consistency`,
+              ...(hasWalkthrough ? [] : [
+                ``,
+                `## Bonus: PR Walkthrough`,
+                `No walkthrough exists for this PR. After completing the review above,`,
+                `add a walkthrough section after the REVIEW block. Include:`,
+                `1. **Narrative summary** — what changed and why (2-3 paragraphs)`,
+                `2. **Key architectural decisions** — why this approach was chosen`,
+                `3. **Diagrams** — \`\`\`mermaid blocks where applicable`,
+                `4. **Thematic groupings** — group changed files by area`,
+                `Separate the walkthrough from the review with:`,
+                `<!-- walkthrough_start -->`,
+                `## Walkthrough`,
+                `(walkthrough content here)`,
+                `<!-- walkthrough_end -->`,
+              ]),
               ``,
               `## Output format`,
-              `When done, produce a review with exactly these sections:`,
+              `Produce the review EXACTLY in this structure. Keep every element shown below`,
+              `including HTML comments and XML-like tags — they are required for parsing.`,
+              `Replace placeholders (e.g. <description>) with your analysis.`,
               ``,
-              `## Summary`,
-              `(1-2 paragraphs — what this PR does and whether it's sound)`,
-              ``,
-              `## Strengths`,
-              `- What's done well (point form)`,
-              ``,
-              `## Findings`,
-              `### [BLOCKING] - path/file.ext:line — description`,
-              `### [WARN] - path/file.ext:line — description`,
-              `### [NIT] - path/file.ext:line — description`,
-              ``,
-              `## Verdict`,
-              `VERDICT: approve | comment | block`,
-              ``,
-              `VERDICT must be exactly one of: approve, comment, block.`,
-              `- approve: no issues, looks good`,
-              `- comment: suggestions but OK to merge`,
-              `- block: must be addressed before merge`,
+              '## Summary',
+              '<1-2 paragraphs — what this PR does and whether it is sound>',
+              '',
+              '## Strengths',
+              '- <point form: what is done well>',
+              '',
+              '## Findings',
+              'If no issues found, write: "No significant findings."',
+              '',
+              '### 🔴 Critical - <path/file.ext:line> — <description>',
+              '<MUST fix before merge — production failure, security breach, data corruption. If suggestion:>',
+              '````',
+              '```suggestion',
+              '<replacement code>',
+              '```',
+              '````',
+              '<details>',
+              '<summary>🤖 AI reasoning</summary>',
+              '<brief explanation of the logic that produced this finding>',
+              '</details>',
+              '<!-- FINDING severity="critical" file="src/auth.py" line="42" reason="security" -->',
+              '',
+              '### 🟠 High - <path/file.ext:line> — <description>',
+              '<should fix — significant problems, bugs, performance degradation. If suggestion:>',
+              '````',
+              '```suggestion',
+              '<code>',
+              '```',
+              '````',
+              '<details><summary>🤖 AI reasoning</summary><explanation></details>',
+              '<!-- FINDING severity="high" file="..." line="..." reason="..." -->',
+              '',
+              '### 🟡 Medium - <path/file.ext:line> — <description>',
+              '<deviation from best practices, technical debt. Consider fixing.>',
+              '<!-- FINDING severity="medium" file="..." line="..." -->',
+              '',
+              '### 🟢 Low - <path/file.ext:line> — <description>',
+              '<minor, stylistic, typos, docs. Author discretion.>',
+              '<!-- FINDING severity="low" file="..." line="..." -->',
+              '',
+              '## Truncation',
+              'If nearing timeout or output exceeds length limits, truncate gracefully.',
+              'Summarize remaining issues. Set verdict block if critical remain, comment if minor.',
+              'Add: <!-- meta-prompt: truncated due to limits -->',
+              '',
+              '## Verdict',
+              '[VERDICT]: approve',
+              '',
+              '<!-- verdict: approve | comment | block -->',
+              '',
+              '<details>',
+              '<summary>🤖 Prompt for AI Agents — implement all per-line changes</summary>',
+              '',
+              'This PR review identified findings that need to be addressed.',
+              'Each per-line comment above includes a specific issue with a code suggestion.',
+              'To implement all changes:',
+              '1. Read each per-line comment with its ```suggestion block',
+              '2. Apply each suggestion at the specified file and line',
+              '3. Verify no regressions are introduced',
+              '4. Commit and push the fixes',
+              '',
+              'Or apply the jules-fix label to this PR for an automated fix PR.',
+              '',
+              '</details>',
             ].join('\n');
 
             const payload = {
@@ -172,7 +271,6 @@ jobs:
               },
             };
 
-            const fs = require('fs');
             fs.writeFileSync('/tmp/jules-review-payload.json', JSON.stringify(payload));
             core.setOutput('head_sha', headSha);
             core.info(`Payload written for PR #${pr.number}`);
@@ -189,10 +287,25 @@ jobs:
         env:
           JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
         run: |
-          RESPONSE=$(curl -sS --fail-with-body -X POST "https://jules.googleapis.com/v1alpha/sessions" \
+          set +e
+          RESPONSE=$(curl -sS --fail-with-body --connect-timeout 10 --max-time 60 -X POST "https://jules.googleapis.com/v1alpha/sessions" \
             -H "Content-Type: application/json" \
             -H "X-Goog-Api-Key: ${JULES_API_KEY}" \
             -d @/tmp/jules-review-payload.json)
+          CURL_EXIT=$?
+          set -e
+
+          if [ $CURL_EXIT -ne 0 ]; then
+            ERROR_CODE=$(echo "$RESPONSE" | jq -r '.error.code // "0"')
+            ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error.message // ""')
+            if [ "$ERROR_CODE" = "429" ] || [ "$ERROR_CODE" = "403" ] || echo "$ERROR_MSG" | grep -qiE 'quota|limit|exceeded|capacity|daily'; then
+              echo "quota_exhausted=true" >> "$GITHUB_OUTPUT"
+              echo "⚠️ Session cap reached — no session created."
+              exit 0
+            fi
+            echo "Error: $RESPONSE"
+            exit 1
+          fi
 
           SESSION_NAME=$(echo "$RESPONSE" | jq -r '.name // empty')
           SESSION_ID=$(echo "$RESPONSE" | jq -r '.id // empty')
@@ -207,8 +320,20 @@ jobs:
           echo "session_id=$SESSION_ID" >> "$GITHUB_OUTPUT"
           echo "Session created: $SESSION_NAME (state: $STATE)"
 
+      - name: Notify session cap reached
+        if: steps.create.outputs.quota_exhausted == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: '⚠️ **Jules session cap reached (15/day).**\n\nNo review was created for this PR. Re-open or sync the PR tomorrow to trigger auto-review again.\n\n<!-- jules-quota-exhausted -->',
+            });
+
       - name: Poll for completion
-        if: steps.prepare.outputs.skip != 'true'
+        if: steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_exhausted != 'true'
         id: poll
         shell: bash
         env:
@@ -231,7 +356,7 @@ jobs:
               ACTS=$(curl -sS --fail-with-body --connect-timeout 10 --max-time 60 \
                 "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}/activities?pageSize=100" \
                 -H "X-Goog-Api-Key: ${JULES_API_KEY}")
-              echo "$ACTS" | jq -r '[.activities[] | select(.agentMessaged.agentMessage != null)][-1].agentMessaged.agentMessage // "Review unavailable"' > /tmp/jules-review-output.txt
+              echo "$ACTS" | jq -r '[(.activities // [])[] | select(.agentMessaged.agentMessage != null)][-1].agentMessaged.agentMessage // "Review unavailable"' > /tmp/jules-review-output.txt
               echo "Session finished ($STATE)"
               exit 0
             fi
@@ -242,7 +367,7 @@ jobs:
           echo "Review timed out after $((MAX_ATTEMPTS * 15)) seconds." > /tmp/jules-review-output.txt
 
       - name: Post review and set commit status
-        if: steps.prepare.outputs.skip != 'true'
+        if: steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_exhausted != 'true'
         uses: actions/github-script@v7
         with:
           script: |
@@ -252,9 +377,23 @@ jobs:
             const headSha = '${{ steps.prepare.outputs.head_sha }}';
             const sessionState = '${{ steps.poll.outputs.session_state }}';
 
-            // Parse verdict from structured output
-            const verdictMatch = reviewText.match(/VERDICT:\s*(approve|comment|block)/i);
-            const verdict = verdictMatch ? verdictMatch[1].toLowerCase() : null;
+            // Split walkthrough from review before parsing
+            const wtStart = '<!-- walkthrough_start -->';
+            const wtEnd = '<!-- walkthrough_end -->';
+            const reviewTextParts = reviewText.split(wtStart);
+            const mainReview = reviewTextParts[0].trim();
+            let walkthroughText = '';
+            if (reviewTextParts.length > 1) {
+              const afterStart = reviewTextParts[1];
+              const endIdx = afterStart.indexOf(wtEnd);
+              walkthroughText = endIdx !== -1
+                ? afterStart.slice(0, endIdx).trim()
+                : afterStart.trim();
+            }
+
+            // Parse verdict from structured output (review portion only)
+            const verdictMatch = mainReview.match(/\[VERDICT\]:\s*(approve|comment|block)|<!--\s*verdict:\s*(approve|comment|block)\s*-->/i);
+            const verdict = verdictMatch ? (verdictMatch[1] || verdictMatch[2]).toLowerCase() : null;
 
             // Determine commit status — fail closed
             let statusState = 'failure';
@@ -290,25 +429,69 @@ jobs:
               core.warning(`Failed to set commit status: ${e.message}`);
             }
 
-            // Post PR review as a pull request review (not issue comment)
-            const body = `<!-- jules-pr-reviewer -->\n\n${reviewText}`;
+            // Parse per-line findings from Jules output
+            const findingRegex = /<!--\s*FINDING\s+severity="([^"]+)"\s+file="([^"]+)"\s+line="?(\d+)"?(?:\s+reason="([^"]*)")?\s*-->/gi;
+            const comments = [];
+            let findingMatch;
+            const seen = new Set();
+            while ((findingMatch = findingRegex.exec(mainReview)) !== null) {
+              const [, severity, file, line, reason] = findingMatch;
+              const key = `${file}:${line}`;
+              if (seen.has(key)) continue;
+              seen.add(key);
+
+              const heading = `### ${severity === 'critical' ? '🔴' : severity === 'high' ? '🟠' : severity === 'medium' ? '🟡' : '🟢'} ${severity.charAt(0).toUpperCase() + severity.slice(1)} - ${file}:${line}`;
+              const startIdx = mainReview.indexOf(heading);
+              const endIdx = mainReview.indexOf('<!-- FINDING', startIdx + 1);
+              const findingBody = startIdx !== -1
+                ? mainReview.slice(startIdx, endIdx !== -1 ? endIdx : undefined).trim()
+                : '';
+
+              comments.push({
+                path: file,
+                line: parseInt(line),
+                body: findingBody || `${heading}\n\nSee review summary for details.`,
+              });
+            }
+
+            // Post PR review (review portion only) with per-line comments
+            const body = `<!-- jules-pr-reviewer -->\n\n${mainReview}`;
 
             try {
-              await github.rest.pulls.createReview({
+              const reviewParams = {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: prNumber,
                 commit_id: headSha,
                 event: 'COMMENT',
                 body,
-              });
-              core.info('Review posted as PR review');
+              };
+              if (comments.length > 0) {
+                reviewParams.comments = comments;
+              }
+              await github.rest.pulls.createReview(reviewParams);
+              core.info(`Review posted with ${comments.length} per-line comments`);
             } catch (e) {
-              core.warning(`PR review failed, falling back to issue comment: ${e.message}`);
+              core.warning(`PR review failed, falling back to batch comment: ${e.message}`);
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: prNumber,
                 body,
               });
+            }
+
+            // Post walkthrough as separate issue comment if generated
+            if (walkthroughText) {
+              try {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  body: `<!-- jules-walkthrough -->\n\n${walkthroughText}`,
+                });
+                core.info('Walkthrough posted as issue comment');
+              } catch (e) {
+                core.warning(`Failed to post walkthrough: ${e.message}`);
+              }
             }

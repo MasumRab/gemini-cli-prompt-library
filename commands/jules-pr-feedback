@@ -1,0 +1,16 @@
+#!/bin/bash
+set -euo pipefail
+
+if [ -z "${GITHUB_TOKEN:-}" ] && [ -z "${GH_TOKEN:-}" ]; then
+    echo "Error: GITHUB_TOKEN or GH_TOKEN is not set." >&2
+    exit 1
+fi
+
+if command -v uv &>/dev/null && [ -f "tools/sessions/post_pr_feedback.py" ]; then
+    exec uv run python -m tools.sessions.post_pr_feedback "$@"
+elif command -v python3 &>/dev/null && [ -f "tools/sessions/post_pr_feedback.py" ]; then
+    exec PYTHONPATH=. python3 -m tools.sessions.post_pr_feedback "$@"
+else
+    echo "Error: post_pr_feedback.py requires the Python tool suite." >&2
+    exit 1
+fi

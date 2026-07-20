@@ -1,0 +1,111 @@
+{
+  "summary": "Session tracking files created for all AWAITING_USER_FEEDBACK sessions",
+  "generated_at": "2026-07-20T00:00:00Z",
+  "total_awaiting_feedback": 5,
+  "sessions": [
+    {
+      "session_id": "14823980629961743161",
+      "title": "Bolt: Autonomous Performance Optimization Agent",
+      "state": "AWAITING_USER_FEEDBACK",
+      "last_update": "2026-07-16T04:58:40Z",
+      "repo": "MasumRab/EmailIntelligence",
+      "key_issue": "CI failures fixed (eslint config mismatch, unused imports). Awaiting approval to create PR or continue performance optimization.",
+      "tracking_file": "14823980629961743161_bolt_perf_optimization.json",
+      "recommended_action": "send_guidance",
+      "urgency": "high",
+      "agent_type": "scheduled-performance"
+    },
+    {
+      "session_id": "3620294950430015682",
+      "title": "Bolt ⚡ - Performance Optimization Agent",
+      "state": "AWAITING_USER_FEEDBACK",
+      "last_update": "2026-07-15T23:03:51Z",
+      "repo": "MasumRab/EmailIntelligence",
+      "key_issue": "Fixed 4 failing CI checks (lint-only: unused imports/undefined names). Awaiting approval for PR.",
+      "tracking_file": "3620294950430015682_bolt_perf_optimization_2.json",
+      "recommended_action": "send_guidance",
+      "urgency": "high",
+      "agent_type": "scheduled-performance"
+    },
+    {
+      "session_id": "6003660157445494667",
+      "title": "Sentinel: Security-Focused Codebase Protection & Vulnerability Patching",
+      "state": "AWAITING_USER_FEEDBACK",
+      "last_update": "2026-07-15T20:55:09Z",
+      "repo": "MasumRab/EmailIntelligence",
+      "key_issue": "Fixed insecure deserialization (joblib.load) but fix restricts custom model loading paths. Code review flagged this. Need decision on approach.",
+      "tracking_file": "6003660157445494667_sentinel_security_patching.json",
+      "recommended_action": "send_guidance",
+      "urgency": "high",
+      "agent_type": "scheduled-security"
+    },
+    {
+      "session_id": "14862791250094253007",
+      "title": "Sentinel: Autonomous Security Remediation Agent",
+      "state": "AWAITING_USER_FEEDBACK",
+      "last_update": "2026-07-15T16:59:48Z",
+      "repo": "MasumRab/EmailIntelligence",
+      "key_issue": "Security scans (bandit, semgrep) clean - no critical/high issues found. Agent needs direction on security focus area.",
+      "tracking_file": "14862791250094253007_sentinel_security_remediation.json",
+      "recommended_action": "send_guidance",
+      "urgency": "medium",
+      "agent_type": "scheduled-security"
+    },
+    {
+      "session_id": "11122169390008224115",
+      "title": "Fix Failing CI Checks in MasumRab/EmailIntelligence",
+      "state": "AWAITING_USER_FEEDBACK",
+      "last_update": "2026-07-15T16:36:01Z",
+      "repo": "MasumRab/EmailIntelligence",
+      "key_issue": "Fixed CI failures in PR #730 (imports, undefined exceptions, model manager errors). Awaiting PR creation approval.",
+      "tracking_file": "11122169390008224115_ci_fix_pr730.json",
+      "recommended_action": "send_guidance",
+      "urgency": "medium",
+      "agent_type": "ci-fix"
+    }
+  ],
+  "older_sessions_still_awaiting": [
+    {
+      "session_id": "3921006696662628935",
+      "title": "Fix failing CI checks in MasumRab/EmailIntelligence",
+      "state": "AWAITING_USER_FEEDBACK",
+      "last_update": "2026-07-08T16:24:48Z",
+      "repo": "MasumRab/EmailIntelligence",
+      "key_issue": "Investigating PR #727 - E402 lint errors (imports not at top). Older session (12 days).",
+      "tracking_file": "3921006696662628935_ci_fix_pr727.json",
+      "recommended_action": "investigate_or_close",
+      "urgency": "low",
+      "agent_type": "ci-fix"
+    },
+    {
+      "session_id": "6551222913502603426",
+      "title": "Fix failing CI checks in MasumRab/EmailIntelligence",
+      "state": "AWAITING_USER_FEEDBACK",
+      "last_update": "2026-06-23T14:31:47Z",
+      "repo": "MasumRab/EmailIntelligence",
+      "key_issue": "Working on PR #724 frontend CI (npm ci failures). Very old session (27 days).",
+      "tracking_file": "NOT_CREATED",
+      "recommended_action": "investigate_or_close",
+      "urgency": "low",
+      "agent_type": "ci-fix"
+    },
+    {
+      "session_id": "8042179028824925778",
+      "title": "Sentinel: Security-Focused Vulnerability Remediation Agent",
+      "state": "AWAITING_USER_FEEDBACK",
+      "last_update": "2026-06-22T03:53:33Z",
+      "repo": "MasumRab/EmailIntelligence",
+      "key_issue": "Fixed insecure deserialization in nlp_engine.py and model_registry.py. Old session (28 days).",
+      "tracking_file": "NOT_CREATED",
+      "recommended_action": "investigate_or_close",
+      "urgency": "low",
+      "agent_type": "scheduled-security"
+    }
+  ],
+  "next_steps": [
+    "For high-urgency sessions: Use ./commands/jules-ask <session_id> \"your guidance\" to respond",
+    "For medium-urgency: Review tracking files, decide on PR creation or direction change",
+    "For low-urgency/old sessions: Check if still relevant, may need to archive or restart",
+    "All tracking files stored in: /home/masum/github/remote/jules/session_tracking/"
+  ]
+}
