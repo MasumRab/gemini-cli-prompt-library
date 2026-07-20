@@ -8,35 +8,86 @@ name: Jules PR Conflict Resolution
 on:
   pull_request:
     types: [labeled]
+  issue_comment:
+    types: [created]
+
+concurrency:
+  group: jules-resolve-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
 
 jobs:
   resolve:
-    if: github.event.label.name == 'jules-resolve'
+    if: >
+      github.event.label.name == 'jules-resolve' ||
+      (github.event_name == 'issue_comment' &&
+       startsWith(github.event.comment.body, '/jules-resolve'))
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       pull-requests: write
-      contents: read
+      contents: write
     steps:
+      - name: Consume label — prevent duplicate sessions
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              name: 'jules-resolve',
+            }).catch(() => core.info('Label already consumed'));
+
+      - name: Parse slash command context
+        if: github.event_name == 'issue_comment'
+        id: parse
+        shell: bash
+        run: |
+          CUSTOM=$(echo "${{ github.event.comment.body }}" | sed 's|^/jules-resolve ||')
+          echo "custom_instructions=$CUSTOM" >> "$GITHUB_OUTPUT"
+
+      - name: Fork check
+        id: fork-check
+        shell: bash
+        env:
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPO: ${{ github.event.pull_request.base.repo.full_name }}
+        run: |
+          if [ "$HEAD_REPO" != "$BASE_REPO" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.fork-check.outputs.skip != 'true'
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
       - name: Fetch base branch
+        if: steps.fork-check.outputs.skip != 'true'
         shell: bash
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
-          BASE_REF="${{ github.event.pull_request.base.ref }}"
           git fetch origin "$BASE_REF"
 
       - name: Check for merge conflicts
         id: conflict-check
         shell: bash
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
-          BASE_REF="${{ github.event.pull_request.base.ref }}"
-          if git merge-tree HEAD "origin/$BASE_REF" 2>/dev/null | grep -q "^@@"; then
-            echo "has_conflicts=true" >> "$GITHUB_OUTPUT"
-          else
+          if git merge-tree --write-tree HEAD "origin/$BASE_REF"; then
             echo "has_conflicts=false" >> "$GITHUB_OUTPUT"
+          else
+            rc=$?
+            case $rc in
+              1) echo "has_conflicts=true" >> "$GITHUB_OUTPUT" ;;
+              *) echo "has_conflicts=error" >> "$GITHUB_OUTPUT"; exit 1 ;;
+            esac
           fi
 
       - name: No conflicts — notify
@@ -52,7 +103,7 @@ jobs:
             });
 
       - name: Watch source PR for stability before resolving
-        if: steps.conflict-check.outputs.has_conflicts == 'true'
+        if: steps.fork-check.outputs.skip != 'true' && steps.conflict-check.outputs.has_conflicts == 'true'
         id: watch
         uses: actions/github-script@v7
         with:
@@ -129,21 +180,25 @@ jobs:
             core.setOutput('head_sha', lastSha);
 
       - name: Fetch latest and re-check conflicts
-        if: steps.conflict-check.outputs.has_conflicts == 'true'
+        if: steps.fork-check.outputs.skip != 'true' && steps.conflict-check.outputs.has_conflicts == 'true'
         id: recheck
         shell: bash
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
-          HEAD_REF="${{ github.event.pull_request.head.ref }}"
-          BASE_REF="${{ github.event.pull_request.base.ref }}"
-
           git fetch origin "$HEAD_REF"
           git reset --hard "origin/$HEAD_REF"
           git fetch origin "$BASE_REF"
 
-          if git merge-tree HEAD "origin/$BASE_REF" 2>/dev/null | grep -q "^@@"; then
-            echo "has_conflicts=true" >> "$GITHUB_OUTPUT"
-          else
+          if git merge-tree --write-tree HEAD "origin/$BASE_REF"; then
             echo "has_conflicts=false" >> "$GITHUB_OUTPUT"
+          else
+            rc=$?
+            case $rc in
+              1) echo "has_conflicts=true" >> "$GITHUB_OUTPUT" ;;
+              *) echo "has_conflicts=error" >> "$GITHUB_OUTPUT"; exit 1 ;;
+            esac
           fi
 
       - name: Conflicts resolved — no session needed
@@ -167,15 +222,22 @@ jobs:
       - name: Build payload with full PR context
         if: steps.recheck.outputs.has_conflicts == 'true'
         id: build
+        env:
+          CUSTOM_INSTRUCTIONS: ${{ steps.parse.outputs.custom_instructions }}
         uses: actions/github-script@v7
         with:
           script: |
+            if ('${{ steps.fork-check.outputs.skip }}' === 'true') {
+              core.setOutput('skip', 'true');
+              return;
+            }
+
             const pr = context.payload.pull_request;
             const baseRef = pr.base.ref;
             const headRef = pr.head.ref;
             const headSha = '${{ steps.watch.outputs.head_sha }}';
 
-            const { data: files } = await github.rest.pulls.listFiles({
+            const files = await github.paginate(github.rest.pulls.listFiles, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: pr.number,
@@ -193,13 +255,13 @@ jobs:
               per_page: 20,
               direction: 'desc',
             });
-            const { data: issueComments } = await github.rest.issues.listComments({
+            const allIssueComments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr.number,
-              per_page: 20,
-              direction: 'desc',
+              per_page: 100,
             });
+            const issueComments = allIssueComments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
             const skipMarkers = ['<!-- jules-pr-reviewer -->', '<!-- jules-auto-fix -->', '<!-- jules-resolve -->'];
             const priorFeedback = issueComments
@@ -216,7 +278,22 @@ jobs:
               .map(c => '- ' + c.path + ':' + c.line + ' — ' + (c.body.slice(0, 300) || ''))
               .join('\n');
 
-            const prompt = [
+            const fs = require('fs');
+
+            // Load repo-specific instructions if present
+            let reviewRules = '';
+            for (const path of ['.jules/INSTRUCTIONS.md', '.github/jules-review-rules.md']) {
+              try {
+                if (fs.existsSync(path)) {
+                  reviewRules = fs.readFileSync(path, 'utf8');
+                  break;
+                }
+              } catch (e) { /* file is optional */ }
+            }
+
+            const customInstr = process.env.CUSTOM_INSTRUCTIONS || '';
+            let prompt = [
+              ...(customInstr ? ['## User instructions', customInstr, ''] : []),
               '## PR Conflict Resolution',
               '',
               'Repository: ' + context.repo.owner + '/' + context.repo.repo,
@@ -230,31 +307,46 @@ jobs:
               JSON.stringify(fileSummary, null, 2),
               ...(priorFeedback ? ['', '## Existing PR discussion', priorFeedback] : []),
               ...(priorReviews ? ['', '## Existing review comments', priorReviews] : []),
+              ...(reviewRules ? ['', '## Repository-specific instructions', reviewRules] : []),
               '',
               '## Your task',
+              'You will re-implement changes and create a new PR targeting ' + baseRef + '.',
               'The source branch ' + headRef + ' (SHA: ' + headSha + ') has conflicts with the current state of ' + baseRef + '.',
               '1. Checkout ' + baseRef,
               '2. Review each changed file — understand what the PR intended to change',
               '3. Re-implement those changes on top of current ' + baseRef,
               '4. If the intent is unclear from the diff, check the existing comments above',
               '5. If a change was intentionally obsoleted by later base changes, skip it',
-              '6. After making and committing the fix locally, check for late-arriving commits:',
-              '   run `git fetch origin ' + headRef + ' && git log --oneline HEAD..origin/' + headRef + '`',
-              '   If new commits arrived: `git rebase origin/' + headRef + '`, resolve any new conflicts,',
-              '   verify the re-implementation still holds, and amend if needed.',
+               '6. After making and committing the fix locally, check for late-arriving commits:',
+               '   run `git fetch origin ' + headRef + ' && git log --oneline HEAD..origin/' + headRef + '`',
+               '   If new commits arrived: `git rebase origin/' + headRef + '`, resolve any new conflicts,',
+               '   verify the re-implementation still holds, and amend if needed.',
+             ].join('\n');
+
+            const prCreateCmd = [
+              '7. Create a new PR with gh (no AUTO_CREATE_PR — you do it):',
+              '   - Push your branch: git push origin HEAD',
+              '   - Then run:',
+              '     gh pr create \\',
+              '       --base ' + baseRef + ' \\',
+              '       --head "$(git rev-parse --abbrev-ref HEAD)" \\',
+              '       --title "fix: resolve conflicts from #' + pr.number + '" \\',
+              '       --body "Resolves conflicts from #' + pr.number + '\\n\\n[Describe the resolution]" \\',
+              '       --label jules-resolve',
+              '   - Verify the label was applied: gh pr view --json labels',
+              '   - Ensure CI checks pass',
               '',
               'Use `git diff ' + baseRef + '...origin/' + headRef + ' -- <filepath>` to inspect original PR intent.',
               'The repo is cloned in your sandbox with full history.',
             ].join('\n');
+            prompt += '\n\n' + prCreateCmd;
 
-            const fs = require('fs');
             const payload = {
               prompt,
               sourceContext: {
                 source: 'sources/github/' + context.repo.owner + '/' + context.repo.repo,
                 githubRepoContext: { startingBranch: baseRef },
               },
-              automationMode: 'AUTO_CREATE_PR',
             };
             fs.writeFileSync('/tmp/jules-resolve-payload.json', JSON.stringify(payload));
             core.setOutput('head_sha', headSha);
@@ -267,21 +359,57 @@ jobs:
         env:
           JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
         run: |
-          RESPONSE=$(curl -s -X POST "https://jules.googleapis.com/v1alpha/sessions" \
+          set +e
+          RESPONSE=$(curl -sS --fail-with-body --connect-timeout 10 --max-time 60 -X POST "https://jules.googleapis.com/v1alpha/sessions" \
             -H "Content-Type: application/json" \
             -H "X-Goog-Api-Key: ${JULES_API_KEY}" \
             -d @/tmp/jules-resolve-payload.json)
+          CURL_EXIT=$?
+          set -e
 
-          SESSION_ID=$(echo "$RESPONSE" | jq -r '.id // empty')
-          if [ -z "$SESSION_ID" ]; then
+          if [ $CURL_EXIT -ne 0 ]; then
+            ERROR_CODE=$(echo "$RESPONSE" | jq -r '.error.code // "0"')
+            ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error.message // ""')
+            if [ "$ERROR_CODE" = "429" ] || [ "$ERROR_CODE" = "403" ] || echo "$ERROR_MSG" | grep -qiE 'quota|limit|exceeded|capacity|daily'; then
+              echo "quota_exhausted=true" >> "$GITHUB_OUTPUT"
+              echo "⚠️ Session cap reached — no session created."
+              exit 0
+            fi
             echo "Error: $RESPONSE"
             exit 1
           fi
+
+          SESSION_NAME=$(echo "$RESPONSE" | jq -r '.name // empty')
+          SESSION_ID=$(echo "$RESPONSE" | jq -r '.id // empty')
+          if [ -z "$SESSION_NAME" ] && [ -z "$SESSION_ID" ]; then
+            echo "Error: $RESPONSE"
+            exit 1
+          fi
+          echo "session_name=$SESSION_NAME" >> "$GITHUB_OUTPUT"
           echo "session_id=$SESSION_ID" >> "$GITHUB_OUTPUT"
-          echo "Session created: $SESSION_ID"
+          echo "Session created: ${SESSION_NAME:-sessions/${SESSION_ID}}"
+
+      - name: Notify session cap reached
+        if: steps.create.outputs.quota_exhausted == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const commentId = Number('${{ steps.watch.outputs.comment_id }}');
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: commentId,
+              body: [
+                '<!-- jules-resolve -->',
+                '⚠️ **Jules session cap reached (15/day).**',
+                'Re-apply the `jules-resolve` label tomorrow to retry.',
+                '',
+                '<!-- jules-quota-exhausted -->',
+              ].join('\n'),
+            });
 
       - name: Update resolution notice with session info
-        if: steps.recheck.outputs.has_conflicts == 'true'
+        if: steps.recheck.outputs.has_conflicts == 'true' && steps.create.outputs.quota_exhausted != 'true'
         uses: actions/github-script@v7
         with:
           script: |

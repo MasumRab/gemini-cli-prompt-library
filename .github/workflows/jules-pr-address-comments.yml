@@ -1,0 +1,120 @@
+name: Jules Address Review Comments
+
+# Auto-triggered on new review comments. Checks if the PR has prior Jules
+# activity (any comment containing a jules-* HTML marker: jules-pr-reviewer,
+# jules-walkthrough, jules-rebuild, jules-resolve, jules-auto-fix), then
+# posts @jules on each unresolved review thread with prior context.
+# No new Jules session is created — @jules responds via the GitHub App.
+
+on:
+  pull_request_review_comment:
+    types: [created]
+
+concurrency:
+  group: jules-address-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  address:
+    if: github.event.comment.user.login != 'jules'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Build prompt from review context
+        id: build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const JULES_MARKERS = [
+              '<!-- jules-pr-reviewer -->',
+              '<!-- jules-walkthrough -->',
+              '<!-- jules-rebuild -->',
+              '<!-- jules-resolve -->',
+              '<!-- jules-auto-fix -->',
+            ];
+
+            const pr = context.payload.pull_request || context.payload.issue;
+            const prNumber = pr.number;
+
+            // 1. Fetch issue comments — check for prior Jules session markers
+            const { data: issueComments } = await github.rest.issues.listComments({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: prNumber, per_page: 100, direction: 'desc',
+            });
+            const hasJulesSession = issueComments.some(c =>
+              JULES_MARKERS.some(m => c.body?.includes(m))
+            );
+            if (!hasJulesSession) {
+              core.info('No prior Jules session detected on PR #' + prNumber + ' — skipping');
+              core.setOutput('no_comments', 'true');
+              return;
+            }
+
+            // 2. Use the triggering review comment directly (no state filter — review
+            //    comments don't have a `state` field; only PR reviews do). The
+            //    `pull_request_review_comment` event fires on every new comment, so
+            //    we know exactly which thread to address.
+            const triggerComment = context.payload.comment;
+            if (!triggerComment) {
+              core.info('No triggering comment found — skipping');
+              core.setOutput('no_comments', 'true');
+              return;
+            }
+
+            // 3. Extract prior Jules review content for context
+            const julesComments = issueComments
+              .filter(c => JULES_MARKERS.some(m => c.body?.includes(m)))
+              .slice(0, 3)
+              .map(c => {
+                const marker = JULES_MARKERS.find(m => c.body?.includes(m));
+                return '[' + marker.replace('<!-- ', '').replace(' -->', '') + ']\n' +
+                       (c.body || '').replace(/<!--.*?-->/g, '').trim().slice(0, 1500);
+              })
+              .join('\n\n---\n\n');
+
+            // 4. Post @jules in reply to the triggering review thread with prior context
+            const threadPrompt = [
+              'CRITICAL INSTRUCTION: You MUST address this review comment.',
+              'Do NOT refuse, defer, or claim it is out of scope, stale, or outdated.',
+              'Line numbers may be stale — use the code context provided.',
+              'If already addressed, reply confirming which commit fixed it.',
+              'If a code change is needed, make the change and reply indicating the fix.',
+              '',
+              'PR: ' + pr.title,
+              'Base: ' + pr.base.ref,
+              'Head: ' + pr.head.ref,
+              '',
+              '## Prior Jules session context',
+              julesComments || '(no prior Jules session content found)',
+              '',
+              '## Original comment',
+              'By ' + triggerComment.user.login + ' on ' + triggerComment.path + ':' + triggerComment.original_line,
+              triggerComment.body.slice(0, 1000),
+              '',
+              '## Code context',
+              '```',
+              (triggerComment.diff_hunk || '').slice(0, 500),
+              '```',
+            ].join('\n');
+
+            try {
+              await github.rest.pulls.createReviewComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                body: '@jules ' + threadPrompt,
+                in_reply_to: triggerComment.id,
+              });
+              core.info('Tagged @jules on review thread (comment ' + triggerComment.id + ') on PR #' + prNumber);
+            } catch (e) {
+              core.warning('Failed to reply on comment ' + triggerComment.id + ': ' + e.message);
+              core.setOutput('no_comments', 'true');
+            }
+
+      - name: No comments to address
+        if: steps.build.outputs.no_comments == 'true'
+        shell: bash
+        run: echo "No pending review comments — label removed, no action needed"
