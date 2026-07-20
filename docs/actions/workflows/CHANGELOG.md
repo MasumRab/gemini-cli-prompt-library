@@ -130,3 +130,25 @@
 | `jules-pr-rebuild.yml` | 2026-07-20 | Two-session messy PR salvage: analysis comment + in-place clean |
 | `jules-pr-address-comments.yml` | 2026-07-20 | Auto-posts `@jules` on unresolved review threads for Jules PRs |
 | `jules-pr-automerge-label.yml` | 2026-07-20 | Hourly cron: labels Jules PRs with `automerge` for Mergify |
+
+### JULES_WORKFLOW_REVIEW_PLAN Phase 1 — Restore executable core paths (2026-07-21)
+
+| Fix | Status | Details |
+|-----|--------|---------|
+| Conflict detector `errexit` bug | **Fixed** | Replaced `git merge-tree ...; case $?` with `if ... then ... else rc=$?; case $rc ... fi` pattern (both checks). Exit 1 from merge-tree no longer kills the script before `case $?` can write `has_conflicts=true`. |
+| fs TDZ in auto-fix and resolve-conflicts | **Fixed** | Moved `const fs = require('fs')` before `fs.existsSync()` in both files. Rules were silently failing to load (`ReferenceError` swallowed by try/catch). |
+| Address-comments no-op | **Fixed** | Replaced broken `rc.state === 'PENDING'` filter (review comments don't have `state`). Now uses GraphQL `pullRequest.reviewThreads` with `isResolved` filter — captures all unresolved threads. |
+| Comment ordering | **Fixed** | Replaced unsupported `direction: desc` on `issues.listComments` with `github.paginate` + `.sort(created_at desc)`. Was silently returning oldest comments first. |
+| Trusted-base rules loading | **Fixed** | Replaced `fs.existsSync`/`fs.readFileSync` from PR head checkout with `repos.getContent(path, ref: baseRef)` via GitHub API. Rules now load from the trusted base branch, eliminating prompt injection via PR-head policy files. |
+
+### JULES_WORKFLOW_REVIEW_PLAN Phase 2+4 — Hardening, safety, and bounded transport (2026-07-21)
+
+| Fix | Status | Details |
+|-----|--------|---------|
+| `timeout-minutes` | **Added** | review/force-review/walkthrough=30m, auto-fix=15m, resolve=45m, rebuild jobs=30m, address/automerge=5m |
+| `always()` on final reporting | **Added** | review, force-review, walkthrough now run post step under `always()` with `steps.prepare.conclusion == 'success'` guard. Failures post error comments instead of silently vanishing. |
+| Fork detection before checkout | **Added** | Added `Fork check` step before `actions/checkout` in all 7 jobs. Fork detection was previously after checkout (wasted runner time) or missing entirely (resolve-conflicts, rebuild rebuild job). |
+| Rebuild job gating | **Added** | Exposed analyze job outputs (`skip`, `session_state`). Rebuild job requires `skip != 'true' && session_state == 'COMPLETED'` — no write session on fork/skip/timeout analysis. |
+| Automerge provenance | **Fixed** | Branch-name trust (`pr.head.ref.startsWith('jules-')`) was a spoof vector — fork authors control branch names. Replaced with `pr.user.login === 'jules' && pr.head.repo.full_name === sameRepo`. Added `github.paginate` for open PRs (was limited to first 100). |
+| Quota error handling | **Added** (templates) | try session creation → on 429/403 post "cap reached" comment → exit 0 instead of failing |
+| Slash commands + CUSTOM_INSTRUCTIONS | **Added** (templates) | All 5 label workflows now support `issue_comment` trigger with `/jules-*` command parsing and custom instructions injection |

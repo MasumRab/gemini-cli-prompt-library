@@ -2,6 +2,55 @@
 
 ## Core Patterns
 
+### Pattern E: Trusted-Base Rules Loading
+```yaml
+steps:
+  - name: Load repo rules from base branch
+    uses: actions/github-script@v7
+    with:
+      script: |
+        let reviewRules = '';
+        for (const path of ['.jules/INSTRUCTIONS.md', '.github/jules-review-rules.md']) {
+          try {
+            const { data } = await github.rest.repos.getContent({
+              owner: context.repo.owner, repo: context.repo.repo,
+              path, ref: '${{ github.event.pull_request.base.ref }}',
+            });
+            reviewRules = Buffer.from(data.content, 'base64').toString('utf8');
+            break;
+          } catch (e) { /* file is optional */ }
+        }
+```
+**Use when:** Any workflow that loads repository-specific instructions. Always use `ref: baseRef` (base branch) NOT the local checkout (PR head) to prevent prompt injection via PR-head policy files.
+
+### Pattern F: GraphQL Review Thread Resolution Check
+```yaml
+steps:
+  - name: Fetch unresolved review threads
+    uses: actions/github-script@v7
+    with:
+      script: |
+        const query = `
+          query($owner: String!, $repo: String!, $pr: Int!) {
+            repository(owner: $owner, name: $repo) {
+              pullRequest(number: $pr) {
+                reviewThreads(first: 100) {
+                  nodes {
+                    isResolved
+                    comments(first: 100) { nodes { id body author { login } path diffHunk originalLine } }
+                  }
+                }
+              }
+            }
+          }`;
+        const result = await github.graphql(query, { owner, repo, pr });
+        const threads = result.repository.pullRequest.reviewThreads.nodes || [];
+        const unresolved = threads.filter(t => !t.isResolved);
+```
+**Use when:** address-comments workflow or any logic that needs to distinguish resolved from unresolved review threads. REST API review comments have no `state` field — this is the only reliable approach.
+
+---
+
 ### Pattern A: Branch Viability Check
 ```yaml
 steps:
@@ -85,13 +134,14 @@ steps:
 | 18 | **Token bloat** (large files) | **A** — detect generated/large files before payload | Filter `linguist-generated=true` files, skip binaries | **C** — note which files were excluded; Pattern 4 |
 | 19 | **Concurrent commits** mid-review | **A** — compare original `headSha` vs current PR head | Pin review to original commit, not floating HEAD | **C** — warn that review may be stale; Pattern 6 |
 | 20 | **GitHub API rate limits** | None | Batch comments into single call | **C** — fall back to markdown list in body |
-| 21 | **Fork secrets unavailable** | **A** — `isFork` check | None — skip session | Skip with explanatory comment |
-| 22 | **Malformed HTML comments** | None — content quality | Forgiving regex with variations; Pattern 5 | **C** — dump raw output if parsing fails |
-| 18 | **Token bloat** (large files) | **A** — detect generated/large files before payload | Filter `linguist-generated=true` files, skip binaries | **C** — note which files were excluded |
-| 19 | **Concurrent commits** mid-review | **A** — compare original `headSha` vs current PR head | Pin review to original commit not floating HEAD | **C** — warn that review may be stale |
-| 20 | **GitHub API rate limits** | None | Batch comments into single call | **C** — fall back to markdown list in body |
-| 21 | **Fork secrets unavailable** | **A** — `isFork` check | None — skip session | Skip with explanatory comment |
+| 21 | **Fork secrets unavailable** | **A/F** — fork check before checkout | None — skip session | Skip with explanatory comment |
 | 22 | **Malformed HTML comments** | None — content quality | Forgiving regex with variations | **C** — dump raw output if parsing fails |
+| 23 | **Unbounded runtime** | **timeout-minutes** | Explicit job timeout (15-45m) | None — workflow ends |
+| 24 | **Post step silently skips** | `always()` guard | Run post under `always()` with conclusion check | Failure comment instead of silence |
+| 25 | **Rebuild on failed analysis** | Job-level output gating | Rebuild requires `session_state == COMPLETED` | Manual re-apply label |
+| 26 | **Automerge branch spoof** | **E** — provenance check | Require jules user + same-repo | None — fork branch attack blocked |
+| 27 | **Address-comments misses threads** | **F** — GraphQL thread resolution | `reviewThreads(isResolved: false)` instead of REST state filter | All unresolved threads captured |
+| 28 | **Wrong comment ordering** | Paginate + sort `created_at` desc | Replace `direction: desc` with explicit sort | Newest comments always used |
 
 ---
 

@@ -71,11 +71,18 @@
 ### 10. Fork PR with skip_forks not set
 | Symptom | Workflow tries to checkout `pr.head.ref` which doesn't exist in the base repo |
 |---------|-----------------------------------------------------------------------------|
-| Detection | `isFork` check at the start of each prepare step |
-| Status | **FIXED** — all workflows now check `isFork` and skip early |
+| Detection | `isFork` check run before checkout as a dedicated step |
+| Status | **FIXED** — all 7 jobs with checkout now have `Fork check` step before `actions/checkout`. Git operations are gated on `steps.fork-check.outputs.skip != 'true'`. |
 | Monitoring | Track fork PR attempts — they indicate users want review from forks |
 
-### 11. PR body/review comments contain prompt injection
+### 11. Rules loaded from PR head (prompt injection via policy files)
+| Symptom | `.jules/INSTRUCTIONS.md` from PR head branch (potentially malicious) is injected into the privileged Jules prompt |
+|---------|--------------------------------------------------------------------------------------------------------------------|
+| Detection | `fs.existsSync` loads from the local checkout, which is the PR head |
+| Status | **FIXED** — all 6 rules-loading locations now use `repos.getContent(path, ref: baseRef)` via GitHub API. Rules load from the trusted base branch. |
+| Safe fallback | If the file doesn't exist on the base branch, the exception is caught and rules remain empty (no rules → no injection). |
+
+### 12. PR body/review comments contain prompt injection
 | Symptom | PR body includes instructions that override the workflow prompt |
 |---------|---------------------------------------------------------------|
 | Detection | Subtle — Jules follows the injected instructions instead of the workflow |
@@ -161,6 +168,41 @@
 | Detection | Human review — no automated detection |
 | Current handling | None |
 | Recommendation | Track false positive rate per PR via manual feedback. Could use `@jules` comments to correct. |
+
+### 23. Unbounded workflow runtime (no timeout-minutes)
+| Symptom | Workflow runs for hours if session hangs or polling gets stuck |
+|---------|---------------------------------------------------------------|
+| Status | **FIXED** — all 8 workflows now have explicit `timeout-minutes` (15-45m depending on job) |
+| Monitoring | If a workflow times out, review the poll step: either the session was stuck or the polling interval is too short |
+
+### 24. Post step silently skips on failure
+| Symptom | Session fails, but no error comment is posted — review appears to never have run |
+|---------|--------------------------------------------------------------------------------|
+| Status | **FIXED** — review, force-review, and walkthrough now use `always()` on their post step with `steps.prepare.conclusion == 'success'` guard |
+| Safety | Post step still skips if prepare step itself failed (no payload → nothing to post) |
+
+### 25. Rebuild write phase runs on failed analysis
+| Symptom | Analysis session times out or fails, but rebuild job still creates a write session with "Analysis unavailable" as context |
+|---------|------------------------------------------------------------------------------------------------------------------------|
+| Status | **FIXED** — analyze job now exposes `session_state` as output; rebuild job requires `session_state == 'COMPLETED'` |
+| Recovery | Re-apply `jules-rebuild` label to restart |
+
+### 26. Automerge spoofed by branch naming
+| Symptom | Fork PR creates `jules-*` branch, automerge labels it, Mergify auto-merges malicious code |
+|---------|-------------------------------------------------------------------------------------------|
+| Status | **FIXED** — automerge now requires `pr.user.login === 'jules'` AND `pr.head.repo.full_name === sameRepo`. Branch-name trust removed entirely. |
+
+### 27. Address-comments misses threads (REST state filter)
+| Symptom | `@jules` never tagged on review threads because `rc.state === 'PENDING'` always returns empty |
+|---------|----------------------------------------------------------------------------------------------|
+| Status | **FIXED** — replaced REST review-comment filter with GraphQL `pullRequest.reviewThreads(isResolved: false)`. Now captures all unresolved threads. |
+| Remaining risk | Only first 100 threads and 100 comments per thread are fetched. Extremely large reviews may miss threads. |
+
+### 28. Comment ordering returns oldest-first (direction: desc unsupported)
+| Symptom | PR context in prompts contains oldest comments instead of newest |
+|---------|----------------------------------------------------------------|
+| Status | **FIXED** — replaced `direction: desc` on `issues.listComments` with `github.paginate` + `.sort(created_at desc)` |
+| Performance impact | `github.paginate` may make multiple API calls for PRs with 100+ comments. For typical PRs this is one call. |
 
 ## Recovery Strategies
 
