@@ -3,6 +3,8 @@ name: Jules Auto-Fix
 on:
   pull_request:
     types: [labeled]
+  issue_comment:
+    types: [created]
 
 concurrency:
   group: jules-fix-${{ github.event.pull_request.number }}
@@ -10,13 +12,18 @@ concurrency:
 
 jobs:
   fix:
-    if: github.event.label.name == 'jules-fix'
+    if: >
+      github.event.label.name == 'jules-fix' ||
+      (github.event_name == 'issue_comment' &&
+       startsWith(github.event.comment.body, '/jules-fix'))
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: write
       pull-requests: write
     steps:
       - name: Consume label — prevent duplicate sessions
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
@@ -26,27 +33,50 @@ jobs:
               issue_number: context.payload.pull_request.number,
               name: 'jules-fix',
             }).catch(() => core.info('Label already consumed'));
+      - name: Parse slash command context
+        if: github.event_name == 'issue_comment'
+        id: parse
+        shell: bash
+        run: |
+          CUSTOM=$(echo "${{ github.event.comment.body }}" | sed 's|^/jules-fix ||')
+          echo "custom_instructions=$CUSTOM" >> "$GITHUB_OUTPUT"
+
+      - name: Fork check
+        id: fork-check
+        shell: bash
+        env:
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPO: ${{ github.event.pull_request.base.repo.full_name }}
+        run: |
+          if [ "$HEAD_REPO" != "$BASE_REPO" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.fork-check.outputs.skip != 'true'
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 1
 
       - name: Prepare prompt and payload
         id: prepare
+        env:
+          CUSTOM_INSTRUCTIONS: ${{ steps.parse.outputs.custom_instructions }}
         uses: actions/github-script@v7
         with:
           script: |
+            if ('${{ steps.fork-check.outputs.skip }}' === 'true') {
+              core.setOutput('skip', 'true');
+              return;
+            }
+
             const pr = context.payload.pull_request;
             const baseRef = pr.base.ref;
             const headRef = pr.head.ref;
             const headSha = pr.head.sha;
             const body = pr.body || '';
-            const isFork = pr.head.repo.full_name !== pr.base.repo.full_name;
-
-            if (isFork) {
-              core.setOutput('skip', 'true');
-              return;
-            }
 
             const match = body.match(/^Target:\s*(\S+)/m);
             const target = (match ? match[1] : baseRef);
@@ -81,13 +111,13 @@ jobs:
               per_page: 20,
               direction: 'desc',
             });
-            const { data: issueComments } = await github.rest.issues.listComments({
+            const allIssueComments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr.number,
-              per_page: 20,
-              direction: 'desc',
+              per_page: 100,
             });
+            const issueComments = allIssueComments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
             // Priority 1: review comments (line-level, actionable) — newest 10
             const priorReviews = reviewComments
@@ -106,6 +136,8 @@ jobs:
               })
               .join('\n\n');
 
+            const fs = require('fs');
+
             // Load repo-specific instructions if present
             let reviewRules = '';
             for (const path of ['.jules/INSTRUCTIONS.md', '.github/jules-review-rules.md']) {
@@ -117,7 +149,9 @@ jobs:
               } catch (e) { /* file is optional */ }
             }
 
+            const customInstr = process.env.CUSTOM_INSTRUCTIONS || '';
             let prompt = [
+              ...(customInstr ? [`## User instructions`, customInstr, ``] : []),
               `Fix the issue described in this PR. You will create a new PR with the fix.`,
               ...(reviewRules ? [``, `## Repository-specific instructions`, reviewRules] : []),
               ``,
@@ -186,7 +220,6 @@ jobs:
             };
 
             // Write payload to file for the curl step
-            const fs = require('fs');
             fs.writeFileSync('/tmp/jules-payload.json', JSON.stringify(payload));
             core.setOutput('target_branch', target);
             core.info(`Payload written to /tmp/jules-payload.json`);
