@@ -190,7 +190,7 @@
 ### 26. Automerge spoofed by branch naming
 | Symptom | Fork PR creates `jules-*` branch, automerge labels it, Mergify auto-merges malicious code |
 |---------|-------------------------------------------------------------------------------------------|
-| Status | **FIXED** — automerge now requires `pr.user.login === 'jules'` AND `pr.head.repo.full_name === sameRepo`. Branch-name trust removed entirely. |
+| Status | **FIXED** — automerge now requires `pr.user.login === 'google-labs-jules[bot]'` AND `pr.head.repo.full_name === sameRepo`. Branch-name trust removed entirely. |
 
 ### 27. Address-comments misses threads (REST state filter)
 | Symptom | `@jules` never tagged on review threads because `rc.state === 'PENDING'` always returns empty |
