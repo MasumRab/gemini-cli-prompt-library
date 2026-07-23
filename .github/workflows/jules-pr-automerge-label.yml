@@ -33,7 +33,7 @@ jobs:
               // Only label PRs from the Jules bot account in the same repository.
               // Branch-name matching is rejected as a spoof vector — a fork author
               // controls their branch name and can trivially create a jules-* branch.
-              if (pr.user.login === 'jules' && pr.head.repo.full_name === sameRepo) {
+              if (pr.user.login === 'google-labs-jules[bot]' && pr.head.repo.full_name === sameRepo) {
                 const { data: labels } = await github.rest.issues.listLabelsOnIssue({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
