@@ -1,0 +1,17 @@
+plugin:
+  id: "camel-society"
+  version: "1.0.0"
+  type: "moa_orchestrator"
+
+capabilities:
+  - parallel_execution
+  - adversarial_review
+
+exports:
+  - camel_society_instance
+
+supports:
+  dspy: true
+  moa: true
+  benchmark: true
+  critic: true

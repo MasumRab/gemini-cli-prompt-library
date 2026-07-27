@@ -1,0 +1,18 @@
+plugin:
+  id: "letta-stateful"
+  version: "1.0.0"
+  type: "memory_injector"
+
+capabilities:
+  - workflow_memory
+  - persona_injection
+
+exports:
+  - letta_tools
+  - core_blocks
+
+supports:
+  dspy: true
+  moa: false
+  benchmark: true
+  critic: true

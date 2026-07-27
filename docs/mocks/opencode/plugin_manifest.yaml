@@ -1,0 +1,18 @@
+plugin:
+  id: "opencode-headless"
+  version: "1.0.0"
+  type: "static_exporter"
+
+capabilities:
+  - shell_execution
+  - recursive_subtasking
+
+exports:
+  - AGENTS.md
+  - cli_wrappers
+
+supports:
+  dspy: true
+  moa: false
+  benchmark: true
+  critic: true

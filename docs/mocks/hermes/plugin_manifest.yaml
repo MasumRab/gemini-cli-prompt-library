@@ -1,0 +1,13 @@
+plugin:
+  id: "hermes-schema"
+  version: "1.0.0"
+  type: "static_exporter"
+capabilities:
+  - function_calling
+exports:
+  - json_schema_definitions
+supports:
+  dspy: true
+  moa: false
+  benchmark: true
+  critic: false

@@ -1,0 +1,18 @@
+plugin:
+  id: "mcp-server"
+  version: "1.0.0"
+  type: "active_daemon"
+
+capabilities:
+  - execute_tool
+  - read_resource
+  - recursive_workflow
+
+exports:
+  - json_rpc_server
+
+supports:
+  dspy: true
+  moa: true
+  benchmark: true
+  critic: true

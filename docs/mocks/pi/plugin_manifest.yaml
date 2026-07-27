@@ -1,0 +1,13 @@
+plugin:
+  id: "ohmypi-registry"
+  version: "1.0.0"
+  type: "ecosystem_wrapper"
+capabilities:
+  - global_discovery
+exports:
+  - registry_entry
+supports:
+  dspy: true
+  moa: true
+  benchmark: true
+  critic: true

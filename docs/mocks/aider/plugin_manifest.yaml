@@ -1,0 +1,13 @@
+plugin:
+  id: "aider-sandbox"
+  version: "1.0.0"
+  type: "workspace_injector"
+capabilities:
+  - context_injection
+exports:
+  - aider_conf_yaml
+supports:
+  dspy: true
+  moa: false
+  benchmark: true
+  critic: false
