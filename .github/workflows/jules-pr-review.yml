@@ -388,7 +388,10 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const reviewText = fs.readFileSync('/tmp/jules-review-output.txt', 'utf8');
+            let reviewText = '';
+            if (fs.existsSync('/tmp/jules-review-output.txt')) {
+              reviewText = fs.readFileSync('/tmp/jules-review-output.txt', 'utf8');
+            }
             const prNumber = context.payload.pull_request.number;
             const headSha = '${{ steps.prepare.outputs.head_sha }}';
             const sessionState = '${{ steps.poll.outputs.session_state }}';
