@@ -1,0 +1,368 @@
+diff --git a/GEMINI.md b/GEMINI.md
+index fdf1a56..bd77ddf 100644
+--- a/GEMINI.md
++++ b/GEMINI.md
+@@ -146,3 +146,4 @@ If a user asks about prompts:
+ - Teach prompt engineering principles
+
+ Remember: You're not just executing prompts, you're helping users become better at prompting.
++- **dspy-install**: DSPy Integration Installer
+diff --git a/QWEN.md b/QWEN.md
+index 5392319..f81dbf9 100644
+--- a/QWEN.md
++++ b/QWEN.md
+@@ -146,3 +146,4 @@ If a user asks about prompts:
+ - Teach prompt engineering principles
+
+ Remember: You're not just executing prompts, you're helping users become better at prompting.
++- **dspy-install**: DSPy Integration Installer
+diff --git a/commands/prompts/improve.toml b/commands/prompts/improve.toml
+index a094400..12937cf 100644
+--- a/commands/prompts/improve.toml
++++ b/commands/prompts/improve.toml
+@@ -10,48 +10,49 @@ Your goal is to analyze a user's request and a list of available commands, and t
+ **AVAILABLE COMMANDS:**
+ ```json
+ {
+-  "/testing:coverage-analysis": "Test Coverage Analysis",
+-  "/testing:edge-cases": "Enhanced Edge Case Identification with DSPy Reasoning",
+-  "/testing:generate-unit-tests": "Enhanced Unit Test Generation with DSPy Reasoning",
+-  "/testing:generate-e2e-tests": "Enhanced End-to-End Test Generation with DSPy Reasoning",
+-  "/writing:technical-blog": "Write Technical Blog Post",
+-  "/writing:email": "Draft Professional Email",
+-  "/writing:presentation": "Create Presentation Outline",
+-  "/code-review:refactor": "Enhanced Code Refactoring Suggestions with DSPy Reasoning",
++  "/architecture:design-api": "Design RESTful API",
++  "/architecture:design-database": "Enhanced Database Schema Design with DSPy Relational Reasoning",
++  "/architecture:design-patterns": "Enhanced Design Pattern Suggestions with DSPy Pattern Matching",
++  "/architecture:system-design": "Enhanced System Architecture Design with DSPy Complex Reasoning",
+   "/code-review:best-practices": "Enhanced Best Practices Code Review with DSPy Best Practice Enforcement",
+   "/code-review:performance": "Enhanced Performance Code Review with DSPy Reasoning",
++  "/code-review:refactor": "Enhanced Code Refactoring Suggestions with DSPy Reasoning",
++  "/code-review:scheduled-codebase-audit": "Analyse all documents in the codebase, predict issues, suggest future improvements, and insert detailed TODOs throughout the code.",
+   "/code-review:security": "Enhanced Security Code Review with DSPy Reasoning",
+-  "/architecture:system-design": "Enhanced System Architecture Design with DSPy Complex Reasoning",
+-  "/architecture:design-patterns": "Enhanced Design Pattern Suggestions with DSPy Pattern Matching",
+-  "/architecture:design-api": "Design RESTful API",
+-  "/architecture:design-database": "Enhanced Database Schema Design with DSPy Relational Reasoning",
+-  "/workflows:smart-refactor": "Smart Refactoring Workflow",
+-  "/workflows:prompt-refinery": "Enhanced Prompt Refinery Workflow with DSPy Integration",
+-  "/workflows:comprehensive-test": "Enhanced Comprehensive Testing Strategy with DSPy Integration",
+-  "/workflows:feature-dev": "Linear Feature Development Workflow",
+-  "/docs:write-readme": "Enhanced README Generation with DSPy Content Structuring",
++  "/debugging:debug-error": "Debug Error",
++  "/debugging:performance-profile": "Performance Profiling & Optimization",
++  "/debugging:trace-issue": "Enhanced Root Cause Analysis with DSPy Reasoning",
+   "/docs:write-api-docs": "Generate API Documentation",
+-  "/docs:write-contributing": "Generate CONTRIBUTING.md",
+   "/docs:write-changelog": "Generate Changelog",
+-  "/prompts:evaluate": "Enhanced Prompt QA & Evaluation with DSPy Integration",
+-  "/prompts:test-case": "Enhanced Prompt Test Case Generation with DSPy Test Case Generation",
+-  "/prompts:improve": "Intelligent Command Dispatcher",
+-  "/prompts:dspy-refine": "Enhanced DSPy Code Refinement with Optimization",
+-  "/prompts:refine": "Refine Prompt",
++  "/docs:write-contributing": "Generate CONTRIBUTING.md",
++  "/docs:write-readme": "Enhanced README Generation with DSPy Content Structuring",
++  "/learning:compare-tech": "Enhanced Technology Comparison with DSPy Multi-Faceted Analysis",
++  "/learning:eli5": "Explain Like I'm 5 (ELI5)",
++  "/learning:explain-concept": "Explain technical concepts with comprehensive, multi-level explanations",
++  "/learning:roadmap": "Create Learning Roadmap",
+   "/prompts:best-practices": "Enhanced Prompt Engineering Best Practices with DSPy Best Practice Enforcement",
+-  "/prompts:system-improver": "Enhanced System Improvement Meta-Prompt with DSPy System Analysis",
+-  "/prompts:dspy-cookbook": "Enhanced DSPy Cookbook Integration with Pattern Optimization",
+-  "/prompts:dspy-convert": "Enhanced DSPy Conversion with Optimization",
+   "/prompts:create-template": "Create Prompt Template",
++  "/prompts:dspy-convert": "Enhanced DSPy Conversion with Optimization",
++  "/prompts:dspy-cookbook": "Enhanced DSPy Cookbook Integration with Pattern Optimization",
++  "/prompts:dspy-install": "DSPy Integration Installer",
+   "/prompts:dspy-qa": "Enhanced DSPy QA Reviewer with Optimization Assessment",
+-  "/debugging:debug-error": "Debug Error",
+-  "/debugging:trace-issue": "Enhanced Root Cause Analysis with DSPy Reasoning",
+-  "/debugging:performance-profile": "Performance Profiling & Optimization",
+-  "/learning:eli5": "Explain Like I'm 5 (ELI5)",
+-  "/learning:compare-tech": "Enhanced Technology Comparison with DSPy Multi-Faceted Analysis",
+-  "/learning:explain_concept": "Explain Technical Concept",
+-  "/learning:roadmap": "Create Learning Roadmap",
+-  "/learning:explain-concept": "Explain Technical Concept"
++  "/prompts:dspy-refine": "Enhanced DSPy Code Refinement with Optimization",
++  "/prompts:evaluate": "Simulate QA review for a prompt with DSPy optimization, scoring it and suggesting improvements",
++  "/prompts:improve": "Intelligent Command Dispatcher",
++  "/prompts:refine": "Refine an existing prompt based on feedback and requirements",
++  "/prompts:system-improver": "Analyze and improve the prompt engineering system itself with DSPy system analysis",
++  "/prompts:test-case": "Generate test cases to verify prompt performance with DSPy integration",
++  "/testing:coverage-analysis": "Test Coverage Analysis",
++  "/testing:edge-cases": "Enhanced Edge Case Identification with DSPy Reasoning",
++  "/testing:generate-e2e-tests": "Enhanced End-to-End Test Generation with DSPy Reasoning",
++  "/testing:generate-unit-tests": "Enhanced Unit Test Generation with DSPy Reasoning",
++  "/workflows:comprehensive-test": "Enhanced Comprehensive Testing Strategy with DSPy Integration",
++  "/workflows:feature-dev": "Linear Feature Development Workflow",
++  "/workflows:prompt-refinery": "Enhanced workflow for the prompt engineering lifecycle with DSPy integration",
++  "/workflows:smart-refactor": "Smart Refactoring Workflow",
++  "/writing:email": "Draft Professional Email",
++  "/writing:presentation": "Create comprehensive presentation outlines with audience analysis and structure",
++  "/writing:technical-blog": "Write Technical Blog Post"
+ }
+ ```
+
+diff --git a/commands_manifest.json b/commands_manifest.json
+index d7921a8..c2228c9 100644
+--- a/commands_manifest.json
++++ b/commands_manifest.json
+@@ -1,44 +1,45 @@
+ {
+-  "/testing:coverage-analysis": "Test Coverage Analysis",
+-  "/testing:edge-cases": "Enhanced Edge Case Identification with DSPy Reasoning",
+-  "/testing:generate-unit-tests": "Enhanced Unit Test Generation with DSPy Reasoning",
+-  "/testing:generate-e2e-tests": "Enhanced End-to-End Test Generation with DSPy Reasoning",
+-  "/writing:technical-blog": "Write Technical Blog Post",
+-  "/writing:email": "Draft Professional Email",
+-  "/writing:presentation": "Create Presentation Outline",
+-  "/code-review:refactor": "Enhanced Code Refactoring Suggestions with DSPy Reasoning",
++  "/architecture:design-api": "Design RESTful API",
++  "/architecture:design-database": "Enhanced Database Schema Design with DSPy Relational Reasoning",
++  "/architecture:design-patterns": "Enhanced Design Pattern Suggestions with DSPy Pattern Matching",
++  "/architecture:system-design": "Enhanced System Architecture Design with DSPy Complex Reasoning",
+   "/code-review:best-practices": "Enhanced Best Practices Code Review with DSPy Best Practice Enforcement",
+   "/code-review:performance": "Enhanced Performance Code Review with DSPy Reasoning",
++  "/code-review:refactor": "Enhanced Code Refactoring Suggestions with DSPy Reasoning",
++  "/code-review:scheduled-codebase-audit": "Analyse all documents in the codebase, predict issues, suggest future improvements, and insert detailed TODOs throughout the code.",
+   "/code-review:security": "Enhanced Security Code Review with DSPy Reasoning",
+-  "/architecture:system-design": "Enhanced System Architecture Design with DSPy Complex Reasoning",
+-  "/architecture:design-patterns": "Enhanced Design Pattern Suggestions with DSPy Pattern Matching",
+-  "/architecture:design-api": "Design RESTful API",
+-  "/architecture:design-database": "Enhanced Database Schema Design with DSPy Relational Reasoning",
+-  "/workflows:smart-refactor": "Smart Refactoring Workflow",
+-  "/workflows:prompt-refinery": "Enhanced Prompt Refinery Workflow with DSPy Integration",
+-  "/workflows:comprehensive-test": "Enhanced Comprehensive Testing Strategy with DSPy Integration",
+-  "/workflows:feature-dev": "Linear Feature Development Workflow",
+-  "/docs:write-readme": "Enhanced README Generation with DSPy Content Structuring",
++  "/debugging:debug-error": "Debug Error",
++  "/debugging:performance-profile": "Performance Profiling & Optimization",
++  "/debugging:trace-issue": "Enhanced Root Cause Analysis with DSPy Reasoning",
+   "/docs:write-api-docs": "Generate API Documentation",
+-  "/docs:write-contributing": "Generate CONTRIBUTING.md",
+   "/docs:write-changelog": "Generate Changelog",
+-  "/prompts:evaluate": "Enhanced Prompt QA & Evaluation with DSPy Integration",
+-  "/prompts:test-case": "Enhanced Prompt Test Case Generation with DSPy Test Case Generation",
+-  "/prompts:improve": "Intelligent Command Dispatcher",
+-  "/prompts:dspy-refine": "Enhanced DSPy Code Refinement with Optimization",
+-  "/prompts:refine": "Refine Prompt",
++  "/docs:write-contributing": "Generate CONTRIBUTING.md",
++  "/docs:write-readme": "Enhanced README Generation with DSPy Content Structuring",
++  "/learning:compare-tech": "Enhanced Technology Comparison with DSPy Multi-Faceted Analysis",
++  "/learning:eli5": "Explain Like I'm 5 (ELI5)",
++  "/learning:explain-concept": "Explain technical concepts with comprehensive, multi-level explanations",
++  "/learning:roadmap": "Create Learning Roadmap",
+   "/prompts:best-practices": "Enhanced Prompt Engineering Best Practices with DSPy Best Practice Enforcement",
+-  "/prompts:system-improver": "Enhanced System Improvement Meta-Prompt with DSPy System Analysis",
+-  "/prompts:dspy-cookbook": "Enhanced DSPy Cookbook Integration with Pattern Optimization",
+-  "/prompts:dspy-convert": "Enhanced DSPy Conversion with Optimization",
+   "/prompts:create-template": "Create Prompt Template",
++  "/prompts:dspy-convert": "Enhanced DSPy Conversion with Optimization",
++  "/prompts:dspy-cookbook": "Enhanced DSPy Cookbook Integration with Pattern Optimization",
++  "/prompts:dspy-install": "DSPy Integration Installer",
+   "/prompts:dspy-qa": "Enhanced DSPy QA Reviewer with Optimization Assessment",
+-  "/debugging:debug-error": "Debug Error",
+-  "/debugging:trace-issue": "Enhanced Root Cause Analysis with DSPy Reasoning",
+-  "/debugging:performance-profile": "Performance Profiling & Optimization",
+-  "/learning:eli5": "Explain Like I'm 5 (ELI5)",
+-  "/learning:compare-tech": "Enhanced Technology Comparison with DSPy Multi-Faceted Analysis",
+-  "/learning:explain_concept": "Explain Technical Concept",
+-  "/learning:roadmap": "Create Learning Roadmap",
+-  "/learning:explain-concept": "Explain Technical Concept"
++  "/prompts:dspy-refine": "Enhanced DSPy Code Refinement with Optimization",
++  "/prompts:evaluate": "Simulate QA review for a prompt with DSPy optimization, scoring it and suggesting improvements",
++  "/prompts:improve": "Intelligent Command Dispatcher",
++  "/prompts:refine": "Refine an existing prompt based on feedback and requirements",
++  "/prompts:system-improver": "Analyze and improve the prompt engineering system itself with DSPy system analysis",
++  "/prompts:test-case": "Generate test cases to verify prompt performance with DSPy integration",
++  "/testing:coverage-analysis": "Test Coverage Analysis",
++  "/testing:edge-cases": "Enhanced Edge Case Identification with DSPy Reasoning",
++  "/testing:generate-e2e-tests": "Enhanced End-to-End Test Generation with DSPy Reasoning",
++  "/testing:generate-unit-tests": "Enhanced Unit Test Generation with DSPy Reasoning",
++  "/workflows:comprehensive-test": "Enhanced Comprehensive Testing Strategy with DSPy Integration",
++  "/workflows:feature-dev": "Linear Feature Development Workflow",
++  "/workflows:prompt-refinery": "Enhanced workflow for the prompt engineering lifecycle with DSPy integration",
++  "/workflows:smart-refactor": "Smart Refactoring Workflow",
++  "/writing:email": "Draft Professional Email",
++  "/writing:presentation": "Create comprehensive presentation outlines with audience analysis and structure",
++  "/writing:technical-blog": "Write Technical Blog Post"
+ }
+\ No newline at end of file
+diff --git a/dspy_integration/framework/evaluation/evaluate.py b/dspy_integration/framework/evaluation/evaluate.py
+index ffe891c..365614f 100644
+--- a/dspy_integration/framework/evaluation/evaluate.py
++++ b/dspy_integration/framework/evaluation/evaluate.py
+@@ -1,4 +1,5 @@
+ """Evaluation module."""
++
+ from dspy_helm.eval.evaluate import Evaluator
+
+ __all__ = ["Evaluator"]
+diff --git a/dspy_integration/framework/optimizers/base.py b/dspy_integration/framework/optimizers/base.py
+index 99531bc..1a3d99c 100644
+--- a/dspy_integration/framework/optimizers/base.py
++++ b/dspy_integration/framework/optimizers/base.py
+@@ -1,4 +1,5 @@
+ """Base optimizer classes."""
++
+ from dspy_helm.optimizers.base import BaseOptimizer, OptimizerRegistry
+
+ __all__ = ["BaseOptimizer", "OptimizerRegistry"]
+diff --git a/dspy_integration/framework/optimizers/bootstrap.py b/dspy_integration/framework/optimizers/bootstrap.py
+index 504941c..003b0d1 100644
+--- a/dspy_integration/framework/optimizers/bootstrap.py
++++ b/dspy_integration/framework/optimizers/bootstrap.py
+@@ -1,4 +1,5 @@
+ """BootstrapFewShot optimizer."""
++
+ from dspy_helm.optimizers.bootstrap import BootstrapFewShotOptimizer
+
+ __all__ = ["BootstrapFewShotOptimizer"]
+diff --git a/dspy_integration/framework/optimizers/mipro_v2.py b/dspy_integration/framework/optimizers/mipro_v2.py
+index 71acb14..641e1ca 100644
+--- a/dspy_integration/framework/optimizers/mipro_v2.py
++++ b/dspy_integration/framework/optimizers/mipro_v2.py
+@@ -1,4 +1,5 @@
+ """MIPROv2 optimizer."""
++
+ from dspy_helm.optimizers.mipro_v2 import MIPROv2Optimizer
+
+ __all__ = ["MIPROv2Optimizer"]
+diff --git a/dspy_integration/framework/providers/base.py b/dspy_integration/framework/providers/base.py
+index 2be5b95..6298242 100644
+--- a/dspy_integration/framework/providers/base.py
++++ b/dspy_integration/framework/providers/base.py
+@@ -1,4 +1,5 @@
+ """Base provider."""
++
+ from dspy_helm.providers.base import Provider as BaseProvider
+
+ __all__ = ["BaseProvider"]
+diff --git a/dspy_integration/framework/providers/gemini.py b/dspy_integration/framework/providers/gemini.py
+index b137edb..0aa7adf 100644
+--- a/dspy_integration/framework/providers/gemini.py
++++ b/dspy_integration/framework/providers/gemini.py
+@@ -1,4 +1,5 @@
+ """Gemini provider."""
++
+ from dspy_helm.providers.gemini import Provider as GeminiProvider
+
+ __all__ = ["GeminiProvider"]
+diff --git a/dspy_integration/framework/providers/groq.py b/dspy_integration/framework/providers/groq.py
+index 1d1f436..4c62d02 100644
+--- a/dspy_integration/framework/providers/groq.py
++++ b/dspy_integration/framework/providers/groq.py
+@@ -1,4 +1,5 @@
+ """Groq provider."""
++
+ from dspy_helm.providers.groq import Provider as GroqProvider
+
+ __all__ = ["GroqProvider"]
+diff --git a/dspy_integration/framework/providers/huggingface.py b/dspy_integration/framework/providers/huggingface.py
+index e7b70bb..8f367e4 100644
+--- a/dspy_integration/framework/providers/huggingface.py
++++ b/dspy_integration/framework/providers/huggingface.py
+@@ -1,4 +1,5 @@
+ """Huggingface provider."""
++
+ from dspy_helm.providers.huggingface import Provider as HuggingfaceProvider
+
+ __all__ = ["HuggingfaceProvider"]
+diff --git a/dspy_integration/framework/providers/opencode.py b/dspy_integration/framework/providers/opencode.py
+index 6d59677..f5e8542 100644
+--- a/dspy_integration/framework/providers/opencode.py
++++ b/dspy_integration/framework/providers/opencode.py
+@@ -1,4 +1,5 @@
+ """Opencode provider."""
++
+ from dspy_helm.providers.opencode import Provider as OpencodeProvider
+
+ __all__ = ["OpencodeProvider"]
+diff --git a/dspy_integration/framework/providers/opencode_zen.py b/dspy_integration/framework/providers/opencode_zen.py
+index 1565334..66a3c24 100644
+--- a/dspy_integration/framework/providers/opencode_zen.py
++++ b/dspy_integration/framework/providers/opencode_zen.py
+@@ -1,4 +1,5 @@
+ """Opencode Zen provider."""
++
+ from dspy_helm.providers.opencode_zen import Provider as OpencodeZenProvider
+
+ __all__ = ["OpencodeZenProvider"]
+diff --git a/dspy_integration/framework/providers/openrouter.py b/dspy_integration/framework/providers/openrouter.py
+index bad6d21..a45e09d 100644
+--- a/dspy_integration/framework/providers/openrouter.py
++++ b/dspy_integration/framework/providers/openrouter.py
+@@ -1,4 +1,5 @@
+ """Openrouter provider."""
++
+ from dspy_helm.providers.openrouter import Provider as OpenrouterProvider
+
+ __all__ = ["OpenrouterProvider"]
+diff --git a/dspy_integration/framework/providers/puter.py b/dspy_integration/framework/providers/puter.py
+index 721c842..68d8cf1 100644
+--- a/dspy_integration/framework/providers/puter.py
++++ b/dspy_integration/framework/providers/puter.py
+@@ -1,4 +1,5 @@
+ """Puter provider."""
++
+ from dspy_helm.providers.puter import Provider as PuterProvider
+
+ __all__ = ["PuterProvider"]
+diff --git a/dspy_integration/framework/providers/qwen.py b/dspy_integration/framework/providers/qwen.py
+index bec1efc..17d49d5 100644
+--- a/dspy_integration/framework/providers/qwen.py
++++ b/dspy_integration/framework/providers/qwen.py
+@@ -1,4 +1,5 @@
+ """Qwen provider."""
++
+ from dspy_helm.providers.qwen import Provider as QwenProvider
+
+ __all__ = ["QwenProvider"]
+diff --git a/scripts/generate_manifest.py b/scripts/generate_manifest.py
+index 134ac46..07fa359 100644
+--- a/scripts/generate_manifest.py
++++ b/scripts/generate_manifest.py
+@@ -27,13 +27,17 @@ def generate_manifest():
+                     with open(filepath, "rb") as f:
+                         try:
+                             data = tomllib.load(f)
+-                            prompt_lines = data.get("prompt", "").strip().split("\n")
+-                            description = "No description available."
+-                            for line in prompt_lines:
+-                                stripped_line = line.strip()
+-                                if stripped_line.startswith("#"):
+-                                    description = stripped_line[1:].strip()
+-                                    break
++                            description = (data.get("description") or "").strip()
++                            if not description:
++                                prompt_lines = (
++                                    data.get("prompt", "").strip().split("\n")
++                                )
++                                description = "No description available."
++                                for line in prompt_lines:
++                                    stripped_line = line.strip()
++                                    if stripped_line.startswith("#"):
++                                        description = stripped_line[1:].strip()
++                                        break
+                             manifest[command_name] = description
+                         except tomllib.TOMLDecodeError as e:
+                             print(f"Error decoding {filepath}: {e}")
+@@ -45,7 +49,7 @@ def generate_manifest():
+     output_filename = "commands_manifest.json"
+     print(f"Writing manifest to {output_filename}")
+     with open(output_filename, "w") as f:
+-        json.dump(manifest, f, indent=2)
++        json.dump(manifest, f, indent=2, sort_keys=True)
+     print("Manifest file generation complete.")
+
+     # Update the improve.toml prompt
+@@ -55,7 +59,7 @@ def generate_manifest():
+     with open(template_path, "r") as f:
+         template_content = f.read()
+
+-    manifest_json = json.dumps(manifest, indent=2)
++    manifest_json = json.dumps(manifest, indent=2, sort_keys=True)
+     new_content = template_content.replace("{{COMMAND_MANIFEST}}", manifest_json)
+
+     with open(output_path, "w") as f:
