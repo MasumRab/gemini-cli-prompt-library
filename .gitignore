@@ -58,3 +58,4 @@ htmlcov/
 .opencode/
 .specify/
 .ckignore
+docs/mocks/
