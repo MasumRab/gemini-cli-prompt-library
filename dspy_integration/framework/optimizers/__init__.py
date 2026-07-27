@@ -7,7 +7,8 @@ Available optimizers:
 - BootstrapFewShotWithRandomSearch: Bootstrap with random search
 """
 
-from .base import BaseOptimizer, OptimizerRegistry, IOptimizer
+from dspy_helm.optimizers.base import OptimizerRegistry, IOptimizer
+from .base import BaseOptimizer
 from .mipro_v2 import MIPROv2Optimizer
 from .bootstrap import BootstrapFewShotOptimizer, BootstrapFewShotRandomSearchOptimizer
 

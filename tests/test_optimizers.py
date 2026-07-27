@@ -207,7 +207,7 @@ class TestOptimizerRegistry:
 class TestOptimizerCompile:
     """Test optimizer compile functionality."""
 
-    @patch("dspy_integration.framework.optimizers.mipro_v2.dspy")
+    @patch("dspy_helm.optimizers.mipro_v2.dspy", create=True)
     def test_compile_requires_lm(self, mock_dspy):
         """Test that compile requires LM to be configured."""
         from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
@@ -215,9 +215,10 @@ class TestOptimizerCompile:
         mock_dspy.settings.lm = None
         mock_dspy.settings.configure = MagicMock()
 
-        # Test that passing None as metric raises ValueError
-        with pytest.raises(ValueError, match="metric is required"):
-            MIPROv2Optimizer(metric=None)
+        optimizer = MIPROv2Optimizer(metric=MagicMock())
+        # Test that calling compile without an LM configured raises a RuntimeError
+        with pytest.raises(RuntimeError, match="No LM configured"):
+            optimizer.compile(program=MagicMock(), trainset=[], valset=[])
 
 
 if __name__ == "__main__":
