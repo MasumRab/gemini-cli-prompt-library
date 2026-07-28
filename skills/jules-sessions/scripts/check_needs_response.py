@@ -3,7 +3,7 @@
 Check Jules sessions needing response and generate suggested messages.
 
 Usage:
-    python scripts/check_needs_response.py [--api] [--stale-minutes N]
+    python skills/jules-sessions/scripts/check_needs_response.py [--api] [--stale-minutes N]
 
 Options:
     --api           Pull latest state from Jules API first (hybrid)

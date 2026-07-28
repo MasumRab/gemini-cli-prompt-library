@@ -137,7 +137,7 @@ Orchestrate complex multi-task Jules workflows.
 
 ## Example: EmailIntelligence Schedule
 
-See `jules_sessions/task_schedule.json` for full example with 11 tasks:
+See `skills/jules-sessions/references/task_schedule.json` for full example with 11 tasks:
 
 | Phase | Tasks | Parallel |
 |-------|-------|----------|
@@ -195,15 +195,15 @@ Work in {branch} branch which contains {context}.
 
 ```bash
 # Check schema
-jq '.' jules_sessions/task_schedule.json
+jq '.' skills/jules-sessions/references/task_schedule.json
 
 # Count tasks by phase
 jq '[.task_schedule[].phase] | group_by(.) | map({phase: .[0], count: length})' \
-  jules_sessions/task_schedule.json
+  skills/jules-sessions/references/task_schedule.json
 
 # Find dependencies
 jq '.task_schedule[] | select(.dependencies | length > 0) | {task_id, dependencies}' \
-  jules_sessions/task_schedule.json
+  skills/jules-sessions/references/task_schedule.json
 ```
 
 ---
@@ -214,13 +214,13 @@ jq '.task_schedule[] | select(.dependencies | length > 0) | {task_id, dependenci
 
 ```bash
 # All task statuses
-jq '.task_schedule[] | {task_id, status, title}' jules_sessions/task_schedule.json
+jq '.task_schedule[] | {task_id, status, title}' skills/jules-sessions/references/task_schedule.json
 
 # Pending tasks
-jq '.task_schedule[] | select(.status == "pending") | .title' jules_sessions/task_schedule.json
+jq '.task_schedule[] | select(.status == "pending") | .title' skills/jules-sessions/references/task_schedule.json
 
 # Completed count
-jq '[.task_schedule[] | select(.status == "completed")] | length' jules_sessions/task_schedule.json
+jq '[.task_schedule[] | select(.status == "completed")] | length' skills/jules-sessions/references/task_schedule.json
 ```
 
 ### Update Status
@@ -228,7 +228,7 @@ jq '[.task_schedule[] | select(.status == "completed")] | length' jules_sessions
 ```bash
 # Mark task complete
 jq '(.task_schedule[] | select(.task_id == "task_1") | .status) = "completed"' \
-  jules_sessions/task_schedule.json > tmp.json && mv tmp.json jules_sessions/task_schedule.json
+  skills/jules-sessions/references/task_schedule.json > tmp.json && mv tmp.json skills/jules-sessions/references/task_schedule.json
 ```
 
 ---
@@ -274,4 +274,4 @@ jq '(.task_schedule[] | select(.task_id == "task_1") | .status) = "completed"' \
 - API: [[jules-api]] for programmatic control
 - Workflows: [[jules-workflows]] for patterns
 - Sessions: [[jules-sessions]] for session analysis
-- Example: `jules_sessions/task_schedule.json`
+- Example: `skills/jules-sessions/references/task_schedule.json`

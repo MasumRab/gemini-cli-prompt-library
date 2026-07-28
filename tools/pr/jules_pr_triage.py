@@ -2,8 +2,8 @@
 """Jules PR Triage — Automated PR review pipeline for GitHub repositories.
 
 Usage:
-    python scripts/jules_pr_triage.py --repo OWNER/REPO
-    python scripts/jules_pr_triage.py --repo OWNER/REPO --dry-run
+    python tools/pr/jules_pr_triage.py --repo OWNER/REPO
+    python tools/pr/jules_pr_triage.py --repo OWNER/REPO --dry-run
 
 This script automates the PR review checklist from JULES_PR_HANDOFF.md:
   1. Fetches open PRs via `gh` CLI

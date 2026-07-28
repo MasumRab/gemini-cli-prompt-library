@@ -15,13 +15,13 @@ Features:
 - Similar branch identification
 
 Usage:
-    python scripts/branch_analysis_tool.py [options]
+    python skills/jules-sessions/scripts/branch_analysis_tool.py [options]
 
 Examples:
-    python scripts/branch_analysis_tool.py
-    python scripts/branch_analysis_tool.py --json
-    python scripts/branch_analysis_tool.py --check-stale --max-stale-days 30
-    python scripts/branch_analysis_tool.py --auto-fix
+    python skills/jules-sessions/scripts/branch_analysis_tool.py
+    python skills/jules-sessions/scripts/branch_analysis_tool.py --json
+    python skills/jules-sessions/scripts/branch_analysis_tool.py --check-stale --max-stale-days 30
+    python skills/jules-sessions/scripts/branch_analysis_tool.py --auto-fix
 """
 
 import subprocess
@@ -456,10 +456,10 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python scripts/branch_analysis_tool.py                    # Full analysis
-  python scripts/branch_analysis_tool.py --json             # JSON output
-  python scripts/branch_analysis_tool.py --check-stale      # Check stale branches
-  python scripts/branch_analysis_tool.py --auto-fix         # Auto-fix issues
+  python skills/jules-sessions/scripts/branch_analysis_tool.py                    # Full analysis
+  python skills/jules-sessions/scripts/branch_analysis_tool.py --json             # JSON output
+  python skills/jules-sessions/scripts/branch_analysis_tool.py --check-stale      # Check stale branches
+  python skills/jules-sessions/scripts/branch_analysis_tool.py --auto-fix         # Auto-fix issues
         """
     )
     

@@ -1,5 +1,5 @@
 #!/bin/bash
-# scripts/jules_sync_all.sh
+# tools/shell/jules_sync_all.sh
 # Syncs local Jules session metadata with the latest API state.
 
 set -e

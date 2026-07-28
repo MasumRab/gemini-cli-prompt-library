@@ -29,7 +29,7 @@ Relevant existing files found locally:
 - `JULES_ACTION_REPORT.md` — session/action report, not a GitHub Actions setup plan.
 - `docs/JULES_OPERATIONS.md` — Jules REST/session operations.
 - `.jules/session_analysis/` — retrieved session data and workflow definitions.
-- `jules_sessions/README.md` and `scripts/jules_sync_all.sh` — session archive/sync support.
+- `jules_sessions/README.md` and `tools/shell/jules_sync_all.sh` — session archive/sync support.
 - `skills/jules-*.skill` — local Jules API/CLI/scheduling/session/workflow skills.
 - `.github/BRANCH_PROPAGATION_POLICY.md`, `.github/PROPAGATION_SETUP_CHECKLIST.md` on relevant remote branches — branch ownership/contamination rules that should feed Jules review rules.
 

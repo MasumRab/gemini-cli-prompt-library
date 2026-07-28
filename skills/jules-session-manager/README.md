@@ -9,7 +9,7 @@ See SKILL.md for full documentation.
 ## Commands
 
 \`\`\`bash
-./scripts/<script>.sh --help
+skills/jules-session-manager/scripts/<script>.sh --help
 \`\`\`
 
 ## Requirements
