@@ -215,6 +215,48 @@
 | Fork PR | Skip with explanatory comment — no secrets leaked |
 | Double label | Second run is a no-op (label already consumed) |
 
+## Cross-Repo Deployment Failures
+
+### 29. CRITICAL — Audit recommended forbidden `main ↔ scientific` merge for EmailIntelligence
+
+| Field | Value |
+|-------|-------|
+| **Severity** | 🔴 CRITICAL — branch-rule violation (would have destroyed intentional divergence) |
+| **Source** | Amp thread [Inspect Jules workflow progress](https://ampcode.com/threads/T-019fa4ad-e2b6-7029-90eb-db8b4897d2ae), message 37 |
+| **Status** | **PREVENTED** — the merge was never executed; targeted commits were used instead |
+
+**What happened:** The audit thread inspected Jules workflow deployment state across 4 repos (GFLQ, GCPL, KNA, EI). It found that EI's P1–P6 workflow fixes had landed on `scientific` but not on `main`. The thread recommended:
+
+> "The gap is that the P1–P6 fixes on `scientific` need to be merged into `main` to bring EI in line with the other 3 repos. Would you like me to merge `scientific` into `main` for EmailIntelligence?"
+
+This recommendation directly violates the **CANONICAL BRANCH MANAGEMENT MODEL** (`BRANCH_MANAGEMENT_MODEL.md` on the `taskmaster` submodule branch), which states:
+
+> **⚠️ ABSOLUTE PROHIBITION: `main` and `scientific` MUST NEVER be merged into each other.** They are intentionally divergent product branches — each contains independent work that must stay separate. No exceptions. Use sanctioned transfer patterns (T1–T5) only.
+
+The model's §5 "The One Hard Guard" explicitly forbids: *"a wholesale `git merge` or `git rebase` of one product branch onto the other (`main ↔ scientific`)"* — which is exactly what was recommended.
+
+**Root cause of the misunderstanding:** Three converging factors:
+
+1. **AGENTS.md was discovered but never read.** The EI `AGENTS.md` (883 lines on `scientific`, 33 lines on `main`) contains a "🔴 CANONICAL BRANCH RULES — READ FIRST" section at the top that references `BRANCH_MANAGEMENT_MODEL.md` and states "Do NOT converge them and do NOT do wholesale `main ↔ scientific` merges." The thread's tool results show `AGENTS.md` was auto-discovered as a guidance file, but no `cat`, `grep`, or `sed` of its contents was ever executed. The branch rules were never inspected.
+
+2. **Uniform treatment across dissimilar repos.** The audit treated all 4 repos identically. GFLQ, GCPL, and KNA are single-branch repos where "push the fix to `main`" is the correct approach. EI is the only repo with a multi-branch governance model (`main` = stable/production, `scientific` = experimental R&D). The thread applied the single-branch remediation pattern to a multi-branch repo.
+
+3. **BRANCH_MANAGEMENT_MODEL.md is not directly visible.** The model lives in the `.taskmaster` submodule (on the `taskmaster` branch), not in the working tree of `main` or `scientific` as a regular file. The AGENTS.md references it by path (`[.taskmaster/BRANCH_MANAGEMENT_MODEL.md](.taskmaster/BRANCH_MANAGEMENT_MODEL.md)`) but the submodule must be checked out to read it. An agent that doesn't follow the AGENTS.md link and check out the submodule will never see the actual rules.
+
+**What was done instead (correct approach):** The identity bug fix was applied as separate, targeted commits on each branch:
+- `main` (commit `f974d257`): fixed `jules-pr-address-comments.yml`, `jules-pr-automerge-label.yml`, `.mergify.yml` — 3 files, 21 insertions, 11 deletions
+- `scientific` (commit `0a617f07`): fixed `.mergify.yml` only (workflows were already fixed on this branch)
+
+This aligns with transfer pattern **T2** (capability seeding — curated cherry-pick/sync of a specific fix from one branch to another). No wholesale merge occurred. The branches remain intentionally divergent.
+
+**Remaining gap:** The P1–P6 hardening (timeout-minutes, slash-command triggers, fork checks, GraphQL address-comments, trusted-base rules loading, enablePullRequestAutoMerge, quota error handling, rebuild job gating) is still on `scientific` only and missing from `main`. Bringing these to `main` requires **T1/T2 curated per-file transfers**, not a branch merge. Each workflow file should be individually cherry-picked or synced after verifying it belongs on `main` per the branch charter.
+
+**Prevention going forward:** Any agent working on EmailIntelligence MUST:
+1. Read the `AGENTS.md` "🔴 CANONICAL BRANCH RULES" section before any cross-branch operation
+2. Follow the `BRANCH_MANAGEMENT_MODEL.md` link into the `.taskmaster` submodule and read §4 (sanctioned transfer patterns) and §5 (the hard guard)
+3. Answer the three STOP-sign questions from §9 before any cross-branch git operation
+4. Never recommend `git merge scientific` into `main` or vice versa — use T1/T2 cherry-picks instead
+
 ## Monitoring Recommendations
 
 Add a workflow that runs once daily and:
