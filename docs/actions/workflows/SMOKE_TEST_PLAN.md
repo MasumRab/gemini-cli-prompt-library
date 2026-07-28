@@ -1,6 +1,6 @@
 # Jules Workflow Smoke Test Plan
 
-Use a disposable same-repository PR on one of the target repos (e.g., `gemini-fullstack-langgraph-quickstart`).
+Use a disposable PR on one of the target repos (e.g., `gemini-fullstack-langgraph-quickstart`). The PR can be either a same-repository PR or a fork PR depending on the test scenario. The Fork Skip test below must use a fork PR.
 
 ## 1. Fork Skip
 
@@ -42,16 +42,17 @@ Use a disposable same-repository PR on one of the target repos (e.g., `gemini-fu
 2. Do NOT merge it to the base branch
 3. Create a PR from that feature branch
 4. Trigger review/auto-fix
-5. Verify the test instruction does NOT appear in the prompt (loaded from base, not PR head)
-6. Merge the file to base, trigger again — verify it now appears
+5. Validate that policy loading uses the base-branch version via `repos.getContent(path, ref: baseRef)` — the head-only rule must NOT be honored (it should not affect the review)
+6. Note that the instruction may appear when Jules inspects the PR diff (this is expected)
+7. Merge the file to base, trigger again — verify it now appears as a loaded rule
 
 ## 7. Address-Comments GraphQL Threads
 
 1. Create a PR, have a reviewer post 2+ review comments
 2. Resolve 1 thread, leave 1 unresolved
 3. Post a new review comment on the unresolved thread
-4. Verify `@jules` is tagged on the unresolved thread only
-5. Verify the resolved thread is NOT tagged
+4. Confirm the workflow produces a consolidated PR comment that references unresolved threads
+5. Verify the comment excludes resolved-thread references
 
 ## 8. Conflict Detection
 

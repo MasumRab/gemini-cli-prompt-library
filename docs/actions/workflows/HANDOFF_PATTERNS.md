@@ -140,7 +140,7 @@ steps:
 | 24 | **Post step silently skips** | `always()` guard | Run post under `always()` with conclusion check | Failure comment instead of silence |
 | 25 | **Rebuild on failed analysis** | Job-level output gating | Rebuild requires `session_state == COMPLETED` | Manual re-apply label |
 | 26 | **Automerge branch spoof** | **E** — provenance check | Require jules user + same-repo | None — fork branch attack blocked |
-| 27 | **Address-comments misses threads** | **F** — GraphQL thread resolution | `reviewThreads(isResolved: false)` instead of REST state filter | All unresolved threads captured |
+| 27 | **Address-comments misses threads** | **F** — GraphQL thread resolution | `reviewThreads(isResolved: false)` instead of REST state filter | Captures up to 100 threads × 100 comments each. Pagination must be added to both `reviewThreads` and `comments` queries for full coverage. |
 | 28 | **Wrong comment ordering** | Paginate + sort `created_at` desc | Replace `direction: desc` with explicit sort | Newest comments always used |
 
 ---

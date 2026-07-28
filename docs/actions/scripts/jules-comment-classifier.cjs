@@ -98,7 +98,9 @@ function classifyContent(body) {
   if (!body) return { hasJulesMarker: false, hasFinding: false, hasWalkthrough: false, hasSourcery: false, hasCodeRabbit: false, julesMarker: null };
   const hasJulesMarker = ALL_JULES_MARKERS.some(m => body.includes(m));
   const hasFinding = body.includes(MARKERS.FINDING);
-  const hasWalkthrough = WALKTHROUGH_MARKERS.some(m => body.includes(m));
+  const hasWalkthrough =
+    [MARKERS.JULES_WALKTHROUGH, MARKERS.WALKTHROUGH_START].some(m => body.includes(m)) ||
+    THIRD_PARTY_MARKERS.some(m => body.toLowerCase().includes(m.toLowerCase()));
   const hasSourcery = body.includes('sourcery-ai') || body.includes('## Review Guide');
   const hasCodeRabbit = /coderabbit/i.test(body);
   const julesMarker = ALL_JULES_MARKERS.find(m => body.includes(m)) || null;
@@ -106,10 +108,11 @@ function classifyContent(body) {
 }
 
 function isJulesGenerated(authorSource, contentClass) {
-  return authorSource === SOURCES.JULES_BOT ||
-         authorSource === SOURCES.GITHUB_ACTIONS && contentClass.hasJulesMarker ||
-         contentClass.hasJulesMarker ||
-         contentClass.hasFinding;
+  if (authorSource === SOURCES.JULES_BOT) return true;
+  if (authorSource === SOURCES.GITHUB_ACTIONS) {
+    if (contentClass.hasJulesMarker || contentClass.hasWalkthrough) return true;
+  }
+  return false;
 }
 
 function formatAttribution(user) {
@@ -138,10 +141,10 @@ async function fetchIssueComments(github, owner, repo, prNumber) {
 }
 
 async function fetchReviewComments(github, owner, repo, prNumber) {
-  const { data } = await github.rest.pulls.listReviewComments({
-    owner, repo, pull_number: prNumber, per_page: 20, direction: 'desc',
+  const all = await github.paginate(github.rest.pulls.listReviewComments, {
+    owner, repo, pull_number: prNumber, per_page: 100,
   });
-  return data.map(c => ({
+  return all.map(c => ({
     id: c.id,
     user: c.user,
     authorSource: classifyAuthor(c.user),
@@ -203,19 +206,21 @@ async function fetchUnresolvedThreads(github, owner, repo, prNumber) {
     .map(t => {
       const nodes = t.comments.nodes || [];
       const last = nodes[nodes.length - 1];
+      const authorLogin = last?.author?.login;
+      const authorType = authorLogin?.endsWith('[bot]') ? 'Bot' : 'User';
       return {
         isResolved: false,
         lastComment: last ? {
           id: last.id,
-          author: last.author?.login,
-          authorSource: classifyAuthor({ login: last.author?.login, type: 'Bot' }),
+          author: authorLogin,
+          authorSource: classifyAuthor({ login: authorLogin, type: authorType }),
           contentClass: classifyContent(last.body),
           body: last.body || '',
           path: last.path,
           line: last.originalLine,
           diffHunk: last.diffHunk,
           isJules: isJulesGenerated(
-            classifyAuthor({ login: last.author?.login, type: 'Bot' }),
+            classifyAuthor({ login: authorLogin, type: authorType }),
             classifyContent(last.body)
           ),
         } : null,

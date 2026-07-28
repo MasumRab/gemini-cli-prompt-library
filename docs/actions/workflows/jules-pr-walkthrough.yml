@@ -7,7 +7,7 @@ on:
     types: [created]
 
 concurrency:
-  group: jules-walkthrough-${{ github.event.pull_request.number }}
+  group: jules-walkthrough-${{ github.event.pull_request.number || github.event.issue.number }}
   cancel-in-progress: false
 
 jobs:
@@ -15,6 +15,10 @@ jobs:
     if: >
       github.event.label.name == 'jules-walkthrough' ||
       (github.event_name == 'issue_comment' &&
+       github.event.issue.pull_request &&
+       (github.event.comment.author_association == 'COLLABORATOR' ||
+        github.event.comment.author_association == 'OWNER' ||
+        github.event.comment.author_association == 'MEMBER') &&
        startsWith(github.event.comment.body, '/jules-walkthrough'))
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -44,12 +48,30 @@ jobs:
           CUSTOM=$(echo "$COMMENT_BODY" | sed 's|^/jules-walkthrough ||')
           echo "custom_instructions=$CUSTOM" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve PR from issue_comment
+        if: github.event_name == 'issue_comment'
+        id: resolve-pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.issue.number,
+            });
+            core.setOutput('head_repo', pr.head.repo.full_name);
+            core.setOutput('base_repo', pr.base.repo.full_name);
+            core.setOutput('base_ref', pr.base.ref);
+            core.setOutput('head_ref', pr.head.ref);
+            core.setOutput('head_sha', pr.head.sha);
+            core.setOutput('number', String(pr.number));
+
       - name: Fork check
         id: fork-check
         shell: bash
         env:
-          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
-          BASE_REPO: ${{ github.event.pull_request.base.repo.full_name }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name || steps.resolve-pr.outputs.head_repo }}
+          BASE_REPO: ${{ github.event.pull_request.base.repo.full_name || steps.resolve-pr.outputs.base_repo }}
         run: |
           if [ "$HEAD_REPO" != "$BASE_REPO" ]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
@@ -60,7 +82,7 @@ jobs:
       - uses: actions/checkout@v4
         if: steps.fork-check.outputs.skip != 'true'
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ steps.resolve-pr.outputs.head_sha || github.event.pull_request.head.sha }}
           fetch-depth: 1
 
       - name: Build payload
@@ -75,7 +97,13 @@ jobs:
               return;
             }
 
-            const pr = context.payload.pull_request;
+            const pr = context.eventName === 'issue_comment'
+              ? (await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.payload.issue.number,
+                })).data
+              : context.payload.pull_request;
             const baseRef = pr.base.ref;
             const headRef = pr.head.ref;
             const headSha = pr.head.sha;
@@ -238,10 +266,11 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const prNumber = context.payload.pull_request?.number || context.payload.issue.number;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
+              issue_number: prNumber,
               body: '⚠️ **Jules session cap reached (15/day).**\n\nWalkthrough cannot run today. Re-apply the `jules-walkthrough` label tomorrow to retry.\n\n<!-- jules-quota-exhausted -->',
             });
 
@@ -291,7 +320,7 @@ jobs:
           script: |
             const fs = require('fs');
             const message = fs.readFileSync('/tmp/jules-walkthrough-output.txt', 'utf8');
-            const prNumber = context.payload.pull_request.number;
+            const prNumber = context.payload.pull_request?.number || context.payload.issue.number;
 
             const body = [
               `<!-- jules-walkthrough -->`,
@@ -337,9 +366,10 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const prNumber = context.payload.pull_request?.number || context.payload.issue.number;
             await github.rest.issues.removeLabel({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
+              issue_number: prNumber,
               name: 'jules-walkthrough',
             }).catch(e => { if (e.status !== 404) throw e; core.warning('Label already removed'); });
