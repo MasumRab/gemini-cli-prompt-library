@@ -30,6 +30,9 @@
 const MARKERS = Object.freeze({
   JULES_REVIEWER:       '<!-- jules-pr-reviewer -->',
   JULES_AUTO_FIX:       '<!-- jules-auto-fix -->',
+  JULES_AUTO_FIX_PLAN:  '<!-- jules-auto-fix-plan -->',
+  JULES_AUTO_FIX_DENIED:'<!-- jules-auto-fix-plan-denied -->',
+  JULES_AUTO_FIX_SUMMARY:'<!-- jules-auto-fix-summary -->',
   JULES_RESOLVE:        '<!-- jules-resolve -->',
   JULES_WALKTHROUGH:    '<!-- jules-walkthrough -->',
   JULES_REBUILD:        '<!-- jules-rebuild -->',
@@ -43,6 +46,9 @@ const MARKERS = Object.freeze({
 const ALL_JULES_MARKERS = Object.freeze([
   MARKERS.JULES_REVIEWER,
   MARKERS.JULES_AUTO_FIX,
+  MARKERS.JULES_AUTO_FIX_PLAN,
+  MARKERS.JULES_AUTO_FIX_DENIED,
+  MARKERS.JULES_AUTO_FIX_SUMMARY,
   MARKERS.JULES_RESOLVE,
   MARKERS.JULES_WALKTHROUGH,
   MARKERS.JULES_REBUILD,
