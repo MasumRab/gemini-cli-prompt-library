@@ -8,7 +8,7 @@ name: Jules PR Auto-Merge Label
 
 on:
   schedule:
-    - cron: '0 * * * *'  # once per hour
+    - cron: "0 * * * *" # once per hour
   workflow_dispatch:
 
 jobs:
