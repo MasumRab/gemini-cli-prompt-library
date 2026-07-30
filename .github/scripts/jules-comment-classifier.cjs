@@ -1,17 +1,17 @@
 /**
- * jules-comment-classifier.js — Shared comment classification & filtering for all Jules workflows.
+ * jules-comment-classifier.cjs — Shared comment classification & filtering for all Jules workflows.
  *
  * This module replaces the inline, inconsistent skipMarkers/priorFeedback/priorReviews logic
  * that was duplicated across 6 workflows with 3 different marker arrays and no review-comment
- * filtering. See AUTOREVIEW_JULES_PLAN.md § 10 (GitHub API Surface Map) for the full design.
+ * filtering. See AUTOREVIEW_JULES_PLAN.md for the full design.
  *
  * Usage in actions/github-script@v7:
- *   const { classifyAndFilter, SOURCES, MARKERS } = require('./.github/scripts/jules-comment-classifier.js');
+ *   const { classifyAndFilter, SOURCES, MARKERS } = require('./_helpers/.github/scripts/jules-comment-classifier.cjs');
  *   const result = await classifyAndFilter(github, owner, repo, prNumber, {
  *     includeReviewComments: true,   // fetch pulls.listReviewComments
  *     includeReviews: false,         // fetch pulls.listReviews
  *     includeThreads: false,         // fetch GraphQL reviewThreads (requires graphql permission)
- *     excludeWalkthrough: false,     // if true, don't filter out jules-walkthrough (auto-fix wants it)
+ *     includeWalkthrough: false,     // if true, include jules-walkthrough comments in priorFeedback
  *     maxComments: 10,               // per surface
  *     maxBodyLength: 300,            // truncate bodies
  *   });
@@ -98,9 +98,11 @@ function classifyContent(body) {
   if (!body) return { hasJulesMarker: false, hasFinding: false, hasWalkthrough: false, hasSourcery: false, hasCodeRabbit: false, julesMarker: null };
   const hasJulesMarker = ALL_JULES_MARKERS.some(m => body.includes(m));
   const hasFinding = body.includes(MARKERS.FINDING);
-  const hasWalkthrough =
-    [MARKERS.JULES_WALKTHROUGH, MARKERS.WALKTHROUGH_START].some(m => body.includes(m)) ||
-    THIRD_PARTY_MARKERS.some(m => body.toLowerCase().includes(m.toLowerCase()));
+  const hasWalkthrough = WALKTHROUGH_MARKERS.some(m =>
+    m === MARKERS.WALKTHROUGH_END
+      ? body.includes(m)
+      : body.toLowerCase().includes(m.toLowerCase())
+  );
   const hasSourcery = body.includes('sourcery-ai') || body.includes('## Review Guide');
   const hasCodeRabbit = /coderabbit/i.test(body);
   const julesMarker = ALL_JULES_MARKERS.find(m => body.includes(m)) || null;
@@ -176,38 +178,46 @@ async function fetchReviews(github, owner, repo, prNumber) {
 }
 
 async function fetchUnresolvedThreads(github, owner, repo, prNumber) {
-  const query = `
-    query($owner: String!, $repo: String!, $pr: Int!) {
-      repository(owner: $owner, name: $repo) {
-        pullRequest(number: $pr) {
-          reviewThreads(first: 100) {
-            nodes {
-              isResolved
-              comments(first: 100) {
-                nodes {
-                  id
-                  body
-                  author { login }
-                  createdAt
-                  path
-                  diffHunk
-                  originalLine
+  const threads = [];
+  let threadCursor = null;
+  do {
+    const query = `
+      query($owner: String!, $repo: String!, $pr: Int!, $threadCursor: String) {
+        repository(owner: $owner, name: $repo) {
+          pullRequest(number: $pr) {
+            reviewThreads(first: 50, after: $threadCursor) {
+              pageInfo { hasNextPage endCursor }
+              nodes {
+                isResolved
+                comments(first: 100) {
+                  nodes {
+                    id
+                    body
+                    author { login __typename }
+                    createdAt
+                    path
+                    diffHunk
+                    originalLine
+                  }
                 }
               }
             }
           }
         }
-      }
-    }`;
-  const result = await github.graphql(query, { owner, repo, pr: prNumber });
-  const threads = result.repository.pullRequest.reviewThreads.nodes || [];
+      }`;
+    const result = await github.graphql(query, { owner, repo, pr: prNumber, threadCursor });
+    const rt = result.repository.pullRequest.reviewThreads;
+    threads.push(...(rt.nodes || []));
+    threadCursor = rt.pageInfo?.hasNextPage ? rt.pageInfo.endCursor : null;
+  } while (threadCursor);
+
   return threads
     .filter(t => !t.isResolved)
     .map(t => {
       const nodes = t.comments.nodes || [];
       const last = nodes[nodes.length - 1];
       const authorLogin = last?.author?.login;
-      const authorType = authorLogin?.endsWith('[bot]') ? 'Bot' : 'User';
+      const authorType = last?.author?.__typename || (authorLogin?.endsWith('[bot]') ? 'Bot' : 'User');
       return {
         isResolved: false,
         lastComment: last ? {
@@ -237,23 +247,38 @@ async function classifyAndFilter(github, owner, repo, prNumber, opts = {}) {
     includeReviewComments = true,
     includeReviews = false,
     includeThreads = false,
-    excludeWalkthrough = false,
+    includeWalkthrough = false,
     maxComments = 10,
     maxBodyLength = 300,
   } = opts;
 
-  const fetches = [fetchIssueComments(github, owner, repo, prNumber)];
-  if (includeReviewComments) fetches.push(fetchReviewComments(github, owner, repo, prNumber));
-  if (includeReviews) fetches.push(fetchReviews(github, owner, repo, prNumber));
-  if (includeThreads) fetches.push(fetchUnresolvedThreads(github, owner, repo, prNumber));
+  // Use allSettled so optional fetch failures don't crash the whole workflow.
+  const fetches = [
+    { key: 'issueComments', promise: fetchIssueComments(github, owner, repo, prNumber) },
+  ];
+  if (includeReviewComments) fetches.push({ key: 'reviewComments', promise: fetchReviewComments(github, owner, repo, prNumber) });
+  if (includeReviews) fetches.push({ key: 'reviews', promise: fetchReviews(github, owner, repo, prNumber) });
+  if (includeThreads) fetches.push({ key: 'unresolvedThreads', promise: fetchUnresolvedThreads(github, owner, repo, prNumber) });
 
-  const results = await Promise.all(fetches);
-  const issueComments = results[0];
-  const reviewComments = includeReviewComments ? results[1] : [];
-  const reviews = includeReviews ? results[includeReviewComments ? 2 : 1] : [];
-  const unresolvedThreads = includeThreads ? results[(includeReviewComments ? 1 : 0) + (includeReviews ? 1 : 0) + 1] : [];
+  const settled = await Promise.allSettled(fetches.map(f => f.promise));
+  const results = {};
+  fetches.forEach((f, i) => {
+    if (settled[i].status === 'fulfilled') {
+      results[f.key] = settled[i].value;
+    } else {
+      core?.warning?.(`Fetch failed for ${f.key}: ${settled[i].reason?.message || settled[i].reason}`);
+      results[f.key] = [];
+    }
+  });
 
-  const excludeMarkers = excludeWalkthrough
+  const issueComments = results.issueComments || [];
+  const reviewComments = results.reviewComments || [];
+  const reviews = results.reviews || [];
+  const unresolvedThreads = results.unresolvedThreads || [];
+
+  // When includeWalkthrough is true, walkthrough comments are NOT filtered out
+  // of priorFeedback (auto-fix wants walkthrough context).
+  const excludeMarkers = includeWalkthrough
     ? ALL_JULES_MARKERS.filter(m => m !== MARKERS.JULES_WALKTHROUGH)
     : ALL_JULES_MARKERS;
 
@@ -324,12 +349,12 @@ async function classifyAndFilter(github, owner, repo, prNumber, opts = {}) {
     _meta: {
       surfaces: ['issue-comments', ...(includeReviewComments ? ['review-comments'] : []),
                  ...(includeReviews ? ['reviews'] : []), ...(includeThreads ? ['threads'] : [])],
-      excludeWalkthrough,
+      includeWalkthrough,
       totalIssueComments: issueComments.length,
       totalReviewComments: reviewComments.length,
       julesIssueComments: issueComments.filter(c => c.isJules).length,
       julesReviewComments: reviewComments.filter(c => c.isJules).length,
-      filteredReviewComments: reviewComments.length - reviewComments.filter(c => {
+      retainedReviewComments: reviewComments.length - reviewComments.filter(c => {
         return c.authorSource === SOURCES.JULES_BOT ||
                c.authorSource === SOURCES.GITHUB_ACTIONS ||
                c.contentClass.hasFinding ||
