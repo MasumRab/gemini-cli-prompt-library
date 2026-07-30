@@ -1,0 +1,100 @@
+---
+title: Session Summary Generation
+description: Always generate compact YAML summaries alongside extensive session/activity data dumps
+glob: "**/*.json"
+---
+
+## Rule: Generate Session Summaries
+
+Whenever you dump, export, or save Jules session or activity data (JSON files containing `activities` or `sessions` arrays), you MUST also generate a companion **summary file**.
+
+### Why
+
+- Full activity/session files can be hundreds of MB with embedded git diffs
+- Summaries enable quick review without loading massive files
+- The standard is defined in `docs/guides/session_summary_standard.md`
+
+### Summary File Requirements
+
+| Property       | Requirement                                                                 |
+|---------------|-----------------------------------------------------------------------------|
+| **Format**    | YAML (.yaml)                                                                |
+| **Location**  | Same directory as the full JSON file                                        |
+| **Naming**    | `<full_filename>_summary.yaml` (e.g., `activities_123_summary.yaml`)         |
+| **Max size**  | 50 KB                                                                        |
+
+### Required Summary Fields
+
+Every summary MUST include:
+
+```yaml
+session:
+  id: "<session-id>"
+  title: "<session title>"
+  repository: "<repo name>"
+  created: "<ISO 8601 timestamp>"
+  updated: "<ISO 8601 timestamp>"
+  status: "<completed|failed|in_progress|awaiting_approval|awaiting_feedback|paused|unknown>"
+  source: "<pr|issue|manual>"
+```
+
+### Recommended Summary Fields
+
+Include these when available:
+
+```yaml
+purpose: "<brief goal description (max 500 chars)>"
+summary: "<narrative of what happened (max 2000 chars)>"
+participants:
+  - role: "user|agent"
+    message: "<truncated message (max 200 chars)>"
+changes:
+  - file: "<file path>"
+    summary: "<change description (max 200 chars)>"
+    change_type: "<added|modified|deleted|renamed>"
+plan:
+  steps:
+    - "<step description>"
+pr:
+  url: "<PR URL>"
+  title: "<PR title>"
+errors:
+  - type: "<error type>"
+    message: "<error message>"
+```
+
+### What NOT to include in summaries
+
+- ❌ Full `unidiffPatch` git diffs (keep in the full file)
+- ❌ Complete conversation transcripts (keep in the full file)
+- ❌ Raw API response metadata (keep in the full file)
+- ❌ Redundant timestamp snapshots (keep only in the full file)
+
+### How to Generate
+
+Use the automation script:
+
+```bash
+# Single file
+python scripts/generate_session_summaries.py activities_123.json
+
+# Entire directory
+python scripts/generate_session_summaries.py /path/to/activities/
+
+# Force regenerate
+python scripts/generate_session_summaries.py --force /path/to/activities/
+```
+
+### Compliance
+
+- [ ] Summary file created alongside full data file
+- [ ] Summary follows YAML format
+- [ ] All required fields present
+- [ ] No full diffs or transcripts leaked into summary
+- [ ] Summary file size < 50 KB
+- [ ] Summary tracked in git (full file may be gitignored)
+
+### References
+
+- Full standard: `docs/guides/session_summary_standard.md`
+- Automation script: `scripts/generate_session_summaries.py`
