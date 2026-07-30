@@ -162,17 +162,25 @@ jobs:
               return;
             }
 
-            const { classifyAndFilter } = require('./_helpers/.github/scripts/jules-comment-classifier.cjs');
-            const result = await classifyAndFilter(github, context.repo.owner, context.repo.repo, pr.number, {
-              includeReviewComments: true,
-              includeReviews: false,
-              includeThreads: false,
-              includeWalkthrough: true,
-              maxComments: 10,
-              maxBodyLength: 300,
-            });
-            const priorFeedback = result.priorFeedback;
-            const priorReviews = result.priorReviews;
+            const fs = require('fs');
+            const classifierPath = './_helpers/.github/scripts/jules-comment-classifier.cjs';
+            let priorFeedback = '';
+            let priorReviews = '';
+            if (fs.existsSync(classifierPath)) {
+              const { classifyAndFilter } = require(classifierPath);
+              const result = await classifyAndFilter(github, context.repo.owner, context.repo.repo, pr.number, {
+                includeReviewComments: true,
+                includeReviews: false,
+                includeThreads: false,
+                includeWalkthrough: true,
+                maxComments: 10,
+                maxBodyLength: 300,
+              });
+              priorFeedback = result.priorFeedback;
+              priorReviews = result.priorReviews;
+            } else {
+              core.warning('jules-comment-classifier.cjs not found in base branch — proceeding without prior comment context');
+            }
 
             // Load repo-specific instructions from base branch (trusted)
             let reviewRules = '';
