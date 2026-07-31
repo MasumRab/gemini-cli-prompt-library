@@ -286,3 +286,57 @@ All validation is static (YAML parse, Node require, grep checks). No workflow ha
 6. **Implement remaining workflow tasks** (T-05 through T-10) — in priority order
 7. **Create new workflows** (T-11 through T-13) — per traceability doc priorities
 8. **Begin user-requested future work** (T-14, T-15) — only after all above is complete
+
+---
+
+## 8. CodeRabbit Review Findings (2026-08-01)
+
+CodeRabbit AI review was run on the 10 commits (`c271afd..06751be`) using the local CLI:
+
+```
+coderabbit review --committed --base-commit c271afd --dir .github
+coderabbit review --committed --base-commit c271afd --dir .github --dir docs/actions
+```
+
+**Result:** 7 findings in `docs/actions/HANDOFF.md` (1st invocation, complete) + 8 findings in
+`.github/workflows/` (2nd invocation, truncated at 5-minute timeout — additional findings may exist
+but were not captured). The findings below are the complete set observed across both invocations.
+
+**Pass criteria:** No blocker/critical findings were reported as gating the plan's PASS line; however
+two `critical` severities (per CodeRabbit's taxonomy) were reported on `jules-pr-review.yml`. Per user
+direction, these are documented here rather than fixed inline.
+
+### 8.1 Findings — `docs/actions/HANDOFF.md` (complete)
+
+| # | Severity | Location | Issue |
+|---|----------|----------|-------|
+| H-01 | major | L34-42 | Phase 3 completion table marks F1-F9 as ✅ Done, but Section 3.2 says F5 is still not done. Reconcile F5 status before declaring hardening complete. |
+| H-02 | major | L161-171 | Section 3.1 heading implies all known issues are addressed, but 10.4 is marked ⚠️ Partial. Rename heading or move 10.4 to outstanding-issues. |
+| H-03 | major | L261-263 | Steps require smoke tests after first sync then EI sync after smoke tests pass — ambiguous, conflicts with "delay sync until hardening complete". Define target and order T-17. |
+| H-04 | minor | L128-138 | `git diff --check` does not inspect untracked files. L132 therefore does not prove the 3 new workflows are whitespace-clean. Record the actual command used. |
+| H-05 | minor | L140-155 | L144 says canonical is ahead in all modified workflows, but L153-154 list `jules-dispatch.yml` and `jules-issue-triage.yml` as in sync. Limit claim to files with a gap. |
+| H-06 | minor | L173-180, L199-204 | F8 marked N/A but T-10 defines the same missing artifact as pending. Use consistent status. |
+| H-07 | minor | L239-247 | Supersession claim should be limited to tracking content; `.github/README.md` remains the structure/distribution reference. |
+
+### 8.2 Findings — `.github/workflows/` (truncated by CLI timeout)
+
+| # | Severity | Location | Issue |
+|---|----------|----------|-------|
+| W-01 | **critical** | `jules-pr-review.yml:710-712` | Pending-marker body contains `<!-- jules-review-deferred-pending -->`; the filter at L711 tests `includes('<!-- jules-review-deferred')`. Pending comments are misread as deferred → duplicate session polling. Rename pending marker (e.g. `jules-review-pending`) and harden the deferred filter regex. **Also affects L921-932.** |
+| W-02 | **critical** | `jules-pr-review.yml:414-434` | `SAVE_OUTPUT` writes `partial_output=true` only to `$GITHUB_OUTPUT`, never to a shell variable. `${partial_output:-false}` therefore always expands to `false`. On timeout the captured partial review is overwritten by the timeout message; status still reports "Partial review". Set a shell var (`PARTIAL_OUTPUT=true`) alongside the GITHUB_OUTPUT write. **Also affects L462-471.** |
+| W-03 | major | `jules-backlog-review.yml:24-30` | `timeout-minutes: 30` is too small. Worst case: 5 PRs × 60 polls × 15s ≈ 75 min. GitHub cancels mid-loop, losing outputs and causing duplicate Jules sessions on the next run. Raise to ≥90 min or shrink poll budget. |
+| W-04 | major | `jules-pr-address-comments.yml:14-22` | Trigger captures reviews but never adds `context.payload.review.body` to `threadSummaries`. A body-only `CHANGES_REQUESTED` review hits the `unresolvedThreads.length === 0` short-circuit and is ignored. Include submitted review body + timestamp before no-thread/debounce checks. |
+| W-05 | major | `jules-dispatch.yml:40-43` | `body.startsWith('@jules')` matches `@julesmith` etc. — needs word-boundary: `/^@jules(?=\s|\/|$)/i`. |
+| W-06 | major | `jules-dispatch.yml:112-118` | Confirmation comment posted before `addLabels` is awaited — on label failure the PR claims success but no label is applied. Await label first, then post comment. |
+| W-07 | major | `jules-pr-review.yml:517-525` | `'neutral'` is not a valid `repos.createCommitStatus` state (only error/failure/pending/success). Causes HTTP 422 → swallowed as warning → no status published → branch protection hangs. Use `success` for informational, `pending` for partial. **Also affects L864-875.** |
+| W-08 | minor | `jules-pr-review.yml` (initial loop) | Quota check inspects `error.code === 429` but Jules API returns `error.status: "RESOURCE_EXHAUSTED"` for quota errors — those slip through and create leaked sessions. Restrict quota check to the error object of a failed `create_rc` call. |
+
+**Note:** The 2nd CLI invocation timed out at 5 min; additional findings may exist in workflow files
+that were not captured. A complete re-review is recommended after the W-01/W-02 criticals are fixed.
+
+### 8.3 Recommended Follow-Up
+
+1. Fix W-01 and W-02 (critical) before any live trigger of `jules-pr-review.yml`.
+2. Address W-03 through W-07 (major) as a batch follow-up commit.
+3. Update Section 3 of this document to reflect the post-fix state.
+4. Re-run CodeRabbit CLI review with `--light` for a complete pass within the 5-minute window.
