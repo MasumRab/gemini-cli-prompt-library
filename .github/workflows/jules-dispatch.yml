@@ -1,0 +1,118 @@
+name: Jules Mention Dispatch
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+  pull_request_review_comment:
+    types: [created]
+
+concurrency:
+  group: jules-dispatch-${{ github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: false
+
+permissions:
+  pull-requests: write
+  contents: read
+  issues: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Route Jules request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const payload = context.payload;
+            const comment = payload.comment || payload.review;
+            const body = comment?.body || '';
+            const actor = comment?.user?.login || '';
+            const association = comment?.author_association || '';
+            const allowedAssociations = new Set(['OWNER', 'MEMBER', 'COLLABORATOR']);
+
+            if (actor === 'google-labs-jules[bot]' || actor === 'github-actions[bot]') {
+              core.info(`Ignoring comment from ${actor}`);
+              return;
+            }
+            if (!body.startsWith('@jules')) {
+              core.info('Comment does not start with @jules — skipping');
+              return;
+            }
+            if (!allowedAssociations.has(association)) {
+              core.info(`Unauthorized author association: ${association}`);
+              return;
+            }
+
+            const prNumber = payload.pull_request?.number || payload.issue?.number;
+            const pr = payload.pull_request ||
+              (payload.issue?.pull_request
+                ? (await github.rest.pulls.get({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: prNumber,
+                  })).data
+                : null);
+            if (!pr) {
+              core.info('Not a PR — skipping');
+              return;
+            }
+            if (pr.head.repo?.fork) {
+              core.info('Fork PR — skipping');
+              return;
+            }
+
+            const request = body.slice('@jules'.length).trim();
+            const command = request.startsWith('/')
+              ? request.split(/\s+/, 1)[0].toLowerCase()
+              : '';
+            const labels = {
+              '/review': 'jules-force-review',
+              '/force-review': 'jules-force-review',
+              '/fix': 'jules-fix',
+              '/auto-fix': 'jules-fix',
+              '/walkthrough': 'jules-walkthrough',
+              '/rebuild': 'jules-rebuild',
+              '/resolve': 'jules-resolve',
+              '/resolve-conflicts': 'jules-resolve',
+            };
+
+            const postComment = async (message) => {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: message,
+              });
+            };
+
+            if (command === '/triage') {
+              await postComment('🤖 Triage is for issues, not pull requests. Please use `@jules /triage` on an issue.');
+              return;
+            }
+
+            const label = command ? labels[command] : 'jules-fix';
+            if (!label) {
+              await postComment([
+                '🤖 Unknown Jules command. Available commands:',
+                '',
+                '- `@jules /review` or `@jules /force-review`',
+                '- `@jules /fix [instructions]` or `@jules /auto-fix [instructions]`',
+                '- `@jules /walkthrough`',
+                '- `@jules /rebuild`',
+                '- `@jules /resolve` or `@jules /resolve-conflicts`',
+                '- `@jules /triage` (issues only)',
+                '- `@jules [instructions]`',
+              ].join('\n'));
+              return;
+            }
+
+            await postComment(`🤖 Hi @${actor}, I've received your request and applied the appropriate label...`);
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              labels: [label],
+            });
