@@ -154,7 +154,7 @@ jobs:
             });
             const existingFix = allIssueComments.find(c =>
               c.body?.includes('<!-- jules-auto-fix -->') &&
-              c.body?.includes(`head_sha:${headSha}`)
+              c.body?.includes(`head_sha: ${headSha}`)
             );
             if (existingFix) {
               core.info('Auto-fix already started for this HEAD SHA — skipping');
@@ -207,13 +207,23 @@ jobs:
               ``,
               `1. **Plan Phase**: Analyze the PR, identify the files to change, and create a`,
               `   detailed plan. Post your plan as a **PR comment** with the marker`,
-              `   <!-- jules-auto-fix-plan --> at the top. Include:`,
-              `   - Files to modify`,
-              `   - Specific changes per file`,
-              `   - Resource estimate (tool calls, files modified)`,
-              `   - The current head SHA so the maintainer can confirm the plan`,
-              `     targets the right commit.`,
-              `   - Instructions for the maintainer: "Comment /approve to proceed, or /deny to cancel."`,
+              `   <!-- jules-auto-fix-plan --> at the top. Use this exact template:`,
+              ``,
+              `   ## 🤖 AI Assistant: Plan of Action`,
+              `   I have analyzed the request and propose the following plan.`,
+              `   **This plan will not be executed until it is approved by a maintainer.**`,
+              ``,
+              `   **Resource Estimate:**`,
+              `   * **Estimated Tool Calls:** ~[Number]`,
+              `   * **Files to Modify:** [Number]`,
+              ``,
+              `   **Proposed Steps:**`,
+              `   - [ ] Step 1: Detailed description of the first action.`,
+              `   - [ ] Step 2: ...`,
+              ``,
+              `   **Current HEAD SHA:** <insert the actual head SHA here>`,
+              `   Please review this plan. To approve, comment /approve on this PR.`,
+              `   To reject, comment /deny.`,
               ``,
               `2. **Wait for Approval**: After posting the plan, STOP. Do NOT implement the fix`,
               `   in this session. A maintainer will review the plan and comment /approve or /deny.`,
@@ -392,9 +402,12 @@ jobs:
   # ─── Plan/Approve: handles /approve and /deny comments ──────────────────────
 
   approve:
-    if: >
+    if: >-
       github.event_name == 'issue_comment' &&
-      (startsWith(github.event.comment.body, '/approve') || startsWith(github.event.comment.body, '/deny')) &&
+      (github.event.comment.body == '/approve' ||
+       startsWith(github.event.comment.body, '/approve ') ||
+       github.event.comment.body == '/deny' ||
+       startsWith(github.event.comment.body, '/deny ')) &&
       github.event.issue.pull_request &&
       contains('OWNER,MEMBER,COLLABORATOR', github.event.comment.author_association)
     runs-on: ubuntu-latest
@@ -420,7 +433,14 @@ jobs:
               owner: context.repo.owner, repo: context.repo.repo,
               issue_number: prNumber, per_page: 100,
             });
-            const planComment = comments.find(c => c.body?.includes('<!-- jules-auto-fix-plan -->'));
+            // Find the most recent pending plan, excluding denied/stale plans
+            const planComment = comments
+              .filter(c =>
+                c.body?.includes('<!-- jules-auto-fix-plan -->') &&
+                !c.body?.includes('<!-- jules-auto-fix-plan-denied -->') &&
+                !c.body?.includes('<!-- jules-auto-fix-plan-stale -->')
+              )
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
             if (!planComment) {
               core.info('No pending plan comment found — nothing to approve/deny');
               core.setOutput('skip', 'true');
@@ -430,13 +450,32 @@ jobs:
               owner: context.repo.owner, repo: context.repo.repo,
               pull_number: prNumber,
             })).data;
+
+            // Extract plan SHA from the plan comment body
+            const planShaMatch = planComment.body.match(/HEAD SHA:\s*([a-f0-9]{7,40})/i);
+            const planSha = planShaMatch ? planShaMatch[1] : null;
+
+            // SHA pin: if the plan recorded a HEAD SHA and it doesn't match
+            // the current PR head, the plan is stale — reject the approval.
+            if (planSha && planSha !== pr.head.sha && !pr.head.sha.startsWith(planSha) && !planSha.startsWith(pr.head.sha.slice(0, planSha.length))) {
+              core.info(`Plan SHA ${planSha} does not match current head ${pr.head.sha} — plan is stale`);
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: `⚠️ **Plan is stale — PR was updated since the plan was posted.**\n\nThe plan was created against commit \`${planSha}\`, but the PR head is now \`${pr.head.sha}\`.\n\nPlease re-apply the \`jules-fix\` label to generate a new plan for the current commit.\n\n<!-- jules-auto-fix-plan-stale -->`,
+              });
+              core.setOutput('skip', 'true');
+              return;
+            }
+
             core.setOutput('skip', 'false');
             core.setOutput('head_sha', pr.head.sha);
             core.setOutput('head_ref', pr.head.ref);
             core.setOutput('base_ref', pr.base.ref);
             core.setOutput('target', pr.base.ref);
             core.setOutput('plan_comment_id', String(planComment.id));
-            core.info('Found pending plan comment');
+            core.info('Found pending plan comment' + (planSha ? ` (SHA match: ${planSha})` : ' (no SHA in plan)'));
 
       - name: Handle /deny
         if: startsWith(github.event.comment.body, '/deny') && steps.plan.outputs.skip != 'true'
