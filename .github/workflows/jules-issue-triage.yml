@@ -1,0 +1,304 @@
+name: Jules Issue Triage
+
+on:
+  issues:
+    types: [opened, reopened, edited]
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: jules-triage-${{ github.event.issue.number || 'schedule' }}
+  cancel-in-progress: false
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  triage:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Prepare issue and Jules payload
+        id: prepare
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const { data: issue } = await github.rest.issues.get({
+              ...context.repo, issue_number: context.issue.number,
+            });
+            if (issue.pull_request) {
+              core.setOutput('skip', 'true');
+              return;
+            }
+            const { data: labels } = await github.rest.issues.listLabelsForRepo({
+              ...context.repo, per_page: 100,
+            });
+            if (!labels.length) {
+              core.setOutput('skip', 'true');
+              return;
+            }
+            const names = labels.map(label => label.name).sort();
+            const prompt = `## Role
+            You are a GitHub issue triage assistant. Analyze this issue and assign labels.
+
+            ## Available Labels
+            ${names.join('\n')}
+
+            ## Issue #${issue.number}: ${issue.title}
+            ${issue.body || '(No body provided)'}
+
+            ## Instructions
+            Select only appropriate labels from the available list. Output your selection as a JSON object at the end:
+            \`\`\`json
+            {"labels": ["kind/bug"], "explanation": "Brief reason"}
+            \`\`\``;
+            fs.writeFileSync('/tmp/jules-triage-payload.json', JSON.stringify({
+              prompt,
+              sourceContext: { source: `sources/github/${context.repo.owner}/${context.repo.repo}` },
+            }));
+
+      - name: Create Jules session
+        if: steps.prepare.outputs.skip != 'true'
+        id: create
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+        shell: bash
+        run: |
+          retry_curl() {
+            local attempt status
+            for attempt in 1 2 3 4; do
+              status=$(curl -sS --connect-timeout 10 --max-time 60 -o /tmp/jules-response.json -w '%{http_code}' "$@") && {
+                [ "$status" -ge 200 ] && [ "$status" -lt 300 ] && return 0
+                [ "$status" = 429 ] && return 29
+              }
+              echo "Jules API attempt $attempt failed (HTTP ${status:-unknown})" >&2
+              sleep $((attempt * 2))
+            done
+            return 1
+          }
+          if retry_curl -X POST 'https://jules.googleapis.com/v1alpha/sessions' \
+            -H 'Content-Type: application/json' -H "X-Goog-Api-Key: ${JULES_API_KEY}" \
+            -d @/tmp/jules-triage-payload.json; then
+            SESSION_NAME=$(jq -r '.name // ("sessions/" + .id) // empty' /tmp/jules-response.json)
+            test -n "$SESSION_NAME" || { cat /tmp/jules-response.json; exit 1; }
+            echo "session_name=$SESSION_NAME" >> "$GITHUB_OUTPUT"
+          elif [ "$?" = 29 ]; then
+            echo 'Jules session cap reached (HTTP 429); triage will be retried later.'
+            echo 'quota_limited=true' >> "$GITHUB_OUTPUT"
+          else
+            cat /tmp/jules-response.json
+            exit 1
+          fi
+
+      - name: Poll for completion
+        if: steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_limited != 'true'
+        id: poll
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+          SESSION_NAME: ${{ steps.create.outputs.session_name }}
+        shell: bash
+        run: |
+          retry_curl() {
+            local attempt
+            for attempt in 1 2 3 4; do
+              curl -sS --fail-with-body --connect-timeout 10 --max-time 60 "$@" && return 0
+              sleep $((attempt * 2))
+            done
+            return 1
+          }
+          for attempt in $(seq 1 60); do
+            RESPONSE=$(retry_curl "https://jules.googleapis.com/v1alpha/${SESSION_NAME}?view=FULL" \
+              -H "X-Goog-Api-Key: ${JULES_API_KEY}")
+            STATE=$(jq -r '.state // "UNKNOWN"' <<< "$RESPONSE")
+            if [ "$STATE" = COMPLETED ] || [ "$STATE" = FAILED ]; then
+              retry_curl "https://jules.googleapis.com/v1alpha/${SESSION_NAME}/activities?pageSize=100" \
+                -H "X-Goog-Api-Key: ${JULES_API_KEY}" | jq -r \
+                '[(.activities // [])[] | select(.agentMessaged.agentMessage != null)][-1].agentMessaged.agentMessage // ""' \
+                > /tmp/jules-triage-output.txt
+              echo "session_state=$STATE" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Attempt $attempt/60: $STATE"
+            sleep 10
+          done
+          echo 'Jules triage timed out.' >&2
+          exit 1
+
+      - name: Validate and apply labels
+        if: steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_limited != 'true'
+        uses: actions/github-script@v7
+        env:
+          SESSION_STATE: ${{ steps.poll.outputs.session_state }}
+        with:
+          script: |
+            const fs = require('fs');
+            const output = fs.readFileSync('/tmp/jules-triage-output.txt', 'utf8');
+            const matches = [...output.matchAll(/\{\s*"labels"\s*:\s*\[[\s\S]*?\][\s\S]*?\}/g)];
+            if (!matches.length) return core.warning('No label JSON found in Jules output.');
+            let result;
+            try { result = JSON.parse(matches.at(-1)[0]); }
+            catch (error) { return core.warning(`Invalid label JSON: ${error.message}`); }
+            const { data: availableLabels } = await github.rest.issues.listLabelsForRepo({
+              ...context.repo, per_page: 100,
+            });
+            const validLabelNames = new Set(availableLabels.map(l => l.name));
+            const requested = Array.isArray(result.labels) ? result.labels : [];
+            const validLabels = requested.filter(l => typeof l === 'string' && validLabelNames.has(l));
+            if (!validLabels.length) return core.info('Jules selected no valid labels.');
+            await github.rest.issues.addLabels({
+              ...context.repo, issue_number: context.issue.number, labels: validLabels,
+            });
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: `<!-- jules-triage -->\n\n## 🤖 Jules Issue Triage\n\n**Labels applied:** ${validLabels.map(l => `\`${l}\``).join(', ')}\n\n${result.explanation || 'Automatically triaged by Jules.'}`,
+            });
+
+  batch-triage:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Find unlabeled issues and prepare batch payload
+        id: prepare
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh issue list --search 'no:label is:open' --json number,title,body --limit 50 > /tmp/issues.json
+          if [ "$(jq length /tmp/issues.json)" -eq 0 ]; then
+            echo 'No unlabeled issues found'
+            echo 'skip=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/labels?per_page=100" --jq '.[].name' > /tmp/labels.txt
+          if [ ! -s /tmp/labels.txt ]; then
+            echo 'No repository labels found'
+            echo 'skip=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          jq -nr --rawfile labels /tmp/labels.txt --slurpfile issues /tmp/issues.json '
+            "## Role\nYou are a GitHub issue triage assistant. Analyze each issue and assign labels.\n\n" +
+            "## Available Labels\n" + $labels + "\n## Issues to Triage\n" +
+            ($issues[0] | map("### Issue #\(.number): \(.title)\n\(.body // "(No body provided)")\n") | join("\n")) +
+            "\n## Instructions\nFor each issue, select appropriate labels from the available list.\n" +
+            "Output your selections as a JSON array at the end:\n```json\n[\n" +
+            "  {\"issue_number\": 123, \"labels\": [\"kind/bug\", \"priority/p1\"], \"explanation\": \"Brief reason\"},\n" +
+            "  {\"issue_number\": 124, \"labels\": [\"kind/enhancement\"], \"explanation\": \"Brief reason\"}\n]\n```"
+          ' > /tmp/prompt.txt
+          jq -n --rawfile prompt /tmp/prompt.txt \
+            --arg source "sources/github/${GITHUB_REPOSITORY}" \
+            '{prompt: $prompt, sourceContext: {source: $source}}' > /tmp/jules-triage-payload.json
+
+      - name: Create one Jules batch session
+        if: steps.prepare.outputs.skip != 'true'
+        id: create
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+        shell: bash
+        run: |
+          retry_curl() {
+            local attempt status
+            for attempt in 1 2 3 4; do
+              status=$(curl -sS --connect-timeout 10 --max-time 60 -o /tmp/jules-response.json -w '%{http_code}' "$@") && {
+                [ "$status" -ge 200 ] && [ "$status" -lt 300 ] && return 0
+                [ "$status" = 429 ] && return 29
+              }
+              echo "Jules API attempt $attempt failed (HTTP ${status:-unknown})" >&2
+              sleep $((attempt * 2))
+            done
+            return 1
+          }
+          if retry_curl -X POST 'https://jules.googleapis.com/v1alpha/sessions' \
+            -H 'Content-Type: application/json' -H "X-Goog-Api-Key: ${JULES_API_KEY}" \
+            -d @/tmp/jules-triage-payload.json; then
+            SESSION_NAME=$(jq -r '.name // ("sessions/" + .id) // empty' /tmp/jules-response.json)
+            test -n "$SESSION_NAME" || { cat /tmp/jules-response.json; exit 1; }
+            echo "session_name=$SESSION_NAME" >> "$GITHUB_OUTPUT"
+          elif [ "$?" = 29 ]; then
+            echo 'Jules session cap reached (HTTP 429); batch triage will retry next run.'
+            echo 'quota_limited=true' >> "$GITHUB_OUTPUT"
+          else
+            cat /tmp/jules-response.json
+            exit 1
+          fi
+
+      - name: Poll batch session for completion
+        if: steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_limited != 'true'
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+          SESSION_NAME: ${{ steps.create.outputs.session_name }}
+        shell: bash
+        run: |
+          retry_curl() {
+            local attempt
+            for attempt in 1 2 3 4; do
+              curl -sS --fail-with-body --connect-timeout 10 --max-time 60 "$@" && return 0
+              sleep $((attempt * 2))
+            done
+            return 1
+          }
+          MAX_ATTEMPTS=60
+          for attempt in $(seq 1 $MAX_ATTEMPTS); do
+            RESPONSE=$(retry_curl "https://jules.googleapis.com/v1alpha/${SESSION_NAME}?view=FULL" \
+              -H "X-Goog-Api-Key: ${JULES_API_KEY}")
+            STATE=$(jq -r '.state // "UNKNOWN"' <<< "$RESPONSE")
+            if [ "$STATE" = COMPLETED ] || [ "$STATE" = FAILED ]; then
+              retry_curl "https://jules.googleapis.com/v1alpha/${SESSION_NAME}/activities?pageSize=100" \
+                -H "X-Goog-Api-Key: ${JULES_API_KEY}" | jq -r \
+                '[(.activities // [])[] | select(.agentMessaged.agentMessage != null)][-1].agentMessaged.agentMessage // ""' \
+                > /tmp/jules-triage-output.txt
+              exit 0
+            fi
+            echo "Attempt $attempt/$MAX_ATTEMPTS: $STATE"
+            sleep 10
+          done
+          echo 'Jules batch triage timed out.' >&2
+          exit 1
+
+      - name: Validate and apply batch results
+        if: steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_limited != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const output = fs.readFileSync('/tmp/jules-triage-output.txt', 'utf8');
+            let results;
+            for (let start = output.lastIndexOf('['); start >= 0; start = output.lastIndexOf('[', start - 1)) {
+              for (let end = output.lastIndexOf(']'); end > start; end = output.lastIndexOf(']', end - 1)) {
+                try {
+                  const candidate = JSON.parse(output.slice(start, end + 1));
+                  if (Array.isArray(candidate)) { results = candidate; break; }
+                } catch (_) {}
+              }
+              if (results) break;
+            }
+            if (!results) return core.warning('No valid JSON array found in Jules output.');
+            const issues = JSON.parse(fs.readFileSync('/tmp/issues.json', 'utf8'));
+            const expectedIssues = new Set(issues.map(issue => issue.number));
+            const { data: availableLabels } = await github.rest.issues.listLabelsForRepo({
+              ...context.repo, per_page: 100,
+            });
+            const validLabelNames = new Set(availableLabels.map(l => l.name));
+            const byIssue = new Map(results.map(result => [Number(result.issue_number), result]));
+            for (const issue of issues) {
+              const result = byIssue.get(issue.number) || {};
+              const labels = Array.isArray(result.labels) ? result.labels : [];
+              const validLabels = labels.filter(l => typeof l === 'string' && validLabelNames.has(l));
+              if (!expectedIssues.has(issue.number)) continue;
+              if (validLabels.length) {
+                await github.rest.issues.addLabels({
+                  ...context.repo, issue_number: issue.number, labels: validLabels,
+                });
+              }
+              const applied = validLabels.length ? validLabels.map(l => `\`${l}\``).join(', ') : 'None';
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: issue.number,
+                body: `<!-- jules-triage -->\n\n## 🤖 Jules Issue Triage\n\n**Labels applied:** ${applied}\n\n${result.explanation || 'Jules did not select any valid labels.'}`,
+              });
+            }
