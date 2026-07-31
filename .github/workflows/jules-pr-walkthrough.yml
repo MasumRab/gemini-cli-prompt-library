@@ -325,7 +325,7 @@ jobs:
           SESSION_ID: ${{ steps.create.outputs.session_id }}
         run: |
           SESSION_RESOURCE="${SESSION_NAME:-sessions/${SESSION_ID}}"
-          MAX_ATTEMPTS=60
+          MAX_ATTEMPTS=90
 
           poll_curl() {
             local response
@@ -372,7 +372,28 @@ jobs:
           done
 
           echo "session_state=TIMEOUT" >> "$GITHUB_OUTPUT"
-          echo "Walkthrough timed out." > /tmp/jules-walkthrough-output.txt
+          # Attempt one final activities fetch to capture partial output
+          ACTS=$(poll_curl \
+            "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}/activities?pageSize=100" \
+            -H "X-Goog-Api-Key: ${JULES_API_KEY}" 2>/dev/null) || true
+          if [ -n "$ACTS" ]; then
+            PARTIAL=$(echo "$ACTS" | jq -r '[
+              (.activities // [])[]
+              | select(.agentMessaged.agentMessage != null)
+              | .agentMessaged.agentMessage
+            ] | join("\n\n---\n\n") // ""' 2>/dev/null)
+            if [ -n "$PARTIAL" ]; then
+              echo "$PARTIAL" > /tmp/jules-walkthrough-output.txt
+              echo "partial_output=true" >> "$GITHUB_OUTPUT"
+              echo "Poll timed out but captured partial output"
+            else
+              echo "Walkthrough timed out." > /tmp/jules-walkthrough-output.txt
+              echo "partial_output=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "Walkthrough timed out." > /tmp/jules-walkthrough-output.txt
+            echo "partial_output=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Post walkthrough comment
         if: always() && steps.build.conclusion == 'success' && steps.create.outputs.quota_exhausted != 'true'
@@ -386,12 +407,19 @@ jobs:
             } catch (e) {
               core.warning(`Output file not found: ${e.message}`);
             }
+            const sessionState = '${{ steps.poll.outputs.session_state }}';
+            const partialOutput = '${{ steps.poll.outputs.partial_output }}';
+            if (sessionState === 'TIMEOUT' && partialOutput === 'true') {
+              message = `> ⏳ **Partial walkthrough — Jules session is still running.**\n\n${message}`;
+            }
             const prNumber = context.payload.pull_request?.number || context.payload.issue.number;
             const headSha = '${{ steps.build.outputs.head_sha }}';
+            const sessionName = '${{ steps.create.outputs.session_name }}';
 
             const body = [
               `<!-- jules-walkthrough -->`,
               `<!-- head_sha: ${headSha} -->`,
+              ...(sessionName ? [`<!-- jules-session: ${sessionName} -->`] : []),
               `## PR Walkthrough`,
               ``,
               message,
