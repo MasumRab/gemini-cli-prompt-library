@@ -19,14 +19,18 @@ name: Jules PR Review
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
 
 concurrency:
-  group: jules-review-${{ github.event.pull_request.number }}
+  group: jules-review-${{ github.event.pull_request.number || github.event.issue.number }}
   cancel-in-progress: true
 
 jobs:
   review:
-    if: ${{ github.event.pull_request.user.login != 'google-labs-jules[bot]' }}
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.user.login != 'google-labs-jules[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -109,7 +113,7 @@ jobs:
             // Cross-session dedup: skip if a review for this SHA was already posted
             const existingReview = allIssueComments.find(c =>
               c.body?.includes('<!-- jules-pr-reviewer -->') &&
-              c.body?.includes(`head_sha:${headSha}`)
+              c.body?.includes(`head_sha: ${headSha}`)
             );
             if (existingReview) {
               core.info('Review already posted for this HEAD SHA — skipping');
@@ -196,6 +200,24 @@ jobs:
               `   - JavaScript: \`eslint .\` (eslint is pre-installed)`,
               `   - Include any security findings classified by severity`,
               `7. Examine logic, edge cases, and consistency`,
+              ``,
+              `## Review Criteria (in priority order)`,
+              `1. **Correctness** — logic errors, unhandled edge cases, race conditions, incorrect API usage, data validation flaws`,
+              `2. **Security** — injection attacks, insecure data storage, insufficient access controls, secrets exposure`,
+              `3. **Efficiency** — performance bottlenecks, unnecessary computations, memory leaks, inefficient data structures`,
+              `4. **Maintainability** — readability, modularity, adherence to language idioms and style guides (PEP 8, Google style, etc.)`,
+              `5. **Testing** — adequate unit/integration/e2e tests, coverage, edge case handling, test quality`,
+              `6. **Performance** — performance under expected load, bottlenecks, optimizations`,
+              `7. **Scalability** — how code scales with growing user base or data volume`,
+              `8. **Modularity and Reusability** — code organization, modularity, reusability, refactoring opportunities`,
+              `9. **Error Logging and Monitoring** — effective error logging, monitoring mechanisms for production health`,
+              ``,
+              `## Severity Levels (strict — assign to every finding)`,
+              `🔴 Critical — production failure, security breach, data corruption. MUST fix before merge.`,
+              `🟠 High — significant problems, bugs, performance degradation. Should fix before merge.`,
+              `🟡 Medium — deviation from best practices, technical debt. Consider fixing.`,
+              `🟢 Low — minor, stylistic, typos, documentation. Author discretion.`,
+              ``,
               ...(hasWalkthrough ? [] : [
                 ``,
                 `## Bonus: PR Walkthrough`,
@@ -380,7 +402,36 @@ jobs:
           SESSION_ID: ${{ steps.create.outputs.session_id }}
         run: |
           SESSION_RESOURCE="${SESSION_NAME:-sessions/${SESSION_ID}}"
-          MAX_ATTEMPTS=60
+          # 90 attempts × 15s = 22.5 min (job timeout is 30 min, leaving room
+          # for setup + post-review).  Increased from 60 (15 min) because Jules
+          # sessions on large PRs frequently exceed 15 minutes.
+          MAX_ATTEMPTS=90
+          FETCH_ACTIVITIES() {
+            curl -sS --fail-with-body --connect-timeout 10 --max-time 60 \
+              "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}/activities?pageSize=100" \
+              -H "X-Goog-Api-Key: ${JULES_API_KEY}" 2>/dev/null || true
+          }
+          SAVE_OUTPUT() {
+            local acts
+            acts="$(FETCH_ACTIVITIES)"
+            if [ -n "$acts" ]; then
+              echo "$acts" | jq -r '[
+                (.activities // [])[]
+                | select(.agentMessaged.agentMessage != null)
+                | .agentMessaged.agentMessage
+              ] | join("\n\n---\n\n") // ""' > /tmp/jules-review-output.txt
+              local msg_count
+              msg_count=$(jq -r '[(.activities // [])[] | select(.agentMessaged.agentMessage != null)] | length' <<< "$acts" 2>/dev/null || echo 0)
+              if [ "$msg_count" -gt 0 ]; then
+                echo "partial_output=true" >> "$GITHUB_OUTPUT"
+                echo "Captured $msg_count agent messages from session"
+              else
+                echo "partial_output=false" >> "$GITHUB_OUTPUT"
+              fi
+            else
+              echo "partial_output=false" >> "$GITHUB_OUTPUT"
+            fi
+          }
 
           for i in $(seq 1 $MAX_ATTEMPTS); do
             sleep 15
@@ -401,22 +452,23 @@ jobs:
 
             if [ "$STATE" = "COMPLETED" ] || [ "$STATE" = "FAILED" ]; then
               echo "session_state=$STATE" >> "$GITHUB_OUTPUT"
-              ACTS=$(curl -sS --fail-with-body --connect-timeout 10 --max-time 60 \
-                "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}/activities?pageSize=100" \
-                -H "X-Goog-Api-Key: ${JULES_API_KEY}")
-              echo "$ACTS" | jq -r '[
-                (.activities // [])[]
-                | select(.agentMessaged.agentMessage != null)
-                | .agentMessaged.agentMessage
-              ] | join("\n\n---\n\n") // "Review unavailable"' > /tmp/jules-review-output.txt
+              SAVE_OUTPUT
               echo "Session finished ($STATE)"
               exit 0
             fi
             echo "Attempt $i/$MAX_ATTEMPTS — state: $STATE"
           done
 
+          # Timeout — attempt one final activities fetch to capture partial
+          # output.  The session may have produced review content even if it
+          # hasn't reached COMPLETED state yet.
           echo "session_state=TIMEOUT" >> "$GITHUB_OUTPUT"
-          echo "Review timed out after $((MAX_ATTEMPTS * 15)) seconds." > /tmp/jules-review-output.txt
+          SAVE_OUTPUT
+          if [ "${partial_output:-false}" = "true" ]; then
+            echo "Poll timed out but captured partial output"
+          else
+            echo "Review timed out after $((MAX_ATTEMPTS * 15)) seconds." > /tmp/jules-review-output.txt
+          fi
 
       - name: Post review and set commit status
         if: always() && steps.prepare.conclusion == 'success' && steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_exhausted != 'true'
@@ -428,6 +480,9 @@ jobs:
             const prNumber = context.payload.pull_request.number;
             const headSha = '${{ steps.prepare.outputs.head_sha }}';
             const sessionState = '${{ steps.poll.outputs.session_state }}';
+            const sessionName = '${{ steps.create.outputs.session_name }}';
+            const sessionId = '${{ steps.create.outputs.session_id }}';
+            const hasPartialOutput = '${{ steps.poll.outputs.partial_output }}' === 'true';
 
             // Split walkthrough from review before parsing
             const wtStart = '<!-- walkthrough_start -->';
@@ -459,9 +514,15 @@ jobs:
             } else if (sessionState === 'COMPLETED' && verdict === 'block') {
               statusState = 'failure';
               statusDesc = 'Blocking issues found';
+            } else if (sessionState === 'COMPLETED' && !verdict) {
+              statusState = 'neutral';
+              statusDesc = 'Review completed (no verdict)';
             } else if (sessionState === 'FAILED') {
               statusState = 'failure';
               statusDesc = 'Jules session failed';
+            } else if (sessionState === 'TIMEOUT' && hasPartialOutput) {
+              statusState = 'neutral';
+              statusDesc = 'Partial review (session still running)';
             } else if (sessionState === 'TIMEOUT') {
               statusState = 'failure';
               statusDesc = 'Review timed out';
@@ -481,11 +542,16 @@ jobs:
               core.warning(`Failed to set commit status: ${e.message}`);
             }
 
-            // Parse per-line findings from Jules output
+            // ── Parse per-line findings ──────────────────────────────────
+            // Primary: FINDING markers (structured, emitted by the prompt).
+            // Fallback: heading-based parsing (### 🔴 Critical - file:line)
+            //           for when Jules doesn't emit FINDING markers.
             const findingRegex = /<!--\s*FINDING\s+severity="([^"]+)"\s+file="([^"]+)"\s+line="?(\d+)"?(?:\s+reason="([^"]*)")?\s*-->/gi;
             const comments = [];
             let findingMatch;
             const seen = new Set();
+
+            // Primary: FINDING markers
             while ((findingMatch = findingRegex.exec(mainReview)) !== null) {
               const [, severity, file, line, reason] = findingMatch;
               const key = `${file}:${line}`;
@@ -506,8 +572,56 @@ jobs:
               });
             }
 
-            // Post PR review (review portion only) with per-line comments
-            const body = `<!-- jules-pr-reviewer -->\n<!-- head_sha: ${headSha} -->\n\n${mainReview}`;
+            // Fallback: heading-based parsing when no FINDING markers found.
+            // Matches patterns like:
+            //   ### 🔴 Critical - src/auth.py:42
+            //   ### 🟠 High — path/file.ext:line — description
+            //   ### [BLOCKING] - path:line — desc
+            //   ### [WARN] - path:line — desc
+            if (comments.length === 0) {
+              const emojiMap = { '🔴': 'critical', '🟠': 'high', '🟡': 'medium', '🟢': 'low' };
+              const bracketMap = { 'BLOCKING': 'critical', 'WARN': 'medium', 'NIT': 'low', 'HIGH': 'high', 'CRITICAL': 'critical', 'MEDIUM': 'medium', 'LOW': 'low' };
+              // Match: ### [emoji|bracket] [severity] [-|—] file:line
+              const headingRegex = /^###\s+(?:([🔴🟠🟡🟢])|(?:\[([A-Z]+)\]))\s*(?:[A-Za-z]+\s*)?[-—]\s*(.+?):(\d+)\s*(?:[-—]\s*(.*))?$/gmi;
+              let hMatch;
+              while ((hMatch = headingRegex.exec(mainReview)) !== null) {
+                const emoji = hMatch[1];
+                const bracket = hMatch[2];
+                const file = hMatch[3].trim();
+                const line = hMatch[4];
+                const key = `${file}:${line}`;
+                if (seen.has(key)) continue;
+                seen.add(key);
+
+                const severity = emoji ? emojiMap[emoji] : (bracketMap[bracket] || 'medium');
+
+                // Extract the finding body (from this heading to the next ### or end)
+                const lineIdx = hMatch.index;
+                const nextHeadingIdx = mainReview.indexOf('###', lineIdx + 1);
+                const findingBody = nextHeadingIdx !== -1
+                  ? mainReview.slice(lineIdx, nextHeadingIdx).trim()
+                  : mainReview.slice(lineIdx).trim();
+
+                comments.push({
+                  path: file,
+                  line: parseInt(line),
+                  body: findingBody,
+                });
+              }
+              core.info(`Fallback heading-based parsing extracted ${comments.length} comments`);
+            }
+
+            // ── Build review body ─────────────────────────────────────────
+            const isPartial = sessionState === 'TIMEOUT' && hasPartialOutput;
+            const sessionResource = sessionName || (sessionId ? `sessions/${sessionId}` : '');
+            const deferredNotice = isPartial && sessionResource
+              ? `\n\n<!-- jules-review-deferred session="${sessionResource}" sha="${headSha}" -->\n\n> ⏳ **Partial review — Jules session is still running.**\n> The session has not completed yet, but partial output was captured.\n> A maintainer can post \`/jules-post-review\` on this PR to re-check the session\n> and post the full review once it completes.`
+              : '';
+            const timeoutNotice = sessionState === 'TIMEOUT' && !hasPartialOutput && sessionResource
+              ? `\n\n<!-- jules-review-deferred session="${sessionResource}" sha="${headSha}" -->\n\n> ⚠️ **Review timed out — Jules session is still running.**\n> No output was captured before the poll expired.\n> A maintainer can post \`/jules-post-review\` on this PR to re-check the session\n> and post the review once it completes.`
+              : '';
+
+            const body = `<!-- jules-pr-reviewer -->\n<!-- head_sha: ${headSha} -->\n${sessionResource ? `<!-- jules-session: ${sessionResource} -->` : ''}\n\n${mainReview}${deferredNotice}${timeoutNotice}`;
 
             let reviewEvent = 'COMMENT';
             if (verdict === 'approve') reviewEvent = 'APPROVE';
@@ -553,9 +667,271 @@ jobs:
             }
 
       - name: Upload session output
-        if: always() && steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_exhausted != 'true'
+        if: always() && steps.prepare.conclusion == 'success' && steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_exhausted != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: jules-review-${{ github.event.pull_request.number }}
           path: /tmp/jules-review-output.txt
           retention-days: 30
+
+  # ─── Deferred review: handles /jules-post-review comments ────────────────
+  # When a review session times out, the review job posts a comment with a
+  # <!-- jules-review-deferred session="..." sha="..." --> marker.  A
+  # maintainer can later comment /jules-post-review on the PR to re-check
+  # the session and post the full review once it has completed.
+  # NOTE: force-review uses a distinct <!-- jules-force-review-deferred -->
+  # marker so the two workflows do not double-post.  Both trigger on
+  # /jules-post-review but only the matching marker is processed.
+  post-deferred:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, '/jules-post-review') &&
+      contains('OWNER,MEMBER,COLLABORATOR', github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pull-requests: write
+      contents: read
+      statuses: write
+    steps:
+      - name: Find deferred review marker and fetch session
+        id: find
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: prNumber, per_page: 100,
+            });
+
+            // Find the most recent deferred review marker
+            const deferredComment = comments
+              .filter(c => c.body?.includes('<!-- jules-review-deferred'))
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+
+            if (!deferredComment) {
+              core.info('No deferred review marker found — nothing to post');
+              core.setOutput('skip', 'true');
+              return;
+            }
+
+            // Extract session resource and SHA from the marker
+            const markerMatch = deferredComment.body.match(
+              /<!--\s*jules-review-deferred\s+session="([^"]+)"\s+sha="([^"]+)"\s*-->/
+            );
+            if (!markerMatch) {
+              core.info('Deferred marker malformed — cannot extract session');
+              core.setOutput('skip', 'true');
+              return;
+            }
+
+            core.setOutput('skip', 'false');
+            core.setOutput('session_resource', markerMatch[1]);
+            core.setOutput('head_sha', markerMatch[2]);
+            core.setOutput('pr_number', String(prNumber));
+            core.info(`Found deferred session: ${markerMatch[1]}`);
+
+      - name: Check session state and fetch activities
+        if: steps.find.outputs.skip != 'true'
+        id: check
+        shell: bash
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+          SESSION_RESOURCE: ${{ steps.find.outputs.session_resource }}
+        run: |
+          RESPONSE=$(curl -sS --fail-with-body --connect-timeout 10 --max-time 60 \
+            "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}?view=FULL" \
+            -H "X-Goog-Api-Key: ${JULES_API_KEY}" 2>&1) || {
+            echo "session_state=ERROR" >> "$GITHUB_OUTPUT"
+            echo "Failed to fetch session state: $RESPONSE" > /tmp/jules-deferred-output.txt
+            exit 0
+          }
+          STATE=$(echo "$RESPONSE" | jq -r '.state // "UNKNOWN"')
+          echo "session_state=$STATE" >> "$GITHUB_OUTPUT"
+          echo "Session state: $STATE"
+
+          if [ "$STATE" = "COMPLETED" ] || [ "$STATE" = "FAILED" ]; then
+            ACTS=$(curl -sS --fail-with-body --connect-timeout 10 --max-time 60 \
+              "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}/activities?pageSize=100" \
+              -H "X-Goog-Api-Key: ${JULES_API_KEY}")
+            echo "$ACTS" | jq -r '[
+              (.activities // [])[]
+              | select(.agentMessaged.agentMessage != null)
+              | .agentMessaged.agentMessage
+            ] | join("\n\n---\n\n") // "Review unavailable"' > /tmp/jules-deferred-output.txt
+            echo "output_ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "output_ready=false" >> "$GITHUB_OUTPUT"
+            echo "Session is still $STATE — not ready for posting." > /tmp/jules-deferred-output.txt
+          fi
+
+      - name: Post deferred review
+        if: steps.find.outputs.skip != 'true' && steps.check.outputs.output_ready == 'true'
+        uses: actions/github-script@v7
+        env:
+          HEAD_SHA: ${{ steps.find.outputs.head_sha }}
+          SESSION_STATE: ${{ steps.check.outputs.session_state }}
+        with:
+          script: |
+            const fs = require('fs');
+            const reviewText = fs.readFileSync('/tmp/jules-deferred-output.txt', 'utf8');
+            const prNumber = parseInt(process.env.PR_NUMBER || '${{ steps.find.outputs.pr_number }}');
+            const headSha = process.env.HEAD_SHA;
+            const sessionState = process.env.SESSION_STATE;
+
+            const pr = (await github.rest.pulls.get({
+              owner: context.repo.owner, repo: context.repo.repo,
+              pull_number: prNumber,
+            })).data;
+
+            // SHA guard: if the PR was updated since the deferred marker was
+            // posted, the review is stale — don't post inline comments against
+            // the wrong commit.
+            if (pr.head.sha !== headSha) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: prNumber,
+                body: `⚠️ **Deferred review skipped — PR was updated.**\n\nThe review session was recorded against commit \`${headSha}\`, but the PR head is now \`${pr.head.sha}\`. The review may be outdated. Please trigger a new review for the current commit.`,
+              });
+              core.info(`SHA mismatch: marker=${headSha}, current=${pr.head.sha} — skipping deferred post`);
+              return;
+            }
+
+            // Split walkthrough from review
+            const wtStart = '<!-- walkthrough_start -->';
+            const wtEnd = '<!-- walkthrough_end -->';
+            const reviewTextParts = reviewText.split(wtStart);
+            const mainReview = reviewTextParts[0].trim();
+            let walkthroughText = '';
+            if (reviewTextParts.length > 1) {
+              const afterStart = reviewTextParts[1];
+              const endIdx = afterStart.indexOf(wtEnd);
+              walkthroughText = endIdx !== -1
+                ? afterStart.slice(0, endIdx).trim()
+                : afterStart.trim();
+            }
+
+            // Parse verdict
+            const verdictMatch = mainReview.match(/\[VERDICT\]:\s*(approve|comment|block)|<!--\s*verdict:\s*(approve|comment|block)\s*-->/i);
+            const verdict = verdictMatch ? (verdictMatch[1] || verdictMatch[2]).toLowerCase() : null;
+
+            // Parse per-line findings (primary + fallback)
+            const findingRegex = /<!--\s*FINDING\s+severity="([^"]+)"\s+file="([^"]+)"\s+line="?(\d+)"?(?:\s+reason="([^"]*)")?\s*-->/gi;
+            const comments = [];
+            const seen = new Set();
+            let m;
+            while ((m = findingRegex.exec(mainReview)) !== null) {
+              const [, severity, file, line] = m;
+              const key = `${file}:${line}`;
+              if (seen.has(key)) continue;
+              seen.add(key);
+              const heading = `### ${severity === 'critical' ? '🔴' : severity === 'high' ? '🟠' : severity === 'medium' ? '🟡' : '🟢'} ${severity.charAt(0).toUpperCase() + severity.slice(1)} - ${file}:${line}`;
+              const startIdx = mainReview.indexOf(heading);
+              const endIdx = mainReview.indexOf('<!-- FINDING', startIdx + 1);
+              const body = startIdx !== -1
+                ? mainReview.slice(startIdx, endIdx !== -1 ? endIdx : undefined).trim()
+                : heading;
+              comments.push({ path: file, line: parseInt(line), body });
+            }
+
+            // Fallback heading-based parsing
+            if (comments.length === 0) {
+              const emojiMap = { '🔴': 'critical', '🟠': 'high', '🟡': 'medium', '🟢': 'low' };
+              const bracketMap = { 'BLOCKING': 'critical', 'WARN': 'medium', 'NIT': 'low', 'HIGH': 'high', 'CRITICAL': 'critical', 'MEDIUM': 'medium', 'LOW': 'low' };
+              const headingRegex = /^###\s+(?:([🔴🟠🟡🟢])|(?:\[([A-Z]+)\]))\s*(?:[A-Za-z]+\s*)?[-—]\s*(.+?):(\d+)\s*(?:[-—]\s*(.*))?$/gmi;
+              let hMatch;
+              while ((hMatch = headingRegex.exec(mainReview)) !== null) {
+                const emoji = hMatch[1];
+                const bracket = hMatch[2];
+                const file = hMatch[3].trim();
+                const line = hMatch[4];
+                const key = `${file}:${line}`;
+                if (seen.has(key)) continue;
+                seen.add(key);
+                const lineIdx = hMatch.index;
+                const nextHeadingIdx = mainReview.indexOf('###', lineIdx + 1);
+                const body = nextHeadingIdx !== -1
+                  ? mainReview.slice(lineIdx, nextHeadingIdx).trim()
+                  : mainReview.slice(lineIdx).trim();
+                comments.push({ path: file, line: parseInt(line), body });
+              }
+              core.info(`Fallback heading-based parsing extracted ${comments.length} comments`);
+            }
+
+            // Update commit status
+            let statusState = 'failure', statusDesc = 'Review failed';
+            if (sessionState === 'COMPLETED' && verdict === 'approve') {
+              statusState = 'success'; statusDesc = 'Approved';
+            } else if (sessionState === 'COMPLETED' && verdict === 'comment') {
+              statusState = 'neutral'; statusDesc = 'Comments provided';
+            } else if (sessionState === 'COMPLETED' && verdict === 'block') {
+              statusState = 'failure'; statusDesc = 'Blocking issues found';
+            } else if (sessionState === 'COMPLETED' && !verdict) {
+              statusState = 'neutral'; statusDesc = 'Review completed (no verdict)';
+            } else if (sessionState === 'FAILED') {
+              statusState = 'failure'; statusDesc = 'Jules session failed';
+            }
+            try {
+              await github.rest.repos.createCommitStatus({
+                owner: context.repo.owner, repo: context.repo.repo,
+                sha: headSha, state: statusState,
+                context: 'jules/review', description: statusDesc,
+              });
+            } catch (e) {
+              core.warning(`Failed to set commit status: ${e.message}`);
+            }
+
+            // Post the review
+            const body = `<!-- jules-pr-reviewer -->\n<!-- head_sha: ${headSha} -->\n<!-- jules-deferred-review-posted -->\n\n${mainReview}`;
+            let reviewEvent = 'COMMENT';
+            if (verdict === 'approve') reviewEvent = 'APPROVE';
+            else if (verdict === 'block') reviewEvent = 'REQUEST_CHANGES';
+
+            try {
+              const reviewParams = {
+                owner: context.repo.owner, repo: context.repo.repo,
+                pull_number: prNumber, commit_id: headSha,
+                event: reviewEvent, body,
+              };
+              if (comments.length > 0) reviewParams.comments = comments;
+              await github.rest.pulls.createReview(reviewParams);
+              core.info(`Deferred review posted with ${comments.length} per-line comments`);
+            } catch (e) {
+              core.warning(`PR review failed, falling back to batch comment: ${e.message}`);
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: prNumber, body,
+              });
+            }
+
+            if (walkthroughText) {
+              try {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner, repo: context.repo.repo,
+                  issue_number: prNumber,
+                  body: `<!-- jules-walkthrough -->\n\n${walkthroughText}`,
+                });
+              } catch (e) {
+                core.warning(`Failed to post walkthrough: ${e.message}`);
+              }
+            }
+
+      - name: Session still running
+        if: steps.find.outputs.skip != 'true' && steps.check.outputs.output_ready != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const state = '${{ steps.check.outputs.session_state }}';
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: `⏳ **Jules session is still ${state}.**\n\nThe session has not completed yet. Comment \`/jules-post-review\` again later to re-check.\n\n<!-- jules-review-deferred-pending -->`,
+            });
+
+      - name: No deferred session found
+        if: steps.find.outputs.skip == 'true'
+        shell: bash
+        run: echo "No deferred review marker found — nothing to post"
