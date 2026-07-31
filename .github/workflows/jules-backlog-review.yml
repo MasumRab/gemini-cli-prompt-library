@@ -1,0 +1,294 @@
+name: Jules Backlog Review
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      max_prs:
+        description: 'Maximum PRs to review per run'
+        required: false
+        default: '5'
+        type: string
+      days_stale:
+        description: 'Minimum days since last update to consider stale'
+        required: false
+        default: '14'
+        type: string
+
+concurrency:
+  group: jules-backlog-review
+  cancel-in-progress: false
+
+jobs:
+  backlog-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      pull-requests: write
+      contents: read
+      issues: write
+
+    steps:
+      - name: Discover stale PRs
+        id: discover
+        uses: actions/github-script@v7
+        env:
+          MAX_PRS: ${{ inputs.max_prs || '5' }}
+          DAYS_STALE: ${{ inputs.days_stale || '14' }}
+        with:
+          script: |
+            const maxPrs = Math.max(1, Number.parseInt(process.env.MAX_PRS, 10) || 5);
+            const daysStale = Math.max(1, Number.parseInt(process.env.DAYS_STALE, 10) || 14);
+            const now = Date.now();
+            const staleBefore = now - daysStale * 24 * 60 * 60 * 1000;
+            const debounceAfter = now - 7 * 24 * 60 * 60 * 1000;
+            const { owner, repo } = context.repo;
+
+            const open = await github.paginate(github.rest.pulls.list, {
+              owner, repo, state: 'open', per_page: 100,
+            });
+            const candidates = open.filter(pr =>
+              new Date(pr.updated_at).getTime() <= staleBefore &&
+              pr.user?.login !== 'google-labs-jules[bot]' &&
+              !pr.draft &&
+              !pr.labels.some(label => label.name === 'jules-override')
+            );
+
+            const stale = [];
+            for (const candidate of candidates) {
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner, repo, issue_number: candidate.number, per_page: 100,
+              });
+              const recentlyReviewed = comments.some(comment =>
+                comment.body?.includes('<!-- jules-backlog-review -->') &&
+                new Date(comment.created_at).getTime() >= debounceAfter
+              );
+              if (recentlyReviewed) continue;
+
+              // The list endpoint can report an outdated mergeability value, so refresh it.
+              const { data: pr } = await github.rest.pulls.get({
+                owner, repo, pull_number: candidate.number,
+              });
+              stale.push(pr);
+            }
+
+            stale.sort((a, b) => {
+              const aConflicting = a.mergeable_state === 'dirty' ? 0 : 1;
+              const bConflicting = b.mergeable_state === 'dirty' ? 0 : 1;
+              return aConflicting - bConflicting ||
+                new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime();
+            });
+            const numbers = stale.slice(0, maxPrs).map(pr => pr.number);
+            core.setOutput('pr_numbers', JSON.stringify(numbers));
+            core.setOutput('skip', numbers.length === 0 ? 'true' : 'false');
+            core.info(numbers.length
+              ? `Selected stale PRs: ${numbers.join(', ')}`
+              : 'No stale PRs need backlog review.');
+
+      - name: Checkout trusted classifier
+        if: steps.discover.outputs.skip != 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          sparse-checkout: .github/scripts
+          path: _helpers
+
+      - name: Process each stale PR
+        if: steps.discover.outputs.skip != 'true'
+        id: process
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+          PR_NUMBERS: ${{ steps.discover.outputs.pr_numbers }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -uo pipefail
+
+          retry_curl() {
+            local max_retries=3 attempt=1 delay=5 rc=0
+            while [ "$attempt" -le "$max_retries" ]; do
+              curl -sS --fail-with-body --connect-timeout 10 --max-time 60 "$@" && return 0
+              rc=$?
+              if [ "$attempt" -lt "$max_retries" ]; then
+                sleep "$delay"
+                delay=$((delay * 2))
+              fi
+              attempt=$((attempt + 1))
+            done
+            return "$rc"
+          }
+
+          reviewed=0
+          deferred=0
+          sessions=0
+          quota_reached=false
+          mapfile -t prs < <(jq -r '.[]' <<< "$PR_NUMBERS")
+
+          defer_pr() {
+            local number="$1"
+            gh api "repos/${REPOSITORY}/issues/${number}/comments" \
+              -f body='⚠️ Backlog review deferred — daily session cap reached. The PR remains queued for a future functional review; this is not a recommendation to close it.' >/dev/null
+            deferred=$((deferred + 1))
+          }
+
+          for index in "${!prs[@]}"; do
+            number="${prs[$index]}"
+            if [ "$quota_reached" = true ] || [ "$sessions" -ge 15 ]; then
+              defer_pr "$number"
+              continue
+            fi
+
+            pr=$(gh api "repos/${REPOSITORY}/pulls/${number}")
+            files=$(gh api --paginate "repos/${REPOSITORY}/pulls/${number}/files?per_page=100" --slurp)
+            comments=$(gh api --paginate "repos/${REPOSITORY}/issues/${number}/comments?per_page=100" --slurp)
+            reviews=$(gh api --paginate "repos/${REPOSITORY}/pulls/${number}/reviews?per_page=100" --slurp)
+            sha=$(jq -r '.head.sha' <<< "$pr")
+            checks=$(gh api "repos/${REPOSITORY}/commits/${sha}/check-runs?per_page=100" || echo '{"check_runs":[]}')
+
+            title=$(jq -r '.title' <<< "$pr")
+            head_ref=$(jq -r '.head.ref' <<< "$pr")
+            base_ref=$(jq -r '.base.ref' <<< "$pr")
+            updated_at=$(jq -r '.updated_at' <<< "$pr")
+            mergeable_state=$(jq -r 'if .mergeable_state == "dirty" then "CONFLICTING" elif .mergeable == true then "MERGEABLE" else (.mergeable_state | ascii_upcase) end' <<< "$pr")
+            changed_count=$(jq -r 'flatten | length' <<< "$files")
+            stale_days=$(( ($(date +%s) - $(date -d "$updated_at" +%s)) / 86400 ))
+            file_summary=$(jq -r 'flatten | map("- \(.filename) (+\(.additions)/-\(.deletions), status: \(.status))") | join("\n")' <<< "$files")
+            conflict_files=$(jq -r 'flatten | map(select(.status == "modified") | .filename) | join(", ")' <<< "$files")
+            failed_checks=$(jq -r '[.check_runs[]? | select(.conclusion != null and (.conclusion | IN("success", "neutral", "skipped") | not)) | "\(.name): \(.conclusion)"] | if length == 0 then "None reported" else join(", ") end' <<< "$checks")
+            context_summary=$(jq -n --argjson comments "$comments" --argjson reviews "$reviews" '
+              "Recent comments/reviews:\n" +
+              ((($comments | flatten | .[-10:] | map("- " + (.user.login // "unknown") + ": " + ((.body // "") | gsub("[\\r\\n]+"; " ") | .[0:500]))) +
+                ($reviews | flatten | .[-10:] | map("- Review " + (.state // "UNKNOWN") + " by " + (.user.login // "unknown") + ": " + ((.body // "") | gsub("[\\r\\n]+"; " ") | .[0:500])))) | join("\n"))')
+
+            cat > /tmp/prompt.txt <<EOF
+          ## Backlog Review: Making This PR Functional
+
+          This PR has been stale for ${stale_days} days. Your task is NOT to determine whether
+          this PR should be closed. Your task is to identify what improvements and
+          changes need to be made to get this code functional and mergeable.
+
+          ## Current State
+          - PR #${number}: ${title}
+          - Branch: ${head_ref} → ${base_ref}
+          - Mergeable: ${mergeable_state}
+          - Last updated: ${updated_at}
+          - Files changed: ${changed_count}
+          - Potential conflict files to inspect: ${conflict_files:-unknown}
+          - Failing CI checks: ${failed_checks}
+
+          Changed files:
+          ${file_summary}
+
+          ${context_summary}
+
+          ## What to Analyze
+          1. **Conflict resolution**: If the PR has merge conflicts, identify the
+             conflicting files and describe what needs to be resolved.
+          2. **Code functionality**: Read the changed files and identify:
+             - Missing imports or dependencies
+             - Broken function signatures or API calls
+             - Tests that would fail due to API changes
+             - Configuration that needs updating
+          3. **Specific fix actions**: For each issue found, provide:
+             - The file path and line number
+             - The specific change needed
+             - A code suggestion if possible
+          4. **Merge readiness checklist**: List what needs to happen before this
+             PR can merge (rebase, fix tests, update deps, etc.)
+
+          Do NOT recommend closing this PR. Focus exclusively on what needs to
+          change to make it work.
+
+          ## Output Format
+          Return only a PR comment with this structure:
+
+          ## 🔧 Backlog Review — Path to Functional
+
+          ### Current Blockers
+          - [list of issues preventing merge/functionality]
+
+          ### Required Changes
+          #### 1. {file:line} — {issue}
+          Use a fenced suggestion block containing the fix when possible.
+
+          ### Merge Readiness Checklist
+          - [ ] Rebase onto ${base_ref}
+          - [ ] Fix {specific issue}
+          - [ ] Update {dependency}
+
+          <!-- jules-backlog-review -->
+          EOF
+
+            jq -n --rawfile prompt /tmp/prompt.txt \
+              --arg source "sources/github/${REPOSITORY}" --arg branch "$head_ref" \
+              '{prompt: $prompt, sourceContext: {source: $source, githubRepoContext: {startingBranch: $branch}}}' \
+              > /tmp/payload.json
+
+            response=$(retry_curl -X POST "https://jules.googleapis.com/v1alpha/sessions" \
+              -H "Content-Type: application/json" \
+              -H "X-Goog-Api-Key: ${JULES_API_KEY}" \
+              -d @/tmp/payload.json 2>&1)
+            create_rc=$?
+            error_code=$(jq -r '.error.code // 0' <<< "$response" 2>/dev/null || echo 0)
+            if [ "$error_code" = 429 ] || echo "$response" | grep -qiE 'quota|limit|exceeded'; then
+              quota_reached=true
+              defer_pr "$number"
+              continue
+            fi
+            if [ "$create_rc" -ne 0 ]; then
+              echo "::warning::Could not create Jules session for PR #${number}: ${response}"
+              continue
+            fi
+
+            sessions=$((sessions + 1))
+            session_resource=$(jq -r '.name // ("sessions/" + .id)' <<< "$response")
+            state=UNKNOWN
+            for attempt in $(seq 1 60); do
+              sleep 15
+              poll=$(retry_curl "https://jules.googleapis.com/v1alpha/${session_resource}?view=FULL" \
+                -H "X-Goog-Api-Key: ${JULES_API_KEY}" || echo '{}')
+              state=$(jq -r '.state // "UNKNOWN"' <<< "$poll")
+              echo "PR #${number}: poll ${attempt}/60 (${state})"
+              if [ "$state" = COMPLETED ] || [ "$state" = FAILED ]; then break; fi
+            done
+
+            activities=$(retry_curl "https://jules.googleapis.com/v1alpha/${session_resource}/activities?pageSize=100" \
+              -H "X-Goog-Api-Key: ${JULES_API_KEY}" || echo '{"activities":[]}')
+            review=$(jq -r '[.activities[]? | select(.agentMessaged.agentMessage != null) | .agentMessaged.agentMessage] | join("\n\n---\n\n")' <<< "$activities")
+            if [ -z "$review" ]; then
+              review="## 🔧 Backlog Review — Path to Functional
+
+          Jules did not return an analysis (session state: ${state}). A future run should retry this functional review.
+
+          <!-- jules-backlog-review -->"
+            elif ! grep -q '<!-- jules-backlog-review -->' <<< "$review"; then
+              review="${review}
+
+          <!-- jules-backlog-review -->"
+            fi
+            gh api "repos/${REPOSITORY}/issues/${number}/comments" -f body="$review" >/dev/null
+            reviewed=$((reviewed + 1))
+          done
+
+          echo "reviewed=$reviewed" >> "$GITHUB_OUTPUT"
+          echo "deferred=$deferred" >> "$GITHUB_OUTPUT"
+          echo "sessions=$sessions" >> "$GITHUB_OUTPUT"
+
+      - name: Summary
+        if: always()
+        env:
+          SKIPPED: ${{ steps.discover.outputs.skip }}
+          REVIEWED: ${{ steps.process.outputs.reviewed || '0' }}
+          DEFERRED: ${{ steps.process.outputs.deferred || '0' }}
+          SELECTED: ${{ steps.discover.outputs.pr_numbers || '[]' }}
+        run: |
+          {
+            echo "## Jules Backlog Review"
+            echo "- Selected PRs: \`${SELECTED}\`"
+            echo "- Reviewed: ${REVIEWED}"
+            echo "- Deferred due to daily cap: ${DEFERRED}"
+            if [ "$SKIPPED" = true ]; then echo "- No eligible stale PRs were found."; fi
+            echo "- Review objective: restore functionality and merge readiness; no PRs are evaluated for closure."
+          } >> "$GITHUB_STEP_SUMMARY"
