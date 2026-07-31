@@ -11,18 +11,27 @@ name: Jules Address Review Comments
 # (pull_request_review_comment) are not seen by the Jules App.
 # Posting as a PR comment also avoids a self-triggering loop (review
 # comment replies fire new pull_request_review_comment events).
+#
+# Also triggers on pull_request_review[submitted] so that reviews posted
+# as proper GitHub reviews (with or without inline comments) are captured.
 
 on:
   pull_request_review_comment:
     types: [created]
+  pull_request_review:
+    types: [submitted]
 
 concurrency:
-  group: jules-address-${{ github.event.pull_request.number }}
+  group: jules-address-${{ github.event.pull_request.number || github.event.review.pull_request.number }}
   cancel-in-progress: false
 
 jobs:
   address:
-    if: github.event.comment.user.login != 'google-labs-jules[bot]'
+    if: >-
+      (github.event_name == 'pull_request_review_comment' &&
+       github.event.comment.user.login != 'google-labs-jules[bot]') ||
+      (github.event_name == 'pull_request_review' &&
+       github.event.review.user.login != 'google-labs-jules[bot]')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -42,7 +51,15 @@ jobs:
               '<!-- jules-auto-fix -->',
             ];
 
-            const pr = context.payload.pull_request || context.payload.issue;
+            // Resolve PR from either event type
+            const pr = context.payload.pull_request ||
+                       (context.payload.review ? context.payload.review.pull_request : null) ||
+                       context.payload.issue;
+            if (!pr || !pr.number) {
+              core.info('Could not resolve PR number — skipping');
+              core.setOutput('no_comments', 'true');
+              return;
+            }
             const prNumber = pr.number;
 
             // 1. @jules only works on Jules-created PRs — the Jules GitHub App
