@@ -713,6 +713,7 @@ jobs:
             // so a stray pending comment cannot collide with this filter.
             const deferredComment = comments
               .filter(c => /<!--\s*jules-review-deferred\s+session="/.test(c.body || ''))
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
 
             if (!deferredComment) {
               core.info('No deferred review marker found — nothing to post');
