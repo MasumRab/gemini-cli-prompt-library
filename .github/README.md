@@ -6,18 +6,21 @@ This directory contains the **canonical templates** that are distributed to all 
 
 ```
 .github/
-├── workflows/                          # GitHub Actions workflow templates
-│   ├── jules-pr-review.yml             # Auto review on PR open/sync
-│   ├── jules-pr-force-review.yml       # Manual review via label or /jules-force-review
-│   ├── jules-pr-walkthrough.yml        # PR walkthrough via label or /jules-walkthrough
-│   ├── jules-pr-auto-fix.yml           # Auto-fix via label or /jules-fix
-│   ├── jules-pr-resolve-conflicts.yml  # Conflict resolution via label or /jules-resolve
-│   ├── jules-pr-rebuild.yml            # Rebuild from base via label or /jules-rebuild
-│   ├── jules-pr-address-comments.yml   # @jules on unresolved review threads
-│   └── jules-pr-automerge-label.yml    # Hourly cron: label Jules PRs for auto-merge
-├── scripts/                            # Shared scripts loaded by workflows
-│   └── jules-comment-classifier.cjs    # Comment classification & filtering (F1 fix)
-└── README.md                           # This file
+├── workflows/                              # GitHub Actions workflow templates
+│   ├── jules-pr-review.yml                 # Auto review on PR open/sync + deferred review
+│   ├── jules-pr-force-review.yml           # Label/label-triggered review + deferred review
+│   ├── jules-pr-walkthrough.yml            # PR walkthrough via label or /jules-walkthrough
+│   ├── jules-pr-auto-fix.yml               # Plan/approve auto-fix via label or /jules-fix
+│   ├── jules-pr-resolve-conflicts.yml      # Conflict resolution via label or /jules-resolve
+│   ├── jules-pr-rebuild.yml                # Rebuild from base via label or /jules-rebuild
+│   ├── jules-pr-address-comments.yml       # @jules on unresolved review threads
+│   ├── jules-pr-automerge-label.yml        # Hourly cron: label Jules PRs for auto-merge
+│   ├── jules-dispatch.yml                  # @jules central command router
+│   ├── jules-issue-triage.yml              # Single + batch issue triage (hourly + on-demand)
+│   └── jules-backlog-review.yml            # Weekly stale PR functional review (never closes)
+├── scripts/                                # Shared scripts loaded by workflows
+│   └── jules-comment-classifier.cjs        # Comment classification & filtering
+└── README.md                               # This file
 ```
 
 ## Distribution
