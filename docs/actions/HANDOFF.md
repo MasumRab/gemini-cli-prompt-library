@@ -114,16 +114,17 @@ Added to both `jules-pr-review.yml` and `jules-pr-force-review.yml`:
 │   └── jules-backlog-review.yml         294 lines  — Stale PR functional review   [NEW]
 ├── scripts/
 │   └── jules-comment-classifier.cjs     396 lines  — Shared classifier
-└── README.md                                       — Stale, needs update
+└── README.md                                       — Updated (lists all 11 workflows)
 ```
 
 ### 2.2 Commit State
 
 - **Branch:** `main`
-- **Last commit:** `c271afd` (fix: prevent CI failures from missing classifier module)
-- **Uncommitted changes:** 6 modified files + 3 untracked new workflows + `.gitignore`
-- **No commits have been made for any of the current session's work**
-- **Total diff:** 781 insertions, 38 deletions across 7 tracked files
+- **Last commit:** `a64d3af` (fix: restore .sort()[0] on deferred filter — W-01 regression)
+- **All hardening-pass work is committed** (15 commits, `c271afd`→`a64d3af`)
+- **No uncommitted changes** — working tree is clean
+- **Total diff committed:** 1875 insertions, 45 deletions across 11 files
+- **CodeRabbit fixes applied post-HANDOFF:** W-01 (pending marker rename, `081d463`), W-02 (partial_output shell var, `8201c22`), W-03..W-08 (batch fix, `4149ff4`), W-01 regression (`a64d3af`)
 
 ### 2.3 Validation State
 
@@ -187,8 +188,8 @@ Canonical `jules/` is ahead of `EmailIntelligence/` in all modified workflows:
 
 | ID | Task | Priority | Effort | Details |
 |----|------|----------|--------|---------|
-| T-01 | Update `.github/README.md` | High | Small | Add `jules-dispatch.yml`, `jules-issue-triage.yml`, `jules-backlog-review.yml` to the structure listing and distribution instructions |
-| T-02 | Update `gemini_jules_analysis.md` Section 10 | Medium | Small | Mark 10.1-10.5 as resolved with implementation references; add new Section 10.6 for remaining gaps |
+| T-01 | ~~Update `.github/README.md`~~ | ~~High~~ | ~~Small~~ | ✅ **Done 2026-08-01** — All 11 workflows now listed in structure and distribution instructions |
+| T-02 | ~~Update `gemini_jules_analysis.md` Section 10~~ | ~~Medium~~ | ~~Small~~ | ✅ **Done 2026-08-01** — 10.1-10.3, 10.5 marked ✅ Resolved; 10.4 marked ⚠️ Partially Resolved with commit references |
 | T-03 | Create `.github/jules-review-rules.md` | Medium | Medium | Project-specific review rules (ReDoS, PII, docstrings, branch contamination). Per `emailintelligence.md` and `jules_actions_traceability.md`. |
 | T-04 | Create `docs/jules_actions.md` | Low | Small | Jules Actions documentation for the canonical repo |
 
@@ -222,7 +223,7 @@ Canonical `jules/` is ahead of `EmailIntelligence/` in all modified workflows:
 
 | ID | Task | Priority | Effort | Details |
 |----|------|----------|--------|---------|
-| T-16 | Commit canonical changes | High | Small | All current work is uncommitted. Commit after final review. |
+| T-16 | ~~Commit canonical changes~~ | ~~High~~ | ~~Small~~ | ✅ **Done 2026-08-01** — All 15 commits pushed (`c271afd`→`a64d3af`), working tree clean |
 | T-17 | Sync hardened workflows to EmailIntelligence | High | Medium | Copy 11 workflows + classifier to EI `.github/`. Commit 5 `gemini-*.yml` deletions. Use `git add -f` if `.gitignore` blocks `.github`. **Blocked by user instruction — do not sync until all hardening is reviewed.** |
 | T-18 | Sync to other repos (KNA, GFLQ, GCPL) | Low | Medium | Per distribution plan in `AUTOREVIEW_JULES_PLAN.md` Section 5. KNA needs careful merge; GFLQ and GCPL are clean copies. |
 
@@ -238,13 +239,11 @@ Canonical `jules/` is ahead of `EmailIntelligence/` in all modified workflows:
 
 ### 5.2 Stale Documentation
 
-Three documents are out of date:
+Two of three stale documents have been updated (2026-08-01):
 
-1. `.github/README.md` — missing 3 new workflows
-2. `gemini_jules_analysis.md` Section 10 — all issues resolved but not updated
-3. `AUTOREVIEW_JULES_PLAN.md` — Phase 1-5 complete but doesn't cover expanded scope
-
-This handoff document supersedes all three for tracking purposes, but the original docs should still be updated (Tasks T-01, T-02).
+1. ~~`.github/README.md` — missing 3 new workflows~~ ✅ **Updated** — now lists all 11 workflows
+2. ~~`gemini_jules_analysis.md` Section 10 — all issues resolved but not updated~~ ✅ **Updated** — 10.1-10.3, 10.5 marked resolved; 10.4 marked partially resolved
+3. `AUTOREVIEW_JULES_PLAN.md` — Phase 1-5 complete but doesn't cover expanded scope — still stale, superseded by this document for tracking
 
 ### 5.3 Line Ending Warnings
 
@@ -339,4 +338,53 @@ that were not captured. A complete re-review is recommended after the W-01/W-02 
 1. Fix W-01 and W-02 (critical) before any live trigger of `jules-pr-review.yml`.
 2. Address W-03 through W-07 (major) as a batch follow-up commit.
 3. Update Section 3 of this document to reflect the post-fix state.
+
+---
+
+## 9. CodeRabbit Review — Fix Status (2026-08-01)
+
+The findings in Section 8 were addressed across four follow-up commits, pushed to `main`:
+
+| Commit | Scope | Findings Resolved |
+|--------|-------|-------------------|
+| `081d463` | `jules-comment-classifier.cjs`, `jules-pr-review.yml`, `jules-pr-force-review.yml` | **W-01** (pending-marker collision, atomic across 3 files) |
+| `8201c22` | `jules-pr-review.yml` | **W-02** (partial_output shell-var) |
+| `4149ff4` | 5 workflow files | **W-03** (backlog timeout), **W-04** (review-body capture), **W-05** (prefix word boundary), **W-06** (label-before-comment), **W-07** (10 status-state sites), **W-08** (quota string) |
+| `a64d3af` | `jules-pr-review.yml`, `jules-pr-force-review.yml` | W-01 regression hotfix — restored `.sort()[0]` on the deferred filter that was dropped during the regex conversion |
+| `2c3eae5` | `jules-pr-review.yml`, `jules-pr-force-review.yml` | **W-11** (no-verdict fail-closed: `success` → `failure` at 4 sites) |
+
+A re-review after `4149ff4` surfaced **6 new findings**, of which 2 criticals were immediate
+regressions introduced by W-01's deferred-filter rewrite and were hotfixed in `a64d3af`. The
+remaining 3 are documented below as known follow-ups.
+
+### 9.1 Resolved Findings (post-fix verification)
+
+| # | Title | Status |
+|---|-------|--------|
+| W-01 | Pending marker collides with deferred filter | ✅ Fixed (3 files atomic, then regression hotfixed) |
+| W-02 | `partial_output` shell-var discards captured output on timeout | ✅ Fixed |
+| W-03 | Backlog timeout smaller than worst-case poll budget | ✅ Fixed (`timeout-minutes: 90`) |
+| W-04 | Address-comments drops body-only CHANGES_REQUESTED reviews | ✅ Fixed (capture-before-short-circuit + injection into @jules mention) |
+| W-05 | `@jules` prefix matches `@julesmith` | ✅ Fixed (word-boundary regex) |
+| W-06 | Comment posted before label, can desync on failure | ✅ Fixed (label-first ordering) |
+| W-07 | Invalid `'neutral'` commit-status state rejected by API | ✅ Fixed (10 sites → `success`/`pending`) |
+| W-08 | Quota grep misses `RESOURCE_EXHAUSTED` | ✅ Fixed (added `exhaust` to pattern) |
+| W-11 | Missing-verdict branch passes as success | ✅ Fixed (4 sites → `failure`) |
+
+### 9.2 New Findings from Re-Review (2026-08-01) — Open
+
+| # | Severity | Location | Title | Recommendation |
+|---|----------|----------|-------|----------------|
+| **W-09** | major | `jules-backlog-review.yml:26-27` | Worst-case timeout excludes `retry_curl` (60s × 3 attempts per poll + delays ≈ 210 min). The 90-min timeout still terminates mid-loop. | Add per-session deadline; stop after repeated poll failures; or cap `maxPrs` and calculate the timeout from it. |
+| **W-10** | major | `jules-pr-address-comments.yml:127-145` | Debounce/dedup doesn't include submitted review bodies. When only a review body is present, `newestThreadTime` is null and the debounce check is skipped — a duplicate event can post another @jules comment. When older threads exist, their timestamp can incorrectly skip a newer submitted review body. | Use `submittedReview.id` and `submitted_at` in the debounce/dedup checks; treat review-body timestamp as a "newest actionable item" candidate. |
+| **W-12** | minor | `jules-pr-review.yml:712-715` / `jules-pr-force-review.yml:704-707` | After the W-01 hotfix, `deferredComment` is now the result of `comments.filter(...).sort(...)[0]`. If the filtered+sorted list is empty, `deferredComment` is `undefined` and `.body.match` would throw — currently guarded by `if (!deferredComment)`. | None — the guard is correct. Mention only for completeness. |
+
+### 9.3 Outstanding Tasks Updated
+
+New tasks implied by W-09 and W-10:
+
+| ID | Task | Priority |
+|----|------|----------|
+| T-19 | Refine backlog-review poll budget: add per-session deadline and stop after N consecutive poll failures (W-09) | Medium |
+| T-20 | Include `submittedReview.id` and `submitted_at` in address-comments debounce/dedup, and use review-body timestamp as the "newest actionable" candidate (W-10) | Medium |
 4. Re-run CodeRabbit CLI review with `--light` for a complete pass within the 5-minute window.
