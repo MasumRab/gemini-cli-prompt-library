@@ -517,7 +517,7 @@ jobs:
               statusState = 'failure';
               statusDesc = 'Blocking issues found';
             } else if (sessionState === 'COMPLETED' && !verdict) {
-              statusState = 'success';
+              statusState = 'failure';
               statusDesc = 'Review completed (no verdict)';
             } else if (sessionState === 'FAILED') {
               statusState = 'failure';
@@ -873,7 +873,7 @@ jobs:
             } else if (sessionState === 'COMPLETED' && verdict === 'block') {
               statusState = 'failure'; statusDesc = 'Blocking issues found';
             } else if (sessionState === 'COMPLETED' && !verdict) {
-              statusState = 'success'; statusDesc = 'Review completed (no verdict)';
+              statusState = 'failure'; statusDesc = 'Review completed (no verdict)';
             } else if (sessionState === 'FAILED') {
               statusState = 'failure'; statusDesc = 'Jules session failed';
             }

@@ -537,7 +537,7 @@ jobs:
               statusState = 'failure';
               statusDesc = 'Blocking issues found';
             } else if (sessionState === 'COMPLETED' && !verdict) {
-              statusState = 'success';
+              statusState = 'failure';
               statusDesc = 'Review completed (no verdict)';
             } else if (sessionState === 'FAILED') {
               statusState = 'failure';
@@ -826,7 +826,7 @@ jobs:
             if (sessionState === 'COMPLETED' && verdict === 'approve') { statusState = 'success'; statusDesc = 'Approved'; }
             else if (sessionState === 'COMPLETED' && verdict === 'comment') { statusState = 'success'; statusDesc = 'Comments provided'; }
             else if (sessionState === 'COMPLETED' && verdict === 'block') { statusState = 'failure'; statusDesc = 'Blocking issues found'; }
-            else if (sessionState === 'COMPLETED' && !verdict) { statusState = 'success'; statusDesc = 'Review completed (no verdict)'; }
+            else if (sessionState === 'COMPLETED' && !verdict) { statusState = 'failure'; statusDesc = 'Review completed (no verdict)'; }
             else if (sessionState === 'FAILED') { statusState = 'failure'; statusDesc = 'Jules session failed'; }
             try {
               await github.rest.repos.createCommitStatus({
