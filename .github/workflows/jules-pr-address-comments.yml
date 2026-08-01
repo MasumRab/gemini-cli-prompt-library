@@ -124,8 +124,25 @@ jobs:
             const threads = repo.reviewThreads.nodes || [];
             const unresolvedThreads = threads.filter(t => !t.isResolved);
 
-            if (unresolvedThreads.length === 0) {
-              core.info('No unresolved review threads on PR #' + prNumber + ' — skipping');
+            // Capture review bodies from pull_request_review events. A review
+            // can contain a body without inline comments (e.g. a body-only
+            // CHANGES_REQUESTED), and the review object exposes body and
+            // submitted_at. These bodies must reach the @jules mention even
+            // when there are no unresolved review threads.
+            const submittedReview = context.payload.review;
+            const submittedReviewBody = submittedReview?.body?.trim();
+            const reviewBodies = [];
+            if (submittedReviewBody) {
+              reviewBodies.push({
+                author: submittedReview.user?.login || 'unknown',
+                body: submittedReviewBody.slice(0, 2000),
+                at: submittedReview.submitted_at || submittedReview.updated_at || null,
+                state: submittedReview.state || null,
+              });
+            }
+
+            if (unresolvedThreads.length === 0 && reviewBodies.length === 0) {
+              core.info('No unresolved review threads or submitted review bodies on PR #' + prNumber + ' — skipping');
               core.setOutput('no_comments', 'true');
               return;
             }
@@ -152,6 +169,10 @@ jobs:
                        (r.body || '').replace(/<!--.*?-->/g, '').trim().slice(0, 1500);
               })
               .join('\n\n---\n\n');
+            const reviewBodySummaries = reviewBodies.map((r, idx) => [
+              '### Submitted Review ' + (idx + 1) + ' by @' + r.author + (r.state ? ' (' + r.state + ')' : ''),
+              r.body,
+            ].join('\n\n'));
             const allJulesContext = [julesComments, julesReviews].filter(Boolean).join('\n\n---\n\n');
 
             // 4. Post a single @jules PR comment (issue comment) with all
@@ -201,8 +222,8 @@ jobs:
               }
             }
 
-            if (threadSummaries.length === 0) {
-              core.info('No actionable unresolved review threads on PR #' + prNumber + ' — skipping');
+            if (threadSummaries.length === 0 && reviewBodySummaries.length === 0) {
+              core.info('No actionable unresolved review threads or submitted review bodies on PR #' + prNumber + ' — skipping');
               core.setOutput('no_comments', 'true');
               return;
             }
@@ -212,6 +233,7 @@ jobs:
               '',
               'The following unresolved review comments on **' + repo.title + '** need your attention:',
               'Base: `' + repo.baseRefName + '` | Head: `' + repo.headRefName + '`',
+              ...reviewBodySummaries,
               '',
               ...threadSummaries,
               '',

@@ -37,7 +37,7 @@ jobs:
               core.info(`Ignoring comment from ${actor}`);
               return;
             }
-            if (!body.startsWith('@jules')) {
+            if (!/^@jules(?=[\s/]|$)/i.test(body)) {
               core.info('Comment does not start with @jules — skipping');
               return;
             }
@@ -109,10 +109,10 @@ jobs:
               return;
             }
 
-            await postComment(`🤖 Hi @${actor}, I've received your request and applied the appropriate label...`);
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
               labels: [label],
             });
+            await postComment(`🤖 Hi @${actor}, I've received your request and applied the appropriate label...`);

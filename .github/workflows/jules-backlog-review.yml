@@ -23,7 +23,8 @@ concurrency:
 jobs:
   backlog-review:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Worst case: max_prs (5) x 60 polls x 15s = ~75 min, plus API overhead.
+    timeout-minutes: 90
     permissions:
       pull-requests: write
       contents: read

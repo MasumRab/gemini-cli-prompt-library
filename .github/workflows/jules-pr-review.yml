@@ -355,7 +355,7 @@ jobs:
           if [ $CURL_EXIT -ne 0 ]; then
             ERROR_CODE=$(echo "$RESPONSE" | jq -r '.error.code // "0"')
             ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error.message // ""')
-            if [ "$ERROR_CODE" = "429" ] || echo "$ERROR_MSG" | grep -qiE 'quota|limit|exceeded|capacity|daily'; then
+            if [ "$ERROR_CODE" = "429" ] || echo "$ERROR_MSG" | grep -qiE 'quota|limit|exhaust|exceeded|capacity|daily'; then
               echo "quota_exhausted=true" >> "$GITHUB_OUTPUT"
               echo "⚠️ Session cap reached — no session created."
               exit 0
@@ -511,19 +511,19 @@ jobs:
               statusState = 'success';
               statusDesc = 'Approved';
             } else if (sessionState === 'COMPLETED' && verdict === 'comment') {
-              statusState = 'neutral';
+              statusState = 'success';
               statusDesc = 'Comments provided';
             } else if (sessionState === 'COMPLETED' && verdict === 'block') {
               statusState = 'failure';
               statusDesc = 'Blocking issues found';
             } else if (sessionState === 'COMPLETED' && !verdict) {
-              statusState = 'neutral';
+              statusState = 'success';
               statusDesc = 'Review completed (no verdict)';
             } else if (sessionState === 'FAILED') {
               statusState = 'failure';
               statusDesc = 'Jules session failed';
             } else if (sessionState === 'TIMEOUT' && hasPartialOutput) {
-              statusState = 'neutral';
+              statusState = 'pending';
               statusDesc = 'Partial review (session still running)';
             } else if (sessionState === 'TIMEOUT') {
               statusState = 'failure';
@@ -868,11 +868,11 @@ jobs:
             if (sessionState === 'COMPLETED' && verdict === 'approve') {
               statusState = 'success'; statusDesc = 'Approved';
             } else if (sessionState === 'COMPLETED' && verdict === 'comment') {
-              statusState = 'neutral'; statusDesc = 'Comments provided';
+              statusState = 'success'; statusDesc = 'Comments provided';
             } else if (sessionState === 'COMPLETED' && verdict === 'block') {
               statusState = 'failure'; statusDesc = 'Blocking issues found';
             } else if (sessionState === 'COMPLETED' && !verdict) {
-              statusState = 'neutral'; statusDesc = 'Review completed (no verdict)';
+              statusState = 'success'; statusDesc = 'Review completed (no verdict)';
             } else if (sessionState === 'FAILED') {
               statusState = 'failure'; statusDesc = 'Jules session failed';
             }

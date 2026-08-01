@@ -531,19 +531,19 @@ jobs:
               statusState = 'success';
               statusDesc = 'Approved';
             } else if (sessionState === 'COMPLETED' && verdict === 'comment') {
-              statusState = 'neutral';
+              statusState = 'success';
               statusDesc = 'Comments provided';
             } else if (sessionState === 'COMPLETED' && verdict === 'block') {
               statusState = 'failure';
               statusDesc = 'Blocking issues found';
             } else if (sessionState === 'COMPLETED' && !verdict) {
-              statusState = 'neutral';
+              statusState = 'success';
               statusDesc = 'Review completed (no verdict)';
             } else if (sessionState === 'FAILED') {
               statusState = 'failure';
               statusDesc = 'Jules session failed';
             } else if (sessionState === 'TIMEOUT' && hasPartialOutput) {
-              statusState = 'neutral';
+              statusState = 'pending';
               statusDesc = 'Partial review (session still running)';
             } else if (sessionState === 'TIMEOUT') {
               statusState = 'failure';
@@ -823,9 +823,9 @@ jobs:
 
             let statusState = 'failure', statusDesc = 'Review failed';
             if (sessionState === 'COMPLETED' && verdict === 'approve') { statusState = 'success'; statusDesc = 'Approved'; }
-            else if (sessionState === 'COMPLETED' && verdict === 'comment') { statusState = 'neutral'; statusDesc = 'Comments provided'; }
+            else if (sessionState === 'COMPLETED' && verdict === 'comment') { statusState = 'success'; statusDesc = 'Comments provided'; }
             else if (sessionState === 'COMPLETED' && verdict === 'block') { statusState = 'failure'; statusDesc = 'Blocking issues found'; }
-            else if (sessionState === 'COMPLETED' && !verdict) { statusState = 'neutral'; statusDesc = 'Review completed (no verdict)'; }
+            else if (sessionState === 'COMPLETED' && !verdict) { statusState = 'success'; statusDesc = 'Review completed (no verdict)'; }
             else if (sessionState === 'FAILED') { statusState = 'failure'; statusDesc = 'Jules session failed'; }
             try {
               await github.rest.repos.createCommitStatus({
