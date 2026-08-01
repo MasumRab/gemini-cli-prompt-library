@@ -1,0 +1,18 @@
+# === Training/eval data ===
+# Generated datasets, not source code
+*.jsonl
+
+# === Prompt templates ===
+# Not standard code files
+*.template
+
+# === Lock / package files ===
+# Auto-generated, not worth linting
+**/package-lock.json
+**/uv.lock
+**/pnpm-lock.yaml
+**/yarn.lock
+
+# === Agent-generated outputs ===
+# Produced by .graphite-agent runs, not hand-authored source
+.graphite-agent/outputs/
