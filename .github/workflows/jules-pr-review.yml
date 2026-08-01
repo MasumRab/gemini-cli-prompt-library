@@ -422,6 +422,7 @@ jobs:
               ] | join("\n\n---\n\n") // ""' > /tmp/jules-review-output.txt
               local msg_count
               msg_count=$(jq -r '[(.activities // [])[] | select(.agentMessaged.agentMessage != null)] | length' <<< "$acts" 2>/dev/null || echo 0)
+              PARTIAL_OUTPUT=true
               if [ "$msg_count" -gt 0 ]; then
                 echo "partial_output=true" >> "$GITHUB_OUTPUT"
                 echo "Captured $msg_count agent messages from session"
@@ -430,6 +431,7 @@ jobs:
               fi
             else
               echo "partial_output=false" >> "$GITHUB_OUTPUT"
+              PARTIAL_OUTPUT=false
             fi
           }
 
@@ -464,7 +466,7 @@ jobs:
           # hasn't reached COMPLETED state yet.
           echo "session_state=TIMEOUT" >> "$GITHUB_OUTPUT"
           SAVE_OUTPUT
-          if [ "${partial_output:-false}" = "true" ]; then
+          if [ "${PARTIAL_OUTPUT:-false}" = "true" ]; then
             echo "Poll timed out but captured partial output"
           else
             echo "Review timed out after $((MAX_ATTEMPTS * 15)) seconds." > /tmp/jules-review-output.txt
