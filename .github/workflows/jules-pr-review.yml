@@ -707,9 +707,10 @@ jobs:
             });
 
             // Find the most recent deferred review marker
+            // Match the full deferred marker form (must include session="..." attribute),
+            // so a stray pending comment cannot collide with this filter.
             const deferredComment = comments
-              .filter(c => c.body?.includes('<!-- jules-review-deferred'))
-              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+              .filter(c => /<!--\s*jules-review-deferred\s+session="/.test(c.body || ''))
 
             if (!deferredComment) {
               core.info('No deferred review marker found — nothing to post');
@@ -928,7 +929,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.issue.number,
-              body: `⏳ **Jules session is still ${state}.**\n\nThe session has not completed yet. Comment \`/jules-post-review\` again later to re-check.\n\n<!-- jules-review-deferred-pending -->`,
+              body: `⏳ **Jules session is still ${state}.**\n\nThe session has not completed yet. Comment \`/jules-post-review\` again later to re-check.\n\n<!-- jules-review-pending -->`,
             });
 
       - name: No deferred session found

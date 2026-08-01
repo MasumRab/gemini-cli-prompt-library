@@ -701,9 +701,10 @@ jobs:
               issue_number: prNumber, per_page: 100,
             });
             // Only match force-review deferred markers (distinct from normal review markers)
+            // Match the full deferred marker form (must include session="..." attribute),
+            // so a stray pending comment cannot collide with this filter.
             const deferredComment = comments
-              .filter(c => c.body?.includes('<!-- jules-force-review-deferred'))
-              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+              .filter(c => /<!--\s*jules-force-review-deferred\s+session="/.test(c.body || ''))
             if (!deferredComment) {
               core.info('No deferred force-review marker found — nothing to post');
               core.setOutput('skip', 'true');
@@ -855,7 +856,7 @@ jobs:
             await github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
               issue_number: context.payload.issue.number,
-              body: `⏳ **Jules session is still ${state}.**\n\nComment \`/jules-post-review\` again later.\n\n<!-- jules-review-deferred-pending -->`,
+              body: `⏳ **Jules session is still ${state}.**\n\nComment \`/jules-post-review\` again later.\n\n<!-- jules-review-pending -->`,
             });
 
       - name: No deferred session found

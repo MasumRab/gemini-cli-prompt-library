@@ -41,7 +41,7 @@ const MARKERS = Object.freeze({
   JULES_ADDRESS:        '<!-- jules-address-comments -->',
   JULES_REVIEW_DEFERRED:'<!-- jules-review-deferred',
   JULES_DEFERRED_POSTED:'<!-- jules-deferred-review-posted -->',
-  JULES_DEFERRED_PENDING:'<!-- jules-review-deferred-pending -->',
+  JULES_DEFERRED_PENDING:'<!-- jules-review-pending -->',
   JULES_SESSION:        '<!-- jules-session:',
   FINDING:              '<!-- FINDING',
   WALKTHROUGH_START:    '<!-- walkthrough_start -->',
