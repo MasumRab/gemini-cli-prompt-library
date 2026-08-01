@@ -377,14 +377,15 @@ remaining 3 are documented below as known follow-ups.
 |---|----------|----------|-------|----------------|
 | **W-09** | major | `jules-backlog-review.yml:26-27` | Worst-case timeout excludes `retry_curl` (60s × 3 attempts per poll + delays ≈ 210 min). The 90-min timeout still terminates mid-loop. | Add per-session deadline; stop after repeated poll failures; or cap `maxPrs` and calculate the timeout from it. |
 | **W-10** | major | `jules-pr-address-comments.yml:127-145` | Debounce/dedup doesn't include submitted review bodies. When only a review body is present, `newestThreadTime` is null and the debounce check is skipped — a duplicate event can post another @jules comment. When older threads exist, their timestamp can incorrectly skip a newer submitted review body. | Use `submittedReview.id` and `submitted_at` in the debounce/dedup checks; treat review-body timestamp as a "newest actionable item" candidate. |
-| **W-12** | minor | `jules-pr-review.yml:712-715` / `jules-pr-force-review.yml:704-707` | After the W-01 hotfix, `deferredComment` is now the result of `comments.filter(...).sort(...)[0]`. If the filtered+sorted list is empty, `deferredComment` is `undefined` and `.body.match` would throw — currently guarded by `if (!deferredComment)`. | None — the guard is correct. Mention only for completeness. |
+| **W-12** | minor | `jules-pr-review.yml:712-715` / `jules-pr-force-review.yml:704-707` | W-01's deferred filter requires `session="`, but the extraction regex on the next lines also needs `sha="`. A malformed comment with only the `session=` attribute is selected, fails extraction, and silently skips an older valid marker. | Require both attributes in the filter regex: `/<!--\s*jules-review-deferred\s+session="[^"]+"\s+sha="[^"]+"\s*-->/` (same shape for force-review). |
+| **W-13** | major | `jules-pr-review.yml:525-527` / `jules-pr-force-review.yml:545-547` | When `sessionState === 'TIMEOUT' && hasPartialOutput`, the status is `pending` but the later reviewEvent logic still maps any parsed verdict to `APPROVE` or `REQUEST_CHANGES`. A partial response can therefore create a final review action while the session is still running. | Force `reviewEvent = 'COMMENT'` when `sessionState !== 'COMPLETED'` (or specifically when `TIMEOUT && hasPartialOutput`). Apply in both review and force-review. |
+| **W-15** | major | `jules-pr-force-review.yml:545-547` | `sessionResource = sessionName \|\| ''` — if the create response contains `id` but no `name`, polling succeeds via `sessions/${SESSION_ID}` but the post step builds an empty `sessionResource`. The deferred marker is never emitted, breaking `/jules-post-review`. | Use the same `sessionName \|\| (sessionId ? `sessions/${sessionId}` : '')` fallback as the normal review workflow. |
 
 ### 9.3 Outstanding Tasks Updated
 
 New tasks implied by W-09 and W-10:
 
 | ID | Task | Priority |
-|----|------|----------|
-| T-19 | Refine backlog-review poll budget: add per-session deadline and stop after N consecutive poll failures (W-09) | Medium |
-| T-20 | Include `submittedReview.id` and `submitted_at` in address-comments debounce/dedup, and use review-body timestamp as the "newest actionable" candidate (W-10) | Medium |
-4. Re-run CodeRabbit CLI review with `--light` for a complete pass within the 5-minute window.
+| T-21 | Harden the deferred-filter regex to require both `session="..."` and `sha="..."` (W-12) | Low |
+| T-22 | Force `reviewEvent = 'COMMENT'` while `sessionState` is not terminal; switch to APPROVE/REQUEST_CHANGES only when `sessionState === 'COMPLETED'` (W-13) | Medium |
+| T-23 | Add `sessionName \|\| sessions/${sessionId}` fallback in force-review deferred-emission (W-15) | Medium |
