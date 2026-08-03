@@ -1,5 +1,8 @@
 # Jules Actions Cross-Repo Assessment
 
+> **Historical artifact:** This 2026-07-08 pre-installation assessment predates the
+> current canonical workflows. Do not use it as distribution or readiness evidence.
+
 Date: 2026-07-08
 Scope:
 

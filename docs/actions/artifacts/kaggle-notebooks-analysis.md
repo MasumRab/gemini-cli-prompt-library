@@ -1,6 +1,8 @@
 # Jules Action Recommendations – Kaggle Notebooks Analysis
 
-> **Legacy reference:** This file documents the external `kaggle-notebooks-analysis` repo. Current Jules tools are in `tools/` within this repo.
+> **Historical artifact:** This file includes dated PR state and third-party workflow
+> examples for the external `kaggle-notebooks-analysis` repository. Reassess that
+> repository and use the canonical workflows before distribution.
 
 ## Project Overview
 This repository holds Kaggle‑style notebooks, data‑processing scripts, and helper utilities. The primary goals are:

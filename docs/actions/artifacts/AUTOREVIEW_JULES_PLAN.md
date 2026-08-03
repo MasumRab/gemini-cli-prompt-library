@@ -1,5 +1,9 @@
 # Jules Workflow Remediation Plan
 
+> **Historical artifact:** This completed initial plan contains obsolete paths and does
+> not cover the current workflow set. Use [`../HANDOFF.md`](../HANDOFF.md) for active
+> tasks and [`../REVIEW_RECOMMENDATION.md`](../REVIEW_RECOMMENDATION.md) for readiness.
+
 **Created:** 2026-07-30
 **Scope:** Centralized fixes in the `jules` template repo (`docs/actions/workflows/`). Distribution to deployed repos (KNA, GFLQ, GCPL, EI) happens after all template fixes are validated.
 **Principle:** Solve every problem once in the template, verify, then propagate.

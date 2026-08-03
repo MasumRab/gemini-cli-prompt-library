@@ -1,5 +1,8 @@
 # Jules Action Recommendations – Gemini CLI Prompt Library
 
+> **Recommendation record:** Validate repository assumptions and use the canonical
+> workflows in this repository; embedded examples are not distribution authorities.
+
 ## Project Overview
 This repository holds a curated collection of ready‑to‑use prompt templates for the Gemini CLI, organised by category (code‑generation, Q&A, summarisation, etc.). The files are mostly markdown/YAML with occasional helper scripts. Key expectations:
 - Every prompt file must contain a front‑matter block:

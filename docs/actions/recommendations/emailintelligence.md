@@ -1,5 +1,8 @@
 # Jules Action Recommendations – Email Intelligence
 
+> **Recommendation record:** Validate repository assumptions and use the canonical
+> workflows in this repository; embedded examples are not distribution authorities.
+
 ## Project Overview
 This repository contains Python utilities for parsing, enriching, and analysing email headers and bodies (SPF/DKIM/DMARC, threat intelligence, etc.). Key characteristics:
 - Heavy reliance on regular expressions for header parsing.

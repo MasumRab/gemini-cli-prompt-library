@@ -1,5 +1,8 @@
 # Workflow Change Log — vs Default Google/Community Examples
 
+> **Historical artifact:** This is point-in-time implementation history, not a current
+> behavior contract. Use the runtime workflows and [`../HANDOFF.md`](../HANDOFF.md).
+
 ## Cross-Cutting Changes (all 5 workflows)
 
 | Change | Default | Ours | Rationale |

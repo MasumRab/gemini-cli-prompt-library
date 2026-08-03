@@ -1,5 +1,8 @@
 # Jules Actions Traceability
 
+> **Historical artifact:** This is a copied source dump, not an active task tracker or
+> current implementation inventory. See [`../README.md`](../README.md).
+
 This document aggregates the per-repo `docs/jules_actions.md` sources for comparison.
 
 ## Source Index

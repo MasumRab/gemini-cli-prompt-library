@@ -3,7 +3,7 @@
  *
  * This module replaces the inline, inconsistent skipMarkers/priorFeedback/priorReviews logic
  * that was duplicated across 6 workflows with 3 different marker arrays and no review-comment
- * filtering. See AUTOREVIEW_JULES_PLAN.md for the full design.
+ * filtering. See docs/actions/artifacts/AUTOREVIEW_JULES_PLAN.md for the historical design.
  *
  * Usage in actions/github-script@v7:
  *   const { classifyAndFilter, SOURCES, MARKERS } = require('./_helpers/.github/scripts/jules-comment-classifier.cjs');
@@ -309,7 +309,8 @@ async function classifyAndFilter(github, owner, repo, prNumber, opts = {}) {
     .join('\n\n');
 
   // ── priorReviews: line-level review comments excluding Jules-generated content ──
-  // THIS IS THE FIX for the defect documented in AUTOREVIEW_JULES_PLAN.md § 10.4.
+  // This fixes the defect documented in the historical
+  // docs/actions/artifacts/AUTOREVIEW_JULES_PLAN.md § 10.4.
   const priorReviews = reviewComments
     .filter(c => {
       if (c.authorSource === SOURCES.JULES_BOT) return false;

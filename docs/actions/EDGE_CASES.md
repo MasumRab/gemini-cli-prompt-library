@@ -1,5 +1,10 @@
 # Jules Workflow Edge Cases & Failure Modes
 
+> **Status warning:** This catalog contains both historical resolved incidents and
+> candidate handling that may not match the current workflows. It is not the active task
+> tracker. Verify behavior in `.github/workflows/` and use `HANDOFF.md` plus
+> `REVIEW_RECOMMENDATION.md` for current finding status.
+
 ## Session-Level Failures
 
 ### 1. Daily quota exhausted (15 sessions/day)
@@ -237,11 +242,11 @@ The model's §5 "The One Hard Guard" explicitly forbids: *"a wholesale `git merg
 
 **Root cause of the misunderstanding:** Three converging factors:
 
-1. **AGENTS.md was discovered but never read.** The EI `AGENTS.md` (883 lines on `scientific`, 33 lines on `main`) contains a "🔴 CANONICAL BRANCH RULES — READ FIRST" section at the top that references `BRANCH_MANAGEMENT_MODEL.md` and states "Do NOT converge them and do NOT do wholesale `main ↔ scientific` merges." The thread's tool results show `AGENTS.md` was auto-discovered as a guidance file, but no `cat`, `grep`, or `sed` of its contents was ever executed. The branch rules were never inspected.
+1. **AGENTS.md was discovered but never read.** The EI `AGENTS.md` (883 lines on `scientific`, 33 lines on `main`) contains a "🔴 CANONICAL BRANCH RULES — READ FIRST" section at the top that references `.taskmaster/BRANCH_MANAGEMENT_MODEL.md` in the EmailIntelligence repository and states "Do NOT converge them and do NOT do wholesale `main ↔ scientific` merges." The thread's tool results show `AGENTS.md` was auto-discovered as a guidance file, but no `cat`, `grep`, or `sed` of its contents was ever executed. The branch rules were never inspected.
 
 2. **Uniform treatment across dissimilar repos.** The audit treated all 4 repos identically. GFLQ, GCPL, and KNA are single-branch repos where "push the fix to `main`" is the correct approach. EI is the only repo with a multi-branch governance model (`main` = stable/production, `scientific` = experimental R&D). The thread applied the single-branch remediation pattern to a multi-branch repo.
 
-3. **BRANCH_MANAGEMENT_MODEL.md is not directly visible.** The model lives in the `.taskmaster` submodule (on the `taskmaster` branch), not in the working tree of `main` or `scientific` as a regular file. The AGENTS.md references it by path (`[.taskmaster/BRANCH_MANAGEMENT_MODEL.md](.taskmaster/BRANCH_MANAGEMENT_MODEL.md)`) but the submodule must be checked out to read it. An agent that doesn't follow the AGENTS.md link and check out the submodule will never see the actual rules.
+3. **BRANCH_MANAGEMENT_MODEL.md is not directly visible.** The model lives in the `.taskmaster` submodule (on the `taskmaster` branch), not in the working tree of `main` or `scientific` as a regular file. The EmailIntelligence `AGENTS.md` references `.taskmaster/BRANCH_MANAGEMENT_MODEL.md`, but the submodule must be checked out to read it. An agent that doesn't follow that reference and check out the submodule will never see the actual rules.
 
 **What was done instead (correct approach):** The identity bug fix was applied as separate, targeted commits on each branch:
 - `main` (commit `f974d257`): fixed `jules-pr-address-comments.yml`, `jules-pr-automerge-label.yml`, `.mergify.yml` — 3 files, 21 insertions, 11 deletions

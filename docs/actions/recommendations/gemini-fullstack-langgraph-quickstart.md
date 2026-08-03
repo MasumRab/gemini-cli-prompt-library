@@ -1,5 +1,8 @@
 # Jules Action Recommendations – Gemini Full‑Stack LangGraph QuickStart
 
+> **Recommendation record:** Validate repository assumptions and use the canonical
+> workflows in this repository; embedded examples are not distribution authorities.
+
 ## Project Overview
 This repo is a starter kit that combines Google’s Gemini LLM with LangGraph to build agent‑based applications. It contains:
 - Backend (FastAPI/Node) API definitions

@@ -2,14 +2,14 @@
 
 **Created:** 2026-07-31
 **Scope:** Canonical Jules GitHub Actions workflows in `jules/.github/`
-**Status:** Hardening pass complete; sync blocked pending final review
-**Supersedes:** `AUTOREVIEW_JULES_PLAN.md` (Phase 1-5 only), `gemini_jules_analysis.md` Section 10
+**Status:** Initial hardening committed; five follow-up findings remain open; sync blocked pending fixes and live validation
+**Supersedes:** `artifacts/AUTOREVIEW_JULES_PLAN.md` (Phase 1-5 only), `gemini_jules_analysis.md` Section 10
 
 ---
 
 ## 0. Why This Document Exists
 
-The original remediation plan (`AUTOREVIEW_JULES_PLAN.md`) tracked Phases 1-5 of the
+The original remediation plan (`artifacts/AUTOREVIEW_JULES_PLAN.md`) tracked Phases 1-5 of the
 initial workflow hardening (defects F1-F9, W1-W10, C1-C8). It was marked complete but
 **never updated** when the scope expanded to include:
 
@@ -29,7 +29,7 @@ plan, the Gemini analysis, and the current session's work into a single source o
 
 ## 1. Complete Work Inventory
 
-### 1.1 Original Plan (AUTOREVIEW_JULES_PLAN.md) — Phases 1-5
+### 1.1 Original Plan (`artifacts/AUTOREVIEW_JULES_PLAN.md`) — Phases 1-5
 
 All items marked ✅ in the original plan are confirmed implemented:
 
@@ -190,7 +190,7 @@ Canonical `jules/` is ahead of `EmailIntelligence/` in all modified workflows:
 |----|------|----------|--------|---------|
 | T-01 | ~~Update `.github/README.md`~~ | ~~High~~ | ~~Small~~ | ✅ **Done 2026-08-01** — All 11 workflows now listed in structure and distribution instructions |
 | T-02 | ~~Update `gemini_jules_analysis.md` Section 10~~ | ~~Medium~~ | ~~Small~~ | ✅ **Done 2026-08-01** — 10.1-10.3, 10.5 marked ✅ Resolved; 10.4 marked ⚠️ Partially Resolved with commit references |
-| T-03 | Create `.github/jules-review-rules.md` | Medium | Medium | Project-specific review rules (ReDoS, PII, docstrings, branch contamination). Per `emailintelligence.md` and `jules_actions_traceability.md`. |
+| T-03 | Create `.github/jules-review-rules.md` | Medium | Medium | Project-specific review rules (ReDoS, PII, docstrings, branch contamination). Per `recommendations/emailintelligence.md`; validate all assumptions against the target repository. |
 | T-04 | Create `docs/jules_actions.md` | Low | Small | Jules Actions documentation for the canonical repo |
 
 ### Workflow Tasks
@@ -204,7 +204,7 @@ Canonical `jules/` is ahead of `EmailIntelligence/` in all modified workflows:
 | T-09 | Second-session retry on session failure | Low | Medium | If a Jules session fails (state=FAILED), create a second session with error context from the first. Not yet implemented. |
 | T-10 | Resolve-conflicts output artifact | Low | Small | Currently fire-and-forget — no output file to upload. Could capture session activities for debugging. |
 
-### New Workflow Tasks (from `jules_actions_traceability.md`)
+### New Workflow Tasks (from historical `artifacts/jules_actions_traceability.md`)
 
 | ID | Task | Priority | Effort | Details |
 |----|------|----------|--------|---------|
@@ -225,7 +225,7 @@ Canonical `jules/` is ahead of `EmailIntelligence/` in all modified workflows:
 |----|------|----------|--------|---------|
 | T-16 | ~~Commit canonical changes~~ | ~~High~~ | ~~Small~~ | ✅ **Done 2026-08-01** — All 15 commits pushed (`c271afd`→`a64d3af`), working tree clean |
 | T-17 | Sync hardened workflows to EmailIntelligence | High | Medium | Copy 11 workflows + classifier to EI `.github/`. Commit 5 `gemini-*.yml` deletions. Use `git add -f` if `.gitignore` blocks `.github`. **Blocked by user instruction — do not sync until all hardening is reviewed.** |
-| T-18 | Sync to other repos (KNA, GFLQ, GCPL) | Low | Medium | Per distribution plan in `AUTOREVIEW_JULES_PLAN.md` Section 5. KNA needs careful merge; GFLQ and GCPL are clean copies. |
+| T-18 | Sync to other repos (KNA, GFLQ, GCPL) | Low | Medium | Use the distribution gates in `REVIEW_RECOMMENDATION.md`; `artifacts/AUTOREVIEW_JULES_PLAN.md` Section 5 is historical context only. Reassess every target repository before copying. |
 
 ---
 
@@ -243,7 +243,7 @@ Two of three stale documents have been updated (2026-08-01):
 
 1. ~~`.github/README.md` — missing 3 new workflows~~ ✅ **Updated** — now lists all 11 workflows
 2. ~~`gemini_jules_analysis.md` Section 10 — all issues resolved but not updated~~ ✅ **Updated** — 10.1-10.3, 10.5 marked resolved; 10.4 marked partially resolved
-3. `AUTOREVIEW_JULES_PLAN.md` — Phase 1-5 complete but doesn't cover expanded scope — still stale, superseded by this document for tracking
+3. ~~`AUTOREVIEW_JULES_PLAN.md` appeared beside current authorities~~ ✅ **Archived** as `artifacts/AUTOREVIEW_JULES_PLAN.md`; this document remains the active tracker
 
 ### 5.3 Line Ending Warnings
 
@@ -353,9 +353,9 @@ The findings in Section 8 were addressed across four follow-up commits, pushed t
 | `a64d3af` | `jules-pr-review.yml`, `jules-pr-force-review.yml` | W-01 regression hotfix — restored `.sort()[0]` on the deferred filter that was dropped during the regex conversion |
 | `2c3eae5` | `jules-pr-review.yml`, `jules-pr-force-review.yml` | **W-11** (no-verdict fail-closed: `success` → `failure` at 4 sites) |
 
-A re-review after `4149ff4` surfaced **6 new findings**, of which 2 criticals were immediate
-regressions introduced by W-01's deferred-filter rewrite and were hotfixed in `a64d3af`. The
-remaining 3 are documented below as known follow-ups.
+A re-review after `4149ff4` and a second review pass surfaced additional findings. Two
+immediate regressions introduced by W-01's deferred-filter rewrite were hotfixed in
+`a64d3af`; W-11 was fixed in `2c3eae5`. Five follow-up findings remain open below.
 
 ### 9.1 Resolved Findings (post-fix verification)
 
@@ -383,9 +383,13 @@ remaining 3 are documented below as known follow-ups.
 
 ### 9.3 Outstanding Tasks Updated
 
-New tasks implied by W-09 and W-10:
+Every open finding has a tracked task:
 
 | ID | Task | Priority |
+|----|------|----------|
+| T-19 | Add a per-session deadline and bounded consecutive poll failures to backlog review; derive the job timeout from `maxPrs`, the per-session budget, and finalization overhead (W-09) | High |
+| T-20 | Deduplicate submitted review bodies by review ID and include `submitted_at` in newest-actionable-feedback selection (W-10) | High |
 | T-21 | Harden the deferred-filter regex to require both `session="..."` and `sha="..."` (W-12) | Low |
 | T-22 | Force `reviewEvent = 'COMMENT'` while `sessionState` is not terminal; switch to APPROVE/REQUEST_CHANGES only when `sessionState === 'COMPLETED'` (W-13) | Medium |
 | T-23 | Add `sessionName \|\| sessions/${sessionId}` fallback in force-review deferred-emission (W-15) | Medium |
+| T-24 | Before target-repository distribution, inventory authoritative instruction, branch-governance, and review-policy sources; classify requirements as trusted-base prompt context, deterministic workflow checks, or operator guidance; define precedence and bounds; and add tests proving integration. Known examples for later investigation: EmailIntelligence branch governance and Kaggle `.jules/INSTRUCTIONS.md`. | High |

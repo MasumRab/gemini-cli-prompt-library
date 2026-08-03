@@ -42,4 +42,4 @@ python3 -m tools.sessions.jules_monitor --daemon
 - **Approve Plan:** `python3 -m tools.sessions.jules_approve_plan <ID>`
 - **Analyze State:** `python3 -m tools.sessions.jules_recovery_manager <ID>`
 
-For more details, see `docs/jules/JULES_SESSION_RUNBOOK.md`.
+For state-specific recovery, see [`../runbooks/session_recovery.md`](../runbooks/session_recovery.md).
