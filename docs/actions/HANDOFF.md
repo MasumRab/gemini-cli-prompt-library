@@ -3,7 +3,7 @@
 **Created:** 2026-07-31
 **Scope:** Canonical Jules GitHub Actions workflows in `jules/.github/`
 **Status:** Initial hardening committed; five follow-up findings remain open; sync blocked pending fixes and live validation
-**Supersedes:** `artifacts/AUTOREVIEW_JULES_PLAN.md` (Phase 1-5 only), `gemini_jules_analysis.md` Section 10
+**Supersedes:** `artifacts/AUTOREVIEW_JULES_PLAN.md` (Phase 1-5 only), `artifacts/external/GEMINI_JULES_ANALYSIS.md` Section 10
 
 ---
 
@@ -19,7 +19,8 @@ initial workflow hardening (defects F1-F9, W1-W10, C1-C8). It was marked complet
 4. **Five bugs found and fixed in the current hardening pass** (see Section 2)
 5. **User policy constraints** (backlog review must not recommend closure)
 
-The `gemini_jules_analysis.md` Section 10 (Known Issues) is also stale — it still lists
+The historical `artifacts/external/GEMINI_JULES_ANALYSIS.md` Section 10 (Known Issues)
+is also stale — it still lists
 issues 10.1-10.5 as open, but all five have been addressed (see Section 3.1).
 
 This document is the new authoritative tracking reference. It reconciles the original
@@ -41,7 +42,7 @@ All items marked ✅ in the original plan are confirmed implemented:
 | 4: Workflow-specific | W1-W10 | ✅ Done | issue_comment path, slash auth, marker selection, file guards, fork guards, concurrency, multiline output |
 | 5: Event normalization | — | ✅ Done | `resolvePullRequest` pattern in all issue_comment workflows |
 
-### 1.2 Gemini-Derived Recommendations (from `gemini_jules_analysis.md` Section 5)
+### 1.2 Gemini-Derived Recommendations (from `artifacts/external/GEMINI_JULES_ANALYSIS.md` Section 5)
 
 | # | Recommendation | Status | Implementation |
 |---|----------------|--------|----------------|
@@ -90,7 +91,8 @@ Added to both `jules-pr-review.yml` and `jules-pr-force-review.yml`:
 
 - `.gitignore` updated to exclude `activities_*.json` debug captures
 - `.github/README.md` is **stale** — does not list the 3 new workflows (backlog-review, dispatch, issue-triage). See Task T-01.
-- `gemini_jules_analysis.md` Section 10 (Known Issues) is **stale** — all 5 issues have been addressed but the document was never updated. See Task T-02.
+- `artifacts/external/GEMINI_JULES_ANALYSIS.md` Section 10 (Known Issues) is a
+  **historical snapshot**. Its issue status is superseded by this tracker. See Task T-02.
 
 ---
 
@@ -161,7 +163,7 @@ Canonical `jules/` is ahead of `EmailIntelligence/` in all modified workflows:
 
 ## 3. Reconciliation: Known Issues vs Actual State
 
-### 3.1 `gemini_jules_analysis.md` Section 10 — All Addressed
+### 3.1 `artifacts/external/GEMINI_JULES_ANALYSIS.md` Section 10 — All Addressed
 
 | Issue | Documented Status | Actual Status | How Addressed |
 |-------|-------------------|---------------|---------------|
@@ -189,7 +191,7 @@ Canonical `jules/` is ahead of `EmailIntelligence/` in all modified workflows:
 | ID | Task | Priority | Effort | Details |
 |----|------|----------|--------|---------|
 | T-01 | ~~Update `.github/README.md`~~ | ~~High~~ | ~~Small~~ | ✅ **Done 2026-08-01** — All 11 workflows now listed in structure and distribution instructions |
-| T-02 | ~~Update `gemini_jules_analysis.md` Section 10~~ | ~~Medium~~ | ~~Small~~ | ✅ **Done 2026-08-01** — 10.1-10.3, 10.5 marked ✅ Resolved; 10.4 marked ⚠️ Partially Resolved with commit references |
+| T-02 | ~~Reconcile `artifacts/external/GEMINI_JULES_ANALYSIS.md` Section 10~~ | ~~Medium~~ | ~~Small~~ | ✅ **Done 2026-08-01** — current status is recorded in this tracker; the imported source remains immutable historical evidence |
 | T-03 | Create `.github/jules-review-rules.md` | Medium | Medium | Project-specific review rules (ReDoS, PII, docstrings, branch contamination). Per `recommendations/emailintelligence.md`; validate all assumptions against the target repository. |
 | T-04 | Create `docs/jules_actions.md` | Low | Small | Jules Actions documentation for the canonical repo |
 
@@ -242,7 +244,7 @@ Canonical `jules/` is ahead of `EmailIntelligence/` in all modified workflows:
 Two of three stale documents have been updated (2026-08-01):
 
 1. ~~`.github/README.md` — missing 3 new workflows~~ ✅ **Updated** — now lists all 11 workflows
-2. ~~`gemini_jules_analysis.md` Section 10 — all issues resolved but not updated~~ ✅ **Updated** — 10.1-10.3, 10.5 marked resolved; 10.4 marked partially resolved
+2. ~~Workspace-only `gemini_jules_analysis.md` dependency~~ ✅ **Imported** as `artifacts/external/GEMINI_JULES_ANALYSIS.md` and superseded for status by this tracker
 3. ~~`AUTOREVIEW_JULES_PLAN.md` appeared beside current authorities~~ ✅ **Archived** as `artifacts/AUTOREVIEW_JULES_PLAN.md`; this document remains the active tracker
 
 ### 5.3 Line Ending Warnings

@@ -1,0 +1,484 @@
+HISTORICAL SNAPSHOT: Imported for provenance. This diagram models 2026-07-22 behavior
+and is not a current runtime or readiness authority. See docs/actions/README.md.
+
+================================================================================
+ JULES PR WORKFLOWS — INTENDED USE, AUTOMATIC TRIGGERS & AUTOMERGE FRAMEWORK
+ Source: docs/JULES_WORKFLOW_REASONING_AND_CHANGES.md (2026-07-22)
+         + deployed .github/workflows/ (all 4 repos, verified 2026-07-22)
+         + jules/docs/runbooks/github_integration.md (@jules vs /jules-*)
+         + jules/docs/actions/workflows/{CHANGELOG,EDGE_CASES}.md
+ Repos : EmailIntelligence (EI)
+         gemini-fullstack-langgraph-quickstart (GFLQ)
+         gemini-cli-prompt-library (GCPL)
+         kaggle-notebooks-analysis (KNA)
+================================================================================
+
+ LEGEND
+  [AUTO]  = fires automatically on GitHub events (no human label needed)
+  [LABEL] = fires when a maintainer adds a label OR posts a slash command
+  [SCHED] = fires on a cron schedule / workflow_dispatch
+  RO      = read-only Jules session (no AUTO_CREATE_PR, no code mutation)
+  MUT     = mutating Jules session (creates PR or pushes to branch)
+  NO-SESS = does NOT create a Jules session (GitHub-side only)
+  -->     = trigger direction
+  ===>    = Jules REST API call
+  ---|    = gate/decision
+  [G]     = posts an HTML marker <!-- jules-* --> for downstream consumers
+
+--------------------------------------------------------------------------------
+ TWO COMMUNICATION MODES WITH JULES (do NOT conflate these)
+--------------------------------------------------------------------------------
+  @jules  (server-side, Jules GitHub App)
+    - posted in a PR comment (issue_comment)
+    - Jules App routes the message to the session that CREATED the PR
+    - works ONLY on Jules-authored PRs (pr.user.login === 'jules')
+    - does NOT create a new session, does NOT consume the 15/day quota
+    - no workflow/secret needed — the Jules App handles it server-side
+    - CRITICAL NUANCE: the review workflow skips jules-* branches, so
+      Jules-created PRs typically do NOT have <!-- jules-pr-reviewer -->
+      markers. The address-comments gate must use pr.user.login, NOT markers.
+    - used by: jules-pr-address-comments.yml
+
+  /jules-* (self-hosted GitHub Actions, REST API)
+    - /jules-fix, /jules-resolve, /jules-rebuild, /jules-walkthrough,
+      /jules-force-review
+    - creates a NEW Jules session via POST /v1alpha/sessions
+    - works on ANY PR (Jules-authored or human-authored)
+    - consumes 1 session per invocation (2 for rebuild)
+    - requires JULES_API_KEY secret + workflow file
+    - custom text after the command becomes CUSTOM_INSTRUCTIONS
+
+  WHY BOTH EXIST:
+    - Session-creating workflows (/jules-*) start FRESH work: new review,
+      new fix, new rebuild. They consume quota and can run on any PR.
+    - @jules CONTINUES existing work: feeds human feedback to the session
+      that already created the PR, without spending another session.
+    - address-comments is the BRIDGE: human review thread -> @jules -> the
+      Jules session that created the PR addresses the feedback.
+
+================================================================================
+ WORKFLOW TAXONOMY (8 deployed workflows across all 4 repos)
+================================================================================
+
+--------------------------------------------------------------------------------
+ 1. jules-pr-review.yml            [AUTO]  RO   [G] | "the always-on reviewer"
+--------------------------------------------------------------------------------
+  trigger : pull_request [opened, synchronize, reopened, ready_for_view]
+  concorr : jules-review-<PR#>, cancel-in-progress: true
+  skip if : head.ref starts with "jules-"  OR  label "jules-override" present
+  fork    : skipped (same-repo only)
+  session : YES — 1 analytical (RO) session from PR HEAD
+  marker  : <!-- jules-pr-reviewer --> in the PR REVIEW BODY (pulls.createReview)
+  output  : PR review + jules/review status (branch-protection gate)
+  skipMk  : jules-pr-reviewer, jules-auto-fix, jules-resolve, jules-walkthrough,
+            jules-rebuild, jules-quota-exhausted, jules-address-comments  [✅ FIXED]
+  checksum: 486820c26b844dff5bf05a53c5ff2f40 (identical, all 4 repos)
+
+  pull_request event ---> [fork? jules-* branch? override?] --no--> skip
+                          | yes (same-repo, eligible)
+                          v
+                  create Jules session (start: pr.head.ref, RO)
+                          ===> poll /v1alpha/sessions/<name>/activities
+                          v
+                  parse VERDICT: approve|comment|block
+                          v
+                  post PR review (with marker) + set jules/review status
+
+--------------------------------------------------------------------------------
+ 2. jules-pr-force-review.yml      [LABEL] RO   [G] | "manual override review"
+--------------------------------------------------------------------------------
+  trigger : pull_request [labeled: jules-force-review]
+            OR issue_comment [/jules-force-review]
+  concorr : jules-force-review-<PR#>, cancel-in-progress: false
+  session : YES — 1 analytical (RO) session from PR HEAD
+  marker  : <!-- jules-pr-reviewer --> in the PR review body
+  output  : PR review + jules/review status
+  skipMk  : (same as review)  [✅ FIXED]
+  checksum: e1adfc711b6b87d0487c3c173601da71 (identical, all 4 repos)
+
+  maintainer adds label jules-force-review  (or /jules-force-review comment)
+        ---> remove label (claim) ---> create RO session from PR HEAD
+        ===> poll ---> post review (with marker) + status
+
+--------------------------------------------------------------------------------
+ 3. jules-pr-walkthrough.yml       [LABEL] RO   [G] | "reviewer's narrative"
+--------------------------------------------------------------------------------
+  trigger : pull_request [labeled: jules-walkthrough]
+            OR issue_comment [/jules-walkthrough]
+  session : YES — 1 analytical (RO) session from PR HEAD
+  marker  : <!-- jules-walkthrough --> in an issue comment (upserted)
+  output  : single maintained PR comment
+  skipMk  : (same as review)  [✅ FIXED]
+  checksum: b56585c158fc5447c2af22c38082a484 (identical, all 4 repos)
+
+  label/comment ---> create RO session (start: pr.head.ref)
+        ===> poll ---> upsert <!-- jules-walkthrough --> comment
+
+--------------------------------------------------------------------------------
+ 4. jules-pr-auto-fix.yml          [LABEL] MUT  [G] | "PR-feedback-driven repair"
+--------------------------------------------------------------------------------
+  trigger : pull_request [labeled: jules-fix]
+            OR issue_comment [/jules-fix]
+  concorr : jules-fix-<PR#>, cancel-in-progress: false
+  session : YES — 1 MUTATING session from PR HEAD
+  marker  : <!-- jules-auto-fix -->; <!-- jules-quota-exhausted --> on 429
+  output  : a follow-up repair PR
+  skipMk  : jules-pr-reviewer, jules-auto-fix, jules-resolve,
+            jules-rebuild, jules-quota-exhausted, jules-address-comments  [✅ FIXED]
+            (walkthrough intentionally NOT skipped — architectural context helps fixes)
+  checksum: 3d079f550f84fb5ed401d6d5c7ce99c9 (identical, all 4 repos)
+
+  label jules-fix ---> consume label ---> create MUT session (start: pr.head.ref)
+        ===> poll ---> Jules pushes fix ---> opens repair PR
+
+--------------------------------------------------------------------------------
+ 5. jules-pr-resolve-conflicts.yml [LABEL] MUT  [G] | "stable-source reimplementation"
+--------------------------------------------------------------------------------
+  trigger : pull_request [labeled: jules-resolve]
+            OR issue_comment [/jules-resolve]
+  timeout : 45 min (stability watch + session)
+  session : YES — 1 MUTATING session from current base (not PR HEAD)
+  marker  : <!-- jules-resolve --> (upserted); <!-- jules-quota-exhausted --> on 429
+  output  : a conflict-resolution PR (or organic-skip notice)
+  skipMk  : jules-pr-reviewer, jules-auto-fix, jules-resolve,
+            jules-rebuild, jules-quota-exhausted, jules-address-comments  [✅ FIXED]
+  checksum: ccb022921d0b0c16550c72240977fec5 (identical, all 4 repos)
+
+  label jules-resolve ---> validate base ref (git rev-parse -q --verify)
+        | missing ref ---------> has_conflicts=error, exit 1 (FAIL) [✅ FIXED]
+        v ref exists
+        merge-tree --write-tree HEAD origin/<base>
+        | exit 0 (clean) ---------> skip, post "conflicts resolved organically"
+        | exit 1 (conflict) -----> stability watch (60s, no sessions)
+        v
+        recheck ---still clean---> skip
+        | still conflict
+        v
+        create MUT session (start: base, pin source head SHA)
+        ===> poll ---> open resolution PR
+
+--------------------------------------------------------------------------------
+ 6. jules-pr-rebuild.yml           [LABEL] MUT  [G] | "two-session messy-PR cleanup"
+--------------------------------------------------------------------------------
+  trigger : pull_request [labeled: jules-rebuild]
+            OR issue_comment [/jules-rebuild]
+  job 1 ANALYZE (RO): from base, comment-only — identify valuable vs noise
+  job 2 REBUILD  (MUT): gated by needs.analyze.session_state == 'COMPLETED'
+      AND same-repo PR. Starts from PR HEAD, reads job-1 analysis, PUSHES
+      DIRECTLY to the PR branch (no new PR)
+  session : YES — 2 sessions (1 RO analyze + 1 MUT rebuild)
+  marker  : <!-- jules-rebuild --> (upserted); <!-- jules-quota-exhausted --> on 429
+  output  : rewritten PR branch
+  skipMk  : NONE — still has no skipMarkers  ❌ GAP (R1)
+  checksum: 7c09fd82af471a7af1babbeb7bd0bc32 (identical, all 4 repos)
+
+  label jules-rebuild
+      ---> ANALYZE job (RO session from base)
+      ===> poll ---> session_state output
+      |  FAILED / TIMEOUT / skip -----> REBUILD job skipped (gated)
+      v  COMPLETED
+      REBUILD job (MUT session from pr.head.ref) ---> push to PR branch
+
+--------------------------------------------------------------------------------
+ 7. jules-pr-address-comments.yml  [AUTO]  NO-SESS [G] | "human-review -> @jules loop"
+--------------------------------------------------------------------------------
+  trigger : pull_request_review_comment [created]
+  concorr : jules-address-<PR#>, cancel-in-progress: false
+  skip if : comment author == 'jules'
+  session : NO — does NOT call Jules REST API; posts @jules for the Jules App
+  does    : (a) GATE: check pr.user.login === 'jules' — skip if not Jules-created
+                (no session to route @jules to). EI removed the marker gate
+                entirely; GFLQ/KNA/GCPL still check markers first then
+                pr.user.login. EI's approach is correct because the review
+                workflow skips jules-* branches, so Jules-created PRs typically
+                have NO markers. [DIVERGENCE — see R2]
+            (b) fetch issue comments + PR reviews for prior Jules context
+                extraction (markers used for context, not for gate)
+            (c) query GraphQL pullRequest.reviewThreads, filter isResolved == false
+            (d) compose ONE smart summary with all unresolved thread context
+            (e) post a SINGLE @jules PR issue comment (NOT per-thread replies —
+                per-thread replies re-trigger this workflow causing a loop)
+            (f) Jules App picks up @jules server-side and routes to the session
+  marker  : <!-- jules-address-comments --> in the posted @jules PR comment
+  output  : single @jules PR comment with unresolved thread summaries
+  skipMk  : N/A (does not build prompt context from prior comments)
+  checksum: DIVERGES — EI=ebbdfbb (no marker gate), others=d83ae29 (marker+login gate)
+
+  review comment created (not by jules)
+      |
+      |--- EI path:
+      |    pr.user.login === 'jules'? --no--> skip
+      |    | yes
+      |    v
+      |    GraphQL reviewThreads(isResolved:false)
+      |    ---> compose single summary
+      |    ---> post ONE @jules PR comment with <!-- jules-address-comments -->
+      |
+      |--- GFLQ/KNA/GCPL path:
+      |    markers in issue comments OR review bodies? --no--> skip
+      |    | yes
+      |    v
+      |    pr.user.login === 'jules'? --no--> skip
+      |    | yes
+      |    v
+      |    GraphQL reviewThreads(isResolved:false)
+      |    ---> compose single summary
+      |    ---> post ONE @jules PR comment with <!-- jules-address-comments -->
+      |
+      v
+  Jules App routes @jules to the session that created the PR
+
+--------------------------------------------------------------------------------
+ 8. jules-pr-automerge-label.yml   [SCHED] NO-SESS   | "automerge provenance labeler"
+--------------------------------------------------------------------------------
+  trigger : schedule cron '0 * * * *' (hourly)  +  workflow_dispatch
+  session : NO — pure GitHub API (no Jules involvement)
+  does    : paginate ALL open PRs; for PRs whose author login === 'jules'
+            AND head.repo == same repository, add the 'automerge' label.
+            THEN (GFLQ/KNA only): call enablePullRequestAutoMerge GraphQL
+            mutation to enable GitHub's native auto-merge on the PR.
+            EI/GCPL do NOT call enablePullRequestAutoMerge (Mergify handles it).
+  output  : 'automerge' label + (GFLQ/KNA) native auto-merge enabled per-PR
+  checksum: 3 VARIANTS (expected):
+            EI=a5bb1a7 (Mergify, no GraphQL call)
+            GCPL=8d3ed62 (Mergify, no GraphQL call)
+            GFLQ/KNA=74ac6b7 (native auto-merge, calls GraphQL)
+
+  hourly cron / manual run
+      ---> paginate open PRs
+      ---> PR.author == 'jules' && head.repo == this repo ?
+        | yes ---> add label 'automerge'
+        |          + (GFLQ/KNA) call enablePullRequestAutoMerge GraphQL
+        v
+      MERGE ENGINE (per repo, external to this workflow) — see below
+
+================================================================================
+ HTML MARKER PRODUCER/CONSUMER MATRIX  (<!-- jules-* -->)
+================================================================================
+ Markers serve THREE purposes. Do NOT delete a marker before understanding all
+ three roles it plays.
+
+ PURPOSE 1 — CIRCULAR CONTEXT PREVENTION (skipMarkers filtering)
+   Session-creating workflows EXCLUDE comments containing any skipMarkers
+   marker so Jules does not read its own prior output as "human feedback."
+
+ PURPOSE 2 — COMMENT LIFECYCLE (upsert / dedup)
+   Walkthrough and resolve-conflicts find their existing marker comment and
+   UPDATE it instead of creating duplicates.
+
+ PURPOSE 3 — PRIOR JULES ACTIVITY DETECTION
+   Address-comments checks for ANY Jules marker (in issue comments AND review
+   bodies) to extract prior Jules context for the @jules prompt. NOTE: EI
+   version uses pr.user.login as the gate, not markers (see §5 of reasoning doc).
+
+  Marker                        | Produced by        | Stored as         | Consumed by                     | Purpose
+  ------------------------------+--------------------+--------------------+---------------------------------+--------
+  <!-- jules-pr-reviewer -->    | review,force-review| PR review body     | skipMarkers (all 5 sess WF)     | 1,3
+  <!-- jules-walkthrough -->    | walkthrough        | issue comment      | skipMarkers (rev,FR,walk); UPD  | 1,2,3
+  <!-- jules-auto-fix -->       | auto-fix           | issue comment      | skipMarkers (all 5 sess WF)     | 1,3
+  <!-- jules-resolve -->        | resolve-conflicts  | issue comment (UPD)| skipMarkers (all 5 sess WF); UPD| 1,2,3
+  <!-- jules-rebuild -->        | rebuild (analyze)  | issue comment (UPD)| skipMarkers (all 5 sess WF) ✅  | 2,3
+  <!-- jules-quota-exhausted -->| any WF on 429/403  | issue comment      | skipMarkers (all 5 sess WF) ✅  | 1
+  <!-- jules-address-comments -->| address-comments  | issue comment      | skipMarkers (all 5 sess WF) ✅  | 1
+
+  ✅ = fixed in this round (added to skipMarkers in all 5 session-creating WFs)
+  ❌ GAP: rebuild still has NO skipMarkers array (R1)
+
+================================================================================
+ AUTOMERGE FRAMEWORK ACROSS REPOS (UPDATED 2026-07-22 — all gaps now closed)
+================================================================================
+
+ The Jules workflows themselves NEVER merge. Automerge is a two-layer system:
+
+  LAYER 1 — LABELER (jules-pr-automerge-label.yml, all 4 repos)
+      - hourly cron, paginates open PRs
+      - trusts ONLY: pr.user.login === 'jules'  AND  pr.head.repo.full_name
+        === '<owner>/<repo>' (same-repo head — branch-name trust was removed)
+      - adds label: 'automerge'
+      - GFLQ/KNA: also calls enablePullRequestAutoMerge GraphQL (native auto-merge)
+      - EI/GCPL: does NOT call GraphQL (Mergify handles the merge)
+      - secrets/permissions: pull-requests: write, contents: read (no merge)
+
+  LAYER 2 — MERGE ENGINE (per repo, external to Jules workflows)
+      - EmailIntelligence (EI):
+          Mergify (.mergify.yml) — ✅ has 'automerge' label rule
+          Rule: label=automerge + check-success(test|lint-only) + -conflict + -draft
+          Also: conflict comments to @jules, dependabot auto-merge, office-hours
+          STATUS: ✅ FULLY CONFIGURED
+      - gemini-cli-prompt-library (GCPL):
+          Mergify (.mergify.yml) — ✅ NOW has 'automerge' label rule (P3 fix)
+          Rule: label=automerge + check-success(SonarCloud,CodeQL,lint) + -conflict + -draft
+          Also: office-hours merge, auto-rebase, conflict ping
+          STATUS: ✅ FULLY CONFIGURED
+      - gemini-fullstack-langgraph-quickstart (GFLQ):
+          NO Mergify — uses GitHub native auto-merge
+          jules-pr-automerge-label.yml calls enablePullRequestAutoMerge ✅ (P2 fix)
+          Requires: Settings > General > Pull Requests > Allow auto-merge enabled
+          Also: dependabot-auto-merge.yml for Dependabot only
+          STATUS: ✅ CONFIGURED (if repo setting is enabled)
+      - kaggle-notebooks-analysis (KNA):
+          NO Mergify — uses GitHub native auto-merge
+          jules-pr-automerge-label.yml calls enablePullRequestAutoMerge ✅ (P2 fix)
+          Requires: Settings > General > Pull Requests > Allow auto-merge enabled
+          STATUS: ✅ CONFIGURED (if repo setting is enabled)
+
+  WHAT MERGIFY ADDS OVER NATIVE GITHUB AUTO-MERGE:
+      Feature                      | GitHub native | Mergify
+      -----------------------------+---------------+--------
+      Auto-merge when checks pass  | ✅            | ✅
+      Label-based conditional rules| ❌ (all/none) | ✅
+      Author-based rules           | ❌            | ✅ (dependabot, jules)
+      Schedule-based merging       | ❌            | ✅ (office hours)
+      Automatic rebase when behind | ❌            | ✅ (threshold)
+      Conflict detection comments  | ❌            | ✅ (auto-comment)
+      Merge queues/batching        | limited       | ✅ (more configurable)
+      Approval counting in rules   | ❌            | ✅ (#approved-reviews-by>=N)
+      Cost                         | free          | free OSS / paid private
+
+================================================================================
+ TRUNK.IO ROLE (NOT a merge tool — it GATES merging)
+================================================================================
+  Trunk.io is a meta-linter/tooling platform, NOT a merge engine.
+  Configured via .trunk/trunk.yaml in each repo.
+
+  What it does:
+    - Runs linters/formatters on PR code: actionlint, shellcheck, ruff, black,
+      semgrep, mypy, eslint, hadolint, checkov, trufflehog, etc.
+    - Runs as a GitHub Action or pre-push hook
+    - Produces status checks on PRs (e.g., "Trunk Check" pass/fail)
+
+  How it fits into auto-merge:
+    1. Trunk.io runs on PR events → produces status checks
+    2. Branch protection requires those checks to pass
+    3. Mergify / GitHub auto-merge waits for ALL required checks (including
+       Trunk Check AND jules/review AND CI) to pass
+    4. Only when ALL required checks pass does the PR auto-merge
+
+  Trunk.io GATES merging — it does not PERFORM merging.
+
+================================================================================
+ REQUIRED BRANCH PROTECTION / SETTINGS (for the gate to be meaningful)
+================================================================================
+  - branch protection requires status check: jules/review
+  - branch protection requires status check: Trunk Check (if Trunk.io enabled)
+  - branch protection requires status check: test / lint / CI
+  - auto-merge enabled in repo settings (Settings → General → Pull Requests)
+    [REQUIRED for GFLQ/KNA — Mergify repos don't need this]
+  - 'automerge' label consumed by merge engine (Mergify rule or native auto-merge)
+  - Jules GitHub App installed on the repo (author identity = 'jules')
+  - JULES_API_KEY secret available to same-repo PR events
+    (NOT exposed to fork PRs — fork paths skip before any secret use)
+
+================================================================================
+ SECURITY POSTURE (intended)
+================================================================================
+  - read-only workflows (review/force-review/walkthrough/address-comments/
+    automerge-label) omit AUTO_CREATE_PR -> cannot spawn PRs
+  - mutating workflows (auto-fix/resolve-conflicts/rebuild) are the only
+    ones that create PRs / push, and only via maintainer label or slash cmd
+  - no workflow uses pull_request_target (avoids elevated fork secret risk)
+  - fork PRs are detected and skipped before checkout / secret use
+  - same-repo head verification in automerge-label prevents fork spoof vector
+
+================================================================================
+ END-TO-END AUTO FLOW (how a Jules-authored PR gets reviewed, fixed, merged)
+================================================================================
+
+  [Jules opens PR from a label/issue task]
+        |
+        v
+  jules-pr-review.yml [AUTO] fires on opened/synchronize
+        ---> BUT skips jules-* branches! (Jules PRs typically NOT auto-reviewed)
+        ===> sets jules/review status (gate) [only on non-jules-* branches]
+        |
+        +-- maintainer sees findings, adds label jules-fix
+        |       v
+        |   jules-pr-auto-fix.yml [LABEL] -> MUT session from PR HEAD -> repair PR
+        |
+        +-- maintainer comments on a review thread
+        |       v
+        |   jules-pr-address-comments.yml [AUTO] fires on review_comment:created
+        |       -> GATE: pr.user.login === 'jules'? (EI: only check; others: markers+login)
+        |       -> GraphQL: unresolved review threads
+        |       -> posts ONE @jules PR comment with thread summaries
+        |       -> Jules App routes @jules to the session that created the PR
+        |          (NO new session consumed — reuses the existing one)
+        |
+        +-- conflicts on base advance?
+        |       v
+        |   jules-pr-resolve-conflicts.yml [LABEL jules-resolve]
+        |       -> validates base ref -> merge-tree check -> stability watch
+        |       -> MUT session from base -> resolution PR
+        |
+        +-- messy PR needs cleanup?
+        |       v
+        |   jules-pr-rebuild.yml [LABEL jules-rebuild]
+        |       -> ANALYZE (RO) -> REBUILD (MUT) -> push to PR branch
+        |
+        v
+  jules-pr-automerge-label.yml [SCHED hourly]
+        ---> author=='jules' && same-repo head? -> add 'automerge' label
+        ---> (GFLQ/KNA) also call enablePullRequestAutoMerge GraphQL
+        v
+  MERGE ENGINE:
+    EI    : Mergify consumes 'automerge' label + checks pass -> MERGE ✅
+    GCPL  : Mergify consumes 'automerge' label + checks pass -> MERGE ✅ (P3 fix)
+    GFLQ  : GitHub native auto-merge (enablePullRequestAutoMerge called) -> MERGE ✅ (P2 fix)
+    KNA   : GitHub native auto-merge (enablePullRequestAutoMerge called) -> MERGE ✅ (P2 fix)
+        |
+        v
+  All required checks must pass BEFORE merge:
+    [jules/review status]  +  [Trunk Check]  +  [test/lint/CI]  +  [-conflict]  +  [-draft]
+        |
+        v
+  MERGE (squash/merge/rebase per repo setting)
+
+================================================================================
+ PROPAGATION STATE (verified 2026-07-22)
+================================================================================
+  All 4 repos have 8/8 workflow files deployed.
+
+  Byte-identical across all 4 repos (confirmed by md5 checksum):
+    review:          486820c...  ✅
+    force-review:    e1adfc7...  ✅
+    walkthrough:     b56585c...  ✅
+    auto-fix:        3d079f5...  ✅
+    resolve-conflict:ccb0229...  ✅
+    rebuild:         7c09fd8...  ✅
+
+  Intentional divergence:
+    address-comments: EI=ebbdfbb (no marker gate) vs others=d83ae29 (marker+login)
+                      → R2: reconcile to EI's approach
+    automerge-label:  3 variants (EI/GCPL=Mergify, GFLQ/KNA=native auto-merge)
+                      → EXPECTED and CORRECT
+
+  Template family (jules/docs/actions/workflows/):
+    Updated with skipMarkers ✅, automerge-label ✅, address-comments P4 check ✅
+    Remaining gap: address-comments template still has marker gate (R4)
+
+  All changes are UNCOMMITTED across all repos.
+
+================================================================================
+ REMAINING CHANGES (see docs/JULES_WORKFLOW_REASONING_AND_CHANGES.md §7)
+================================================================================
+  COMPLETED (P1-P6 from previous round):
+    P1 ✅ skipMarkers updated in 5/6 workflows (all repos + templates)
+    P2 ✅ enablePullRequestAutoMerge added to GFLQ/KNA
+    P3 ✅ automerge label rule added to GCPL .mergify.yml
+    P4 ✅ pr.user.login === 'jules' check added to address-comments
+    P5 ⚠️ GFLQ/KNA/GCPL docs updated; EI docs NOT updated
+    P6 ✅ jules/ templates updated
+
+  REMAINING:
+    R1: Add skipMarkers to rebuild workflow's analyze phase (all 4 repos)
+    R2: Reconcile address-comments — adopt EI's approach across GFLQ/KNA/GCPL
+        (remove marker gate, use only pr.user.login)
+    R3: Update EI docs/jules_actions.md (still says "not yet installed")
+    R4: Fully sync jules/ template address-comments to EI's version
+    R5-R12: Review plan P0 issues and blockers (session URL, activity fields,
+            base-vs-head, rebuild compile, rebuild gating, repo rules, VERDICT
+            parsing, P1/P2 issues) — see §6 of reasoning doc
+
+================================================================================
+ DIAGRAM END
+================================================================================
