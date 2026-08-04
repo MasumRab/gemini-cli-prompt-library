@@ -156,6 +156,8 @@ The following planned items remain open in `HANDOFF.md`:
   and explicit workflow checks. Known examples requiring later investigation are
   EmailIntelligence branch governance and `kaggle-notebooks-analysis`'s
   `.jules/INSTRUCTIONS.md`.
+- T-25: inventory legacy-layout branches/worktrees and migrate or explicitly supersede
+  their semantic changes through `WORKTREE_MIGRATION.md`.
 
 New workflow creation and parser refactoring are not prerequisites for fixing the five
 open correctness findings. Keep behavior repair and refactoring as separate reviewable
@@ -211,20 +213,23 @@ starts only after the open findings are fixed and validation passes.
 
 1. Define the canonical file manifest explicitly: 11 workflows plus the classifier.
 2. Produce a machine-readable content-hash report for canonical and target copies.
-3. Generate one reviewable target-repository change per repository.
-4. Inventory each target repository's authoritative instruction, branch-governance,
+3. Reconcile branches or worktrees using the legacy `docs/actions/workflows/` or
+   `docs/actions/scripts/` layout through `WORKTREE_MIGRATION.md`; port semantic changes
+   onto current canonical files rather than restoring old paths.
+4. Generate one reviewable target-repository change per repository.
+5. Inventory each target repository's authoritative instruction, branch-governance,
    and review-policy sources before designing its overlay. Classify each requirement as
    prompt context, a deterministic workflow guard/check, or operator-only guidance.
-5. Load prompt-relevant policy only from the trusted base revision, with documented
+6. Load prompt-relevant policy only from the trusted base revision, with documented
    precedence and size bounds. Implement enforceable branch and safety requirements as
    explicit checks rather than relying on prompt text alone.
-6. Preserve repository-specific configuration only through documented inputs or a
+7. Preserve repository-specific configuration only through documented inputs or a
    narrowly reviewed overlay; do not maintain silent forks of canonical logic.
-7. Run target YAML/actionlint checks and tests proving required policy is loaded and
+8. Run target YAML/actionlint checks and tests proving required policy is loaded and
    deterministic guards are enforced, plus the applicable smoke subset.
-8. Merge through each target repository's normal protected-branch process.
-9. Record the canonical source commit, policy-source revision, and target commit in the
-   distribution table.
+9. Merge through each target repository's normal protected-branch process.
+10. Record the canonical source commit, policy-source revision, and target commit in the
+    distribution table.
 
 ## 8. Readiness gates
 
@@ -235,6 +240,8 @@ Distribution is ready only when all gates are satisfied:
 - [ ] Required live smoke scenarios pass and have recorded run evidence.
 - [ ] Backlog non-closure policy is verified statically and live.
 - [ ] Canonical manifest and hashes are recorded.
+- [ ] No active workflow/classifier changes remain only under the legacy
+      `docs/actions/{workflows,scripts}` layout.
 - [ ] T-24 is complete for every target: policy sources, precedence, prompt injection,
       deterministic checks, and test evidence are documented.
 - [ ] Target-specific differences are intentional and documented.
