@@ -1,0 +1,9 @@
+session:   id: 7979893028704332984
+  title: Replace Absolute Paths with Repo-Relative Paths
+  repository: masumrab/kaggle-notebooks-analysis
+  created: "2026-04-23T04:38:40.429890+00:00"
+  updated: "2026-04-23T17:08:50.453715+00:00"
+  status: awaiting_feedback
+  source: pr
+purpose: |
+summary: |
