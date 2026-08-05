@@ -48,13 +48,25 @@ FULL_FILE_PATTERNS: List[str] = [
     r"^jules_sessions\.json$",
 ]
 
+INDIVIDUAL_SESSION_PATTERN: str = r"^(\d{10,})_(.+)\.json$"
+
 STATUS_MAP = {
+    # Full API constant names (from bundle files)
     "SESSION_STATUS_COMPLETED": "completed",
     "SESSION_STATUS_FAILED": "failed",
     "SESSION_STATUS_IN_PROGRESS": "in_progress",
     "SESSION_STATUS_AWAITING_PLAN_APPROVAL": "awaiting_approval",
     "SESSION_STATUS_AWAITING_USER_FEEDBACK": "awaiting_feedback",
     "SESSION_STATUS_PAUSED": "paused",
+    # Raw short values (from individual session files)
+    "COMPLETED": "completed",
+    "FAILED": "failed",
+    "IN_PROGRESS": "in_progress",
+    "AWAITING_PLAN_APPROVAL": "awaiting_approval",
+    "AWAITING_USER_FEEDBACK": "awaiting_feedback",
+    "PAUSED": "paused",
+    "QUEUED": "queued",
+    "STATE_UNSPECIFIED": "unspecified",
 }
 
 VALID_STATUSES = set(STATUS_MAP.values()) | {"unknown"}
@@ -110,9 +122,40 @@ def detect_source(session: Dict[str, Any]) -> str:
     return "manual"
 
 
+def detect_source_from_context(source_context: Dict[str, Any]) -> str:
+    """Detect the session source from sourceContext object."""
+    source = (source_context.get("source") or "").lower()
+    if "pr" in source or "pull" in source:
+        return "pr"
+    if "issue" in source:
+        return "issue"
+    # Parse source path like "sources/github/MasumRab/EmailIntelligence"
+    if "github" in source:
+        return "pr"
+    return "manual"
+
+
 def is_activity_file(path: Path) -> bool:
     """Check if a file matches activity/session patterns."""
     return any(re.match(p, path.name) for p in FULL_FILE_PATTERNS)
+
+
+def is_individual_session_file(path: Path) -> bool:
+    """Check if a file matches individual session file pattern (<session_id>_<purpose>.json)."""
+    return bool(re.match(INDIVIDUAL_SESSION_PATTERN, path.name))
+
+
+def _detect_individual_format(data: Dict[str, Any]) -> str:
+    """Detect whether an individual session file is NEW or OLD format.
+    
+    NEW format: has 'id' key (Jules API v1 response)
+    OLD format: has 'session_id' key (structured summary)
+    """
+    if "session_id" in data:
+        return "old"
+    if "id" in data:
+        return "new"
+    return "unknown"
 
 
 def summary_path_for(full_path: Path) -> Path:
@@ -392,6 +435,246 @@ def extract_from_sessions(data: Dict[str, Any]) -> List[Dict[str, Any]]:
     return results
 
 
+def extract_from_new_session(data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Extract session summary from a NEW format individual session file.
+
+    Structure (flat, Jules API v1 response):
+        { "id", "name", "title", "createTime", "updateTime", "state",
+          "sourceContext": { "source", "gitRepoContext" },
+          "prompt", "url", "outputs": [ { "changeSet", "pullRequest" } ] }
+    """
+    session_id = data.get("id", "")
+    title = truncate(data.get("title") or data.get("name") or f"Session {session_id}", 200)
+    purpose = truncate(data.get("prompt") or "", SUMMARY_FIELDS["purpose_max_chars"])
+    raw_status = data.get("state", "")
+    status = STATUS_MAP.get(raw_status, "unknown")
+
+    source_context = data.get("sourceContext", {})
+    source = detect_source_from_context(source_context)
+
+    # Extract repository from source context
+    repo = ""
+    git_context = source_context.get("gitRepoContext", {})
+    if git_context:
+        repo = git_context.get("repo", "") or git_context.get("repository", "")
+    if not repo:
+        source_str = (source_context.get("source") or "").lower()
+        # Parse "sources/github/MasumRab/EmailIntelligence"
+        if "github" in source_str:
+            parts = source_str.split("/")
+            for i, p in enumerate(parts):
+                if p == "github" and i + 2 < len(parts):
+                    repo = f"{parts[i+1]}/{parts[i+2]}"
+                    break
+
+    # Extract PR info and changes from outputs
+    pr_info: Dict[str, Any] = {}
+    changes: List[Dict[str, Any]] = []
+    outputs = data.get("outputs", [])
+
+    for output in outputs:
+        pr_data = output.get("pullRequest", {})
+        if pr_data:
+            pr_url = pr_data.get("url", "")
+            pr_number = 0
+            if pr_url:
+                m = re.search(r"/pull/(\d+)", pr_url)
+                if m:
+                    pr_number = int(m.group(1))
+            pr_info = {
+                "url": pr_url,
+                "title": pr_data.get("title", ""),
+                "number": pr_number,
+            }
+
+        change_set = output.get("changeSet", {})
+        git_patch = change_set.get("gitPatch", {})
+        if git_patch:
+            unidiff = git_patch.get("unidiffPatch", "")
+            commit_msg = git_patch.get("suggestedCommitMessage", "")
+            diff_lines = unidiff.split("\n")
+            for line in diff_lines:
+                fm = re.match(r"^(?:diff --git a/)(\S+)", line)
+                if fm:
+                    file_path = fm.group(1)
+                    change_type = "modified"
+                    for dl in diff_lines[diff_lines.index(line):]:
+                        for kw, ct in CHANGE_TYPE_KEYWORDS.items():
+                            if dl.startswith(kw):
+                                change_type = ct
+                                break
+                    if not any(c.get("file") == file_path for c in changes):
+                        changes.append({
+                            "file": file_path,
+                            "summary": truncate(commit_msg, SUMMARY_FIELDS["change_summary_max_chars"]),
+                            "change_type": change_type,
+                            "suggested_commit": commit_msg or "",
+                            "base_commit": git_patch.get("baseCommitId", ""),
+                        })
+
+    # Build summary from available data
+    summary_text = ""
+    # Try PR description first (most informative)
+    for output in outputs:
+        pr_data = output.get("pullRequest", {})
+        if pr_data:
+            desc = pr_data.get("description", "")
+            if desc:
+                summary_text = truncate(desc, SUMMARY_FIELDS["summary_max_chars"])
+                break
+    # Fallback: use status context + title
+    if not summary_text:
+        if status == "completed" and outputs:
+            summary_text = f"Session completed with changes to {len(changes)} file(s)."
+        elif status == "failed":
+            summary_text = f"Session failed. Title: {title}"
+        elif purpose:
+            summary_text = truncate(purpose[:500], SUMMARY_FIELDS["summary_max_chars"])
+        else:
+            summary_text = truncate(title, SUMMARY_FIELDS["summary_max_chars"])
+
+    result = {
+        "session": {
+            "id": session_id,
+            "title": title,
+            "repository": repo,
+            "created": parse_timestamp(data.get("createTime", "")),
+            "updated": parse_timestamp(data.get("updateTime", "")),
+            "status": status,
+            "source": source,
+        },
+        "purpose": purpose,
+        "summary": truncate(summary_text, SUMMARY_FIELDS["summary_max_chars"]),
+        "participants": [],
+        "changes": changes,
+        "plan": {},
+        "pr": pr_info if pr_info else {},
+        "errors": [],
+    }
+
+    return [result]
+
+
+def extract_from_old_session(data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Extract session summary from an OLD format individual session file.
+
+    Structure (flat, structured summary):
+        { "session_id", "title", "state", "last_update", "activity_count",
+          "repo", "pr_url", "prompt_summary", "latest_agent_message",
+          "user_messages", "context_analysis": { "what_agent_did", "what_agent_needs",
+          "decision_points", "recommended_action", "suggested_response" },
+          "relevant_files_mentioned", "tags" }
+    """
+    session_id = data.get("session_id", "")
+    title = truncate(data.get("title") or f"Session {session_id}", 200)
+    purpose = truncate(data.get("prompt_summary") or "", SUMMARY_FIELDS["purpose_max_chars"])
+    raw_status = data.get("state", "")
+    status = STATUS_MAP.get(raw_status, "unknown")
+
+    repo = data.get("repo", "")
+
+    # Detect source from PR URL
+    pr_url = data.get("pr_url", "")
+    if pr_url:
+        source = "pr"
+    else:
+        source = detect_source(data)
+
+    # Build summary from context_analysis
+    summary_parts: List[str] = []
+    context_analysis = data.get("context_analysis", {})
+
+    what_agent_did = context_analysis.get("what_agent_did", [])
+    if what_agent_did:
+        summary_parts.extend(what_agent_did)
+
+    latest_message = data.get("latest_agent_message", "")
+    if latest_message:
+        summary_parts.append(latest_message)
+
+    recommended_action = context_analysis.get("recommended_action", "")
+    if recommended_action:
+        summary_parts.append(f"Recommended action: {recommended_action}")
+
+    summary_text = " ".join(summary_parts) if summary_parts else ""
+
+    # Extract PR number from repo/pr_url if available
+    pr_info: Dict[str, Any] = {}
+    if pr_url:
+        # Extract PR number from URL like "https://github.com/.../pull/730"
+        m = re.search(r"/pull/(\d+)", pr_url)
+        if m:
+            pr_info = {
+                "url": pr_url,
+                "number": int(m.group(1)),
+            }
+
+    # Extract relevant files from context_analysis
+    relevant_files = context_analysis.get("relevant_files_mentioned", data.get("relevant_files_mentioned", []))
+    changes = []
+    for rf in relevant_files:
+        rf_str = str(rf)
+        # Try to extract file path from references like "PR #730"
+        if "PR #" in rf_str:
+            continue  # Skip PR references
+        changes.append({
+            "file": truncate(rf_str, SUMMARY_FIELDS["change_summary_max_chars"]),
+            "summary": "",
+            "change_type": "mentioned",
+        })
+
+    # Build participants from user messages
+    participants: List[Dict[str, str]] = []
+    user_messages = data.get("user_messages", [])
+    for um in user_messages:
+        participants.append({
+            "role": "user",
+            "message": truncate(str(um), SUMMARY_FIELDS["message_max_chars"]),
+        })
+
+    result = {
+        "session": {
+            "id": session_id,
+            "title": title,
+            "repository": repo,
+            "created": parse_timestamp(data.get("last_update", "")),
+            "updated": parse_timestamp(data.get("last_update", "")),
+            "status": status,
+            "source": source,
+        },
+        "purpose": purpose,
+        "summary": truncate(summary_text, SUMMARY_FIELDS["summary_max_chars"]),
+        "participants": participants,
+        "changes": changes,
+        "plan": {},
+        "pr": pr_info if pr_info else {},
+        "errors": [],
+    }
+
+    # Add metadata fields that are unique to OLD format
+    if what_agent_did:
+        result["agent_actions"] = what_agent_did
+    what_needs = context_analysis.get("what_agent_needs", [])
+    if what_needs:
+        result["agent_needs"] = what_needs
+    decision_points = context_analysis.get("decision_points", [])
+    if decision_points:
+        result["decision_points"] = decision_points
+    suggested_response = context_analysis.get("suggested_response", "")
+    if suggested_response:
+        result["suggested_response"] = truncate(suggested_response, SUMMARY_FIELDS["summary_max_chars"])
+    tags = data.get("tags", [])
+    if tags:
+        result["tags"] = tags
+    activity_count = data.get("activity_count", 0)
+    if activity_count:
+        result["activity_count"] = activity_count
+
+    return [result]
+
+
 # ── File Processing ──────────────────────────────────────────────────────────
 
 
@@ -424,12 +707,21 @@ def process_file(full_path: Path, force: bool = False, dry_run: bool = False) ->
     # Determine the structure type and extract
     summaries: List[Dict[str, Any]] = []
     
-    if "activities" in data:
+    if is_individual_session_file(full_path):
+        detected_format = _detect_individual_format(data)
+        if detected_format == "new":
+            summaries = extract_from_new_session(data)
+        elif detected_format == "old":
+            summaries = extract_from_old_session(data)
+        else:
+            print(f"⚠️  Skipping {full_path.name}: unknown individual session format", file=sys.stderr)
+            return None
+    elif "activities" in data:
         summaries = extract_from_activities(data)
     elif "sessions" in data:
         summaries = extract_from_sessions(data)
     else:
-        print(f"⚠️  Skipping {full_path.name}: unknown structure (no 'activities' or 'sessions' key)", file=sys.stderr)
+        print(f"⚠️  Skipping {full_path.name}: unknown structure (no 'activities', 'sessions', or individual session data)", file=sys.stderr)
         return None
     
     if not summaries:
@@ -465,24 +757,27 @@ def dict_to_yaml(data: Any, indent: int = 0) -> str:
     """
     lines: List[str] = []
     prefix = "  " * indent
-    
+
     if data is None:
         return "null\n"
-    
+
     if isinstance(data, bool):
         return f"{str(data).lower()}\n"
-    
+
     if isinstance(data, (int, float)):
         return f"{data}\n"
-    
+
     if isinstance(data, str):
         if "\n" in data:
-            # Multi-line string
-            return f"|\n"
+            # Multi-line string — use block scalar
+            content_lines = data.split("\n")
+            block_indent = "  " * (indent + 1)
+            yaml_lines = "\n".join(block_indent + cl for cl in content_lines)
+            return f"|-\n{yaml_lines}\n"
         if len(data) > 80 or ":" in data or "#" in data:
             return f"\"{data.replace('\"', '\\\"')}\"\n"
         return f"{data}\n"
-    
+
     if isinstance(data, list):
         if not data:
             return "[]\n"
@@ -494,31 +789,46 @@ def dict_to_yaml(data: Any, indent: int = 0) -> str:
             return f"[{', '.join(items)}]\n"
         # Complex list — block style
         lines.append("\n")
+        item_prefix = f"{prefix}- "
         for item in data:
-            lines.append(f"{prefix}- ")
-            item_str = dict_to_yaml(item, indent + 1).lstrip()
-            # If multi-line, indent continuation
+            item_str = dict_to_yaml(item, indent=0)
             item_lines = item_str.rstrip("\n").split("\n")
             for i, il in enumerate(item_lines):
                 if i == 0:
-                    lines.append(il + "\n")
+                    lines.append(f"{item_prefix}{il}\n")
                 else:
                     lines.append(f"{prefix}  {il}\n")
         return "".join(lines)
-    
+
     if isinstance(data, dict):
         if not data:
             return "{}\n"
         for key, value in data.items():
             if value == "" or value == [] or value == {} or value is None:
                 continue  # Skip empty values for cleaner output
-            lines.append(f"{prefix}{key}: ")
-            value_str = dict_to_yaml(value, indent + 1)
-            lines.append(value_str)
+            # Multi-line strings must be checked BEFORE scalar check
+            if isinstance(value, str) and "\n" in value:
+                # Block scalar on its own line
+                content_lines = value.split("\n")
+                block_indent = "  " * (indent + 1)
+                yaml_lines = "\n".join(block_indent + cl for cl in content_lines)
+                lines.append(f"{prefix}{key}: |-\n{yaml_lines}\n")
+            # Simple scalars go on the same line as the key
+            elif isinstance(value, (str, int, float, bool)):
+                lines.append(f"{prefix}{key}: {value}\n")
+            elif isinstance(value, list) and (not value or all(isinstance(item, (str, int, float)) for item in value)):
+                # Simple list — inline with key
+                items = [str(item) for item in value]
+                lines.append(f"{prefix}{key}: [{', '.join(items)}]\n")
+            else:
+                # Nested dict/list — key on its own line, content nested
+                lines.append(f"{prefix}{key}:\n")
+                value_str = dict_to_yaml(value, indent + 1)
+                lines.append(value_str)
         if not lines:
             return "{}\n"
         return "".join(lines)
-    
+
     return f"{data}\n"
 
 
@@ -547,7 +857,7 @@ def validate_summaries(directory: Path) -> int:
                 print(f"❌ Cannot read summary: {summary_path.name} — {e}")
                 missing += 1
     
-    total = sum(1 for f in directory.iterdir() if f.is_file() and is_activity_file(f))
+    total = sum(1 for f in directory.iterdir() if f.is_file() and (is_activity_file(f) or is_individual_session_file(f)))
     print(f"\n📊 Summary: {total - missing}/{total} files have valid summaries")
     return missing
 
@@ -600,7 +910,7 @@ def main():
         processed = 0
         skipped = 0
         for f in sorted(target.iterdir()):
-            if f.is_file() and is_activity_file(f):
+            if f.is_file() and (is_activity_file(f) or is_individual_session_file(f)):
                 result = process_file(f, force=args.force, dry_run=args.dry_run)
                 if result:
                     processed += 1
@@ -609,7 +919,7 @@ def main():
         print(f"\n📊 Done: {processed} summaries generated, {skipped} skipped")
     else:
         # Process single file
-        if not is_activity_file(target):
+        if not (is_activity_file(target) or is_individual_session_file(target)):
             print(f"⚠️  File doesn't match activity/session pattern: {target.name}")
             cont = input("Process anyway? [y/N] ")
             if cont.lower() != "y":

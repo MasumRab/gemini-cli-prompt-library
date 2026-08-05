@@ -1,0 +1,9 @@
+session:   id: 13005011563799472129
+  title: Fix failing CI checks for selected pull requests
+  repository: masumrab/emailintelligence
+  created: "2026-04-21T14:18:50.375775+00:00"
+  updated: "2026-04-21T15:25:29.494177+00:00"
+  status: failed
+  source: pr
+purpose: |
+summary: "Session failed. Title: Fix failing CI checks for selected pull requests"

@@ -1,0 +1,17 @@
+{
+  "name": "sessions/7979893028704332984",
+  "title": "Replace Absolute Paths with Repo-Relative Paths",
+  "createTime": "2026-04-23T04:38:40.429890138Z",
+  "updateTime": "2026-04-23T17:08:50.453715Z",
+  "state": "AWAITING_USER_FEEDBACK",
+  "sourceContext": {
+    "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+    "githubRepoContext": {
+      "startingBranch": "main"
+    },
+    "environmentVariablesEnabled": true
+  },
+  "prompt": "Working in the repo root (MasumRab/kaggle-notebooks-analysis):\n\n1. Do a codebase-wide search for all occurrences of /home/claude/ and ${PROJECT_ROOT}\n   across every file (scripts/, .github/workflows/, *.md, *.toml, *.py):\n     grep -r \"/home/claude/\" . --include=\"*.py\" --include=\"*.toml\" \\\n         --include=\"*.yml\" --include=\"*.md\" -l\n     grep -r \"\\${PROJECT_ROOT}\" . -l\n\n   Replace every instance with repo-relative paths.\n\n2. Fix pyproject.toml QA extras specifically:\n     \"kaggle-qa-toolkit @ file:./tools/kaggle-qa-toolkit\",\n     \"kaggle-forensics @ file:./tools/kaggle_forensics\",\n\n3. Check if tools/ is tracked in git:\n     git status tools/\n   If untracked: git add tools/ && git commit -m \"feat: embed QA tools under tools/\"\n\n4. Verify the fix works:\n     pip install -e \".[qa]\"\n\n5. Commit remaining path fixes:\n     git add -A\n     git commit -m \"fix: replace all absolute paths with repo-relative equivalents\"\n",
+  "url": "https://jules.google.com/session/7979893028704332984",
+  "id": "7979893028704332984"
+}

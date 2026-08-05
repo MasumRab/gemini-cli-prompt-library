@@ -1,0 +1,23 @@
+session:   id: 10865630989900669675
+  title: Fix failing CI checks in MasumRab/EmailIntelligence PRs
+  repository: masumrab/emailintelligence
+  created: "2026-04-17T14:07:59.361442+00:00"
+  updated: "2026-04-17T17:01:39.817859+00:00"
+  status: failed
+  source: pr
+purpose: |
+summary: |
+changes: 
+  - file: scripts/branch_rename_migration.py
+        summary: |
+        change_type: modified
+        suggested_commit: |
+        base_commit: d9811e9b45a475ac3001c16a4ac6317ace35b4d3
+  - file: uv.lock
+        summary: |
+        change_type: modified
+        suggested_commit: |
+        base_commit: d9811e9b45a475ac3001c16a4ac6317ace35b4d3
+pr:   url: "https://github.com/MasumRab/EmailIntelligence/pull/660"
+  title: "fix(uv): remove duplicate bandit entries in lockfile"
+  number: 660

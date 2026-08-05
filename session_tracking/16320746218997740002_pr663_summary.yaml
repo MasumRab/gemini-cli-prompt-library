@@ -1,0 +1,28 @@
+session:   id: 16320746218997740002
+  title: "Sentinel 🛡️: Autonomous Security Remediation Agent"
+  repository: masumrab/emailintelligence
+  created: "2026-04-21T03:11:45.056462+00:00"
+  updated: "2026-04-21T08:37:57.460450+00:00"
+  status: failed
+  source: pr
+purpose: |
+summary: |
+changes: 
+  - file: src/backend/python_backend/auth.py
+        summary: "🛡️ Sentinel: [MEDIUM] Prevent token expiration drift by removing deprecated datetime.utcnow()"
+        change_type: modified
+        suggested_commit: "🛡️ Sentinel: [MEDIUM] Prevent token expiration drift by removing deprecated datetime.utcnow()"
+        base_commit: eec04785f227a64cb29a9201cd4290d32d9bfb75
+  - file: src/context_control/models.py
+        summary: "🛡️ Sentinel: [MEDIUM] Prevent token expiration drift by removing deprecated datetime.utcnow()"
+        change_type: modified
+        suggested_commit: "🛡️ Sentinel: [MEDIUM] Prevent token expiration drift by removing deprecated datetime.utcnow()"
+        base_commit: eec04785f227a64cb29a9201cd4290d32d9bfb75
+  - file: src/core/auth.py
+        summary: "🛡️ Sentinel: [MEDIUM] Prevent token expiration drift by removing deprecated datetime.utcnow()"
+        change_type: modified
+        suggested_commit: "🛡️ Sentinel: [MEDIUM] Prevent token expiration drift by removing deprecated datetime.utcnow()"
+        base_commit: eec04785f227a64cb29a9201cd4290d32d9bfb75
+pr:   url: "https://github.com/MasumRab/EmailIntelligence/pull/663"
+  title: "🛡️ Sentinel: [MEDIUM] Fix timezone-naive JWT Token Expiration "
+  number: 663
