@@ -1,7 +1,7 @@
 # Jules GitHub Actions — Independent Review and Distribution Recommendation
 
 **Created:** 2026-08-01
-**Updated:** 2026-08-03
+**Updated:** 2026-08-05
 **Code revision audited:** `b93d658` on `main`
 **Scope:** Canonical distributable GitHub Actions in `.github/` and their Actions-specific documentation
 **Readiness:** **Not ready for distribution** — five workflow findings, target-policy integration, and live validation remain open
@@ -197,14 +197,18 @@ YAML parse or successful manual inspection is not a substitute for a live run.
 
 ## 7. Distribution status at the audited revision
 
+The target refs were refreshed and branch-audited on 2026-08-05. Detailed evidence,
+half-finished branch dispositions, and per-workflow overlays are recorded in
+`TARGET_REPOSITORY_ADJUSTMENTS.md`.
+
 No target repository is byte-identical to the canonical 11-workflow set plus classifier.
 
-| Target                                  | Observed state                                                                                                | Readiness        |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ---------------- |
-| `EmailIntelligence`                     | 10 Jules workflows; backlog review missing; canonical files differ; local workflow changes remain uncommitted | Not synchronized |
-| `kaggle-notebooks-analysis`             | 8 Jules workflows; dispatch, issue triage, and backlog review missing; several canonical files differ         | Not synchronized |
-| `gemini-fullstack-langgraph-quickstart` | 8 Jules workflows; dispatch, issue triage, and backlog review missing; several canonical files differ         | Not synchronized |
-| `gemini-cli-prompt-library`             | 8 Jules workflows; dispatch, issue triage, and backlog review missing; several canonical files differ         | Not synchronized |
+| Target                                  | Observed state                                                                                                                                                                                                             | Readiness        |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| `EmailIntelligence`                     | Main/scientific each have 9 Jules workflows plus classifier; rebuild and resolve-conflicts match canonical; `sync/jules-workflows-main@6183314d` matches canonical runtime but lacks current target base/policy validation | Not synchronized |
+| `kaggle-notebooks-analysis`             | 8 workflows plus classifier; three files match canonical; `b76bb5a` hardening is already merged; preserve `.jules/INSTRUCTIONS.md`                                                                                         | Not synchronized |
+| `gemini-fullstack-langgraph-quickstart` | 8 workflows plus classifier; three files match canonical; `9076cea` is superseded branch-only hardening                                                                                                                    | Not synchronized |
+| `gemini-cli-prompt-library`             | 8 workflows plus classifier; three files match canonical; `cdca8d7` and `4409bdf` are obsolete as merge sources                                                                                                            | Not synchronized |
 
 Do not copy the current canonical files merely to make this table green. Distribution
 starts only after the open findings are fixed and validation passes.

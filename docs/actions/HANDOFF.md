@@ -34,36 +34,36 @@ plan, the Gemini analysis, and the current session's work into a single source o
 
 All items marked ✅ in the original plan are confirmed implemented:
 
-| Phase | Defects | Status | Notes |
-|-------|---------|--------|-------|
-| 1: Classifier hardening | C1-C8 | ✅ Done | `jules-comment-classifier.cjs` — 396 lines |
-| 2: Trust boundary | — | ✅ Done | Trusted base-branch checkout (`_helpers/`) in all workflows |
-| 3: Systemic fixes | F1-F9 | ✅ Done | Classifier integration, verdict mapping, retry/backoff, multi-message, dedup, pagination, quota, artifacts |
-| 4: Workflow-specific | W1-W10 | ✅ Done | issue_comment path, slash auth, marker selection, file guards, fork guards, concurrency, multiline output |
-| 5: Event normalization | — | ✅ Done | `resolvePullRequest` pattern in all issue_comment workflows |
+| Phase                   | Defects | Status  | Notes                                                                                                      |
+| ----------------------- | ------- | ------- | ---------------------------------------------------------------------------------------------------------- |
+| 1: Classifier hardening | C1-C8   | ✅ Done | `jules-comment-classifier.cjs` — 396 lines                                                                 |
+| 2: Trust boundary       | —       | ✅ Done | Trusted base-branch checkout (`_helpers/`) in all workflows                                                |
+| 3: Systemic fixes       | F1-F9   | ✅ Done | Classifier integration, verdict mapping, retry/backoff, multi-message, dedup, pagination, quota, artifacts |
+| 4: Workflow-specific    | W1-W10  | ✅ Done | issue_comment path, slash auth, marker selection, file guards, fork guards, concurrency, multiline output  |
+| 5: Event normalization  | —       | ✅ Done | `resolvePullRequest` pattern in all issue_comment workflows                                                |
 
 ### 1.2 Gemini-Derived Recommendations (from `artifacts/external/GEMINI_JULES_ANALYSIS.md` Section 5)
 
-| # | Recommendation | Status | Implementation |
-|---|----------------|--------|----------------|
-| 1 | Sync EI workflows with canonical templates | ⚠️ Partial | Earlier subagents synced some files; canonical has since advanced. Sync is now blocked per user instruction. |
-| 2 | Copy classifier script to EI | ⚠️ Partial | Was synced earlier; canonical has since advanced. |
-| 3 | Port 9 review criteria + severity rules | ✅ Done | Added to both `jules-pr-review.yml` and `jules-pr-force-review.yml` prompts |
-| 4 | Batch triage in `jules-issue-triage.yml` | ✅ Done | Scheduled/manual batch of up to 50 unlabeled issues |
-| 5 | Create `jules-dispatch.yml` central router | ✅ Done | `@jules` mention routing, OWNER/MEMBER/COLLABORATOR auth, fork guard |
-| 6 | Port plan template with resource estimates | ✅ Done | Structured plan template in `jules-pr-auto-fix.yml` with resource estimate, tool calls, files, checklist, HEAD SHA |
-| 7 | Retry/backoff on API calls | ✅ Done | `retry_curl()` in all API-calling workflows |
-| 8 | Artifact upload | ✅ Done | `upload-artifact@v4` in all polling workflows |
-| 9 | Error retry mechanism (second session) | ❌ Not done | See Section 4, Task T-09 |
-| 10 | Remove deprecated Gemini workflows | ⚠️ Partial | 5 `gemini-*.yml` staged for deletion in EI; not yet committed |
+| #   | Recommendation                             | Status      | Implementation                                                                                                     |
+| --- | ------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------ |
+| 1   | Sync EI workflows with canonical templates | ⚠️ Partial  | Earlier subagents synced some files; canonical has since advanced. Sync is now blocked per user instruction.       |
+| 2   | Copy classifier script to EI               | ⚠️ Partial  | Was synced earlier; canonical has since advanced.                                                                  |
+| 3   | Port 9 review criteria + severity rules    | ✅ Done     | Added to both `jules-pr-review.yml` and `jules-pr-force-review.yml` prompts                                        |
+| 4   | Batch triage in `jules-issue-triage.yml`   | ✅ Done     | Scheduled/manual batch of up to 50 unlabeled issues                                                                |
+| 5   | Create `jules-dispatch.yml` central router | ✅ Done     | `@jules` mention routing, OWNER/MEMBER/COLLABORATOR auth, fork guard                                               |
+| 6   | Port plan template with resource estimates | ✅ Done     | Structured plan template in `jules-pr-auto-fix.yml` with resource estimate, tool calls, files, checklist, HEAD SHA |
+| 7   | Retry/backoff on API calls                 | ✅ Done     | `retry_curl()` in all API-calling workflows                                                                        |
+| 8   | Artifact upload                            | ✅ Done     | `upload-artifact@v4` in all polling workflows                                                                      |
+| 9   | Error retry mechanism (second session)     | ❌ Not done | See Section 4, Task T-09                                                                                           |
+| 10  | Remove deprecated Gemini workflows         | ⚠️ Partial  | 5 `gemini-*.yml` staged for deletion in EI; not yet committed                                                      |
 
 ### 1.3 New Workflows Created (not in original plan)
 
-| Workflow | Lines | Trigger | Purpose |
-|----------|-------|---------|---------|
-| `jules-dispatch.yml` | 118 | issue_comment, pull_request_review, pull_request_review_comment, pull_request, issues | Central `@jules` command router |
-| `jules-issue-triage.yml` | 304 | issues (opened/reopened), schedule (hourly), workflow_dispatch | Single + batch issue triage |
-| `jules-backlog-review.yml` | 294 | schedule (weekly Mon 06:00 UTC), workflow_dispatch | Functional review of stale PRs — **never recommends closure** |
+| Workflow                   | Lines | Trigger                                                                               | Purpose                                                       |
+| -------------------------- | ----- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `jules-dispatch.yml`       | 118   | issue_comment, pull_request_review, pull_request_review_comment, pull_request, issues | Central `@jules` command router                               |
+| `jules-issue-triage.yml`   | 304   | issues (opened/reopened), schedule (hourly), workflow_dispatch                        | Single + batch issue triage                                   |
+| `jules-backlog-review.yml` | 294   | schedule (weekly Mon 06:00 UTC), workflow_dispatch                                    | Functional review of stale PRs — **never recommends closure** |
 
 ### 1.4 Deferred Review Mechanism (new, not in original plan)
 
@@ -79,13 +79,13 @@ Added to both `jules-pr-review.yml` and `jules-pr-force-review.yml`:
 
 ### 1.5 Current Session Bug Fixes (5 bugs, 2026-07-31)
 
-| # | Bug | Severity | Files Fixed |
-|---|-----|----------|-------------|
-| 1 | Duplicate deferred handler — both review and force-review triggered on `/jules-post-review` and searched for the same marker, causing double-posted reviews | 🔴 Critical | `jules-pr-force-review.yml` — now uses distinct `jules-force-review-deferred` marker |
-| 2 | Duplicate `head_sha` marker in force-review body template | 🟡 Medium | `jules-pr-force-review.yml` — removed duplicate `<!-- head_sha:SHA -->` line |
-| 3 | Dedup check never matched — review, force-review, and auto-fix searched for `head_sha:${sha}` (no space) but emitted `head_sha: ${sha}` (with space) | 🟠 High | `jules-pr-review.yml`, `jules-pr-force-review.yml`, `jules-pr-auto-fix.yml` — all search patterns fixed to include space |
-| 4 | Auto-fix plan selection picked first/oldest plan comment, even if denied or stale | 🟠 High | `jules-pr-auto-fix.yml` — now filters out denied/stale plans and selects most recent pending |
-| 5 | No SHA guard on deferred reviews — inline comments could be posted against wrong commit if PR was updated | 🟠 High | `jules-pr-review.yml`, `jules-pr-force-review.yml` — both now verify current head SHA matches marker before posting |
+| #   | Bug                                                                                                                                                         | Severity    | Files Fixed                                                                                                              |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Duplicate deferred handler — both review and force-review triggered on `/jules-post-review` and searched for the same marker, causing double-posted reviews | 🔴 Critical | `jules-pr-force-review.yml` — now uses distinct `jules-force-review-deferred` marker                                     |
+| 2   | Duplicate `head_sha` marker in force-review body template                                                                                                   | 🟡 Medium   | `jules-pr-force-review.yml` — removed duplicate `<!-- head_sha:SHA -->` line                                             |
+| 3   | Dedup check never matched — review, force-review, and auto-fix searched for `head_sha:${sha}` (no space) but emitted `head_sha: ${sha}` (with space)        | 🟠 High     | `jules-pr-review.yml`, `jules-pr-force-review.yml`, `jules-pr-auto-fix.yml` — all search patterns fixed to include space |
+| 4   | Auto-fix plan selection picked first/oldest plan comment, even if denied or stale                                                                           | 🟠 High     | `jules-pr-auto-fix.yml` — now filters out denied/stale plans and selects most recent pending                             |
+| 5   | No SHA guard on deferred reviews — inline comments could be posted against wrong commit if PR was updated                                                   | 🟠 High     | `jules-pr-review.yml`, `jules-pr-force-review.yml` — both now verify current head SHA matches marker before posting      |
 
 ### 1.6 Other Changes
 
@@ -146,16 +146,16 @@ User instruction: **"do not sync till all changes are hardened"**
 
 Canonical `jules/` is ahead of `EmailIntelligence/` in all modified workflows:
 
-| Workflow | Canonical | EmailIntelligence | Gap |
-|----------|-----------|-------------------|-----|
-| `jules-pr-review.yml` | 937 | 561 | +376 lines (deferred, criteria, fixes) |
-| `jules-pr-force-review.yml` | 864 | 593 | +271 lines (deferred, criteria, fixes) |
-| `jules-pr-auto-fix.yml` | 633 | 594 | +39 lines (plan selection, dedup fix) |
-| `jules-pr-address-comments.yml` | 247 | 230 | +17 lines |
-| `jules-pr-walkthrough.yml` | 481 | 479 | +2 lines |
-| `jules-dispatch.yml` | 118 | 118 | In sync |
-| `jules-issue-triage.yml` | 304 | 304 | In sync |
-| `jules-backlog-review.yml` | 294 | — | Not synced |
+| Workflow                        | Canonical | EmailIntelligence | Gap                                    |
+| ------------------------------- | --------- | ----------------- | -------------------------------------- |
+| `jules-pr-review.yml`           | 937       | 561               | +376 lines (deferred, criteria, fixes) |
+| `jules-pr-force-review.yml`     | 864       | 593               | +271 lines (deferred, criteria, fixes) |
+| `jules-pr-auto-fix.yml`         | 633       | 594               | +39 lines (plan selection, dedup fix)  |
+| `jules-pr-address-comments.yml` | 247       | 230               | +17 lines                              |
+| `jules-pr-walkthrough.yml`      | 481       | 479               | +2 lines                               |
+| `jules-dispatch.yml`            | 118       | 118               | In sync                                |
+| `jules-issue-triage.yml`        | 304       | 304               | In sync                                |
+| `jules-backlog-review.yml`      | 294       | —                 | Not synced                             |
 
 5 deprecated `gemini-*.yml` workflows staged for deletion in EmailIntelligence (not yet committed).
 
@@ -165,22 +165,22 @@ Canonical `jules/` is ahead of `EmailIntelligence/` in all modified workflows:
 
 ### 3.1 `artifacts/external/GEMINI_JULES_ANALYSIS.md` Section 10 — All Addressed
 
-| Issue | Documented Status | Actual Status | How Addressed |
-|-------|-------------------|---------------|---------------|
-| 10.1 Poll Timeout (60×15s = 15min) | Open | ✅ Fixed | Poll increased to 90×15s (22.5min) in review, force-review, walkthrough |
-| 10.2 FINDING Marker Dependency | Open | ✅ Fixed | Heading-based fallback parser added to review + force-review (both initial and deferred) |
-| 10.3 No Partial Output Capture | Open | ✅ Fixed | Partial output captured on timeout; neutral status instead of failure |
-| 10.4 Address-Comments Workflow Gap | Open | ⚠️ Partial | `pull_request_review[submitted]` trigger added; still lacks classifier integration and Jules-thread filtering |
-| 10.5 No Deferred Review Mechanism | Open | ✅ Fixed | `/jules-post-review` command + deferred marker + retrieval job in review + force-review |
+| Issue                              | Documented Status | Actual Status | How Addressed                                                                                                 |
+| ---------------------------------- | ----------------- | ------------- | ------------------------------------------------------------------------------------------------------------- |
+| 10.1 Poll Timeout (60×15s = 15min) | Open              | ✅ Fixed      | Poll increased to 90×15s (22.5min) in review, force-review, walkthrough                                       |
+| 10.2 FINDING Marker Dependency     | Open              | ✅ Fixed      | Heading-based fallback parser added to review + force-review (both initial and deferred)                      |
+| 10.3 No Partial Output Capture     | Open              | ✅ Fixed      | Partial output captured on timeout; neutral status instead of failure                                         |
+| 10.4 Address-Comments Workflow Gap | Open              | ⚠️ Partial    | `pull_request_review[submitted]` trigger added; still lacks classifier integration and Jules-thread filtering |
+| 10.5 No Deferred Review Mechanism  | Open              | ✅ Fixed      | `/jules-post-review` command + deferred marker + retrieval job in review + force-review                       |
 
 ### 3.2 Original Plan "Remaining Work" — Status Update
 
-| Item | Original Status | Current Status |
-|------|----------------|----------------|
-| Classifier integration for address-comments | Not blocking | ❌ Still not done — uses manual marker context. See Task T-06. |
-| F5 dedup for resolve-conflicts | Not blocking | ❌ Still not done — has PR stability check only. See Task T-05. |
-| F8 artifact for resolve-conflicts | Not blocking | ❌ Still N/A — fire-and-forget, no output file. |
-| Unresolved thread filtering in address-comments | Not blocking | ❌ Still not done — includes Jules-generated threads. See Task T-07. |
+| Item                                            | Original Status | Current Status                                                       |
+| ----------------------------------------------- | --------------- | -------------------------------------------------------------------- |
+| Classifier integration for address-comments     | Not blocking    | ❌ Still not done — uses manual marker context. See Task T-06.       |
+| F5 dedup for resolve-conflicts                  | Not blocking    | ❌ Still not done — has PR stability check only. See Task T-05.      |
+| F8 artifact for resolve-conflicts               | Not blocking    | ❌ Still N/A — fire-and-forget, no output file.                      |
+| Unresolved thread filtering in address-comments | Not blocking    | ❌ Still not done — includes Jules-generated threads. See Task T-07. |
 
 ---
 
@@ -188,46 +188,46 @@ Canonical `jules/` is ahead of `EmailIntelligence/` in all modified workflows:
 
 ### Documentation Tasks
 
-| ID | Task | Priority | Effort | Details |
-|----|------|----------|--------|---------|
-| T-01 | ~~Update `.github/README.md`~~ | ~~High~~ | ~~Small~~ | ✅ **Done 2026-08-01** — All 11 workflows now listed in structure and distribution instructions |
-| T-02 | ~~Reconcile `artifacts/external/GEMINI_JULES_ANALYSIS.md` Section 10~~ | ~~Medium~~ | ~~Small~~ | ✅ **Done 2026-08-01** — current status is recorded in this tracker; the imported source remains immutable historical evidence |
-| T-03 | Create `.github/jules-review-rules.md` | Medium | Medium | Project-specific review rules (ReDoS, PII, docstrings, branch contamination). Per `recommendations/emailintelligence.md`; validate all assumptions against the target repository. |
-| T-04 | Create `docs/jules_actions.md` | Low | Small | Jules Actions documentation for the canonical repo |
+| ID   | Task                                                                   | Priority   | Effort    | Details                                                                                                                                                                           |
+| ---- | ---------------------------------------------------------------------- | ---------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T-01 | ~~Update `.github/README.md`~~                                         | ~~High~~   | ~~Small~~ | ✅ **Done 2026-08-01** — All 11 workflows now listed in structure and distribution instructions                                                                                   |
+| T-02 | ~~Reconcile `artifacts/external/GEMINI_JULES_ANALYSIS.md` Section 10~~ | ~~Medium~~ | ~~Small~~ | ✅ **Done 2026-08-01** — current status is recorded in this tracker; the imported source remains immutable historical evidence                                                    |
+| T-03 | Create `.github/jules-review-rules.md`                                 | Medium     | Medium    | Project-specific review rules (ReDoS, PII, docstrings, branch contamination). Per `recommendations/emailintelligence.md`; validate all assumptions against the target repository. |
+| T-04 | Create `docs/jules_actions.md`                                         | Low        | Small     | Jules Actions documentation for the canonical repo                                                                                                                                |
 
 ### Workflow Tasks
 
-| ID | Task | Priority | Effort | Details |
-|----|------|----------|--------|---------|
-| T-05 | Add cross-session dedup to `jules-pr-resolve-conflicts.yml` | Medium | Small | Before creating a session, check for existing `<!-- jules-resolve -->` marker + same `head_sha`. Skip if found. Same pattern as review/force-review/auto-fix. |
-| T-06 | Integrate shared classifier in `jules-pr-address-comments.yml` | Medium | Medium | Replace manual marker context with `classifyAndFilter()`. Different pattern from other workflows — uses marker-based Jules context, not priorReviews. Needs custom integration approach. |
-| T-07 | Filter Jules-generated unresolved threads in address-comments | Medium | Medium | Currently includes all unresolved threads even if the latest comment is Jules-generated. Use `isJulesGenerated()` from classifier to filter. |
-| T-08 | Extract shared deferred-review parsing into a reusable script | Low | Medium | Review (937 lines) and force-review (864 lines) share ~200 lines of duplicated FINDING/heading parsing logic. Extract to `.github/scripts/jules-review-parser.cjs`. |
-| T-09 | Second-session retry on session failure | Low | Medium | If a Jules session fails (state=FAILED), create a second session with error context from the first. Not yet implemented. |
-| T-10 | Resolve-conflicts output artifact | Low | Small | Currently fire-and-forget — no output file to upload. Could capture session activities for debugging. |
+| ID   | Task                                                           | Priority | Effort | Details                                                                                                                                                                                  |
+| ---- | -------------------------------------------------------------- | -------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T-05 | Add cross-session dedup to `jules-pr-resolve-conflicts.yml`    | Medium   | Small  | Before creating a session, check for existing `<!-- jules-resolve -->` marker + same `head_sha`. Skip if found. Same pattern as review/force-review/auto-fix.                            |
+| T-06 | Integrate shared classifier in `jules-pr-address-comments.yml` | Medium   | Medium | Replace manual marker context with `classifyAndFilter()`. Different pattern from other workflows — uses marker-based Jules context, not priorReviews. Needs custom integration approach. |
+| T-07 | Filter Jules-generated unresolved threads in address-comments  | Medium   | Medium | Currently includes all unresolved threads even if the latest comment is Jules-generated. Use `isJulesGenerated()` from classifier to filter.                                             |
+| T-08 | Extract shared deferred-review parsing into a reusable script  | Low      | Medium | Review (937 lines) and force-review (864 lines) share ~200 lines of duplicated FINDING/heading parsing logic. Extract to `.github/scripts/jules-review-parser.cjs`.                      |
+| T-09 | Second-session retry on session failure                        | Low      | Medium | If a Jules session fails (state=FAILED), create a second session with error context from the first. Not yet implemented.                                                                 |
+| T-10 | Resolve-conflicts output artifact                              | Low      | Small  | Currently fire-and-forget — no output file to upload. Could capture session activities for debugging.                                                                                    |
 
 ### New Workflow Tasks (from historical `artifacts/jules_actions_traceability.md`)
 
-| ID | Task | Priority | Effort | Details |
-|----|------|----------|--------|---------|
-| T-11 | Create `jules-invoke.yml` | Medium | Medium | Label-gated general AI task execution. Per traceability doc: "Manual/label-gated task execution for CI repair, CLI cleanup, docs alignment." |
-| T-12 | Create `jules-feedback.yml` | Medium | Medium | Submit PR review feedback to Jules for learning. Per traceability doc: "Send submitted human PR reviews back to existing Jules sessions." |
-| T-13 | Create `jules-pr-metadata.yml` | Low | Small | Post session ID, artifacts, and context on Jules-authored PRs. |
+| ID   | Task                           | Priority | Effort | Details                                                                                                                                      |
+| ---- | ------------------------------ | -------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| T-11 | Create `jules-invoke.yml`      | Medium   | Medium | Label-gated general AI task execution. Per traceability doc: "Manual/label-gated task execution for CI repair, CLI cleanup, docs alignment." |
+| T-12 | Create `jules-feedback.yml`    | Medium   | Medium | Submit PR review feedback to Jules for learning. Per traceability doc: "Send submitted human PR reviews back to existing Jules sessions."    |
+| T-13 | Create `jules-pr-metadata.yml` | Low      | Small  | Post session ID, artifacts, and context on Jules-authored PRs.                                                                               |
 
 ### User-Requested Future Work (not started)
 
-| ID | Task | Priority | Effort | Details |
-|----|------|----------|--------|---------|
-| T-14 | Scheduled/label-driven address-comments queue | Low | Large | User's later request: a workflow that polls GitHub for open PRs with unresolved review comments and creates Jules sessions to address them. **Do not start until Gemini-derived work and current hardening are complete.** |
-| T-15 | Jules review comments fallback mechanism | Medium | Large | User request: if Jules session comments are not processed within N cycles, the session should post line-by-line comments with suggested code or AI prompts in the structure the full workflow would have created. Root cause likely slow Jules response. Needs investigation. |
+| ID   | Task                                          | Priority | Effort | Details                                                                                                                                                                                                                                                                       |
+| ---- | --------------------------------------------- | -------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T-14 | Scheduled/label-driven address-comments queue | Low      | Large  | User's later request: a workflow that polls GitHub for open PRs with unresolved review comments and creates Jules sessions to address them. **Do not start until Gemini-derived work and current hardening are complete.**                                                    |
+| T-15 | Jules review comments fallback mechanism      | Medium   | Large  | User request: if Jules session comments are not processed within N cycles, the session should post line-by-line comments with suggested code or AI prompts in the structure the full workflow would have created. Root cause likely slow Jules response. Needs investigation. |
 
 ### Sync & Distribution Tasks
 
-| ID | Task | Priority | Effort | Details |
-|----|------|----------|--------|---------|
-| T-16 | ~~Commit canonical changes~~ | ~~High~~ | ~~Small~~ | ✅ **Done 2026-08-01** — All 15 commits pushed (`c271afd`→`a64d3af`), working tree clean |
-| T-17 | Sync hardened workflows to EmailIntelligence | High | Medium | Copy 11 workflows + classifier to EI `.github/`. Commit 5 `gemini-*.yml` deletions. Use `git add -f` if `.gitignore` blocks `.github`. **Blocked by user instruction — do not sync until all hardening is reviewed.** |
-| T-18 | Sync to other repos (KNA, GFLQ, GCPL) | Low | Medium | Use the distribution gates in `REVIEW_RECOMMENDATION.md`; `artifacts/AUTOREVIEW_JULES_PLAN.md` Section 5 is historical context only. Reassess every target repository before copying. |
+| ID   | Task                                         | Priority | Effort    | Details                                                                                                                                                                                                                                                                                                                                   |
+| ---- | -------------------------------------------- | -------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T-16 | ~~Commit canonical changes~~                 | ~~High~~ | ~~Small~~ | ✅ **Done 2026-08-01** — All 15 commits pushed (`c271afd`→`a64d3af`), working tree clean                                                                                                                                                                                                                                                  |
+| T-17 | Sync hardened workflows to EmailIntelligence | High     | Medium    | Recreate clean distributions independently from each authorized EI product branch. Use `sync/jules-workflows-main@6183314d` only as incomplete provenance; never merge main/scientific or source the dirty combined worktree. Complete T-24 and the EI column of `TARGET_REPOSITORY_ADJUSTMENTS.md` before intentional Gemini retirement. |
+| T-18 | Sync to other repos (KNA, GFLQ, GCPL)        | Low      | Medium    | Use `TARGET_REPOSITORY_ADJUSTMENTS.md`: preserve KNA `.jules/INSTRUCTIONS.md`; do not merge superseded GFLQ/GCPL fix branches; evaluate missing scheduled/router workflows separately. Apply all readiness gates before copying.                                                                                                          |
 
 ---
 
@@ -309,28 +309,28 @@ direction, these are documented here rather than fixed inline.
 
 ### 8.1 Findings — `docs/actions/HANDOFF.md` (complete)
 
-| # | Severity | Location | Issue |
-|---|----------|----------|-------|
-| H-01 | major | L34-42 | Phase 3 completion table marks F1-F9 as ✅ Done, but Section 3.2 says F5 is still not done. Reconcile F5 status before declaring hardening complete. |
-| H-02 | major | L161-171 | Section 3.1 heading implies all known issues are addressed, but 10.4 is marked ⚠️ Partial. Rename heading or move 10.4 to outstanding-issues. |
-| H-03 | major | L261-263 | Steps require smoke tests after first sync then EI sync after smoke tests pass — ambiguous, conflicts with "delay sync until hardening complete". Define target and order T-17. |
-| H-04 | minor | L128-138 | `git diff --check` does not inspect untracked files. L132 therefore does not prove the 3 new workflows are whitespace-clean. Record the actual command used. |
-| H-05 | minor | L140-155 | L144 says canonical is ahead in all modified workflows, but L153-154 list `jules-dispatch.yml` and `jules-issue-triage.yml` as in sync. Limit claim to files with a gap. |
-| H-06 | minor | L173-180, L199-204 | F8 marked N/A but T-10 defines the same missing artifact as pending. Use consistent status. |
-| H-07 | minor | L239-247 | Supersession claim should be limited to tracking content; `.github/README.md` remains the structure/distribution reference. |
+| #    | Severity | Location           | Issue                                                                                                                                                                           |
+| ---- | -------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| H-01 | major    | L34-42             | Phase 3 completion table marks F1-F9 as ✅ Done, but Section 3.2 says F5 is still not done. Reconcile F5 status before declaring hardening complete.                            |
+| H-02 | major    | L161-171           | Section 3.1 heading implies all known issues are addressed, but 10.4 is marked ⚠️ Partial. Rename heading or move 10.4 to outstanding-issues.                                   |
+| H-03 | major    | L261-263           | Steps require smoke tests after first sync then EI sync after smoke tests pass — ambiguous, conflicts with "delay sync until hardening complete". Define target and order T-17. |
+| H-04 | minor    | L128-138           | `git diff --check` does not inspect untracked files. L132 therefore does not prove the 3 new workflows are whitespace-clean. Record the actual command used.                    |
+| H-05 | minor    | L140-155           | L144 says canonical is ahead in all modified workflows, but L153-154 list `jules-dispatch.yml` and `jules-issue-triage.yml` as in sync. Limit claim to files with a gap.        |
+| H-06 | minor    | L173-180, L199-204 | F8 marked N/A but T-10 defines the same missing artifact as pending. Use consistent status.                                                                                     |
+| H-07 | minor    | L239-247           | Supersession claim should be limited to tracking content; `.github/README.md` remains the structure/distribution reference.                                                     |
 
 ### 8.2 Findings — `.github/workflows/` (truncated by CLI timeout)
 
-| # | Severity | Location | Issue |
-|---|----------|----------|-------|
-| W-01 | **critical** | `jules-pr-review.yml:710-712` | Pending-marker body contains `<!-- jules-review-deferred-pending -->`; the filter at L711 tests `includes('<!-- jules-review-deferred')`. Pending comments are misread as deferred → duplicate session polling. Rename pending marker (e.g. `jules-review-pending`) and harden the deferred filter regex. **Also affects L921-932.** |
-| W-02 | **critical** | `jules-pr-review.yml:414-434` | `SAVE_OUTPUT` writes `partial_output=true` only to `$GITHUB_OUTPUT`, never to a shell variable. `${partial_output:-false}` therefore always expands to `false`. On timeout the captured partial review is overwritten by the timeout message; status still reports "Partial review". Set a shell var (`PARTIAL_OUTPUT=true`) alongside the GITHUB_OUTPUT write. **Also affects L462-471.** |
-| W-03 | major | `jules-backlog-review.yml:24-30` | `timeout-minutes: 30` is too small. Worst case: 5 PRs × 60 polls × 15s ≈ 75 min. GitHub cancels mid-loop, losing outputs and causing duplicate Jules sessions on the next run. Raise to ≥90 min or shrink poll budget. |
-| W-04 | major | `jules-pr-address-comments.yml:14-22` | Trigger captures reviews but never adds `context.payload.review.body` to `threadSummaries`. A body-only `CHANGES_REQUESTED` review hits the `unresolvedThreads.length === 0` short-circuit and is ignored. Include submitted review body + timestamp before no-thread/debounce checks. |
-| W-05 | major | `jules-dispatch.yml:40-43` | `body.startsWith('@jules')` matches `@julesmith` etc. — needs word-boundary: `/^@jules(?=\s|\/|$)/i`. |
-| W-06 | major | `jules-dispatch.yml:112-118` | Confirmation comment posted before `addLabels` is awaited — on label failure the PR claims success but no label is applied. Await label first, then post comment. |
-| W-07 | major | `jules-pr-review.yml:517-525` | `'neutral'` is not a valid `repos.createCommitStatus` state (only error/failure/pending/success). Causes HTTP 422 → swallowed as warning → no status published → branch protection hangs. Use `success` for informational, `pending` for partial. **Also affects L864-875.** |
-| W-08 | minor | `jules-pr-review.yml` (initial loop) | Quota check inspects `error.code === 429` but Jules API returns `error.status: "RESOURCE_EXHAUSTED"` for quota errors — those slip through and create leaked sessions. Restrict quota check to the error object of a failed `create_rc` call. |
+| #    | Severity     | Location                              | Issue                                                                                                                                                                                                                                                                                                                                                                                      |
+| ---- | ------------ | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| W-01 | **critical** | `jules-pr-review.yml:710-712`         | Pending-marker body contains `<!-- jules-review-deferred-pending -->`; the filter at L711 tests `includes('<!-- jules-review-deferred')`. Pending comments are misread as deferred → duplicate session polling. Rename pending marker (e.g. `jules-review-pending`) and harden the deferred filter regex. **Also affects L921-932.**                                                       |
+| W-02 | **critical** | `jules-pr-review.yml:414-434`         | `SAVE_OUTPUT` writes `partial_output=true` only to `$GITHUB_OUTPUT`, never to a shell variable. `${partial_output:-false}` therefore always expands to `false`. On timeout the captured partial review is overwritten by the timeout message; status still reports "Partial review". Set a shell var (`PARTIAL_OUTPUT=true`) alongside the GITHUB_OUTPUT write. **Also affects L462-471.** |
+| W-03 | major        | `jules-backlog-review.yml:24-30`      | `timeout-minutes: 30` is too small. Worst case: 5 PRs × 60 polls × 15s ≈ 75 min. GitHub cancels mid-loop, losing outputs and causing duplicate Jules sessions on the next run. Raise to ≥90 min or shrink poll budget.                                                                                                                                                                     |
+| W-04 | major        | `jules-pr-address-comments.yml:14-22` | Trigger captures reviews but never adds `context.payload.review.body` to `threadSummaries`. A body-only `CHANGES_REQUESTED` review hits the `unresolvedThreads.length === 0` short-circuit and is ignored. Include submitted review body + timestamp before no-thread/debounce checks.                                                                                                     |
+| W-05 | major        | `jules-dispatch.yml:40-43`            | `body.startsWith('@jules')` matches `@julesmith` etc. — needs a word boundary matching whitespace, `/`, or end of input.                                                                                                                                                                                                                                                                   |
+| W-06 | major        | `jules-dispatch.yml:112-118`          | Confirmation comment posted before `addLabels` is awaited — on label failure the PR claims success but no label is applied. Await label first, then post comment.                                                                                                                                                                                                                          |
+| W-07 | major        | `jules-pr-review.yml:517-525`         | `'neutral'` is not a valid `repos.createCommitStatus` state (only error/failure/pending/success). Causes HTTP 422 → swallowed as warning → no status published → branch protection hangs. Use `success` for informational, `pending` for partial. **Also affects L864-875.**                                                                                                               |
+| W-08 | minor        | `jules-pr-review.yml` (initial loop)  | Quota check inspects `error.code === 429` but Jules API returns `error.status: "RESOURCE_EXHAUSTED"` for quota errors — those slip through and create leaked sessions. Restrict quota check to the error object of a failed `create_rc` call.                                                                                                                                              |
 
 **Note:** The 2nd CLI invocation timed out at 5 min; additional findings may exist in workflow files
 that were not captured. A complete re-review is recommended after the W-01/W-02 criticals are fixed.
@@ -347,13 +347,13 @@ that were not captured. A complete re-review is recommended after the W-01/W-02 
 
 The findings in Section 8 were addressed across four follow-up commits, pushed to `main`:
 
-| Commit | Scope | Findings Resolved |
-|--------|-------|-------------------|
-| `081d463` | `jules-comment-classifier.cjs`, `jules-pr-review.yml`, `jules-pr-force-review.yml` | **W-01** (pending-marker collision, atomic across 3 files) |
-| `8201c22` | `jules-pr-review.yml` | **W-02** (partial_output shell-var) |
-| `4149ff4` | 5 workflow files | **W-03** (backlog timeout), **W-04** (review-body capture), **W-05** (prefix word boundary), **W-06** (label-before-comment), **W-07** (10 status-state sites), **W-08** (quota string) |
-| `a64d3af` | `jules-pr-review.yml`, `jules-pr-force-review.yml` | W-01 regression hotfix — restored `.sort()[0]` on the deferred filter that was dropped during the regex conversion |
-| `2c3eae5` | `jules-pr-review.yml`, `jules-pr-force-review.yml` | **W-11** (no-verdict fail-closed: `success` → `failure` at 4 sites) |
+| Commit    | Scope                                                                              | Findings Resolved                                                                                                                                                                       |
+| --------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `081d463` | `jules-comment-classifier.cjs`, `jules-pr-review.yml`, `jules-pr-force-review.yml` | **W-01** (pending-marker collision, atomic across 3 files)                                                                                                                              |
+| `8201c22` | `jules-pr-review.yml`                                                              | **W-02** (partial_output shell-var)                                                                                                                                                     |
+| `4149ff4` | 5 workflow files                                                                   | **W-03** (backlog timeout), **W-04** (review-body capture), **W-05** (prefix word boundary), **W-06** (label-before-comment), **W-07** (10 status-state sites), **W-08** (quota string) |
+| `a64d3af` | `jules-pr-review.yml`, `jules-pr-force-review.yml`                                 | W-01 regression hotfix — restored `.sort()[0]` on the deferred filter that was dropped during the regex conversion                                                                      |
+| `2c3eae5` | `jules-pr-review.yml`, `jules-pr-force-review.yml`                                 | **W-11** (no-verdict fail-closed: `success` → `failure` at 4 sites)                                                                                                                     |
 
 A re-review after `4149ff4` and a second review pass surfaced additional findings. Two
 immediate regressions introduced by W-01's deferred-filter rewrite were hotfixed in
@@ -361,38 +361,38 @@ immediate regressions introduced by W-01's deferred-filter rewrite were hotfixed
 
 ### 9.1 Resolved Findings (post-fix verification)
 
-| # | Title | Status |
-|---|-------|--------|
-| W-01 | Pending marker collides with deferred filter | ✅ Fixed (3 files atomic, then regression hotfixed) |
-| W-02 | `partial_output` shell-var discards captured output on timeout | ✅ Fixed |
-| W-03 | Backlog timeout smaller than worst-case poll budget | ✅ Fixed (`timeout-minutes: 90`) |
-| W-04 | Address-comments drops body-only CHANGES_REQUESTED reviews | ✅ Fixed (capture-before-short-circuit + injection into @jules mention) |
-| W-05 | `@jules` prefix matches `@julesmith` | ✅ Fixed (word-boundary regex) |
-| W-06 | Comment posted before label, can desync on failure | ✅ Fixed (label-first ordering) |
-| W-07 | Invalid `'neutral'` commit-status state rejected by API | ✅ Fixed (10 sites → `success`/`pending`) |
-| W-08 | Quota grep misses `RESOURCE_EXHAUSTED` | ✅ Fixed (added `exhaust` to pattern) |
-| W-11 | Missing-verdict branch passes as success | ✅ Fixed (4 sites → `failure`) |
+| #    | Title                                                          | Status                                                                  |
+| ---- | -------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| W-01 | Pending marker collides with deferred filter                   | ✅ Fixed (3 files atomic, then regression hotfixed)                     |
+| W-02 | `partial_output` shell-var discards captured output on timeout | ✅ Fixed                                                                |
+| W-03 | Backlog timeout smaller than worst-case poll budget            | ✅ Fixed (`timeout-minutes: 90`)                                        |
+| W-04 | Address-comments drops body-only CHANGES_REQUESTED reviews     | ✅ Fixed (capture-before-short-circuit + injection into @jules mention) |
+| W-05 | `@jules` prefix matches `@julesmith`                           | ✅ Fixed (word-boundary regex)                                          |
+| W-06 | Comment posted before label, can desync on failure             | ✅ Fixed (label-first ordering)                                         |
+| W-07 | Invalid `'neutral'` commit-status state rejected by API        | ✅ Fixed (10 sites → `success`/`pending`)                               |
+| W-08 | Quota grep misses `RESOURCE_EXHAUSTED`                         | ✅ Fixed (added `exhaust` to pattern)                                   |
+| W-11 | Missing-verdict branch passes as success                       | ✅ Fixed (4 sites → `failure`)                                          |
 
 ### 9.2 New Findings from Re-Review (2026-08-01) — Open
 
-| # | Severity | Location | Title | Recommendation |
-|---|----------|----------|-------|----------------|
-| **W-09** | major | `jules-backlog-review.yml:26-27` | Worst-case timeout excludes `retry_curl` (60s × 3 attempts per poll + delays ≈ 210 min). The 90-min timeout still terminates mid-loop. | Add per-session deadline; stop after repeated poll failures; or cap `maxPrs` and calculate the timeout from it. |
-| **W-10** | major | `jules-pr-address-comments.yml:127-145` | Debounce/dedup doesn't include submitted review bodies. When only a review body is present, `newestThreadTime` is null and the debounce check is skipped — a duplicate event can post another @jules comment. When older threads exist, their timestamp can incorrectly skip a newer submitted review body. | Use `submittedReview.id` and `submitted_at` in the debounce/dedup checks; treat review-body timestamp as a "newest actionable item" candidate. |
-| **W-12** | minor | `jules-pr-review.yml:712-715` / `jules-pr-force-review.yml:704-707` | W-01's deferred filter requires `session="`, but the extraction regex on the next lines also needs `sha="`. A malformed comment with only the `session=` attribute is selected, fails extraction, and silently skips an older valid marker. | Require both attributes in the filter regex: `/<!--\s*jules-review-deferred\s+session="[^"]+"\s+sha="[^"]+"\s*-->/` (same shape for force-review). |
-| **W-13** | major | `jules-pr-review.yml:525-527` / `jules-pr-force-review.yml:545-547` | When `sessionState === 'TIMEOUT' && hasPartialOutput`, the status is `pending` but the later reviewEvent logic still maps any parsed verdict to `APPROVE` or `REQUEST_CHANGES`. A partial response can therefore create a final review action while the session is still running. | Force `reviewEvent = 'COMMENT'` when `sessionState !== 'COMPLETED'` (or specifically when `TIMEOUT && hasPartialOutput`). Apply in both review and force-review. |
-| **W-15** | major | `jules-pr-force-review.yml:545-547` | `sessionResource = sessionName \|\| ''` — if the create response contains `id` but no `name`, polling succeeds via `sessions/${SESSION_ID}` but the post step builds an empty `sessionResource`. The deferred marker is never emitted, breaking `/jules-post-review`. | Use the same `sessionName \|\| (sessionId ? `sessions/${sessionId}` : '')` fallback as the normal review workflow. |
+| #        | Severity | Location                                                            | Title                                                                                                                                                                                                                                                                                                       | Recommendation                                                                                                                                                   |
+| -------- | -------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **W-09** | major    | `jules-backlog-review.yml:26-27`                                    | Worst-case timeout excludes `retry_curl` (60s × 3 attempts per poll + delays ≈ 210 min). The 90-min timeout still terminates mid-loop.                                                                                                                                                                      | Add per-session deadline; stop after repeated poll failures; or cap `maxPrs` and calculate the timeout from it.                                                  |
+| **W-10** | major    | `jules-pr-address-comments.yml:127-145`                             | Debounce/dedup doesn't include submitted review bodies. When only a review body is present, `newestThreadTime` is null and the debounce check is skipped — a duplicate event can post another @jules comment. When older threads exist, their timestamp can incorrectly skip a newer submitted review body. | Use `submittedReview.id` and `submitted_at` in the debounce/dedup checks; treat review-body timestamp as a "newest actionable item" candidate.                   |
+| **W-12** | minor    | `jules-pr-review.yml:712-715` / `jules-pr-force-review.yml:704-707` | W-01's deferred filter requires `session="`, but the extraction regex on the next lines also needs `sha="`. A malformed comment with only the `session=` attribute is selected, fails extraction, and silently skips an older valid marker.                                                                 | Require both attributes in the filter regex: `/<!--\s*jules-review-deferred\s+session="[^"]+"\s+sha="[^"]+"\s*-->/` (same shape for force-review).               |
+| **W-13** | major    | `jules-pr-review.yml:525-527` / `jules-pr-force-review.yml:545-547` | When `sessionState === 'TIMEOUT' && hasPartialOutput`, the status is `pending` but the later reviewEvent logic still maps any parsed verdict to `APPROVE` or `REQUEST_CHANGES`. A partial response can therefore create a final review action while the session is still running.                           | Force `reviewEvent = 'COMMENT'` when `sessionState !== 'COMPLETED'` (or specifically when `TIMEOUT && hasPartialOutput`). Apply in both review and force-review. |
+| **W-15** | major    | `jules-pr-force-review.yml:545-547`                                 | `sessionResource = sessionName \|\| ''` — if the create response contains `id` but no `name`, polling succeeds via `sessions/${SESSION_ID}` but the post step builds an empty `sessionResource`. The deferred marker is never emitted, breaking `/jules-post-review`.                                       | Use the same `sessionName \|\| (sessionId ? `sessions/${sessionId}` : '')` fallback as the normal review workflow.                                               |
 
 ### 9.3 Outstanding Tasks Updated
 
 Every open finding has a tracked task:
 
-| ID | Task | Priority |
-|----|------|----------|
-| T-19 | Add a per-session deadline and bounded consecutive poll failures to backlog review; derive the job timeout from `maxPrs`, the per-session budget, and finalization overhead (W-09) | High |
-| T-20 | Deduplicate submitted review bodies by review ID and include `submitted_at` in newest-actionable-feedback selection (W-10) | High |
-| T-21 | Harden the deferred-filter regex to require both `session="..."` and `sha="..."` (W-12) | Low |
-| T-22 | Force `reviewEvent = 'COMMENT'` while `sessionState` is not terminal; switch to APPROVE/REQUEST_CHANGES only when `sessionState === 'COMPLETED'` (W-13) | Medium |
-| T-23 | Add `sessionName \|\| sessions/${sessionId}` fallback in force-review deferred-emission (W-15) | Medium |
-| T-24 | Before target-repository distribution, inventory authoritative instruction, branch-governance, and review-policy sources; classify requirements as trusted-base prompt context, deterministic workflow checks, or operator guidance; define precedence and bounds; and add tests proving integration. Known examples for later investigation: EmailIntelligence branch governance and Kaggle `.jules/INSTRUCTIONS.md`. | High |
-| T-25 | Inventory active branches/worktrees that still modify `docs/actions/workflows/` or `docs/actions/scripts/`; migrate necessary semantic changes through `WORKTREE_MIGRATION.md`, record the legacy commit range and canonical destination, and explicitly supersede obsolete changes. | High |
+| ID   | Task                                                                                                                                                                                                                                                                                                                                                                                                                                     | Priority |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| T-19 | Add a per-session deadline and bounded consecutive poll failures to backlog review; derive the job timeout from `maxPrs`, the per-session budget, and finalization overhead (W-09)                                                                                                                                                                                                                                                       | High     |
+| T-20 | Deduplicate submitted review bodies by review ID and include `submitted_at` in newest-actionable-feedback selection (W-10)                                                                                                                                                                                                                                                                                                               | High     |
+| T-21 | Harden the deferred-filter regex to require both `session="..."` and `sha="..."` (W-12)                                                                                                                                                                                                                                                                                                                                                  | Low      |
+| T-22 | Force `reviewEvent = 'COMMENT'` while `sessionState` is not terminal; switch to APPROVE/REQUEST_CHANGES only when `sessionState === 'COMPLETED'` (W-13)                                                                                                                                                                                                                                                                                  | Medium   |
+| T-23 | Add `sessionName \|\| sessions/${sessionId}` fallback in force-review deferred-emission (W-15)                                                                                                                                                                                                                                                                                                                                           | Medium   |
+| T-24 | Before target-repository distribution, inventory authoritative instruction, branch-governance, and review-policy sources; classify requirements as trusted-base prompt context, deterministic workflow checks, or operator guidance; define precedence and bounds; and add tests proving integration. Known examples for later investigation: EmailIntelligence branch governance and Kaggle `.jules/INSTRUCTIONS.md`.                   | High     |
+| T-25 | Inventory active branches/worktrees that still modify `docs/actions/workflows/` or `docs/actions/scripts/`; migrate necessary semantic changes through `WORKTREE_MIGRATION.md`, record the legacy commit range and canonical destination, and explicitly supersede obsolete changes. **2026-08-05 audit:** branch discovery and dispositions recorded in `TARGET_REPOSITORY_ADJUSTMENTS.md`; migration/supersession actions remain open. | High     |
