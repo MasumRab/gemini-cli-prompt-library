@@ -1,0 +1,14 @@
+{
+  "name": "sessions/14586978430582998057",
+  "title": "Adjust TextFeature Pipeline Steps in schema_bootstrap.py",
+  "createTime": "2026-04-22T11:22:06.184492889Z",
+  "updateTime": "2026-04-23T17:38:11.932591Z",
+  "state": "COMPLETED",
+  "sourceContext": {
+    "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+    "environmentVariablesEnabled": true
+  },
+  "prompt": "## Task: Adjust text pipeline steps\n\n**Details:**\n- File: tools/kaggle-qa-toolkit/src/kaggle_qa/schema_bootstrap.py:244\n- Description: The pipeline steps for TextFeature are hardcoded and need adjustment based on preprocessing.\n- Language: python\n\n**Context:**\n```python\n                vocab_size=30522,              # TODO: check tokeniser vocab\n                tokenizer_name=\"bert-base-uncased\",  # TODO: update to actual tokeniser\n                special_tokens=[\"[PAD]\", \"[CLS]\", \"[SEP]\", \"[UNK]\", \"[MASK]\"],\n                padding=\"post\",\n                truncation=\"post\",\n                pipeline=[\"lower\", \"rm_html\"],  # TODO: adjust to pipeline steps\n                original_var=var[\"original\"],\n            ))\n            n_text += 1\n\n```\n\n**Rationale:** Requires analyzing preprocessing logic in the data source to specify the exact sequence of transformations.\n\n**Your Task:**\nPlease analyze this item and implement a solution.\n\n1. **Understand the Context**: Review the surrounding code and the description to understand what needs to be implemented or fixed.\n\n2. **Implement the Solution**: Write clean, production-ready code that addresses the item completely.\n\n3. **Follow Best Practices**: Ensure your solution follows the existing codebase patterns and conventions.\n\n4. **Test Your Changes**: Make sure your implementation works correctly and doesn't break existing functionality.\n\nPlease focus on delivering a complete, working solution for this item.\n",
+  "url": "https://jules.google.com/session/14586978430582998057",
+  "id": "14586978430582998057"
+}

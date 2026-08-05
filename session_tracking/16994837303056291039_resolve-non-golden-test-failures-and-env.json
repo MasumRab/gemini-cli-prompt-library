@@ -1,0 +1,17 @@
+{
+  "name": "sessions/16994837303056291039",
+  "title": "Resolve Non-Golden Test Failures and Environment Issues",
+  "createTime": "2026-04-22T09:26:14.213814543Z",
+  "updateTime": "2026-04-23T20:08:22.764664Z",
+  "state": "AWAITING_USER_FEEDBACK",
+  "sourceContext": {
+    "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+    "githubRepoContext": {
+      "startingBranch": "main"
+    },
+    "environmentVariablesEnabled": true
+  },
+  "prompt": "Working in the repo root (MasumRab/kaggle-notebooks-analysis):\n\nInstall dependencies first:\n  pip install -e tools/kaggle-qa-toolkit\n  pip install -e tools/kaggle_forensics\n  pip install -r envs/requirements-dev.txt 2\u003e/dev/null || pip install pytest nbqa ruff\n\nRun the full test suite, excluding tests marked \"golden\" (those need real data):\n  python -m pytest scripts/tests/ -v -m \"not golden\" --tb=short 2\u003e&1 | tee test_output.txt\n\nTriage the results into three buckets:\n  PASS   — no action needed\n  SKIP   — note why (missing fixture, data dependency)\n  FAIL   — fix if the fix does not require competition data\n\nKnown tests that should pass without data:\n  - test_notebook_triage.py    (pure unit tests, no I/O)\n  - test_security.py           (mocked, no I/O)\n  - test_house_prices_golden.py  (non-golden class only: TestSubmissionSchema, TestPipelineStructure)\n  - test_lanl_golden.py          (non-golden class only)\n\nFix all FAIL cases that are fixable without data. Do not mock out real behaviour —\nonly fix genuine bugs (import errors, wrong paths, missing fixtures).\n\nAfter all fixes pass, commit:\n  git add scripts/tests/ scripts/\n  git commit -m \"fix: test suite — resolve import errors and path bugs (non-golden tests)\"",
+  "url": "https://jules.google.com/session/16994837303056291039",
+  "id": "16994837303056291039"
+}

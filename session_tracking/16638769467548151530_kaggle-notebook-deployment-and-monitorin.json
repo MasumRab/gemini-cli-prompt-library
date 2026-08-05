@@ -1,0 +1,17 @@
+{
+  "name": "sessions/16638769467548151530",
+  "title": "Kaggle Notebook Deployment and Monitoring Workflow",
+  "createTime": "2026-04-22T09:26:55.828605045Z",
+  "updateTime": "2026-04-23T19:25:18.159262Z",
+  "state": "AWAITING_USER_FEEDBACK",
+  "sourceContext": {
+    "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+    "githubRepoContext": {
+      "startingBranch": "main"
+    },
+    "environmentVariablesEnabled": true
+  },
+  "prompt": "Working in the repo root (MasumRab/kaggle-notebooks-analysis):\n\nPrerequisite: KAGGLE_API_TOKEN set as a Jules secret.\n\nThis prompt pushes already-migrated notebooks TO Kaggle (no local data download needed).\nKaggle provides the competition data inside its own kernel environment.\n\nStep 1 — Generate kernel-metadata.json for each migrated competition that lacks one.\nCheck which kaggle/ dirs already have metadata:\n  ls notebooks/*/kaggle/kernel-metadata.json\n\nFor any missing, run:\n  python scripts/prepare_kaggle_push.py \u003cslug\u003e\n\nStep 2 — Push all 8 migrated competitions one at a time. After each push, poll\nstatus until complete or failed (max 20 minutes per competition):\n\n  Batch 1 (tabular, no GPU needed): house-prices, lanl, rossmann\n    kaggle kernels push -p notebooks/house-prices/kaggle/\n    kaggle kernels push -p notebooks/lanl/kaggle/\n\n  Batch 2 (vision, GPU): panda, aptos, melanoma\n    kaggle kernels push -p notebooks/panda/kaggle/\n    kaggle kernels push -p notebooks/aptos/kaggle/\n\n  Batch 3 (NLP/other): bengali, ieee-fraud\n    kaggle kernels push -p notebooks/bengali/kaggle/\n    kaggle kernels push -p notebooks/ieee-fraud/kaggle/\n\nFor each push, record the result in qa_reports/",
+  "url": "https://jules.google.com/session/16638769467548151530",
+  "id": "16638769467548151530"
+}

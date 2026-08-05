@@ -1,0 +1,17 @@
+{
+  "name": "sessions/8371048452105557519",
+  "title": "Automate Kaggle Kernel Execution and Golden Output Updates",
+  "createTime": "2026-04-22T09:25:29.812706574Z",
+  "updateTime": "2026-04-23T17:04:41.655538Z",
+  "state": "FAILED",
+  "sourceContext": {
+    "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+    "githubRepoContext": {
+      "startingBranch": "main"
+    },
+    "environmentVariablesEnabled": true
+  },
+  "prompt": "Working in the repo root (MasumRab/kaggle-notebooks-analysis):\n\nPrerequisite: KAGGLE_API_TOKEN must be set as a Jules secret.\n\n1. Push the house-prices pipeline notebook to Kaggle:\n     python scripts/prepare_kaggle_push.py house-prices\n     kaggle kernels push -p notebooks/house-prices/kaggle/\n\n2. Poll until the kernel finishes (status: \"complete\" or \"error\"):\n     kaggle kernels status criticalmaz/house-prices-pipeline\n   Retry every 60 seconds, up to 30 attempts (~30 min timeout).\n\n3. If status = \"complete\", pull the outputs:\n     kaggle kernels output criticalmaz/house-prices-pipeline \\\n         -p qa_reports/house-prices/\n\n4. Parse the output to extract actual golden values and update\n   golden_outputs/house_prices.json with:\n     - row_count, id_min, id_max, sale_price_min, sale_price_max, cv_rmse\n\n5. Repeat for lanl (criticalmaz/lanl-pipeline).\n\n6. Run golden tests to confirm they pass (not skipped):\n     python -m pytest scripts/tests/test_house_prices_golden.py -v -m golden\n\n7. Commit and push:\n     git add golden_outputs/\n     git commit -m \"feat: populate golden output fixtures from Kaggle kernel runs\"\n     git push",
+  "url": "https://jules.google.com/session/8371048452105557519",
+  "id": "8371048452105557519"
+}
