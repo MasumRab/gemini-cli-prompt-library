@@ -1,7 +1,7 @@
 # Target-repository Jules Actions adjustments
 
-**Branch audit:** 2026-08-05  
-**Canonical runtime compared:** `jules/main@22e1705` (`.github/` runtime content)  
+**Branch audit:** 2026-08-05
+**Canonical runtime compared:** `jules/main@22e1705` (`.github/` runtime content)
 **Scope:** EmailIntelligence, kaggle-notebooks-analysis, gemini-fullstack-langgraph-quickstart, and gemini-cli-prompt-library
 
 This document records branch-only and half-finished Jules Actions work found after
