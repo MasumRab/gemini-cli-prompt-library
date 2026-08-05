@@ -1,5 +1,9 @@
 # Architecture
 
+> **Inventory note:** This document explains the original consolidation design. Counts
+> and source-location snapshots are historical; use [`docs/README.md`](docs/README.md)
+> to find current operational and GitHub Actions authorities.
+
 ## Consolidation Design
 
 ### Problem

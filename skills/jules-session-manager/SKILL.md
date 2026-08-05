@@ -44,10 +44,10 @@ python3 tools/sessions/jules_list_activities.py <SESSION_ID>
 ### Legacy Scripts
 ```bash
 # Basic session listing (legacy bash script)
-./scripts/list_sessions.sh
+skills/jules-session-manager/scripts/list_sessions.sh
 
 # Dry-run mode for testing
-./scripts/list_sessions.sh --dry-run
+skills/jules-session-manager/scripts/list_sessions.sh --dry-run
 ```
 
 ### Agent Invocation

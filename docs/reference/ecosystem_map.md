@@ -1,5 +1,9 @@
 # Jules Ecosystem Map — Skills, Runbooks, Docs, Tools & Connections
 
+> **Historical topology snapshot:** Several paths and duplication counts in this map
+> predate consolidation. Use [`../README.md`](../README.md) for current authorities;
+> verify any path against the repository before following it.
+
 ## 1. Location Architecture (Where Everything Lives)
 
 ```

@@ -1,0 +1,6 @@
+# Operational Jules state files - not committed to git
+# These are runtime snapshots that change frequently
+# Generate summaries using scripts/generate_session_summaries.py
+*
+!.gitignore
+!README.md

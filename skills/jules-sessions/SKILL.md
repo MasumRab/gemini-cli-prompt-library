@@ -127,13 +127,13 @@ Determine what response/nudge to send based on session state and context.
 
 ```bash
 # Check all sessions needing response
-python scripts/check_needs_response.py
+python skills/jules-sessions/scripts/check_needs_response.py
 
 # Pull latest from API first (hybrid)
-python scripts/check_needs_response.py --api
+python skills/jules-sessions/scripts/check_needs_response.py --api
 
 # Output as JSON for scripting
-python scripts/check_needs_response.py --json
+python skills/jules-sessions/scripts/check_needs_response.py --json
 ```
 
 ### Manual Analysis
@@ -172,18 +172,18 @@ grep -A10 "AWAITING_PLAN_APPROVAL" references/response_templates.md
 
 ## Scripts
 
-### `scripts/analyze_sessions.sh`
+### `skills/jules-sessions/scripts/analyze_sessions.sh`
 
 ```bash
 #!/bin/bash
 # Usage:
-#   ./scripts/analyze_sessions.sh --status      # All sessions with state
-#   ./scripts/analyze_sessions.sh --pr-links    # PR URLs
-#   ./scripts/analyze_sessions.sh --pending     # Sessions needing action
-#   ./scripts/analyze_sessions.sh --summary      # One-line per PR
+#   ./skills/jules-sessions/scripts/analyze_sessions.sh --status      # All sessions with state
+#   ./skills/jules-sessions/scripts/analyze_sessions.sh --pr-links    # PR URLs
+#   ./skills/jules-sessions/scripts/analyze_sessions.sh --pending     # Sessions needing action
+#   ./skills/jules-sessions/scripts/analyze_sessions.sh --summary      # One-line per PR
 ```
 
-### `scripts/sync_session.sh`
+### `skills/jules-sessions/scripts/sync_session.sh`
 
 ```bash
 #!/bin/bash
@@ -196,49 +196,49 @@ curl -s "https://jules.googleapis.com/v1alpha/sessions/$SESSION_ID" \
   > "jules_sessions/session_${SESSION_ID}.json"
 ```
 
-### `scripts/list_prs_by_deletions.py`
+### `skills/jules-sessions/scripts/list_prs_by_deletions.py`
 
 Track PRs with aggressive code deletions (potential Jules over-deletion).
 
 ```bash
 # List PRs with >300 deletions
-python scripts/list_prs_by_deletions.py --threshold 300
+python skills/jules-sessions/scripts/list_prs_by_deletions.py --threshold 300
 
 # Check all PRs (open/closed/merged)
-python scripts/list_prs_by_deletions.py --state all --limit 50
+python skills/jules-sessions/scripts/list_prs_by_deletions.py --state all --limit 50
 
 # Output as JSON
-python scripts/list_prs_by_deletions.py --json --threshold 500
+python skills/jules-sessions/scripts/list_prs_by_deletions.py --json --threshold 500
 ```
 
-### `scripts/branch_analysis_tool.py`
+### `skills/jules-sessions/scripts/branch_analysis_tool.py`
 
 Analyze branch sync status and detect issues.
 
 ```bash
 # Full branch analysis
-python scripts/branch_analysis_tool.py
+python skills/jules-sessions/scripts/branch_analysis_tool.py
 
 # JSON output
-python scripts/branch_analysis_tool.py --json
+python skills/jules-sessions/scripts/branch_analysis_tool.py --json
 
 # Check stale branches (>30 days)
-python scripts/branch_analysis_tool.py --check-stale --max-stale-days 30
+python skills/jules-sessions/scripts/branch_analysis_tool.py --check-stale --max-stale-days 30
 ```
 
-### `scripts/check_needs_response.py`
+### `skills/jules-sessions/scripts/check_needs_response.py`
 
 Check sessions needing response and generate suggested messages.
 
 ```bash
 # List sessions needing action
-python scripts/check_needs_response.py
+python skills/jules-sessions/scripts/check_needs_response.py
 
 # Hybrid: pull latest from API first
-python scripts/check_needs_response.py --api --stale-minutes 20
+python skills/jules-sessions/scripts/check_needs_response.py --api --stale-minutes 20
 
 # JSON output
-python scripts/check_needs_response.py --json
+python skills/jules-sessions/scripts/check_needs_response.py --json
 ```
 
 **Output includes:**

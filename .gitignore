@@ -1,5 +1,6 @@
 # Python
 __pycache__/
+**/__pycache__/
 *.pyc
 *.pyo
 *.egg-info/
@@ -27,3 +28,6 @@ node_modules/
 # Build artifacts
 dist/
 build/
+
+# Jules API debug captures
+activities_*.json

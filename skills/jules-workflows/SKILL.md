@@ -349,7 +349,7 @@ curl -X POST "https://jules.googleapis.com/v1alpha/sessions/$SESSION_ID:approve"
 
 ## Scripts
 
-### `scripts/conflict_predictor.py`
+### `skills/jules-workflows/scripts/conflict_predictor.py`
 
 Predict merge conflicts before they occur.
 
@@ -362,14 +362,14 @@ prediction = predictor.predict_conflicts([file_change1, file_change2])
 # Returns: file_path, conflict_type, severity, confidence, suggested_resolution
 ```
 
-### `scripts/intelligent_merge_analyzer.py`
+### `skills/jules-workflows/scripts/intelligent_merge_analyzer.py`
 
 Analyze merge strategies and identify optimal approaches.
 
 ```bash
 # Analyze potential merge between branches
-python scripts/intelligent_merge_analyzer.py --source feature/abc --target main
+python skills/jules-workflows/scripts/intelligent_merge_analyzer.py --source feature/abc --target main
 
 # Get merge recommendations
-python scripts/intelligent_merge_analyzer.py --analyze --json
+python skills/jules-workflows/scripts/intelligent_merge_analyzer.py --analyze --json
 ```

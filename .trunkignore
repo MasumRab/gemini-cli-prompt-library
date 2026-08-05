@@ -1,0 +1,16 @@
+# === Lock / package files ===
+# Auto-generated, large, not worth linting
+**/package-lock.json
+**/uv.lock
+**/pnpm-lock.yaml
+**/yarn.lock
+
+# === Generated data outputs ===
+data/*.json
+
+# === Jules API session captures ===
+# Generated snapshots from session tracking, not source code
+session_tracking/*.json
+
+# === Debug captures ===
+activities_*.json

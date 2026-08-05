@@ -2,6 +2,11 @@
 
 Track the complete implementation of the `~/github/jules/` consolidated repo.
 
+> **Historical consolidation record:** Checked items describe the original import and
+> verification pass, not current subsystem readiness. Paths below may predate the
+> documentation reorganization. Use [`docs/README.md`](docs/README.md) for current
+> authorities and active reviews.
+
 ---
 
 ## 1. Repo Creation

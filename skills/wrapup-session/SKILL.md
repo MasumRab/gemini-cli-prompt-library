@@ -34,10 +34,10 @@ Enhanced wrapup session skill integrated with the new architectural framework fo
 python3 tools/pr/session_pr_triage.py --repo <owner>/<repo>
 
 # Step 3: Generate wrapup with QA status
-./scripts/wrapup_session.sh --include-qa-status
+skills/wrapup-session/scripts/wrapup_session.sh --include-qa-status
 
 # Step 4: Or specify output format
-./scripts/wrapup_session.sh --output-format markdown
+skills/wrapup-session/scripts/wrapup_session.sh --output-format markdown
 ```
 
 ## Authentication

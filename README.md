@@ -2,6 +2,9 @@
 
 Single source of truth for Jules AI coding session management: skills, tools, docs, and extensions.
 
+> Start with [`docs/README.md`](docs/README.md) to distinguish distributable GitHub
+> Actions from REST/operator tooling and session-archive policy.
+
 ## What This Is
 
 Centralized repository for all Jules-related tooling, consolidating 68 unique items from 7 scattered locations into one repo. Designed for development, testing, and future integration with `@google/jules-sdk`.
@@ -22,14 +25,16 @@ jules/
 │   ├── shell/       # Shell scripts (audit, sync, setup, retrieve)
 │   └── tests/       # Test suite
 ├── commands/        # 10 shell wrapper commands
-├── docs/            # Documentation
-│   ├── runbooks/    # Operational runbooks (9 files)
-│   ├── reference/   # API reference, tools docs, ecosystem map (5 files)
-│   ├── guides/      # Quickstart, operations, templates (3 files)
-│   ├── actions/     # Per-repo Jules action plans (6 files)
-│   ├── prompts/     # Formatted prompts and response templates (4 files)
-│   ├── behavioral/  # Jules behavioral instructions (1 file)
-│   └── extracted/   # Extracted role docs and configs (4 files)
+├── docs/            # Documentation map and subsystem-specific authorities
+│   ├── actions/     # Distributable Actions review, tasks, tests, recommendations, artifacts
+│   ├── reviews/     # Revision-specific subsystem reviews
+│   ├── runbooks/    # Operator procedures
+│   ├── reference/   # REST and tooling reference
+│   ├── guides/      # Quickstart, operations, templates, archive standard
+│   ├── triage/      # Repository-specific triage material
+│   ├── prompts/     # Formatted prompts and response templates
+│   ├── behavioral/  # Jules behavioral instructions
+│   └── extracted/   # Extracted role docs and configs
 ├── extensions/      # Gemini CLI extension
 └── CHECKLIST.md     # Consolidation checklist (170+ checkpoints)
 ```

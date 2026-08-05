@@ -2,6 +2,10 @@
 
 Comprehensive inventory of all interaction modalities, tools, and files in the consolidated `jules/` folder.
 
+> **Inventory snapshot:** File counts and source comparisons describe the original
+> consolidation and can drift. Use [`../README.md`](../README.md) for current document
+> ownership and inspect runtime code before relying on a capability claim.
+
 Consolidates 68 unique items from 7 scattered locations (kaggle-notebooks-analysis, EmailIntelligence, gemini-fullstack-langgraph-quickstart, gemini-cli-prompt-library, ~/.agents/, ~/.gemini/extensions/, ~/.jules/).
 
 ---
@@ -242,7 +246,8 @@ Each modality is a distinct way to interact with the Jules API (`jules.googleapi
 | `docs/runbooks/` | 9 runbooks (session, failure, PR verification, orchestrator, auth, GitHub, recovery, architecture, improvement log) |
 | `docs/reference/` | 5 reference docs (this file, REST API ref, tools readme, multi-repo, ecosystem map, API update guide) |
 | `docs/guides/` | 3 guides (quickstart, operations, backlog template) |
-| `docs/actions/` | 6 per-repo action plans (EmailIntelligence, kaggle, gemini-fullstack, gemini-cli-prompt, traceability, cross-repo) |
+| `docs/actions/` | Distributable Actions authorities, repository recommendations, and historical artifacts; see `docs/actions/README.md` |
+| `docs/reviews/` | Revision-specific subsystem reviews |
 | `docs/prompts/` | 4 prompt files (formatted prompts, extracted prompts, response templates, sent responses) |
 | `docs/behavioral/` | Behavioral instructions for Jules |
 | `docs/extracted/` | Extracted configs (bolt role, sentinel role, MCP schedule, recovery payloads) |
@@ -261,7 +266,7 @@ All files in `jules/` were compared against their origin sources. Findings:
 | Skill paths | `jules-session-manager`, `wrapup-session` | Expected — reference paths rewritten from scripts/ to tools/ |
 | New files in jules | `jules_pr_triage.py`, `jules-manager.py`, `auth_manager.py`, MCP server, Gemini extension, all skills, docs | New consolidation additions not in kaggle |
 
-**No functionality is missing.** All 17 Python tools and all 10 command wrappers from kaggle are present. The `jules/` folder adds unified CLI, MCP server, skills, and documentation not present in any single origin repo.
+**Original consolidation result:** At the time of the source comparison, all 17 Python tools and all 10 command wrappers from kaggle were present. Re-run an inventory before using this statement as current completeness evidence.
 
 ---
 
