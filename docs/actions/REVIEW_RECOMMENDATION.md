@@ -171,6 +171,11 @@ New workflow creation and parser refactoring are not prerequisites for fixing th
 open correctness findings. Keep behavior repair and refactoring as separate reviewable
 changes.
 
+Cross-system trigger/session evidence is specified in
+`docs/guides/workflow_session_traceability.md` as TRACE-01 through TRACE-07. Those tasks
+strengthen live validation and later operations but do not replace or close the five
+Actions correctness findings.
+
 ## 6. Validation requirements
 
 ### Required static validation

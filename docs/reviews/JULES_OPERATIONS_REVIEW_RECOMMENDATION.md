@@ -55,6 +55,10 @@ That assessment lives in `docs/actions/REVIEW_RECOMMENDATION.md`.
 The term **operator workflow** in this document means a sequence described by a skill,
 runbook, command, or local tool. It does not mean a GitHub Actions workflow.
 
+Cross-system correlation between a GitHub run and exact Jules session content is defined
+in `docs/guides/workflow_session_traceability.md`. Its trace manifest is derived
+operational state, not a raw archive companion.
+
 ## 2. Classify operations before reviewing them
 
 | Class                     | Definition                                                                    | Examples                                                        |                Archive companion required? |

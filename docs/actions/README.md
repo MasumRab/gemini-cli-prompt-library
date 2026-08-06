@@ -6,15 +6,16 @@ separately in [`../README.md`](../README.md).
 
 ## Current authorities
 
-| Document                                                               | Use                                                                                            |
-| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| [`REVIEW_RECOMMENDATION.md`](REVIEW_RECOMMENDATION.md)                 | Revision-specific readiness decision, findings, and distribution criteria                      |
-| [`HANDOFF.md`](HANDOFF.md)                                             | Active task IDs and implementation status                                                      |
-| [`SMOKE_TEST_PLAN.md`](SMOKE_TEST_PLAN.md)                             | Deterministic and live validation scenarios                                                    |
-| [`EDGE_CASES.md`](EDGE_CASES.md)                                       | Edge-case catalog; verify historical status claims against runtime code and the active tracker |
-| [`HANDOFF_PATTERNS.md`](HANDOFF_PATTERNS.md)                           | Reusable implementation patterns; verify examples against current runtime code before reuse    |
-| [`WORKTREE_MIGRATION.md`](WORKTREE_MIGRATION.md)                       | Replay changes from the legacy `docs/actions/{workflows,scripts}` layout into `.github/`       |
-| [`TARGET_REPOSITORY_ADJUSTMENTS.md`](TARGET_REPOSITORY_ADJUSTMENTS.md) | Branch-audited per-repository and per-workflow distribution overlays                           |
+| Document                                                                                   | Use                                                                                            |
+| ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| [`REVIEW_RECOMMENDATION.md`](REVIEW_RECOMMENDATION.md)                                     | Revision-specific readiness decision, findings, and distribution criteria                      |
+| [`HANDOFF.md`](HANDOFF.md)                                                                 | Active task IDs and implementation status                                                      |
+| [`SMOKE_TEST_PLAN.md`](SMOKE_TEST_PLAN.md)                                                 | Deterministic and live validation scenarios                                                    |
+| [`EDGE_CASES.md`](EDGE_CASES.md)                                                           | Edge-case catalog; verify historical status claims against runtime code and the active tracker |
+| [`HANDOFF_PATTERNS.md`](HANDOFF_PATTERNS.md)                                               | Reusable implementation patterns; verify examples against current runtime code before reuse    |
+| [`WORKTREE_MIGRATION.md`](WORKTREE_MIGRATION.md)                                           | Replay changes from the legacy `docs/actions/{workflows,scripts}` layout into `.github/`       |
+| [`TARGET_REPOSITORY_ADJUSTMENTS.md`](TARGET_REPOSITORY_ADJUSTMENTS.md)                     | Branch-audited per-repository and per-workflow distribution overlays                           |
+| [`../guides/workflow_session_traceability.md`](../guides/workflow_session_traceability.md) | Correlate trigger/run IDs, prompts and policy hashes, sessions, content, and GitHub outcomes   |
 
 Runtime behavior is defined by `.github/workflows/` and `.github/scripts/`. When a
 document conflicts with those files, record the discrepancy as a finding rather than

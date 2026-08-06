@@ -43,6 +43,13 @@ unmodified Jules session or activity API responses—not for transient API inspe
 derived trackers, or ordinary GitHub Actions output. The operations review records the
 remaining implementation gaps and the migration away from the Cursor rule.
 
+## Cross-system workflow and session traceability
+
+[`guides/workflow_session_traceability.md`](guides/workflow_session_traceability.md)
+defines how to join a GitHub trigger/run to the exact Jules session content and resulting
+GitHub side effects. Use it for Actions instrumentation and historical investigations;
+it does not merge the separate Actions-readiness and operations-readiness decisions.
+
 ## Historical material
 
 [`actions/artifacts/README.md`](actions/artifacts/README.md) indexes superseded plans,

@@ -2,6 +2,11 @@
 
 Use a disposable PR on one of the target repos (e.g., `gemini-fullstack-langgraph-quickstart`). The PR can be either a same-repository PR or a fork PR depending on the test scenario. The Fork Skip test below must use a fork PR.
 
+For every scenario, record the repository, run ID, run attempt, workflow SHA, triggering
+object ID, target head SHA, exact Jules session resource(s), and resulting GitHub object
+IDs. Use [`../guides/workflow_session_traceability.md`](../guides/workflow_session_traceability.md)
+for the trace schema and for explicit `none`, `app-mediated`, and unresolved cases.
+
 ## 1. Fork Skip
 
 1. Create a PR from a fork (any branch with a trivial change)
