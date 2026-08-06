@@ -22,11 +22,13 @@ dependencies:
 # Jules Session Manager
 
 ## Overview
+
 Enhanced session manager with integrated Session-PR correlation capabilities. Uses the new architectural framework for authentication and bidirectional mapping between Jules sessions and GitHub PRs.
 
 ## Usage
 
 ### Recommended Workflow
+
 ```bash
 # Step 1: Run pre-flight checks
 ./tools/utils/pre_flight_check.sh
@@ -42,6 +44,7 @@ python3 tools/sessions/jules_list_activities.py <SESSION_ID>
 ```
 
 ### Legacy Scripts
+
 ```bash
 # Basic session listing (legacy bash script)
 skills/jules-session-manager/scripts/list_sessions.sh
@@ -51,6 +54,7 @@ skills/jules-session-manager/scripts/list_sessions.sh --dry-run
 ```
 
 ### Agent Invocation
+
 - "List Jules sessions"
 - "Inspect session activities"
 - "Check Jules API"
@@ -60,6 +64,7 @@ skills/jules-session-manager/scripts/list_sessions.sh --dry-run
 - "/jules-triage"
 
 ## Capabilities
+
 - **Session Listing**: Fetch all Jules sessions with state filtering
 - **Activity Inspection**: Retrieve detailed session activity logs
 - **Message Sending**: Send messages to active sessions
@@ -69,22 +74,28 @@ skills/jules-session-manager/scripts/list_sessions.sh --dry-run
 - **JSON Export**: Save session-PR mappings to session_pr_map.json
 
 ## Authentication
+
 Uses centralized auth manager for validation:
+
 ```bash
 python3 tools/utils/auth_manager.py
 ```
 
 Required environment variables:
+
 - `JULES_API_KEY` - Jules API key (validated against placeholder patterns)
 - `GITHUB_TOKEN` - GitHub personal access token with repo scope
 
 ## Pre-Flight Checks
+
 Always run before session operations:
+
 ```bash
 ./tools/utils/pre_flight_check.sh
 ```
 
 Checks performed:
+
 1. Authentication validation
 2. Clean working directory verification
 3. Branch safety (warns if on main)
@@ -92,12 +103,14 @@ Checks performed:
 ## Examples
 
 ### Full Session-PR Triage
+
 ```bash
 # Run comprehensive correlation analysis
 python3 tools/pr/session_pr_triage.py --repo <owner>/<repo>
 ```
 
 Output:
+
 ```
 ================================================================================
 SESSION ID           PR #       CONFIDENCE   METHOD
@@ -110,11 +123,13 @@ Total Mapped: 2
 ```
 
 ### List Sessions by State
+
 ```bash
 python3 tools/sessions/jules_list_sessions.py --state IN_PROGRESS
 ```
 
 ### Inspect Session Activities
+
 ```bash
 python3 tools/sessions/jules_list_activities.py 2977177834934208195 --limit 50
 ```
@@ -125,9 +140,12 @@ The triage tool uses multiple methods to correlate sessions with PRs:
 
 1. **Activity Log: Branch Creation** - Detects `git checkout -b` commands in session activities
 2. **Activity Log: PR Link Detected** - Scans for GitHub PR URLs in agent messages
-3. **PR Branch Name Match** - Matches session IDs in branch names (session-*, jules-*, task-*)
+3. **PR Branch Name Match** - Matches session IDs in branch names (session-_, jules-_, task-\*)
 
 ## Related Runbooks
+
+- See `docs/guides/workflow_session_traceability.md` for the canonical historical
+  session-forensics procedure, evidence confidence, and Actions-run correlation rules.
 - See `docs/runbooks/SESSION_RECOVERY.md` for recovery procedures
 - See `docs/runbooks/GITHUB_INTEGRATION.md` for PR workflow guidelines
 - See `docs/runbooks/AUTH_SETUP.md` for authentication troubleshooting

@@ -247,7 +247,102 @@ deleted, and scheduled workflows may have no natural PR comment.
 | Address-comments                  | The workflow posts an `@jules` comment and does not create the session through REST. Record the posted comment ID as `app-mediated`; reconcile only when the App exposes an explicit session reference. |
 | Dispatch and automerge-label      | These do not create sessions. Record routed label/comment IDs or label outcome only when tracing the downstream chain.                                                                                  |
 
-## 9. Operator reconstruction procedure
+## 9. Historical forensic inventory with current tools
+
+The current REST and GitHub tools can inspect every session that remains visible to the
+authenticated Jules account and enrich it with available GitHub evidence. They cannot
+guarantee recovery of deleted sessions, expired GitHub run logs, inaccessible
+repositories, or a historical Actions-run link that was never recorded.
+
+### Evidence to record for every accessible session
+
+| Field                      | Evidence source                                                                                                                   |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Session identity and state | Full `GET /sessions/<id>` response                                                                                                |
+| Purpose                    | Original prompt, title, source context, starting branch, and plan; distinguish quoted facts from reviewer interpretation          |
+| Activity history           | Every page from `/sessions/<id>/activities`, not only the latest 20 or 50 entries                                                 |
+| Output                     | Session `outputs`, change sets, explicit PR URLs, final agent activity, and failure reason                                        |
+| GitHub result              | PR head/base SHA, commits, files, checks, reviews, comments, conflicts, state, and merge outcome                                  |
+| Actions origin             | Trace manifest/marker when present; otherwise matching run, event object, workflow SHA, and timestamps as candidate evidence only |
+| Correlation confidence     | `exact`, `strong`, `probable`, or `unresolved`, with the specific method and evidence                                             |
+| Recommended action         | Reviewer conclusion plus evidence, prerequisites, risk, and whether mutation requires approval                                    |
+| Review provenance          | Reviewer, review timestamp, Jules/GitHub retrieval timestamp, and known missing evidence                                          |
+
+Purpose and output may be API facts. A recommended action is a reviewer judgment and
+must not be presented as a field returned by Jules.
+
+### Current tool roles and limits
+
+| Tool                                                 | Useful for                                                                                   | Important limit                                                                                                                                                                                   |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tools/api/jules_api_client.py`                      | Uncapped paginated session inventory, full session lookup, and complete paginated activities | Use `list_sessions(max_results=None)` and `list_activities(..., max_results=None)` for completeness; callers often add lower caps                                                                 |
+| `tools/cli/jules-manager.py session <id>`            | Full metadata/prompt/output inspection for one session                                       | Does not establish a GitHub Actions run link by itself                                                                                                                                            |
+| `tools/sessions/jules_list_sessions.py`              | State-filtered triage and output PR discovery                                                | Scans at most 500 sessions and returns the requested limit; not proof of an all-time inventory                                                                                                    |
+| `tools/sessions/jules_list_activities.py <id> --all` | Complete activity inspection for one session                                                 | Default is only 50; use `--all` for forensics                                                                                                                                                     |
+| `tools/pr/session_pr_triage.py --repo <owner/repo>`  | Candidate session/PR discovery from activity links and branch names                          | Active sessions only, at most 100 sessions, 20 activities each, and open PRs for branch matching; its High/Medium labels are leads, not the evidence scale in this guide                          |
+| `tools/pr/jules_pr_context.py <pr> --json`           | PR state, diff size, checks, comments, and priority hint                                     | Run with the intended target repository selected; it does not retrieve Jules content or Actions provenance                                                                                        |
+| `tools/sessions/analyze_unanswered.py <id>`          | Categorizing an awaiting-feedback session                                                    | Recommendation aid only; verify against full activities                                                                                                                                           |
+| `tools/pr/jules_audit_session_pr.py`                 | Supplemental local diff checks                                                               | Run only in a target worktree with the verified PR head checked out. `--session` uses `startingBranch`, which may be the base rather than the PR head, so it is not standalone proof of PR safety |
+
+### Forensic procedure
+
+1. Run authentication/pre-flight checks without mutating sessions or PRs.
+2. Enumerate sessions through `JulesAPIClient.list_sessions(max_results=None)` so every
+   API page is consumed. Save retrieval time and any API/account boundary.
+3. For each session, fetch full metadata and all activities. For individual inspection:
+
+   ```bash
+   python3 -m tools.cli.jules-manager session <session_id>
+   python3 -m tools.sessions.jules_list_activities <session_id> --all
+   ```
+
+4. Extract the original purpose, source repository/branch, state transitions, outputs,
+   PR URLs, patch/change identity, questions, plans, and terminal evidence.
+5. Run `session_pr_triage.py` for candidate discovery, then independently verify each
+   candidate against full session output and GitHub. Include closed and merged PRs; the
+   triage script's open-PR branch scan is not exhaustive.
+6. In the target repository, inspect each verified PR:
+
+   ```bash
+   python3 /path/to/jules/tools/pr/jules_pr_context.py <pr_number> --json
+   gh run list --commit <head_sha>
+   gh pr view <pr_number> --json id,url,state,headRefName,headRefOid,baseRefName,mergeable,mergeStateStatus,commits,reviews,comments,statusCheckRollup
+   ```
+
+7. Search Actions runs and existing comment markers for exact run/session IDs. If only
+   repository, PR, title, and time proximity agree, record `probable`, not `exact`.
+8. Assign a recommended action using the rubric below. Do not approve, message, retry,
+   close, merge, or delete as part of a read-only forensic pass.
+9. Record one row per session, including sessions with no PR, no output, or unresolved
+   Action origin. Reconcile counts against the uncapped API inventory.
+
+### Correlation confidence for historical data
+
+| Confidence   | Minimum evidence                                                                                                                               |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `exact`      | Trace manifest/marker, create response, session output, or another stable ID explicitly joins both records                                     |
+| `strong`     | Explicit PR URL or unique commit/branch evidence in full session activities matches GitHub exactly, but the originating Actions run is unknown |
+| `probable`   | Multiple independent contextual fields agree, but none is a unique durable join                                                                |
+| `unresolved` | Evidence is absent, conflicting, inaccessible, or admits multiple candidates                                                                   |
+
+### Recommended-action rubric
+
+| Observed state/result                  | Default reviewer recommendation                                                                                                          |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `QUEUED`, `PLANNING`, `IN_PROGRESS`    | Monitor unless stale beyond an explicitly defined service threshold                                                                      |
+| `AWAITING_PLAN_APPROVAL`               | Review plan, repository policy, branch, and scope; recommend approve, request revision, or supersede—never auto-approve from state alone |
+| `AWAITING_USER_FEEDBACK`               | Read the complete question/context; recommend a specific response, missing evidence request, or supersession                             |
+| `PAUSED` or unknown state              | Investigate activities/API errors and avoid mutation until the state is understood                                                       |
+| `COMPLETED` with PR                    | Verify PR head, checks, reviews, policy, and actual diff; recommend merge, repair, further review, or close/supersede                    |
+| `COMPLETED` without expected PR/output | Determine whether the task was analysis-only; otherwise recommend output recovery or a replacement session                               |
+| `FAILED`                               | Identify terminal evidence and partial changes; recommend targeted retry only when inputs remain valid, otherwise replace or archive     |
+| Duplicate/stale session                | Preserve provenance and recommend one authoritative successor; do not send competing instructions                                        |
+
+An inventory is complete only relative to a named account, retrieval timestamp, API
+visibility boundary, repository set, and GitHub retention window. State those bounds in
+the report instead of claiming universal coverage.
+
+## 10. Operator reconstruction procedure
 
 When investigating a historical trigger:
 
@@ -263,7 +358,7 @@ When investigating a historical trigger:
 7. Never rewrite the original trace. Append a reconciliation record with operator,
    timestamp, evidence, and prior/new correlation status.
 
-## 10. Privacy, retention, and failure rules
+## 11. Privacy, retention, and failure rules
 
 - Never store API keys, authorization headers, signed URLs, or raw secret values.
 - Redact sensitive email/PII and repository secrets before retaining prompt or activity
@@ -277,7 +372,7 @@ When investigating a historical trigger:
 - Tracing must not make a successful mutation appear failed after the mutation occurred.
   Preserve the API response, report partial trace failure, and require reconciliation.
 
-## 11. Implementation sequence
+## 12. Implementation sequence
 
 1. Define and test the versioned manifest schema and redaction rules.
 2. Add a shared manifest writer that never executes code from PR head.
