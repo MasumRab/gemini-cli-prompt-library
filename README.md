@@ -2,8 +2,9 @@
 
 Single source of truth for Jules AI coding session management: skills, tools, docs, and extensions.
 
-> Start with [`docs/README.md`](docs/README.md) to distinguish distributable GitHub
-> Actions from REST/operator tooling and session-archive policy.
+> **Agent and reviewer cold start:** read [`AGENTS.md`](AGENTS.md) and
+> [`JULES_REVIEW_GUIDE.md`](JULES_REVIEW_GUIDE.md). The detailed documentation map is
+> [`docs/README.md`](docs/README.md).
 
 ## What This Is
 
@@ -13,6 +14,8 @@ Centralized repository for all Jules-related tooling, consolidating 68 unique it
 
 ```
 jules/
+├── AGENTS.md        # Repository-wide cold-start instructions
+├── JULES_REVIEW_GUIDE.md # Root review and implementation map
 ├── skills/          # 7 skills (35 files) — Jules API, CLI, sessions, workflows, scheduling, session-manager, wrapup
 ├── tools/           # Python tools + shell scripts
 │   ├── api/         # Jules API client
@@ -50,19 +53,19 @@ jules/
 
 This folder implements 11 distinct ways to interact with Jules. See `docs/reference/tools_readme.md` for complete per-file inventory.
 
-| # | Modality | Entry Point | Auth |
-|---|----------|-------------|------|
-| 1 | Python REST Client (`JulesAPIClient`) | `tools/api/jules_api_client.py` | API key |
-| 2 | Raw curl / HTTP | Runbook examples, `commands/jules_triage.sh` fallback | API key |
-| 3 | Individual Python Session Scripts | `tools/sessions/*.py` (7 scripts) | API key |
-| 4 | Python PR Tooling | `tools/pr/*.py` (4 scripts) | API key + GitHub token |
-| 5 | Unified Python CLI | `tools/cli/jules-manager.py` | API key |
-| 6 | Shell Command Wrappers | `commands/` (10 wrappers) | API key |
-| 7 | Operational Shell Scripts | `tools/shell/` (6 scripts) | API key |
-| 8 | MCP Server (TypeScript/SDK) | `extensions/gemini-cli-jules/mcp-server/src/jules.ts` | API key |
-| 9 | Gemini CLI Extension Prompt | `extensions/gemini-cli-jules/commands/jules.toml` | OAuth |
-| 10 | Skill-based Agent Instructions | `skills/` (7 skill directories) | Any |
-| 11 | Jules CLI Binary (referenced) | `npm install -g @google/jules` | OAuth |
+| #   | Modality                              | Entry Point                                           | Auth                   |
+| --- | ------------------------------------- | ----------------------------------------------------- | ---------------------- |
+| 1   | Python REST Client (`JulesAPIClient`) | `tools/api/jules_api_client.py`                       | API key                |
+| 2   | Raw curl / HTTP                       | Runbook examples, `commands/jules_triage.sh` fallback | API key                |
+| 3   | Individual Python Session Scripts     | `tools/sessions/*.py` (7 scripts)                     | API key                |
+| 4   | Python PR Tooling                     | `tools/pr/*.py` (4 scripts)                           | API key + GitHub token |
+| 5   | Unified Python CLI                    | `tools/cli/jules-manager.py`                          | API key                |
+| 6   | Shell Command Wrappers                | `commands/` (10 wrappers)                             | API key                |
+| 7   | Operational Shell Scripts             | `tools/shell/` (6 scripts)                            | API key                |
+| 8   | MCP Server (TypeScript/SDK)           | `extensions/gemini-cli-jules/mcp-server/src/jules.ts` | API key                |
+| 9   | Gemini CLI Extension Prompt           | `extensions/gemini-cli-jules/commands/jules.toml`     | OAuth                  |
+| 10  | Skill-based Agent Instructions        | `skills/` (7 skill directories)                       | Any                    |
+| 11  | Jules CLI Binary (referenced)         | `npm install -g @google/jules`                        | OAuth                  |
 
 ## Quick Usage
 
@@ -89,15 +92,15 @@ python tools/pr/session_pr_triage.py --repo <owner>/<repo>
 
 ## Source Mapping
 
-| Source Location | Destination |
-|----------------|-------------|
+| Source Location                                   | Destination                                  |
+| ------------------------------------------------- | -------------------------------------------- |
 | `kaggle-notebooks-analysis/scripts/julius_tools/` | `tools/api/`, `tools/sessions/`, `tools/pr/` |
-| `kaggle-notebooks-analysis/scripts/core/` | `tools/utils/` |
-| `kaggle-notebooks-analysis/scripts/skills/` | `tools/pr/` |
-| `~/.agents/commands/` | `tools/cli/` |
-| `~/.agents/skills/jules-*` | `skills/` |
-| `~/.gemini/extensions/gemini-cli-jules/` | `extensions/` |
-| `kaggle-notebooks-analysis/docs/jules/` | `docs/runbooks/`, `docs/reference/` |
+| `kaggle-notebooks-analysis/scripts/core/`         | `tools/utils/`                               |
+| `kaggle-notebooks-analysis/scripts/skills/`       | `tools/pr/`                                  |
+| `~/.agents/commands/`                             | `tools/cli/`                                 |
+| `~/.agents/skills/jules-*`                        | `skills/`                                    |
+| `~/.gemini/extensions/gemini-cli-jules/`          | `extensions/`                                |
+| `kaggle-notebooks-analysis/docs/jules/`           | `docs/runbooks/`, `docs/reference/`          |
 
 ## License
 
