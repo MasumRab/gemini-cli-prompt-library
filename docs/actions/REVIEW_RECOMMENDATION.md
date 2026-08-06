@@ -1,10 +1,18 @@
 # Jules GitHub Actions — Independent Review and Distribution Recommendation
 
 **Created:** 2026-08-01
-**Updated:** 2026-08-05
-**Code revision audited:** `b93d658` on `main`
+**Updated:** 2026-08-06
+**Code revision audited:** `b93d658` on `main`; Actions behavior revalidated at `05d430c`
 **Scope:** Canonical distributable GitHub Actions in `.github/` and their Actions-specific documentation
 **Readiness:** **Not ready for distribution** — five workflow findings, target-policy integration, and live validation remain open
+
+## 2026-08-06 refresh
+
+After updating to `main@05d430c`, the runtime comparison from `b93d658` found no
+workflow YAML changes. The classifier changed only historical-documentation comments;
+its executable behavior is unchanged. The session-summary changes in `d003eed` belong
+to the separate operations subsystem. Therefore W-09, W-10, W-12, W-13, and W-15 and
+all readiness gates below remain open without modification.
 
 ## 0. Scope and authority
 

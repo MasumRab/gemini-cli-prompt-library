@@ -1,9 +1,43 @@
 # Jules REST Operations, Triage, Repair, and Session Archive — Review Recommendation
 
 **Created:** 2026-08-03
-**Code revision examined:** `b93d658` on `main`
+**Updated:** 2026-08-06
+**Code revision examined:** `main@05d430c`, including generator change `d003eed`
 **Scope:** Operator-driven Jules REST tooling, skills, runbooks, and durable session archives
 **Relationship to GitHub Actions:** Separate subsystem; findings here do not block Actions unless an Action directly depends on the affected component
+
+## 0. 2026-08-06 implementation refresh
+
+Commit `d003eed` is partial progress, not completion of this review. It adds support for
+numeric-ID-prefixed `session_tracking` files, recognizes additional status strings,
+attempts to improve handwritten YAML output, and backfills derived tracking summaries.
+It does not integrate the raw archive producers, archive skill, or runbooks, and it does
+not satisfy the generator/standard contract below.
+
+Focused serializer checks at `05d430c` demonstrate that representative strings still
+produce invalid or meaning-changing YAML:
+
+| Input shape                                            | Generated result                       |
+| ------------------------------------------------------ | -------------------------------------- |
+| `{"summary": "key: value"}`                            | YAML parser error                      |
+| `{"summary": "before # after"}`                        | Parses as `{"summary": "before"}`      |
+| `{"summary": "true"}`                                  | Parses as boolean `true`, not a string |
+| Simple lists containing `:`, `#`, or YAML-like scalars | Parser error or changed type           |
+
+Current refresh findings:
+
+| ID     | Severity | Finding                                                                                                                                                                                                                                                                | Required correction                                                                                                                                                                           |
+| ------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ARC-01 | Critical | `dict_to_yaml()` bypasses its scalar quoting logic for dictionary values and inline lists. The claimed valid-YAML fix is incorrect for ordinary prompts, titles, messages, and paths containing YAML-significant text.                                                 | Replace the handwritten serializer with a maintained YAML library, or implement and exhaustively test one scalar encoder used by every scalar position. Round-trip generated output in tests. |
+| ARC-02 | Major    | `validate_summaries()` still checks only `is_activity_file()` in its validation loop, does not parse YAML or enforce fields/status, and only warns on oversize output. Its total includes individual files that the loop never checks, so it can report false success. | Validate every recognized raw archive, parse each companion, enforce schemas/status/size/staleness, and return nonzero for every violation.                                                   |
+| ARC-03 | Major    | Filename recognition still omits actual raw producer names such as `pr<N>_session.json`, `pr<N>_activities.json`, `jules_<id>.json`, and `session_<id>.json`. Explicit unknown files still prompt interactively.                                                       | Classify explicit files by supported JSON schema and provenance without prompting; align directory discovery with producer outputs.                                                           |
+| ARC-04 | Major    | Summary writes remain direct and non-atomic. A skipped/failed explicit file can finish with a warning and successful process exit. No raw producer invokes strict generation/validation.                                                                               | Use temporary-file plus atomic replace, propagate failures as nonzero, then integrate all producers transactionally.                                                                          |
+| ARC-05 | Major    | The new numeric filename pattern primarily recognizes derived `session_tracking/*.json`, which this policy explicitly excludes from raw-archive companion requirements. This conflates derived operational state with raw Jules API archives.                          | Keep optional derived summaries separate from archive compliance; use provenance/schema rather than the numeric filename as the archive signal.                                               |
+| ARC-06 | Medium   | `detect_source_from_context()` classifies any GitHub source as PR and lowercases the source before reconstructing the repository, fabricating provenance and changing repository casing.                                                                               | Preserve source metadata exactly; infer PR/issue only from explicit evidence and leave unknown values absent.                                                                                 |
+| ARC-07 | Medium   | The normative standard still lacks individual/collection schema alignment and excludes newly emitted `queued`/`unspecified` statuses. Its MUST/SHOULD and 50 KB/1 MB contradictions remain.                                                                            | Update the standard and generator together before enforcement or migration is declared complete.                                                                                              |
+
+No tests for the generator were found. The acceptance criteria in Section 8 remain
+required, with YAML parse-and-round-trip fixtures added explicitly.
 
 ## 1. Scope boundaries
 
@@ -94,6 +128,11 @@ Automatic enforcement is unsafe until these contract defects are fixed:
 7. The standard conflicts between `MUST`, `SHOULD`, and a suggested 1 MB threshold.
 8. `data/.gitignore` also ignores summaries that the standard describes as trackable.
 
+`d003eed` attempted parts of items 1, 3, and 5, but ARC-01 through ARC-07 show that none
+of those contract items can yet be marked complete. In particular, generated files in
+`session_tracking/` are derived operational summaries and are not evidence that raw
+archive producers comply with this policy.
+
 ### Correct contract
 
 - Every durable raw Jules archive receives a companion, regardless of raw file size.
@@ -166,6 +205,8 @@ Add focused generator/producer tests for:
 - Noninteractive explicit-file operation
 - Atomic producer behavior and propagated generator failure
 - Exclusion of derived JSON such as `session_pr_map.json`
+- YAML parse-and-round-trip coverage for colons, hashes, quotes, booleans, null-like
+  strings, timestamps, multiline text, and nested/simple lists
 
 Migration is complete only when:
 
