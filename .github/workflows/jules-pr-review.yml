@@ -626,31 +626,63 @@ jobs:
             const body = `<!-- jules-pr-reviewer -->\n<!-- head_sha: ${headSha} -->\n${sessionResource ? `<!-- jules-session: ${sessionResource} -->` : ''}\n\n${mainReview}${deferredNotice}${timeoutNotice}`;
 
             let reviewEvent = 'COMMENT';
-            if (verdict === 'approve') reviewEvent = 'APPROVE';
-            else if (verdict === 'block') reviewEvent = 'REQUEST_CHANGES';
+            if (sessionState === 'COMPLETED' && verdict === 'approve') reviewEvent = 'APPROVE';
+            else if (sessionState === 'COMPLETED' && verdict === 'block') reviewEvent = 'REQUEST_CHANGES';
 
+            // Stale SHA guard: re-fetch PR head to ensure no new commits arrived
+            // during polling. If the SHA is stale, don't post inline comments or
+            // formal approve/request-changes against outdated work.
+            let currentSha = headSha;
             try {
-              const reviewParams = {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
+              const currentPr = (await github.rest.pulls.get({
+                owner: context.repo.owner, repo: context.repo.repo,
                 pull_number: prNumber,
-                commit_id: headSha,
-                event: reviewEvent,
-                body,
-              };
-              if (comments.length > 0) {
-                reviewParams.comments = comments;
-              }
-              await github.rest.pulls.createReview(reviewParams);
-              core.info(`Review posted with ${comments.length} per-line comments`);
+              })).data;
+              currentSha = currentPr.head.sha;
             } catch (e) {
-              core.warning(`PR review failed, falling back to batch comment: ${e.message}`);
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-                body,
-              });
+              core.warning(`Could not re-fetch PR for SHA check: ${e.message}`);
+            }
+
+            if (currentSha !== headSha) {
+              core.warning(`PR head changed during review: was ${headSha}, now ${currentSha} — posting COMMENT only, no inline comments`);
+              const staleBody = `⚠️ **Review posted as comment — PR was updated during review.**\n\nThe review session ran against commit \`${headSha}\`, but the PR head is now \`${currentSha}\`. Inline comments and formal approve/block were skipped to avoid targeting outdated code.\n\n${body}`;
+              try {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner, repo: context.repo.repo,
+                  issue_number: prNumber, body: staleBody,
+                });
+              } catch (e2) {
+                core.error(`Failed to post stale-review comment: ${e2.message}`);
+              }
+            } else {
+              try {
+                const reviewParams = {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                  commit_id: headSha,
+                  event: reviewEvent,
+                  body,
+                };
+                if (comments.length > 0) {
+                  reviewParams.comments = comments;
+                }
+                await github.rest.pulls.createReview(reviewParams);
+                core.info(`Review posted with ${comments.length} per-line comments`);
+              } catch (e) {
+                core.warning(`PR review failed (${reviewEvent}), falling back to batch comment: ${e.message}`);
+                const fallbackBody = `<!-- jules-pr-reviewer -->\n<!-- head_sha: ${headSha} -->\n<!-- intended_review_event: ${reviewEvent} -->\n<!-- review_post_failed: ${e.message.slice(0, 200)} -->\n\n${body}`;
+                try {
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: prNumber,
+                    body: fallbackBody,
+                  });
+                } catch (e2) {
+                  core.error(`Both createReview and fallback createComment failed: ${e2.message}`);
+                }
+              }
             }
 
             // Post walkthrough as separate issue comment if generated
@@ -709,10 +741,10 @@ jobs:
             });
 
             // Find the most recent deferred review marker
-            // Match the full deferred marker form (must include session="..." attribute),
-            // so a stray pending comment cannot collide with this filter.
+            // Match the full deferred marker form (must include both session and sha attributes),
+            // so a malformed or stray pending comment cannot collide with this filter.
             const deferredComment = comments
-              .filter(c => /<!--\s*jules-review-deferred\s+session="/.test(c.body || ''))
+              .filter(c => /<!--\s*jules-review-deferred\s+session="[^"]+"\s+sha="[^"]+"\s*-->/.test(c.body || ''))
               .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
 
             if (!deferredComment) {
@@ -764,7 +796,7 @@ jobs:
               (.activities // [])[]
               | select(.agentMessaged.agentMessage != null)
               | .agentMessaged.agentMessage
-            ] | join("\n\n---\n\n") // "Review unavailable"' > /tmp/jules-deferred-output.txt
+            ] | if length == 0 then "Review unavailable" else join("\n\n---\n\n") end' > /tmp/jules-deferred-output.txt
             echo "output_ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "output_ready=false" >> "$GITHUB_OUTPUT"
@@ -777,6 +809,7 @@ jobs:
         env:
           HEAD_SHA: ${{ steps.find.outputs.head_sha }}
           SESSION_STATE: ${{ steps.check.outputs.session_state }}
+          SESSION_RESOURCE: ${{ steps.find.outputs.session_resource }}
         with:
           script: |
             const fs = require('fs');
@@ -784,6 +817,7 @@ jobs:
             const prNumber = parseInt(process.env.PR_NUMBER || '${{ steps.find.outputs.pr_number }}');
             const headSha = process.env.HEAD_SHA;
             const sessionState = process.env.SESSION_STATE;
+            const sessionResource = process.env.SESSION_RESOURCE;
 
             const pr = (await github.rest.pulls.get({
               owner: context.repo.owner, repo: context.repo.repo,
@@ -800,6 +834,18 @@ jobs:
                 body: `⚠️ **Deferred review skipped — PR was updated.**\n\nThe review session was recorded against commit \`${headSha}\`, but the PR head is now \`${pr.head.sha}\`. The review may be outdated. Please trigger a new review for the current commit.`,
               });
               core.info(`SHA mismatch: marker=${headSha}, current=${pr.head.sha} — skipping deferred post`);
+              return;
+            }
+
+            // FAILED session: post diagnostic comment, not a formal review.
+            // Preserve session/SHA for recovery; don't consume the deferred marker.
+            if (sessionState === 'FAILED') {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: prNumber,
+                body: `❌ **Jules review session failed.**\n\nSession: \`${sessionResource}\`\nCommit: \`${headSha}\`\n\nThe session did not complete successfully. Raw output (for evidence):\n\n<details><summary>Session output</summary>\n\n${reviewText.slice(0, 4000)}\n\n</details>\n\nThe deferred review marker is preserved so recovery remains possible.`,
+              });
+              core.info('Session FAILED — posted diagnostic comment, deferred marker preserved');
               return;
             }
 
@@ -890,8 +936,8 @@ jobs:
             // Post the review
             const body = `<!-- jules-pr-reviewer -->\n<!-- head_sha: ${headSha} -->\n<!-- jules-deferred-review-posted -->\n\n${mainReview}`;
             let reviewEvent = 'COMMENT';
-            if (verdict === 'approve') reviewEvent = 'APPROVE';
-            else if (verdict === 'block') reviewEvent = 'REQUEST_CHANGES';
+            if (sessionState === 'COMPLETED' && verdict === 'approve') reviewEvent = 'APPROVE';
+            else if (sessionState === 'COMPLETED' && verdict === 'block') reviewEvent = 'REQUEST_CHANGES';
 
             try {
               const reviewParams = {
@@ -903,11 +949,16 @@ jobs:
               await github.rest.pulls.createReview(reviewParams);
               core.info(`Deferred review posted with ${comments.length} per-line comments`);
             } catch (e) {
-              core.warning(`PR review failed, falling back to batch comment: ${e.message}`);
-              await github.rest.issues.createComment({
-                owner: context.repo.owner, repo: context.repo.repo,
-                issue_number: prNumber, body,
-              });
+              core.warning(`Deferred review failed (${reviewEvent}), falling back to batch comment: ${e.message}`);
+              const fallbackBody = `<!-- jules-pr-reviewer -->\n<!-- head_sha: ${headSha} -->\n<!-- jules-deferred-review-posted -->\n<!-- intended_review_event: ${reviewEvent} -->\n<!-- review_post_failed: ${e.message.slice(0, 200)} -->\n\n${mainReview}`;
+              try {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner, repo: context.repo.repo,
+                  issue_number: prNumber, body: fallbackBody,
+                });
+              } catch (e2) {
+                core.error(`Both createReview and fallback createComment failed: ${e2.message}`);
+              }
             }
 
             if (walkthroughText) {

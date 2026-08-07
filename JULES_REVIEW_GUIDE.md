@@ -20,9 +20,14 @@ documents remain in `docs/` so there is one maintained copy of each authority.
 ### GitHub Actions
 
 The canonical set is 11 workflows plus the shared classifier under `.github/`. It is
-not ready for broad distribution while W-09, W-10, W-12, W-13, W-15, target-policy
-integration, and live smoke evidence remain open. Do not use target parity as a reason
-to copy an unvalidated canonical revision.
+not ready for broad distribution while W-09, W-10, W-12, W-13, W-15, W-18,
+target-policy integration, and live smoke evidence remain open. W-16 and W-17 are
+implemented and audited but still need regression tests and live smoke evidence.
+Do not use target parity as a reason to copy an unvalidated canonical revision.
+
+A repo-specific recovery and migration strategy with per-repository analysis,
+session-creation quota budgeting, and never-close guardrails is in
+[`docs/forensics/REPO_SPECIFIC_STRATEGY_2026-08-06.md`](docs/forensics/REPO_SPECIFIC_STRATEGY_2026-08-06.md).
 
 ### REST operations and archives
 
