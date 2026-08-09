@@ -1,6 +1,28 @@
 ---
 name: jules-cli
-description: Execute Jules CLI commands for creating, monitoring, and managing AI coding sessions. Use when the user asks about Jules CLI, creating Jules sessions, checking Jules status, or working with Google's Jules AI coding agent. Trigger keywords: jules, jules new, jules remote, jules auth.
+description: "Execute Jules CLI commands for creating, monitoring, and managing AI coding sessions. Use when the user asks about Jules CLI, creating Jules sessions, checking Jules status, or working with Google's Jules AI coding agent."
+category: [ai, cli, tooling]
+type: [guide, cli]
+tags: [jules, cli, commands, sessions, monitoring, coding-agent, google]
+trigger_keywords:
+  - jules cli
+  - jules new
+  - jules remote
+  - jules auth
+  - jules session
+  - jules status
+  - jules commands
+dependencies: [jules-api]
+usage_context:
+  - when: "user wants to use Jules CLI"
+    confidence: high
+  - when: "creating/managing Jules sessions"
+    confidence: high
+  - when: "checking Jules status"
+    confidence: high
+complexity: simple
+frequency: occasional
+auto_load: context
 ---
 
 # Jules CLI Commands

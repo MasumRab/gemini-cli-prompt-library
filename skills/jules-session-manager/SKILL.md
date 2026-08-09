@@ -1,22 +1,31 @@
 ---
 name: jules-session-manager
-description: Manage Google Jules AI sessions - list, inspect activities, send messages, and track PR tasks with integrated session-PR correlation
-triggers:
+description: "Manage Google Jules AI sessions - list, inspect activities, send messages, and track PR tasks with integrated session-PR correlation"
+category: [ai, session-management, pr-tracking]
+type: [guide, tool]
+tags: [jules, sessions, management, pr-tracking, activities, correlation, triage]
+trigger_keywords:
   - jules session
   - jules api
   - inspect jules sessions
   - session-pr mapping
   - /jules-triage
-allowed-tools:
-  - terminal
-  - python3
-  - tools/pr/session_pr_triage.py
-  - tools/utils/auth_manager.py
-  - tools/utils/pre_flight_check.sh
-  - tools/api/jules_api_client.py
+  - jules session manager
 dependencies:
-  - PyGithub
-  - python-dotenv
+  - jules-api
+  - jules-cli
+usage_context:
+  - when: "managing Jules sessions"
+    confidence: high
+  - when: "inspecting session activities"
+    confidence: high
+  - when: "PR-task correlation"
+    confidence: high
+  - when: "jules triage"
+    confidence: high
+complexity: moderate
+frequency: frequent
+auto_load: context
 ---
 
 # Jules Session Manager

@@ -1,6 +1,26 @@
 ---
 name: jules-scheduling
-description: Jules task scheduling and orchestration — multi-task workflows, parallel execution, phase dependencies, and coordination. Use when planning multi-step Jules projects, creating task schedules, or managing complex Jules workflows. Trigger keywords: jules schedule, jules orchestration, jules tasks, jules parallel.
+description: "Jules task scheduling and orchestration — multi-task workflows, parallel execution, phase dependencies, and coordination. Use when planning multi-step Jules projects, creating task schedules, or managing complex Jules workflows."
+category: [ai, scheduling, orchestration]
+type: [guide, workflow]
+tags: [jules, scheduling, orchestration, workflows, parallel, tasks, coordination]
+trigger_keywords:
+  - jules schedule
+  - jules orchestration
+  - jules tasks
+  - jules parallel
+  - multi-task workflow
+dependencies: [jules-cli, jules-api]
+usage_context:
+  - when: "planning multi-step Jules projects"
+    confidence: high
+  - when: "creating task schedules"
+    confidence: high
+  - when: "managing complex workflows"
+    confidence: high
+complexity: moderate
+frequency: occasional
+auto_load: context
 ---
 
 # Jules Task Scheduling

@@ -1,6 +1,25 @@
 ---
 name: jules-workflows
-description: Common Jules workflow patterns for automated tasks, interactive sessions, and analysis-driven follow-ups. Use when planning Jules sessions, setting up automated workflows, or responding to completed Jules work. Trigger keywords: jules workflow, jules automation, jules follow-up.
+description: "Common Jules workflow patterns for automated tasks, interactive sessions, and analysis-driven follow-ups. Use when planning Jules sessions, setting up automated workflows, or responding to completed Jules work."
+category: [ai, workflows, automation]
+type: [guide, workflow]
+tags: [jules, workflows, automation, patterns, sessions, follow-up]
+trigger_keywords:
+  - jules workflow
+  - jules automation
+  - jules follow-up
+  - workflow patterns
+dependencies: [jules-scheduling, jules-sessions]
+usage_context:
+  - when: "planning Jules sessions"
+    confidence: high
+  - when: "setting up automated workflows"
+    confidence: high
+  - when: "responding to completed work"
+    confidence: high
+complexity: moderate
+frequency: occasional
+auto_load: context
 ---
 
 # Jules Workflows

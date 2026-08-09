@@ -1,23 +1,29 @@
 ---
 name: wrapup-session
-description: Generate session summary reports and wrap-up documentation with QA status - integrated with new architectural framework
-triggers:
+description: "Generate session summary reports and wrap-up documentation with QA status - integrated with new architectural framework"
+category: [ai, documentation, reporting]
+type: [guide, tool]
+tags: [wrapup, sessions, summaries, reporting, qa, documentation]
+trigger_keywords:
   - wrapup
   - session summary
   - /wrapup
   - generate report
   - session-pr correlation
-allowed-tools:
-  - terminal
-  - python3
-  - jq
-  - gh
-  - tools/utils/auth_manager.py
-  - tools/utils/pre_flight_check.sh
-  - tools/pr/session_pr_triage.py
+  - wrapup session
 dependencies:
-  - PyGithub
-  - python-dotenv
+  - jules-sessions
+  - jules-session-manager
+usage_context:
+  - when: "generating session summaries"
+    confidence: high
+  - when: "creating wrap-up documentation"
+    confidence: high
+  - when: "QA status reporting"
+    confidence: high
+complexity: simple
+frequency: occasional
+auto_load: context
 ---
 
 # Wrapup Session
