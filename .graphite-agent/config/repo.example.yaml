@@ -1,0 +1,38 @@
+repo:
+  name: auto
+  mode: local_only
+
+analysis:
+  include_remote_branches: true
+  include_local_branches: true
+  include_pr_metadata: auto
+  default_base_strategy: discover
+
+roots:
+  configured: []
+  discover: true
+
+generated_files:
+  patterns:
+    - "dist/**"
+    - "build/**"
+    - "*.generated.*"
+    - "*.lock"
+  treat_as_replay_risk: true
+
+ignore_paths:
+  - ".git/**"
+  - ".venv/**"
+  - "node_modules/**"
+
+replay:
+  large_commit_file_threshold: 20
+  large_commit_line_threshold: 800
+  detect_active_rebase: true
+  detect_conflict_markers: true
+  detect_delete_modify: true
+  detect_both_modified: true
+
+execution:
+  default_mode: analyzer_only
+  require_explicit_approval: true

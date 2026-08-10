@@ -1,0 +1,16 @@
+{
+  "required_fields": [
+    "run_id",
+    "summary",
+    "repository_state",
+    "conflicts",
+    "commit_risks",
+    "generated_file_risks",
+    "recommendations"
+  ],
+  "summary_required_fields": [
+    "overall_risk",
+    "execution_allowed",
+    "primary_reason"
+  ]
+}

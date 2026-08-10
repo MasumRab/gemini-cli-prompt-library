@@ -1,0 +1,8 @@
+generated_files:
+  patterns:
+    - "dist/**"
+    - "build/**"
+    - "*.generated.*"
+    - "*.lock"
+    - "package-lock.json"
+    - "commands_manifest.json"

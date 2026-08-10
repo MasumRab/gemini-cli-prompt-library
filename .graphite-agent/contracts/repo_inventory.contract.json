@@ -1,0 +1,17 @@
+{
+  "required_fields": [
+    "run_id",
+    "repo",
+    "state",
+    "branches",
+    "targets",
+    "pr_metadata"
+  ],
+  "repo_required_fields": ["path", "git_root", "current_branch", "is_dirty"],
+  "state_required_fields": [
+    "active_rebase",
+    "active_merge",
+    "active_cherry_pick",
+    "conflicted_files"
+  ]
+}

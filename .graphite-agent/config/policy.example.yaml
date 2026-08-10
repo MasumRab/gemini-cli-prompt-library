@@ -1,0 +1,11 @@
+execution:
+  default_mode: analyzer_only
+  require_explicit_approval: true
+
+validation:
+  block_on_active_rebase: true
+  block_on_active_merge: true
+  block_on_active_cherry_pick: true
+  block_on_conflicted_files: true
+  block_on_conflict_markers: true
+  block_on_large_mixed_commits: true
