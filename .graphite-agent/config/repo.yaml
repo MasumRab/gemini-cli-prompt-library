@@ -1,0 +1,95 @@
+# Graphite Agent V8 Configuration
+# Active configuration for gemini-cli-prompt-library repository
+
+repo:
+  name: gemini-cli-prompt-library
+  mode: local_only  # Use 'full' for GitHub integration
+  default_branch: main
+  description: "Gemini CLI Prompt Library - Curated prompts for development tasks"
+
+roots:
+  configured:
+    - main
+  discover: true
+  max_depth: 10
+  allow_auto_discovery: true
+
+generated_files:
+  patterns:
+    - "dist/**"
+    - "build/**"
+    - "*.generated.*"
+    - "*.lock"
+    - "package-lock.json"
+    - "commands_manifest.json"
+    - ".pytest_cache/**"
+    - "__pycache__/**"
+    - "*.pyc"
+    - ".mypy_cache/**"
+    - ".hypothesis/**"
+  treat_as_replay_risk: true
+  exclude_from_analysis: true
+
+execution:
+  default_mode: analyzer_only
+  require_explicit_approval: true
+  dry_run_default: true
+  max_concurrent_operations: 1
+  timeout_seconds: 3600
+  
+validation:
+  check_staleness: true
+  idempotency_verify: true
+  require_replay_validation: true
+  staleness_threshold_seconds: 300  # 5 minutes
+
+logging:
+  level: INFO
+  directory: .graphite-agent/outputs/logs
+  retention_days: 30
+  max_file_size_mb: 10
+
+# Target discovery scoring weights
+target_scoring:
+  origin_head: 100
+  pr_base_frequency: 15
+  max_pr_factor: 60
+  ancestry_depth: 10
+  max_ancestry: 50
+  semantic_match: 30
+  proximity: 20
+  short_lived_penalty: -80
+  
+  # Confidence thresholds
+  high_confidence: 85
+  medium_confidence: 50
+
+# Replay risk settings
+replay_risk:
+  check_merge_conflicts: true
+  check_rebase_active: true
+  check_cherry_picks: true
+  check_large_commits: true
+  large_commit_threshold: 1000  # lines changed
+  
+# Safety gates
+gates:
+  replay_safety: true  # Block if replay risk is high
+  decision_projection: true  # Require decisions for execution
+  validation_staleness: true  # Block if inputs are stale
+  command_approval: true  # Require --approve for execution
+
+# Git settings
+git:
+  default_remote: origin
+  shallow_clone: false
+  fetch_depth: 0  # Full history
+
+# Pipeline stage timeouts (seconds)
+timeouts:
+  discover: 600
+  analyse: 1200
+  triage: 900
+  plan: 600
+  validate: 300
+  execute: 3600
