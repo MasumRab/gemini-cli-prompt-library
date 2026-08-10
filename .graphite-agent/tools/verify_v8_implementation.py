@@ -10,6 +10,19 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Import zip manager for zip-based validation
+try:
+    from lib.zip_manager import ZipManager
+except ImportError:
+    # Fallback imports for different execution contexts
+    try:
+        from tools.lib.zip_manager import ZipManager
+    except ImportError:
+        try:
+            from .lib.zip_manager import ZipManager
+        except ImportError:
+            ZipManager = None
+
 
 REQUIRED_TOOLS = [
     'semantic_inventory.py', 'ast_analyse.py', 'symbol_graph.py', 'reference_graph.py',
@@ -30,6 +43,21 @@ REQUIRED_LATEST_ARTIFACTS = [
 ]
 
 SEMANTIC_QUESTION_TYPES = ['api_change_intent', 'competing_symbol_change', 'generated_file_provenance']
+
+# V8 zip validation requirements
+V8_ZIP_REQUIREMENTS = {
+    'required_tools': [
+        '.graphite-agent/tools/semantic_inventory.py',
+        '.graphite-agent/tools/ast_analyse.py', 
+        '.graphite-agent/tools/symbol_graph.py',
+        '.graphite-agent/tools/reference_graph.py'
+    ],
+    'required_libs': [
+        '.graphite-agent/tools/lib/tree_sitter_adapter.py',
+        '.graphite-agent/tools/lib/ast_extractors.py',
+        '.graphite-agent/tools/lib/symbols.py'
+    ]
+}
 
 
 def check_file(path: Path, required=True) -> dict:
@@ -105,6 +133,88 @@ def check_semantic_questions() -> list:
     return results
 
 
+def check_zip_based_v8() -> list:
+    """Check V8 implementation using zip-based validation."""
+    checks = []
+    
+    if ZipManager is None:
+        checks.append({
+            'id': 'zip_manager_available',
+            'status': 'optional_missing',
+            'required': False,
+            'description': 'ZipManager not available for zip-based validation'
+        })
+        return checks
+    
+    try:
+        manager = ZipManager()
+        v8_zips = manager.find_v8_zips()
+        
+        if not v8_zips:
+            checks.append({
+                'id': 'v8_zip_files_exist',
+                'status': 'optional_missing',
+                'required': False,
+                'description': 'No V8 zip files found'
+            })
+            return checks
+        
+        # Check latest V8 zip
+        latest_v8 = manager.find_latest_v8_zip()
+        if latest_v8:
+            required_files = V8_ZIP_REQUIREMENTS['required_tools'] + V8_ZIP_REQUIREMENTS['required_libs']
+            valid, result = manager.validate_zip_contents(latest_v8, required_files)
+            
+            checks.append({
+                'id': 'v8_zip_validation',
+                'status': 'pass' if valid else 'fail',
+                'required': False,
+                'description': f'V8 zip validation for {latest_v8.name}',
+                'details': result
+            })
+            
+            if not valid and 'missing_files' in result:
+                for missing_file in result['missing_files']:
+                    checks.append({
+                        'id': f'v8_zip_missing_{missing_file.replace("/", "_").replace(".", "_")}',
+                        'status': 'fail',
+                        'required': False,
+                        'description': f'Missing {missing_file} in {latest_v8.name}'
+                    })
+                    
+        # Check that we can extract and validate
+        for v8_zip in v8_zips[:3]:  # Check first 3 V8 zips
+            try:
+                zip_info = manager.get_zip_info(v8_zip)
+                checks.append({
+                    'id': f'v8_zip_info_{v8_zip.name.replace(".", "_")}',
+                    'status': 'pass' if zip_info.get('valid', False) else 'fail',
+                    'required': False,
+                    'description': f'Zip info for {v8_zip.name}',
+                    'details': {
+                        'size': zip_info.get('size', 0),
+                        'file_count': len(zip_info.get('contents', []))
+                    }
+                })
+            except Exception as e:
+                checks.append({
+                    'id': f'v8_zip_info_{v8_zip.name.replace(".", "_")}',
+                    'status': 'error',
+                    'required': False,
+                    'description': f'Error getting info for {v8_zip.name}: {str(e)}'
+                })
+            
+    except Exception as e:
+        checks.append({
+            'id': 'v8_zip_check_error',
+            'status': 'error',
+            'required': False,
+            'description': f'Error checking V8 zips: {str(e)}'
+        })
+    
+    return checks
+
+
 def main():
     """Run V8 implementation verification."""
     repo = Path('.').resolve()
@@ -140,6 +250,16 @@ def main():
         check = check_file(lib_path, required=False)
         checks.append(check)
         print(f"  {check['status']}: {check['id']}")
+    
+    # Check zip-based V8 validation
+    print("\n📦 Checking V8 zip-based validation...")
+    zip_checks = check_zip_based_v8()
+    checks.extend(zip_checks)
+    for check in zip_checks:
+        if 'details' in check and isinstance(check['details'], dict):
+            print(f"  {check['status']}: {check['id']} - {check['description']}")
+        else:
+            print(f"  {check['status']}: {check['id']}")
     
     # Run semantic tools
     print("\n⚡ Running semantic tools...")
