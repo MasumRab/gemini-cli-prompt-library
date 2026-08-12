@@ -333,3 +333,28 @@ grep "prompt_type:" references/sent_responses.md | sort | uniq -c
 - **Session**: 16314414237181869537 (PR #571) | **Type**: guidance | **Prompt**: Rebase or confirm close
 
 **Total: 28 messages sent across 3 repos (EmailIntelligence, kaggle-notebooks, gemini-fullstack)**
+
+### Reopen Batch (2026-08-13, continued)
+
+Reopened sessions with open PRs or unfinished work:
+
+- **Session**: 15863163327149061241 (PR #437) | **Type**: reopen | **Prompt**: Rebase against scientific, resolve conflicts
+- **Session**: 8364650927851285109 (PR #521) | **Type**: reopen | **Prompt**: Rebase against scientific, resolve conflicts
+- **Session**: 7592875515078415283 (PR #535) | **Type**: reopen | **Prompt**: Rebase against scientific, resolve conflicts
+- **Session**: 16320746218997740002 (PR #663) | **Type**: reopen | **Prompt**: Rebase, check if JWT fix still needed
+- **Session**: 11122169390008224115 (PR #730) | **Type**: reopen | **Prompt**: Push CI fixes to PR branch
+- **Session**: 15008828426973856885 | **Type**: reopen | **Prompt**: Retry code review
+- **Session**: 5938780760607407206 | **Type**: reopen | **Prompt**: Retry code review
+- **Session**: 8294985337104762975 | **Type**: reopen | **Prompt**: Retry code review
+- **Session**: 13005011563799472129 | **Type**: reopen | **Prompt**: Retry CI fix, diagnose environment
+- **Session**: 9164742845732374282 | **Type**: reopen | **Prompt**: Retry scientific CI fix
+- **Session**: 8371048452105557519 | **Type**: reopen | **Prompt**: Retry kaggle kernel execution
+- **Session**: 17857204272766840681 (PR #487) | **Type**: reopen | **Prompt**: Rebase or close
+- **Session**: 4710008747613819117 (PR #489) | **Type**: reopen | **Prompt**: Rebase or close
+- **Session**: 9033653426873037468 (PR #494) | **Type**: reopen | **Prompt**: Rebase or close
+- **Session**: 654824856418808212 (PR #523) | **Type**: reopen | **Prompt**: Rebase or close
+- **Session**: 16314414237181869537 (PR #571) | **Type**: reopen | **Prompt**: Rebase or close
+- **Session**: 125717287297355188 (PR #464) | **Type**: reopen | **Prompt**: Rebase or close
+
+**Reopen batch: 17 messages (3 retried after rate limit)**
+**Grand total this session: 45 messages across 3 repos**
