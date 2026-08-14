@@ -551,3 +551,169 @@ indicating gaps in session tracking coverage.
   closed.
 - **2 already-open high line-count PRs** (#375, #376 in gemini-fullstack) need
   monitoring but were not reopened.
+
+## Painful Commit Investigation — Detailed Analysis
+
+This section investigates the merge commits and tangled history in the four PRs
+flagged for squash-and-rebase. Each PR's commits were examined at the file level
+to separate the actual fix from the noise.
+
+### PR #738 — 28 commits, 12 merge commits (React.memo for EmailList)
+
+**Actual fix:** 2 commits, 11 lines total
+- `fae82cbe6829`: Added `React.memo` wrapper to `email-list.tsx` (+6/-2, 2 files)
+- `bf91f82da075`: Refined the `React.memo` wrapper (+3/-3, 1 file)
+
+**The other 26 commits contain:**
+
+| Category | Commits | Lines | What it is |
+| --- | --- | --- | --- |
+| Unrelated features | 4 | ~4,156 | Jules sessions README (+258), 5 Jules skill packages (+1,408), branch health CLI tools (+1,269), branch unification docs (+601/-1,625) |
+| Unrelated infra | 4 | ~1,446 | `.taskmaster` submodule (+87), submodule update (+246), CI workflow standardization (+104), CI threshold relaxation + `launch.py.bak` file (+1,887 — includes a 1,625-line `.bak` file committed to the repo) |
+| Unrelated dependency changes | 1 | ~3,149 | Dependency vulnerability fixes — wholesale `package-lock.json` rewrite (+1,009/-2,140) |
+| CI fix sprawl | 2 | ~1,195 | Circular import fixes that added **18 `fix_*.py` one-off scripts** to the repo root (`fix_ai_engine.py`, `fix_ai_engine2.py`, `fix_audit_logger.py`, `fix_audit_logger2.py`, `fix_auth.py`, `fix_db_source.py`, `fix_factory.py`, etc.) + 300 lines of `logs/performance_metrics.jsonl` committed |
+| Merge conflict resolution | 10 | ~-1,493 | 10 merge commits that resolved `<<<<<<< HEAD` / `>>>>>>> scientific` conflict markers across `src/main.py`, `src/core/`, `src/core/data/`, backend routes, tests, docs, and setup files. These commits **delete conflict markers** that should never have been committed |
+| Post-merge cleanup | 2 | ~-513 | `cbe3bafbf3c0`: removed dead code from "keep-both-sides" merge resolution (−156 lines); `c5dbf0be0370`: restored constructors that were accidentally removed during shadow-definition cleanup (+63 lines) |
+| Shadow definition removal | 1 | ~-575 | `b2196842ab86`: removed 60 duplicate/shadow definitions created by a "keep-both-sides" merge resolution strategy — 24 files, 569 net lines removed |
+
+**Root cause:** This branch was used as a general-purpose working branch across
+multiple sessions and agents. It accumulated features (Jules skills, CLI tools),
+infrastructure changes (submodules, CI config), and then had to be reconciled
+with `main` via 10 merge commits that each resolved conflict markers in a
+different subsystem. The actual React.memo fix is 11 lines buried at commits 24
+and 28.
+
+**Verdict:** Squash to a single commit containing only the `email-list.tsx`
+change. Everything else is either already on main, unrelated, or should be a
+separate PR.
+
+---
+
+### PR #734 — 100 commits, 16 merge commits (Sentinel: Security Headers + CORS)
+
+**Actual fix:** The security headers middleware in `src/core/middleware.py` and
+CORS configuration changes — approximately 50-100 lines. These are buried
+somewhere in 100 commits.
+
+**The 100 commits contain:**
+
+| Category | Commit count | Representative content |
+| --- | --- | --- |
+| Merge conflict resolutions | 16 | Including a 67-file merge (+19,371/-1,041), a 132-file merge (+14,839/-2,043), a 593-file merge (+533,088 lines) that was immediately reverted (−533,088), and a 112-file merge (+18,806/-687) |
+| Orchestration tooling | ~35 | Git hook scripts (`disable-hooks.sh`, `enable-hooks.sh`), stash management tools, branch sync scripts, context profiles |
+| Documentation | ~20 | IDE agent distribution plans, taskmaster isolation docs, hook safety docs, branch-agent guidelines, stash resolution docs |
+| CI configuration | ~5 | Workflow standardization across branches, action version pinning |
+| `.taskmaster` submodule | ~5 | Worktree isolation, pre-commit hooks, gitignore management |
+| Stash management | ~10 | Interactive stash resolver scripts, stash todo managers, comprehensive READMEs for stash tools |
+| Reverts and cleanups | ~5 | Reverting merged PRs, cleaning `.gitignore` conflict markers, restoring deleted files |
+| Actual security fix | ~1-2 | SecurityHeadersMiddleware and CORS config — the stated purpose of the PR |
+
+**Most damaging commit:** `6c4eccd2be59` ("Merge pull request #195") brought in
+593 files and 533,088 insertions — this was a merge of a completely unrelated
+PR. It was immediately reverted by `a67970e6021b` (−533,088), but the revert
+itself is 593 files and creates a massive noise in the diff. The net effect is
+nearly zero, but the history is permanently polluted.
+
+**Root cause:** This branch was the `orchestration-tools` product branch, not a
+fix branch. It accumulated months of orchestration infrastructure work, hook
+management, stash tools, and documentation. The Sentinel security headers fix
+was committed on top of this accumulated history. The branch targets
+`orchestration-tools` (not `main`), so it may have been intentional to build on
+this base, but the PR scope is completely unmanageable.
+
+**Verdict:** Extract only the `src/core/middleware.py` security header additions
+and CORS config changes into a fresh branch targeting `main`. The 100 commits of
+orchestration tooling should be evaluated separately if needed.
+
+---
+
+### PR #742 — 6 commits, 1 merge commit (E402/F821 lint errors)
+
+**Actual fix:** 1 commit, ~20 lines
+- `0d1d67e35f24`: Added `# noqa: E402` to late imports in `main.py` and
+  `__init__.py`, imported `get_db` for startup/shutdown events
+
+**The other 5 commits contain:**
+
+| Commit | What it is | Lines |
+| --- | --- | --- |
+| `d762ec26d1fd` | Ensure data directory exists for `smart_filters.db` — 3-line fix in `smart_filters.py` | +3 |
+| `de484ae91fff` | **Merge commit** — merges `d762ec26` into `c0c0ef7`. This merge brings in the entire branch state including lock files | +12,807/-10,842 |
+| `9333653d05e6` | Same data directory fix applied to `smart_filter_manager.py` (duplicate of d762ec26) | +2 |
+| `dfb15612b177` | Resolve Python check errors — removes dead code from `email_routes.py` and `gradio_app.py` | +3/-17 |
+| `9d768c5b2103` | "Acknowledge obsolete task" — reverts the dead code removal from `dfb15612b177` | +17/-3 |
+
+**Key finding:** The merge commit `de484ae91fff` is where the massive lock file
+changes enter (12,807 additions / 10,842 deletions across 79 files). The actual
+lint fix and data directory fix together are ~25 lines. Commits `dfb15612b177`
+and `9d768c5b2103` cancel each other out (one removes code, the next adds it
+back).
+
+**Verdict:** Squash to a single commit with only the `# noqa: E402` additions.
+Close PR #703 as a duplicate (same branch).
+
+---
+
+### PR #650 — 6 commits, 1 merge commit (Sentinel: Missing Authentication)
+
+**Actual fix:** 4 near-identical commits, ~30 lines total
+- `0dba29d3f9af`, `86537bbb250c`, `73aa92890fcd`, `d800ac26b5ad`: All add
+  `Depends(get_current_active_user)` to `APIRouter` in `plugin_routes.py` and
+  `model_routes.py`, fix `argon2.exceptions` import in `auth.py`, and fix
+  `test_password_hashing.py` assertions
+
+Jules committed the same fix 4 times — each commit has an identical commit
+message. This suggests Jules was retrying the commit after failures or
+incorrectly re-applying changes.
+
+**The other 2 commits contain:**
+
+| Commit | What it is | Lines |
+| --- | --- | --- |
+| `1bf723828f74` | Restore `middleware.py` to resolve SonarCloud duplication and test errors | small |
+| `6d8402b3323c` | **Merge commit** — "Merge branch 'main' into jules-809845...". This merge's primary effect was deleting `setup/launch.py` (−806 lines). It also brought in the full `uv.lock` state from main (2,816 lines of lock file changes). | −806 + lock files |
+
+**Key finding:** The merge commit `6d8402b3323c` is responsible for the entire
+`uv.lock` diff (2,816 lines) and the deletion of `setup/launch.py` (806 lines).
+The actual security fix is ~30 lines across 3 files (`auth.py`,
+`model_routes.py`, `plugin_routes.py`). The 4 identical commits should be
+squashed to one.
+
+**Verdict:** Squash to a single commit with only the auth dependency additions
+and `argon2` import fix. Drop the merge and the `middleware.py` restoration.
+
+---
+
+## Summary: Actual Fixes vs Noise
+
+| PR | Total lines | Actual fix lines | Noise lines | Noise ratio | Merge commits |
+| --- | --- | --- | --- | --- | --- |
+| #738 | 11,084 | **11** (React.memo) | 11,073 | 99.9% | 12 |
+| #734 | 95,313 | **~80** (security headers) | 95,233 | 99.9% | 16 |
+| #742 | 23,646 | **~20** (noqa comments) | 23,626 | 99.9% | 1 |
+| #650 | 2,836 | **~30** (auth dependencies) | 2,806 | 98.9% | 1 |
+
+**The painful merge commits contain:**
+1. **Conflict marker removal** (PR #738): 10 merge commits that delete
+   `<<<<<<< HEAD` / `>>>>>>> scientific` markers — artifacts of merging a
+   branch with unresolved conflict markers committed
+2. **Shadow definition cleanup** (PR #738): 1 merge commit removing 60 duplicate
+   definitions created by a "keep-both-sides" merge strategy — a manual
+   conflict resolution approach that duplicated code
+3. **Unrelated PR merge + revert** (PR #734): A 593-file, 533K-line merge
+   immediately followed by its revert — zero net effect but massive history
+   pollution
+4. **Lock file import** (PR #742, #650): Merge commits that brought in the full
+   lock file state from main, adding thousands of lines
+5. **File deletion** (PR #650): Merge commit that deleted `setup/launch.py`
+   (806 lines) — unrelated to the auth fix
+6. **`.bak` file committed** (PR #738): `setup/launch.py.bak` (1,625 lines)
+   committed to the repo by a merge commit
+7. **One-off fix scripts** (PR #738): 18 `fix_*.py` scripts committed to the
+   repo root during a CI fix sprawl, never cleaned up
+
+All four PRs share the same pattern: Jules created the fix in 10-80 lines, then
+the branch accumulated unrelated work, was merged with main (or other branches)
+one or more times, and the merge commits brought in lock files, conflict
+markers, and unrelated changes. Squashing eliminates all of this and produces a
+clean commit with only the actual fix.
