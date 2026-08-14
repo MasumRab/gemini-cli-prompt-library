@@ -283,3 +283,78 @@ grep -B2 -A10 "session_id: 15863163327149061241" references/sent_responses.md
 # Count by type
 grep "prompt_type:" references/sent_responses.md | sort | uniq -c
 ```
+
+---
+
+## 2026-08-13 Batch: Refresh Stalled/Failed Sessions
+
+### Failed Code Review Sessions (EmailIntelligence, live API)
+- **Session**: 15008828426973856885 | **Type**: retry | **Prompt**: Status check, retry if relevant
+- **Session**: 5938780760607407206 | **Type**: retry | **Prompt**: Status check, retry if relevant
+- **Session**: 8294985337104762975 | **Type**: retry | **Prompt**: Status check, retry if relevant
+
+### Failed Session Tracking Sessions (EmailIntelligence)
+- **Session**: 10865630989900669675 | **Type**: close | **Prompt**: PR #660 closed, no action needed
+- **Session**: 13005011563799472129 | **Type**: retry | **Prompt**: Retry CI fix with focused scope
+- **Session**: 16320746218997740002 | **Type**: guidance | **Prompt**: PR #663 still open, check if fix needed post-#596
+- **Session**: 9164742845732374282 | **Type**: retry | **Prompt**: Retry scientific CI fix, diagnose environment
+
+### Awaiting Feedback Sessions (EmailIntelligence)
+- **Session**: 14823980629961743161 | **Type**: guidance | **Prompt**: Create PR or confirm if resolved by #719/#713
+- **Session**: 3620294950430015682 | **Type**: guidance | **Prompt**: Create PR or confirm if resolved by #719/#713
+- **Session**: 6003660157445494667 | **Type**: close | **Prompt**: Superseded by PR #735 (verify_model_safety)
+- **Session**: 14862791250094253007 | **Type**: close | **Prompt**: Security issues fixed by PRs #735/#696/#659/#600/#596
+- **Session**: 11122169390008224115 | **Type**: guidance | **Prompt**: PR #730 still open, push changes or confirm
+- **Session**: 2281891166145596786 | **Type**: guidance | **Prompt**: Security fixes applied, create PR for remaining or confirm
+- **Session**: 3921006696662628935 | **Type**: close | **Prompt**: PR #727 closed, no action needed
+
+### Kaggle Notebooks Sessions
+- **Session**: 3030477830221326431 | **Type**: approve | **Prompt**: Proceed with PR for regex pre-compile
+- **Session**: 13172420826211369022 | **Type**: guidance | **Prompt**: Proceed with PR for pipeline stubs
+- **Session**: 16638769467548151530 | **Type**: nudge | **Prompt**: Status update, describe blockers or continue
+- **Session**: 16994837303056291039 | **Type**: nudge | **Prompt**: Status update on test failures
+- **Session**: 3927471279591052912 | **Type**: nudge | **Prompt**: Proceed with static analysis handoff
+- **Session**: 7979893028704332984 | **Type**: guidance | **Prompt**: Proceed with absolute path replacement
+- **Session**: 8371048452105557519 | **Type**: retry | **Prompt**: Retry kaggle kernel execution
+
+### Other Sessions
+- **Session**: 7956689661359593335 | **Type**: nudge | **Prompt**: Status update on gemini-fullstack maintenance
+- **Session**: 14586978430582998057 | **Type**: close | **Prompt**: Confirm and close completed session
+
+### Scientific Branch PR Sessions (jules_sessions/)
+- **Session**: 15863163327149061241 (PR #437) | **Type**: guidance | **Prompt**: Rebase or confirm close
+- **Session**: 125717287297355188 (PR #464) | **Type**: guidance | **Prompt**: Rebase or confirm close
+- **Session**: 17857204272766840681 (PR #487) | **Type**: guidance | **Prompt**: Rebase or confirm close
+- **Session**: 4710008747613819117 (PR #489) | **Type**: guidance | **Prompt**: Rebase or confirm close
+- **Session**: 9033653426873037468 (PR #494) | **Type**: guidance | **Prompt**: Rebase or confirm close
+- **Session**: 8364650927851285109 (PR #521) | **Type**: guidance | **Prompt**: Rebase or confirm close
+- **Session**: 654824856418808212 (PR #523) | **Type**: guidance | **Prompt**: Rebase or confirm close
+- **Session**: 7592875515078415283 (PR #535) | **Type**: guidance | **Prompt**: Rebase or confirm close
+- **Session**: 16314414237181869537 (PR #571) | **Type**: guidance | **Prompt**: Rebase or confirm close
+
+**Total: 28 messages sent across 3 repos (EmailIntelligence, kaggle-notebooks, gemini-fullstack)**
+
+### Reopen Batch (2026-08-13, continued)
+
+Reopened sessions with open PRs or unfinished work:
+
+- **Session**: 15863163327149061241 (PR #437) | **Type**: reopen | **Prompt**: Rebase against scientific, resolve conflicts
+- **Session**: 8364650927851285109 (PR #521) | **Type**: reopen | **Prompt**: Rebase against scientific, resolve conflicts
+- **Session**: 7592875515078415283 (PR #535) | **Type**: reopen | **Prompt**: Rebase against scientific, resolve conflicts
+- **Session**: 16320746218997740002 (PR #663) | **Type**: reopen | **Prompt**: Rebase, check if JWT fix still needed
+- **Session**: 11122169390008224115 (PR #730) | **Type**: reopen | **Prompt**: Push CI fixes to PR branch
+- **Session**: 15008828426973856885 | **Type**: reopen | **Prompt**: Retry code review
+- **Session**: 5938780760607407206 | **Type**: reopen | **Prompt**: Retry code review
+- **Session**: 8294985337104762975 | **Type**: reopen | **Prompt**: Retry code review
+- **Session**: 13005011563799472129 | **Type**: reopen | **Prompt**: Retry CI fix, diagnose environment
+- **Session**: 9164742845732374282 | **Type**: reopen | **Prompt**: Retry scientific CI fix
+- **Session**: 8371048452105557519 | **Type**: reopen | **Prompt**: Retry kaggle kernel execution
+- **Session**: 17857204272766840681 (PR #487) | **Type**: reopen | **Prompt**: Rebase or close
+- **Session**: 4710008747613819117 (PR #489) | **Type**: reopen | **Prompt**: Rebase or close
+- **Session**: 9033653426873037468 (PR #494) | **Type**: reopen | **Prompt**: Rebase or close
+- **Session**: 654824856418808212 (PR #523) | **Type**: reopen | **Prompt**: Rebase or close
+- **Session**: 16314414237181869537 (PR #571) | **Type**: reopen | **Prompt**: Rebase or close
+- **Session**: 125717287297355188 (PR #464) | **Type**: reopen | **Prompt**: Rebase or close
+
+**Reopen batch: 17 messages (3 retried after rate limit)**
+**Grand total this session: 45 messages across 3 repos**

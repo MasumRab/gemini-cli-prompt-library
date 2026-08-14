@@ -1,6 +1,28 @@
 ---
 name: jules-sessions
-description: Analyze local Jules session JSON files to track PR status, completion state, and generate context-aware response messages for sessions needing action (approval, nudge, follow-up). Use when reviewing Jules work, responding to sessions, or checking what messages to send. Trigger keywords: jules session, jules pr, jules status, jules response, analyze jules, jules nudge.
+description: "Analyze local Jules session JSON files to track PR status, completion state, and generate context-aware response messages for sessions needing action (approval, nudge, follow-up). Use when reviewing Jules work, responding to sessions, or checking what messages to send."
+category: [ai, analysis, session-management]
+type: [guide, analysis]
+tags: [jules, sessions, analysis, pr-tracking, status, responses, nudge]
+trigger_keywords:
+  - jules session
+  - jules pr
+  - jules status
+  - jules response
+  - analyze jules
+  - jules nudge
+  - session analysis
+dependencies: [jules-session-manager]
+usage_context:
+  - when: "reviewing Jules work"
+    confidence: high
+  - when: "responding to sessions"
+    confidence: high
+  - when: "checking session status"
+    confidence: high
+complexity: moderate
+frequency: frequent
+auto_load: context
 ---
 
 # Jules Session Analysis

@@ -1,6 +1,27 @@
 ---
 name: jules-api
-description: Reference and guidance for using the Jules REST API (v1alpha) to create sessions, manage activities, and interact with Jules through code.
+description: "Reference and guidance for using the Jules REST API (v1alpha) to create sessions, manage activities, and interact with Jules through code."
+category: [ai, integration, api]
+type: [guide, reference]
+tags: [jules, api, rest, v1alpha, sessions, activities, integration, automation]
+trigger_keywords:
+  - jules api
+  - jules rest api
+  - create jules session
+  - jules activities
+  - jules integration
+  - jules automation
+dependencies: []
+usage_context:
+  - when: "user wants to use Jules API"
+    confidence: high
+  - when: "creating/managing Jules sessions"
+    confidence: high
+  - when: "Jules integration work"
+    confidence: high
+complexity: moderate
+frequency: occasional
+auto_load: context
 ---
 
 # Jules API Skill
