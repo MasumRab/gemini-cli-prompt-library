@@ -358,3 +358,20 @@ Reopened sessions with open PRs or unfinished work:
 
 **Reopen batch: 17 messages (3 retried after rate limit)**
 **Grand total this session: 45 messages across 3 repos**
+
+---
+
+## 2026-08-15 Batch: Latest PR Updates + CLI Session Status
+
+### New Sessions Discovered (8 new since last check)
+
+- **Session**: 1501238287897315088 | **Type**: guidance | **Prompt**: PR #788 React.memo ready to merge, close duplicate PRs #762/#738
+- **Session**: 4011484320208761877 | **Type**: retry | **Prompt**: PR #693 mega-PR with 100 files, split debouncing fix into clean PR
+- **Session**: 2506962712549882166 | **Type**: guidance | **Prompt**: PR #778 CI infra ready, verify launch.py feature completeness (1597→1241 lines)
+- **Session**: 3066004504936610335 | **Type**: retry | **Prompt**: PR #776 lodash CVE fix verified, recommend merge, retry review
+- **Session**: 13304122811068390240 | **Type**: guidance | **Prompt**: PR #776 ready to merge, close Dependabot #603 in favor of #776
+- **Session**: 15014477667741021080 | **Type**: nudge | **Prompt**: Status check on Linear MAS-121 resolution
+- **Session**: 13562239120519700863 | **Type**: guidance | **Prompt**: PR #778 is active PR (not #779/#782 which were closed), ready to merge
+- **Session**: 12998852914377637541 | **Type**: guidance | **Prompt**: PR #756 CLI stubs partial — 10/16 files still have stubs, safe as incremental progress
+
+**Total this batch: 8 messages sent**
