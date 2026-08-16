@@ -10,7 +10,7 @@
       "last_update": "2026-07-16T04:58:40Z",
       "repo": "MasumRab/EmailIntelligence",
       "key_issue": "CI failures fixed (eslint config mismatch, unused imports). Awaiting approval to create PR or continue performance optimization.",
-      "tracking_file": "14823980629961743161_bolt_perf_optimization.json",
+      "tracking_file": "2026/07/14823980629961743161_bolt_perf_optimization.json",
       "recommended_action": "send_guidance",
       "urgency": "high",
       "agent_type": "scheduled-performance"
@@ -22,7 +22,7 @@
       "last_update": "2026-07-15T23:03:51Z",
       "repo": "MasumRab/EmailIntelligence",
       "key_issue": "Fixed 4 failing CI checks (lint-only: unused imports/undefined names). Awaiting approval for PR.",
-      "tracking_file": "3620294950430015682_bolt_perf_optimization_2.json",
+      "tracking_file": "2026/07/3620294950430015682_bolt_perf_optimization_2.json",
       "recommended_action": "send_guidance",
       "urgency": "high",
       "agent_type": "scheduled-performance"
@@ -34,7 +34,7 @@
       "last_update": "2026-07-15T20:55:09Z",
       "repo": "MasumRab/EmailIntelligence",
       "key_issue": "Fixed insecure deserialization (joblib.load) but fix restricts custom model loading paths. Code review flagged this. Need decision on approach.",
-      "tracking_file": "6003660157445494667_sentinel_security_patching.json",
+      "tracking_file": "2026/07/6003660157445494667_sentinel_security_patching.json",
       "recommended_action": "send_guidance",
       "urgency": "high",
       "agent_type": "scheduled-security"
@@ -46,7 +46,7 @@
       "last_update": "2026-07-15T16:59:48Z",
       "repo": "MasumRab/EmailIntelligence",
       "key_issue": "Security scans (bandit, semgrep) clean - no critical/high issues found. Agent needs direction on security focus area.",
-      "tracking_file": "14862791250094253007_sentinel_security_remediation.json",
+      "tracking_file": "2026/07/14862791250094253007_sentinel_security_remediation.json",
       "recommended_action": "send_guidance",
       "urgency": "medium",
       "agent_type": "scheduled-security"
@@ -58,7 +58,7 @@
       "last_update": "2026-07-15T16:36:01Z",
       "repo": "MasumRab/EmailIntelligence",
       "key_issue": "Fixed CI failures in PR #730 (imports, undefined exceptions, model manager errors). Awaiting PR creation approval.",
-      "tracking_file": "11122169390008224115_ci_fix_pr730.json",
+      "tracking_file": "2026/07/11122169390008224115_ci_fix_pr730.json",
       "recommended_action": "send_guidance",
       "urgency": "medium",
       "agent_type": "ci-fix"
@@ -70,7 +70,7 @@
       "last_update": "2026-04-17T17:01:39.817859Z",
       "repo": "MasumRab/EmailIntelligence",
       "key_issue": "Session failed. Check outputs for details.",
-      "tracking_file": "10865630989900669675_pr660.json",
+      "tracking_file": "2026/04/10865630989900669675_pr660.json",
       "recommended_action": "review_and_retry",
       "urgency": "high",
       "agent_type": "ci-fix",
@@ -85,7 +85,7 @@
       "last_update": "2026-04-21T15:25:29.494177Z",
       "repo": "MasumRab/EmailIntelligence",
       "key_issue": "Session failed. Check outputs for details.",
-      "tracking_file": "13005011563799472129_fix-failing-ci-checks-for-selected-pull.json",
+      "tracking_file": "2026/04/13005011563799472129_fix-failing-ci-checks-for-selected-pull.json",
       "recommended_action": "review_and_retry",
       "urgency": "high",
       "agent_type": "ci-fix"
@@ -97,7 +97,7 @@
       "last_update": "2026-04-23T17:01:57.468584Z",
       "repo": "MasumRab/kaggle-notebooks-analysis",
       "key_issue": "Title: Create and Verify Pipeline Script Stubs",
-      "tracking_file": "13172420826211369022_pr15.json",
+      "tracking_file": "2026/04/13172420826211369022_pr15.json",
       "recommended_action": "send_guidance",
       "urgency": "medium",
       "agent_type": "general",
@@ -112,7 +112,7 @@
       "last_update": "2026-04-23T17:38:11.932591Z",
       "repo": "MasumRab/kaggle-notebooks-analysis",
       "key_issue": "Session completed successfully.",
-      "tracking_file": "14586978430582998057_adjust-textfeature-pipeline-steps-in-sch.json",
+      "tracking_file": "2026/04/14586978430582998057_adjust-textfeature-pipeline-steps-in-sch.json",
       "recommended_action": "archive",
       "urgency": "medium",
       "agent_type": "general"
@@ -124,7 +124,7 @@
       "last_update": "2026-04-21T08:37:57.460450Z",
       "repo": "MasumRab/EmailIntelligence",
       "key_issue": "Session failed. Check outputs for details.",
-      "tracking_file": "16320746218997740002_pr663.json",
+      "tracking_file": "2026/04/16320746218997740002_pr663.json",
       "recommended_action": "review_and_retry",
       "urgency": "low",
       "agent_type": "scheduled-security",
@@ -139,7 +139,7 @@
       "last_update": "2026-04-23T19:25:18.159262Z",
       "repo": "MasumRab/kaggle-notebooks-analysis",
       "key_issue": "Title: Kaggle Notebook Deployment and Monitoring Workflow",
-      "tracking_file": "16638769467548151530_kaggle-notebook-deployment-and-monitorin.json",
+      "tracking_file": "2026/04/16638769467548151530_kaggle-notebook-deployment-and-monitorin.json",
       "recommended_action": "send_guidance",
       "urgency": "medium",
       "agent_type": "data-pipeline"
@@ -151,7 +151,7 @@
       "last_update": "2026-04-23T20:08:22.764664Z",
       "repo": "MasumRab/kaggle-notebooks-analysis",
       "key_issue": "Title: Resolve Non-Golden Test Failures and Environment Issues",
-      "tracking_file": "16994837303056291039_resolve-non-golden-test-failures-and-env.json",
+      "tracking_file": "2026/04/16994837303056291039_resolve-non-golden-test-failures-and-env.json",
       "recommended_action": "send_guidance",
       "urgency": "medium",
       "agent_type": "general"
@@ -163,7 +163,7 @@
       "last_update": "2026-04-17T03:25:54.091877Z",
       "repo": "MasumRab/EmailIntelligence",
       "key_issue": "Title: Sentinel: Autonomous Codebase Security Agent",
-      "tracking_file": "2281891166145596786_sentinel-autonomous-codebase-security-ag.json",
+      "tracking_file": "2026/04/2281891166145596786_sentinel-autonomous-codebase-security-ag.json",
       "recommended_action": "send_guidance",
       "urgency": "medium",
       "agent_type": "scheduled-security"
@@ -175,7 +175,7 @@
       "last_update": "2026-04-23T19:51:26.415697Z",
       "repo": "MasumRab/kaggle-notebooks-analysis",
       "key_issue": "Title: Data-Free Repository Maintenance and Static Analysis Handoff Prompts",
-      "tracking_file": "3927471279591052912_data-free-repository-maintenance-and-sta.json",
+      "tracking_file": "2026/04/3927471279591052912_data-free-repository-maintenance-and-sta.json",
       "recommended_action": "send_guidance",
       "urgency": "medium",
       "agent_type": "general"
@@ -187,7 +187,7 @@
       "last_update": "2026-04-23T07:47:41.952649Z",
       "repo": "Unknown",
       "key_issue": "Title: Autonomous Repository Maintenance Agent",
-      "tracking_file": "7956689661359593335_autonomous-repository-maintenance-agent.json",
+      "tracking_file": "2026/04/7956689661359593335_autonomous-repository-maintenance-agent.json",
       "recommended_action": "send_guidance",
       "urgency": "medium",
       "agent_type": "general"
@@ -199,7 +199,7 @@
       "last_update": "2026-04-23T17:08:50.453715Z",
       "repo": "MasumRab/kaggle-notebooks-analysis",
       "key_issue": "Title: Replace Absolute Paths with Repo-Relative Paths",
-      "tracking_file": "7979893028704332984_replace-absolute-paths-with-repo-relativ.json",
+      "tracking_file": "2026/04/7979893028704332984_replace-absolute-paths-with-repo-relativ.json",
       "recommended_action": "send_guidance",
       "urgency": "medium",
       "agent_type": "general"
@@ -211,7 +211,7 @@
       "last_update": "2026-04-23T17:04:41.655538Z",
       "repo": "MasumRab/kaggle-notebooks-analysis",
       "key_issue": "Session failed. Check outputs for details.",
-      "tracking_file": "8371048452105557519_automate-kaggle-kernel-execution-and-gol.json",
+      "tracking_file": "2026/04/8371048452105557519_automate-kaggle-kernel-execution-and-gol.json",
       "recommended_action": "review_and_retry",
       "urgency": "medium",
       "agent_type": "data-pipeline"
@@ -223,7 +223,7 @@
       "last_update": "2026-04-16T15:34:29.105210Z",
       "repo": "MasumRab/EmailIntelligence",
       "key_issue": "Session failed. Check outputs for details.",
-      "tracking_file": "9164742845732374282_fix-failing-ci-checks-for-scientific-bra.json",
+      "tracking_file": "2026/04/9164742845732374282_fix-failing-ci-checks-for-scientific-bra.json",
       "recommended_action": "review_and_retry",
       "urgency": "high",
       "agent_type": "ci-fix"
@@ -235,7 +235,7 @@
       "last_update": "2026-07-08T16:24:48Z",
       "repo": "MasumRab/EmailIntelligence",
       "key_issue": "Investigating PR #727 - E402 lint errors (imports not at top). Older session (12 days).",
-      "tracking_file": "3921006696662628935_ci_fix_pr727.json",
+      "tracking_file": "2026/07/3921006696662628935_ci_fix_pr727.json",
       "recommended_action": "investigate_or_close",
       "urgency": "low",
       "agent_type": "ci-fix"

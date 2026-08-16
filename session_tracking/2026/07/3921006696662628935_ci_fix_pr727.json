@@ -32,5 +32,12 @@
     "PR #727",
     "Python linting (E402)"
   ],
-  "tags": ["ci-fixes", "lint", "emailintelligence", "awaiting-approval", "older-session"]
+  "tags": [
+    "ci-fixes",
+    "lint",
+    "emailintelligence",
+    "awaiting-approval",
+    "older-session"
+  ],
+  "forensics_analysis_note": "For aggregated forensics analysis of sessions, see the migrated_forensics_data.json file in the docs/forensics/ directory."
 }
