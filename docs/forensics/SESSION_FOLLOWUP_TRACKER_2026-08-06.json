@@ -1,0 +1,4522 @@
+{
+  "generated_at": "2026-08-06T20:32:32.872283+00:00",
+  "total_sessions": 1355,
+  "state_counts": {
+    "COMPLETED": 996,
+    "FAILED": 343,
+    "IN_PROGRESS": 7,
+    "QUEUED": 2,
+    "AWAITING_USER_FEEDBACK": 6,
+    "UNKNOWN": 1
+  },
+  "actions_completed": {
+    "failed_session_followups_sent": [
+      {
+        "session_id": "12673670803420108442",
+        "state_before": "FAILED",
+        "state_after": "FAILED",
+        "message_sent": "The previous code review session failed. Please retry the review for PR #724. Focus on the npm dependency bump changes and provide your review findings.",
+        "pr": "MasumRab/EmailIntelligence#724",
+        "created": "2026-07-28",
+        "followup_sent": "2026-08-06T20:24",
+        "has_agent_messages": false,
+        "note": "No agent messages to recover. Session still FAILED after message."
+      },
+      {
+        "session_id": "7404018986702295062",
+        "state_before": "FAILED",
+        "state_after": "IN_PROGRESS",
+        "message_sent": "Please retry the failed task. Check git and gh CLI access and proceed with fixing PR #102.",
+        "pr": "MasumRab/kaggle-notebooks-analysis#102",
+        "created": "2026-07-27",
+        "followup_sent": "2026-08-06T20:21",
+        "has_agent_messages": true,
+        "agent_message_count": 4,
+        "note": "Session transitioned FAILED -> IN_PROGRESS after message. PR #102 is open with conflicts. Monitoring for new agent output."
+      },
+      {
+        "session_id": "5376590409304111007",
+        "state_before": "FAILED",
+        "state_after": "FAILED",
+        "message_sent": "The previous merge coordination session failed. Please retry the merge tree generation for open PRs in EmailIntelligence. Start from where you left off - you had completed Batch 1.",
+        "pr": "MasumRab/EmailIntelligence#730",
+        "created": "2026-07-08",
+        "followup_sent": "2026-08-06T20:25",
+        "has_agent_messages": true,
+        "agent_message_count": 2,
+        "note": "Session still FAILED after message. PR #730 is closed. Has gitPatch output (20KB) and PR #730 output."
+      }
+    ],
+    "recovered_review_comments_posted": [
+      {
+        "session_id": "407057180968158428",
+        "pr": "MasumRab/gemini-fullstack-langgraph-quickstart#380",
+        "pr_state": "closed",
+        "chars": 4488,
+        "posted": "2026-08-06"
+      },
+      {
+        "session_id": "15663117438426005859",
+        "pr": "MasumRab/kaggle-notebooks-analysis#72",
+        "pr_state": "closed",
+        "chars": 4398,
+        "posted": "2026-08-06"
+      },
+      {
+        "session_id": "2439836587492402728",
+        "pr": "MasumRab/EmailIntelligence#724",
+        "pr_state": "closed",
+        "chars": 358,
+        "posted": "2026-08-06"
+      },
+      {
+        "session_id": "17081540647053958394",
+        "pr": "MasumRab/EmailIntelligence#663",
+        "pr_state": "closed",
+        "chars": 1664,
+        "posted": "2026-08-06"
+      },
+      {
+        "session_id": "15395171181174401486",
+        "pr": "MasumRab/EmailIntelligence#662",
+        "pr_state": "closed",
+        "chars": 3601,
+        "posted": "2026-08-06"
+      },
+      {
+        "session_id": "12017438274060233457",
+        "pr": "MasumRab/EmailIntelligence#732",
+        "pr_state": "closed",
+        "chars": 510,
+        "posted": "2026-08-06"
+      },
+      {
+        "session_id": "13784688349893950295",
+        "pr": "MasumRab/gemini-fullstack-langgraph-quickstart#379",
+        "pr_state": "open",
+        "chars": 1439,
+        "posted": "2026-08-06"
+      },
+      {
+        "session_id": "15182315018848459082",
+        "pr": "MasumRab/EmailIntelligence#666",
+        "pr_state": "closed",
+        "chars": 5259,
+        "posted": "2026-08-06"
+      },
+      {
+        "session_id": "3971178889713665128",
+        "pr": "MasumRab/EmailIntelligence#665",
+        "pr_state": "closed",
+        "chars": 2557,
+        "posted": "2026-08-06"
+      },
+      {
+        "session_id": "2632364069348294557",
+        "pr": "MasumRab/EmailIntelligence#737",
+        "pr_state": "closed",
+        "chars": 6802,
+        "posted": "2026-08-06"
+      },
+      {
+        "session_id": "8360352952423786120",
+        "pr": "MasumRab/EmailIntelligence#736",
+        "pr_state": "closed",
+        "chars": 2557,
+        "posted": "2026-08-06"
+      },
+      {
+        "session_id": "347802861262204790",
+        "pr": "MasumRab/EmailIntelligence#733",
+        "pr_state": "closed",
+        "chars": 2014,
+        "posted": "2026-08-06"
+      }
+    ]
+  },
+  "pending_followup": {
+    "failed_sessions_not_yet_messaged": [
+      {
+        "session_id": "2088004130054247653",
+        "created": "2026-06-16",
+        "updated": "2026-07-28",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix failing CI checks in MasumRab/EmailIntelligence",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/712"
+        ],
+        "pr_num": "712",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14797958652014372092",
+        "created": "2026-06-04",
+        "updated": "2026-06-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Repository Maintenance and Cleanup Agent",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3736514888046636230",
+        "created": "2026-06-01",
+        "updated": "2026-06-27",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Jules REST API Client Upgrade and GitHub Interoperability",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4021773491556249026",
+        "created": "2026-05-30",
+        "updated": "2026-05-30",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Upgrade Jules REST API Client to Latest Documentation Specification",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16610982362272230087",
+        "created": "2026-05-29",
+        "updated": "2026-06-27",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "From Scripts to Services: A Layered Architecture for API and CLI Orchestration",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "18263686970900711382",
+        "created": "2026-05-29",
+        "updated": "2026-06-27",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Jules API Prompt Retrieval and Tools Verification",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10885500323633122676",
+        "created": "2026-05-26",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix failing CI for MasumRab/EmailIntelligence PRs",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/699"
+        ],
+        "pr_num": "699",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4179869875933521980",
+        "created": "2026-05-26",
+        "updated": "2026-05-26",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Branch Sanitization and Anti-Pattern Cleanup Protocol",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1514871084058990886",
+        "created": "2026-05-26",
+        "updated": "2026-05-29",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Jules API Prompt Retrieval and Script Verification",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11425562427132513634",
+        "created": "2026-05-26",
+        "updated": "2026-05-26",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Optimize Regex Performance in Forensics Loop",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "5348340040377993664",
+        "created": "2026-05-26",
+        "updated": "2026-05-26",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Refactor PIL Tests and Fix Broken Imports",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7192554046024828261",
+        "created": "2026-05-26",
+        "updated": "2026-05-26",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Address Review Feedback for Schema Bootstrap Refactoring",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13154297482591775324",
+        "created": "2026-05-26",
+        "updated": "2026-05-26",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Rebase Orchestrator Branch Cleanup Directive",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "6558055275744753712",
+        "created": "2026-05-22",
+        "updated": "2026-05-23",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Jules Failed Session Analysis and Prompt Recreation",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2362388763594963052",
+        "created": "2026-05-19",
+        "updated": "2026-05-23",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "PR #90 into #91 Consolidation and Quality Refactor",
+        "pr_urls": [],
+        "pr_num": "91",
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1618067056155335146",
+        "created": "2026-05-19",
+        "updated": "2026-05-23",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "PR #81: Rebase Orchestrator Branch Cleanup and Repair",
+        "pr_urls": [],
+        "pr_num": "81",
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10680519591823246444",
+        "created": "2026-05-19",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing CI Checks for MasumRab/EmailIntelligence",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/694"
+        ],
+        "pr_num": "694",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9428245771597118875",
+        "created": "2026-05-15",
+        "updated": "2026-05-20",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Update time series window size and feature count",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14524679377202940941",
+        "created": "2026-05-15",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Jules SonarQube API Integration",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/691"
+        ],
+        "pr_num": "691",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13742216318984033787",
+        "created": "2026-05-15",
+        "updated": "2026-05-20",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Kaggle Performance Audit: Winning Solutions & Workflow Optimization",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17284716988251515626",
+        "created": "2026-05-15",
+        "updated": "2026-05-20",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Kaggle Repository Tool Registry",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12242907898869531134",
+        "created": "2026-05-15",
+        "updated": "2026-05-20",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Kaggle Methodology Audit and Winning Strategy Roadmap",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13773663779447125022",
+        "created": "2026-05-15",
+        "updated": "2026-05-20",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Kaggle Notebook Analysis and Migration Agent Rules",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16753839092582531381",
+        "created": "2026-05-14",
+        "updated": "2026-07-30",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Autonomous Repository Maintenance and Cleanup Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/370"
+        ],
+        "pr_num": "370",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17314831057412251938",
+        "created": "2026-05-12",
+        "updated": "2026-07-29",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Automated PR CI Repair and Management",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/689"
+        ],
+        "pr_num": "689",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "899862534564244020",
+        "created": "2026-05-07",
+        "updated": "2026-07-30",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Autonomous Repository Maintenance and Cleanup Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/369"
+        ],
+        "pr_num": "369",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1187660136859994710",
+        "created": "2026-05-06",
+        "updated": "2026-05-15",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Automated CI Failure Resolution for EmailIntelligence PRs",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/688"
+        ],
+        "pr_num": "688",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8803610982851555196",
+        "created": "2026-04-30",
+        "updated": "2026-05-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "CLI-Consolidation Tooling Requirements Review",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/679"
+        ],
+        "pr_num": "679",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8631250892007985202",
+        "created": "2026-04-30",
+        "updated": "2026-07-30",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Autonomous Repository Maintenance and TODO Management Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/368"
+        ],
+        "pr_num": "368",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12241526996749142811",
+        "created": "2026-04-29",
+        "updated": "2026-05-24",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "Verify Tokenizer Vocabulary Size in Text Schema",
+        "pr_urls": [
+          "https://github.com/MasumRab/kaggle-notebooks-analysis/pull/57"
+        ],
+        "pr_num": "57",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15682446560131661605",
+        "created": "2026-04-22",
+        "updated": "2026-08-06",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security Hardening Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/665"
+        ],
+        "pr_num": "665",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11567873765075606709",
+        "created": "2026-04-21",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix failing CI for prioritized PR in MasumRab/EmailIntelligence",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/664"
+        ],
+        "pr_num": "664",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13005011563799472129",
+        "created": "2026-04-21",
+        "updated": "2026-04-21",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix failing CI checks for selected pull requests",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16320746218997740002",
+        "created": "2026-04-21",
+        "updated": "2026-08-06",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel \ud83d\udee1\ufe0f: Autonomous Security Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/663"
+        ],
+        "pr_num": "663",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "474940669257573315",
+        "created": "2026-04-19",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix CI Checks for EmailIntelligence Pull Requests",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/667"
+        ],
+        "pr_num": "667",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8016358531059558537",
+        "created": "2026-04-19",
+        "updated": "2026-08-06",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security & Vulnerability Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/666"
+        ],
+        "pr_num": "666",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15310599703825757849",
+        "created": "2026-04-18",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security & Vulnerability Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/661"
+        ],
+        "pr_num": "661",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10865630989900669675",
+        "created": "2026-04-17",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix failing CI checks in MasumRab/EmailIntelligence PRs",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/660"
+        ],
+        "pr_num": "660",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2281891166145596786",
+        "created": "2026-04-17",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Codebase Security Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/675"
+        ],
+        "pr_num": "675",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9164742845732374282",
+        "created": "2026-04-16",
+        "updated": "2026-04-16",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix failing CI checks for scientific branch PRs in EmailIntelligence",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4819412441763000548",
+        "created": "2026-04-16",
+        "updated": "2026-04-16",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing CI Checks in EmailIntelligence",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11806280539751524203",
+        "created": "2026-04-16",
+        "updated": "2026-04-24",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Deterministic Repository Maintenance and Cleanup Agent",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14535563393146852202",
+        "created": "2026-04-16",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/659"
+        ],
+        "pr_num": "659",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16572034054047473480",
+        "created": "2026-04-16",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Autonomous Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/658"
+        ],
+        "pr_num": "658",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "237124919842135197",
+        "created": "2026-04-15",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Autonomous Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/657"
+        ],
+        "pr_num": "657",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11982775895671121845",
+        "created": "2026-04-15",
+        "updated": "2026-07-23",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Hardening Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/656"
+        ],
+        "pr_num": "656",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16892506444325126380",
+        "created": "2026-04-15",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing CI Checks for EmailIntelligence Pull Requests",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/670"
+        ],
+        "pr_num": "670",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14223796116496687610",
+        "created": "2026-04-15",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security & Vulnerability Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/654"
+        ],
+        "pr_num": "654",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10074074019737754398",
+        "created": "2026-04-15",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/653"
+        ],
+        "pr_num": "653",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8231128269860105898",
+        "created": "2026-04-14",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/672"
+        ],
+        "pr_num": "672",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1953285154798479397",
+        "created": "2026-04-14",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing CI Checks for EmailIntelligence Pull Requests",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/655"
+        ],
+        "pr_num": "655",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17547299271318969829",
+        "created": "2026-04-14",
+        "updated": "2026-04-14",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Automated CI Repair and PR Review Workflow",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17538639473453725922",
+        "created": "2026-04-14",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security & Vulnerability Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/671"
+        ],
+        "pr_num": "671",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12679806066699207963",
+        "created": "2026-04-14",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/674"
+        ],
+        "pr_num": "674",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12798576168905647370",
+        "created": "2026-04-13",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Codebase Security & Vulnerability Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/652"
+        ],
+        "pr_num": "652",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9976353698363073761",
+        "created": "2026-04-13",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/648"
+        ],
+        "pr_num": "648",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13364391327843600411",
+        "created": "2026-04-13",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/647"
+        ],
+        "pr_num": "647",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8155304876034522533",
+        "created": "2026-04-13",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security-Focused Codebase Protection Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/646"
+        ],
+        "pr_num": "646",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9787173685158425816",
+        "created": "2026-04-12",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/637"
+        ],
+        "pr_num": "637",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "501417479112563725",
+        "created": "2026-04-12",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Automated CI Repair for EmailIntelligence PRs",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/640"
+        ],
+        "pr_num": "640",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3329550361238354756",
+        "created": "2026-04-12",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing CI Checks in MasumRab/EmailIntelligence PRs",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/638"
+        ],
+        "pr_num": "638",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14323196579621021860",
+        "created": "2026-04-12",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security-Focused Code Protection Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/636"
+        ],
+        "pr_num": "636",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "5656601079512900964",
+        "created": "2026-04-12",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/635"
+        ],
+        "pr_num": "635",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12020355510843090616",
+        "created": "2026-04-11",
+        "updated": "2026-07-28",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/634"
+        ],
+        "pr_num": "634",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "314162335015195357",
+        "created": "2026-04-11",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security-Focused Codebase Vulnerability Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/632"
+        ],
+        "pr_num": "632",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2308156640503755864",
+        "created": "2026-04-10",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel \ud83d\udee1\ufe0f: Autonomous Security Hardening Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/645"
+        ],
+        "pr_num": "645",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7831562456284511166",
+        "created": "2026-04-10",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing CI Checks in MasumRab/EmailIntelligence PRs",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/649"
+        ],
+        "pr_num": "649",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3108841316244190984",
+        "created": "2026-04-10",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/631"
+        ],
+        "pr_num": "631",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "450031598351769364",
+        "created": "2026-04-10",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Codebase Security Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/630"
+        ],
+        "pr_num": "630",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14540362026225469649",
+        "created": "2026-04-09",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "You are Sentinel \ud83d\udee1\ufe0f, a security-focused agent responsible for making the codebase safer by identifying and fixing exactl",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/642"
+        ],
+        "pr_num": "642",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14220203592363167967",
+        "created": "2026-04-09",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Automated CI Repair for EmailIntelligence Pull Requests",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/643"
+        ],
+        "pr_num": "643",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11315881698264364189",
+        "created": "2026-04-09",
+        "updated": "2026-04-13",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing CI in EmailIntelligence PRs",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8098457377596089277",
+        "created": "2026-04-09",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/650"
+        ],
+        "pr_num": "650",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3042306592230324145",
+        "created": "2026-04-09",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/629"
+        ],
+        "pr_num": "629",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17912463478864979564",
+        "created": "2026-04-08",
+        "updated": "2026-07-28",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/628"
+        ],
+        "pr_num": "628",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12679619644744086809",
+        "created": "2026-04-08",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/639"
+        ],
+        "pr_num": "639",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7692854003959057341",
+        "created": "2026-04-08",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/627"
+        ],
+        "pr_num": "627",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "5013138083547654050",
+        "created": "2026-04-07",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing CI and Review PRs in EmailIntelligence",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/626"
+        ],
+        "pr_num": "626",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "18083307284626523730",
+        "created": "2026-04-07",
+        "updated": "2026-04-07",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing CI on Scientific Branch PRs in EmailIntelligence",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8919410920181695339",
+        "created": "2026-04-07",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance-Obsessed Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/623"
+        ],
+        "pr_num": "623",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12754606951812768873",
+        "created": "2026-04-07",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Vulnerability Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/622"
+        ],
+        "pr_num": "622",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9416853960953674263",
+        "created": "2026-04-06",
+        "updated": "2026-04-06",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13369706404709841236",
+        "created": "2026-04-06",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Codebase Security Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/621"
+        ],
+        "pr_num": "621",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13249318558277900638",
+        "created": "2026-04-06",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel \ud83d\udee1\ufe0f: Autonomous Security Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/620"
+        ],
+        "pr_num": "620",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12706650364775836825",
+        "created": "2026-04-06",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing CI Checks for Open Pull Requests",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/641"
+        ],
+        "pr_num": "641",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2019152598300629437",
+        "created": "2026-04-06",
+        "updated": "2026-04-06",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix failing CI checks for EmailIntelligence PRs",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2140584468424237267",
+        "created": "2026-04-06",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security-Focused Codebase Guardian",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/644"
+        ],
+        "pr_num": "644",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "5814112027244730925",
+        "created": "2026-04-06",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/618"
+        ],
+        "pr_num": "618",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2474488982911118790",
+        "created": "2026-04-05",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Repair Failing CI Checks in EmailIntelligence PRs",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/617"
+        ],
+        "pr_num": "617",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4946642088847545950",
+        "created": "2026-04-05",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix failing CI checks in MasumRab/EmailIntelligence pull requests",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/616"
+        ],
+        "pr_num": "616",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8959520943282783781",
+        "created": "2026-04-05",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/614"
+        ],
+        "pr_num": "614",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3966060809404614253",
+        "created": "2026-04-05",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security-Focused Codebase Protection Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/613"
+        ],
+        "pr_num": "613",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14877540009260806442",
+        "created": "2026-04-04",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/610"
+        ],
+        "pr_num": "610",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3358543152461195241",
+        "created": "2026-04-04",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Codebase Security & Vulnerability Remediation",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/609"
+        ],
+        "pr_num": "609",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9316582264769296415",
+        "created": "2026-04-03",
+        "updated": "2026-04-03",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Repair Failing CI Checks in MasumRab/EmailIntelligence",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "446399527159945365",
+        "created": "2026-04-03",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Codebase Security Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/673"
+        ],
+        "pr_num": "673",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15057319115628707546",
+        "created": "2026-04-03",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "You are \"Sentinel\" \ud83d\udee1\ufe0f - a security-focused agent who protects the codebase from vulnerabilities and security risks. \n \nY",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/606"
+        ],
+        "pr_num": "606",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8006723200286707225",
+        "created": "2026-04-03",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "You are \"Sentinel\" \ud83d\udee1\ufe0f - a security-focused agent who protects the codebase from vulnerabilities and security risks. \n \nY",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/608"
+        ],
+        "pr_num": "608",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11171452089317330802",
+        "created": "2026-04-03",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 - Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/607"
+        ],
+        "pr_num": "607",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2847209926012702474",
+        "created": "2026-04-02",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel \ud83d\udee1\ufe0f: Autonomous Codebase Security Guardian",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/605"
+        ],
+        "pr_num": "605",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11214614300440604316",
+        "created": "2026-04-02",
+        "updated": "2026-04-02",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "You are working on Pull Requests in repository MasumRab/EmailIntelligence.\n\nSelect exactly one open pull request targeti",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4466363853499373166",
+        "created": "2026-04-02",
+        "updated": "2026-04-02",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "You are working on Pull Requests in repository MasumRab/EmailIntelligence.\n\nSelect exactly one open pull request targeti",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10038802447824932976",
+        "created": "2026-04-02",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security-Focused Code Protection Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/600"
+        ],
+        "pr_num": "600",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8520358591554843867",
+        "created": "2026-04-02",
+        "updated": "2026-04-02",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Autonomous Performance Optimization Agent",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16084049240313378501",
+        "created": "2026-04-01",
+        "updated": "2026-07-28",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/595"
+        ],
+        "pr_num": "595",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11053728609860372163",
+        "created": "2026-04-01",
+        "updated": "2026-04-23",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing PR CI Checks in MasumRab/EmailIntelligence",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/601"
+        ],
+        "pr_num": "601",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13984108449657640487",
+        "created": "2026-04-01",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Autonomous Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/594"
+        ],
+        "pr_num": "594",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "5059163550529109578",
+        "created": "2026-04-01",
+        "updated": "2026-05-01",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Codebase Security Agent",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9379951361616744672",
+        "created": "2026-03-31",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/593"
+        ],
+        "pr_num": "593",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12604864429983464687",
+        "created": "2026-03-31",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing CI Checks in EmailIntelligence Pull Requests",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/592"
+        ],
+        "pr_num": "592",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9736121976653288762",
+        "created": "2026-03-31",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Codebase Security Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/591"
+        ],
+        "pr_num": "591",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15512237253199194164",
+        "created": "2026-03-31",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/590"
+        ],
+        "pr_num": "590",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "240038953332671293",
+        "created": "2026-03-30",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/589"
+        ],
+        "pr_num": "589",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "176656685749812344",
+        "created": "2026-03-30",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security-Focused Codebase Guardian",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/596"
+        ],
+        "pr_num": "596",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17080630917374843345",
+        "created": "2026-03-30",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/597"
+        ],
+        "pr_num": "597",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16246116557128889789",
+        "created": "2026-03-30",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "CI Repair and PR Maintenance for EmailIntelligence",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/585"
+        ],
+        "pr_num": "585",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15817828327833890190",
+        "created": "2026-03-30",
+        "updated": "2026-03-30",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing CI in EmailIntelligence PRs",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8235919815413349963",
+        "created": "2026-03-30",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Codebase Security Guardian",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/583"
+        ],
+        "pr_num": "583",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "5380313799745612066",
+        "created": "2026-03-30",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Autonomous Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/584"
+        ],
+        "pr_num": "584",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4893894402315046894",
+        "created": "2026-03-29",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/581"
+        ],
+        "pr_num": "581",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12254347793198898246",
+        "created": "2026-03-29",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix failing CI checks for EmailIntelligence PRs",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/580"
+        ],
+        "pr_num": "580",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10502466804609748602",
+        "created": "2026-03-29",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/582"
+        ],
+        "pr_num": "582",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17093554810729107068",
+        "created": "2026-03-28",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "You are Sentinel \ud83d\udee1\ufe0f, a security-focused agent responsible for making the codebase safer by identifying and fixing exactl",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/579"
+        ],
+        "pr_num": "579",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8825342107962755172",
+        "created": "2026-03-28",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Automated CI Repair for EmailIntelligence Pull Requests",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/578"
+        ],
+        "pr_num": "578",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14866028949151004384",
+        "created": "2026-03-28",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 Performance Optimization Agent Persona",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/570"
+        ],
+        "pr_num": "570",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9840535869182617684",
+        "created": "2026-03-28",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel \ud83d\udee1\ufe0f: Security-Focused Autonomous Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/569"
+        ],
+        "pr_num": "569",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9595581368138401731",
+        "created": "2026-03-28",
+        "updated": "2026-07-27",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "[RESTART - PRIORITY] Fix the core logic errors identified in recent PR activity. ",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "71416683568953581",
+        "created": "2026-03-27",
+        "updated": "2026-07-27",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Automated CI Repair for EmailIntelligence Pull Requests",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16314414237181869537",
+        "created": "2026-03-27",
+        "updated": "2026-07-27",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing CI Checks for EmailIntelligence scientific PRs",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/571"
+        ],
+        "pr_num": "571",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17767275821537050104",
+        "created": "2026-03-27",
+        "updated": "2026-07-27",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing PR CI in EmailIntelligence",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1632179022360231273",
+        "created": "2026-03-27",
+        "updated": "2026-07-27",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/564"
+        ],
+        "pr_num": "564",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11524884843006392642",
+        "created": "2026-03-27",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security Vulnerability & Risk Mitigation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/563"
+        ],
+        "pr_num": "563",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2356798923414901247",
+        "created": "2026-03-26",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/560"
+        ],
+        "pr_num": "560",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16919069101989055443",
+        "created": "2026-03-26",
+        "updated": "2026-08-04",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Automated Pull Request CI Repair Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/565"
+        ],
+        "pr_num": "565",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7504676650025767662",
+        "created": "2026-03-26",
+        "updated": "2026-07-27",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix failing CI checks for scientific branch PRs in MasumRab/EmailIntelligence",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/568"
+        ],
+        "pr_num": "568",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2773016427995540587",
+        "created": "2026-03-26",
+        "updated": "2026-07-30",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Autonomous Repository Maintenance and Hygiene Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/356"
+        ],
+        "pr_num": "356",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "18392026273713110704",
+        "created": "2026-03-26",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Vulnerability & Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/552"
+        ],
+        "pr_num": "552",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4132952529411191411",
+        "created": "2026-03-26",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: The Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/551"
+        ],
+        "pr_num": "551",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15677120218954249242",
+        "created": "2026-03-25",
+        "updated": "2026-07-27",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix failing CI checks in MasumRab/EmailIntelligence PRs",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "549494581436167566",
+        "created": "2026-03-25",
+        "updated": "2026-07-27",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix Failing CI Checks for EmailIntelligence Pull Requests",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12051453820203235666",
+        "created": "2026-03-25",
+        "updated": "2026-07-27",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Fix failing CI checks for scientific PRs in EmailIntelligence",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/567"
+        ],
+        "pr_num": "567",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11867655261819744500",
+        "created": "2026-03-25",
+        "updated": "2026-07-27",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/576"
+        ],
+        "pr_num": "576",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3604705373427898679",
+        "created": "2026-03-25",
+        "updated": "2026-07-27",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Codebase Security & Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/561"
+        ],
+        "pr_num": "561",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10526275000213447420",
+        "created": "2026-03-24",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Improvement Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/548"
+        ],
+        "pr_num": "548",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8645133856938915124",
+        "created": "2026-03-24",
+        "updated": "2026-04-13",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "PRIORITY PR TASK: #286",
+        "pr_urls": [],
+        "pr_num": "286",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "6002053070852596826",
+        "created": "2026-03-24",
+        "updated": "2026-03-28",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "PRIORITY PR TASK: #300",
+        "pr_urls": [],
+        "pr_num": "300",
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13941376577602437089",
+        "created": "2026-03-24",
+        "updated": "2026-04-13",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "PRIORITY PR TASK: #211",
+        "pr_urls": [],
+        "pr_num": "211",
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9307877399307151176",
+        "created": "2026-03-24",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/524"
+        ],
+        "pr_num": "524",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10584915272486147494",
+        "created": "2026-03-24",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel \ud83d\udee1\ufe0f: Autonomous Codebase Security Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/525"
+        ],
+        "pr_num": "525",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8954014732675812611",
+        "created": "2026-03-23",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Autonomous Security Vulnerability & Enhancement Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/526"
+        ],
+        "pr_num": "526",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "654824856418808212",
+        "created": "2026-03-23",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance-Obsessed Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/523"
+        ],
+        "pr_num": "523",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "6374229603522871154",
+        "created": "2026-03-23",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security Vulnerability Protection Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/495"
+        ],
+        "pr_num": "495",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9033653426873037468",
+        "created": "2026-03-22",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/494"
+        ],
+        "pr_num": "494",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11790186057934001697",
+        "created": "2026-03-19",
+        "updated": "2026-07-30",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Autonomous Repository Maintenance and Cleanup Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/350"
+        ],
+        "pr_num": "350",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4710008747613819117",
+        "created": "2026-03-15",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance-Obsessed Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/489"
+        ],
+        "pr_num": "489",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4486936059047711087",
+        "created": "2026-03-12",
+        "updated": "2026-07-30",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Autonomous Repository Maintenance and Organization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/349"
+        ],
+        "pr_num": "349",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17857204272766840681",
+        "created": "2026-03-08",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/487"
+        ],
+        "pr_num": "487",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15198152699149131080",
+        "created": "2026-03-05",
+        "updated": "2026-07-30",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Autonomous Repository Maintenance & Cleanup Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/347"
+        ],
+        "pr_num": "347",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12107342462627706138",
+        "created": "2026-03-02",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "You are \"Sentinel\" \ud83d\udee1\ufe0f - a security-focused agent who protects the codebase from vulnerabilities and security risks.\n\nYou",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/488"
+        ],
+        "pr_num": "488",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "91423972654295756",
+        "created": "2026-03-01",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "You are \"Bolt\" \u26a1 - a performance-obsessed agent who makes the codebase faster, one optimization at a time.\n\nYour mission",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/485"
+        ],
+        "pr_num": "485",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2105168770599836167",
+        "created": "2026-03-01",
+        "updated": "2026-07-30",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "consolidate and move examples and notebooks folders, there seems to be duplication and inconcsitency. determine how to c",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/348"
+        ],
+        "pr_num": "348",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9750286105324430980",
+        "created": "2026-02-27",
+        "updated": "2026-07-30",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Gemma Integration Plan via Kaggle Models",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/346"
+        ],
+        "pr_num": "346",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9119171047628725306",
+        "created": "2026-02-23",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security-Focused Codebase Guardian",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/479"
+        ],
+        "pr_num": "479",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "5812717026261906864",
+        "created": "2026-02-22",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/478"
+        ],
+        "pr_num": "478",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11438400044889294952",
+        "created": "2026-02-22",
+        "updated": "2026-06-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Render Free Tier Deployment & Resource Optimization Guide",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/352"
+        ],
+        "pr_num": "352",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "6186272092202799273",
+        "created": "2026-02-22",
+        "updated": "2026-06-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Render.com Free Tier Deployment & Optimization Guide",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/354"
+        ],
+        "pr_num": "354",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16015195601436770027",
+        "created": "2026-02-22",
+        "updated": "2026-07-04",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Automated Repo Health & Linear Triage",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/353"
+        ],
+        "pr_num": "353",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "18323209961354138092",
+        "created": "2026-02-22",
+        "updated": "2026-06-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Render Free Tier Deployment & Workspace Setup Guide",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/340"
+        ],
+        "pr_num": "340",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3906785188840410701",
+        "created": "2026-02-16",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security-Focused Codebase Guardian",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/475"
+        ],
+        "pr_num": "475",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15053144712995869500",
+        "created": "2026-02-15",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 - Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/472"
+        ],
+        "pr_num": "472",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1640575417749861073",
+        "created": "2026-02-15",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/471"
+        ],
+        "pr_num": "471",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7448375539232869153",
+        "created": "2026-02-15",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/470"
+        ],
+        "pr_num": "470",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4540183078167904732",
+        "created": "2026-02-14",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/469"
+        ],
+        "pr_num": "469",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10550361840472611230",
+        "created": "2026-02-14",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/468"
+        ],
+        "pr_num": "468",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8862928834246598288",
+        "created": "2026-02-14",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: The Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/467"
+        ],
+        "pr_num": "467",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "368565110711438303",
+        "created": "2026-02-13",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/466"
+        ],
+        "pr_num": "466",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14752379369256525860",
+        "created": "2026-02-13",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/465"
+        ],
+        "pr_num": "465",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "125717287297355188",
+        "created": "2026-02-13",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/464"
+        ],
+        "pr_num": "464",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3896725142875397422",
+        "created": "2026-02-12",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/463"
+        ],
+        "pr_num": "463",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2156213339902996583",
+        "created": "2026-02-12",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/462"
+        ],
+        "pr_num": "462",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8545770187831493709",
+        "created": "2026-02-12",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 - Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/461"
+        ],
+        "pr_num": "461",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17127629550011902893",
+        "created": "2026-02-11",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/460"
+        ],
+        "pr_num": "460",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9622230322894001388",
+        "created": "2026-02-11",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/458"
+        ],
+        "pr_num": "458",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4063477833861769953",
+        "created": "2026-02-10",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/457"
+        ],
+        "pr_num": "457",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8966513054024812029",
+        "created": "2026-02-10",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/456"
+        ],
+        "pr_num": "456",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10148431230534253265",
+        "created": "2026-02-10",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/455"
+        ],
+        "pr_num": "455",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15037694108219148880",
+        "created": "2026-02-09",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance-Obsessed Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/474"
+        ],
+        "pr_num": "474",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1958617820492897427",
+        "created": "2026-02-08",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/453"
+        ],
+        "pr_num": "453",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "502469560835961524",
+        "created": "2026-02-08",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/452"
+        ],
+        "pr_num": "452",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10974685647757795352",
+        "created": "2026-02-08",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/451"
+        ],
+        "pr_num": "451",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1269616884679818684",
+        "created": "2026-02-07",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/450"
+        ],
+        "pr_num": "450",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12439902906189713853",
+        "created": "2026-02-07",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 Performance Optimizer Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/449"
+        ],
+        "pr_num": "449",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10439505451333200306",
+        "created": "2026-02-07",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/448"
+        ],
+        "pr_num": "448",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "18172545641471320098",
+        "created": "2026-02-06",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/447"
+        ],
+        "pr_num": "447",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9821986845195045536",
+        "created": "2026-02-06",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance-Obsessed Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/446"
+        ],
+        "pr_num": "446",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11187372043761988741",
+        "created": "2026-02-06",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/445"
+        ],
+        "pr_num": "445",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14153233467409275469",
+        "created": "2026-02-05",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/444"
+        ],
+        "pr_num": "444",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "469430222766494407",
+        "created": "2026-02-05",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: The Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/443"
+        ],
+        "pr_num": "443",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "5872943549695094303",
+        "created": "2026-02-05",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/442"
+        ],
+        "pr_num": "442",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13783399005312079059",
+        "created": "2026-02-04",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/441"
+        ],
+        "pr_num": "441",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "6435047672108938677",
+        "created": "2026-02-04",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 Performance Optimization Specialist",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/440"
+        ],
+        "pr_num": "440",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8240136512384063162",
+        "created": "2026-02-04",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/439"
+        ],
+        "pr_num": "439",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17231589403034892496",
+        "created": "2026-02-03",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/438"
+        ],
+        "pr_num": "438",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15863163327149061241",
+        "created": "2026-02-03",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/437"
+        ],
+        "pr_num": "437",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "434479758107672600",
+        "created": "2026-02-03",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Specialist",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/436"
+        ],
+        "pr_num": "436",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14305652007130065894",
+        "created": "2026-02-02",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/435"
+        ],
+        "pr_num": "435",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7944292050876960721",
+        "created": "2026-02-02",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/434"
+        ],
+        "pr_num": "434",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9830689703834564358",
+        "created": "2026-02-02",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/433"
+        ],
+        "pr_num": "433",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3778809004459403554",
+        "created": "2026-02-01",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/432"
+        ],
+        "pr_num": "432",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2166097941151715551",
+        "created": "2026-02-01",
+        "updated": "2026-06-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Sentinel: Security Vulnerability Remediation Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/310"
+        ],
+        "pr_num": "310",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "47180017976503727",
+        "created": "2026-02-01",
+        "updated": "2026-06-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Bolt \u26a1: Performance Optimization Expert",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/307"
+        ],
+        "pr_num": "307",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3968941239566233894",
+        "created": "2026-02-01",
+        "updated": "2026-06-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Test Suite Stabilization and Repair Protocol",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/308"
+        ],
+        "pr_num": "308",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15446056023500948760",
+        "created": "2026-02-01",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/431"
+        ],
+        "pr_num": "431",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14613806729026390621",
+        "created": "2026-02-01",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/476"
+        ],
+        "pr_num": "476",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12203455504678449603",
+        "created": "2026-01-31",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 - Performance Optimization Specialist",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/430"
+        ],
+        "pr_num": "430",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16683645347065683212",
+        "created": "2026-01-31",
+        "updated": "2026-06-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Test Suite Stabilization and Repair Protocol",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/302"
+        ],
+        "pr_num": "302",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1174864170861687434",
+        "created": "2026-01-31",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/429"
+        ],
+        "pr_num": "429",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15837389978047367580",
+        "created": "2026-01-30",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/427"
+        ],
+        "pr_num": "427",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11836678414580974204",
+        "created": "2026-01-30",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/426"
+        ],
+        "pr_num": "426",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "5660363663322280167",
+        "created": "2026-01-30",
+        "updated": "2026-06-13",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Bolt \u26a1 Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/297"
+        ],
+        "pr_num": "297",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1438205139362308677",
+        "created": "2026-01-30",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/425"
+        ],
+        "pr_num": "425",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "6726386105313152954",
+        "created": "2026-01-30",
+        "updated": "2026-06-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Palette: Autonomous Micro-UX & Repository Maintenance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/296"
+        ],
+        "pr_num": "296",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7831107115064417945",
+        "created": "2026-01-29",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/424"
+        ],
+        "pr_num": "424",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7121301670343563821",
+        "created": "2026-01-29",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1 Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/422"
+        ],
+        "pr_num": "422",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8179461817397132422",
+        "created": "2026-01-29",
+        "updated": "2026-07-30",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Autonomous Repository Maintenance and Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/290"
+        ],
+        "pr_num": "290",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4918278467349114335",
+        "created": "2026-01-28",
+        "updated": "2026-06-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Sentinel \ud83d\udee1\ufe0f: Security-Focused Codebase Guardian",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/289"
+        ],
+        "pr_num": "289",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11022930860156776867",
+        "created": "2026-01-28",
+        "updated": "2026-06-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Palette: Autonomous UX & Repository Maintenance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/288"
+        ],
+        "pr_num": "288",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "6997016135442389858",
+        "created": "2026-01-28",
+        "updated": "2026-06-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/287"
+        ],
+        "pr_num": "287",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7227686800701657484",
+        "created": "2026-01-28",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/419"
+        ],
+        "pr_num": "419",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4452219616516742819",
+        "created": "2026-01-27",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Driver",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/418"
+        ],
+        "pr_num": "418",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2717574023185544628",
+        "created": "2026-01-27",
+        "updated": "2026-06-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Palette: Autonomous Micro-UX & Maintenance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/283"
+        ],
+        "pr_num": "283",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10612509618003589509",
+        "created": "2026-01-27",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/416"
+        ],
+        "pr_num": "416",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11593286539955937059",
+        "created": "2026-01-27",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/415"
+        ],
+        "pr_num": "415",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13195680493735150712",
+        "created": "2026-01-26",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/413"
+        ],
+        "pr_num": "413",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "167388032825507375",
+        "created": "2026-01-26",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/412"
+        ],
+        "pr_num": "412",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10907914097922933574",
+        "created": "2026-01-26",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/410"
+        ],
+        "pr_num": "410",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17047980519112911855",
+        "created": "2026-01-26",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Codebase Security Guardian",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/409"
+        ],
+        "pr_num": "409",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17142042357956849385",
+        "created": "2026-01-26",
+        "updated": "2026-06-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Palette: Autonomous Micro-UX & Maintenance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/275"
+        ],
+        "pr_num": "275",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "706447350467402885",
+        "created": "2026-01-25",
+        "updated": "2026-04-24",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Sentinel: Codebase Guardian and Vulnerability Hunter",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/274"
+        ],
+        "pr_num": "274",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14640929968479025837",
+        "created": "2026-01-25",
+        "updated": "2026-07-11",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/408"
+        ],
+        "pr_num": "408",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14659884133964517626",
+        "created": "2026-01-25",
+        "updated": "2026-04-23",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Stabilizing CI Tests",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/272"
+        ],
+        "pr_num": "272",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9235482525725743831",
+        "created": "2026-01-25",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "\u26a1 Bolt: Codebase Accelerator",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/407"
+        ],
+        "pr_num": "407",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7689486681793389033",
+        "created": "2026-01-25",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/406"
+        ],
+        "pr_num": "406",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1968977037766676891",
+        "created": "2026-01-25",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Codebase Guardian",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/405"
+        ],
+        "pr_num": "405",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1668012057561864305",
+        "created": "2026-01-24",
+        "updated": "2026-04-23",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "\ud83d\udee1\ufe0f Sentinel: Focused Security Hardening",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/269"
+        ],
+        "pr_num": "269",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13264765310929834381",
+        "created": "2026-01-24",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/404"
+        ],
+        "pr_num": "404",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2379413473971023695",
+        "created": "2026-01-24",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/403"
+        ],
+        "pr_num": "403",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16795074845747765870",
+        "created": "2026-01-24",
+        "updated": "2026-04-23",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Test Suite Stabilization",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/267"
+        ],
+        "pr_num": "267",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3497977898820872987",
+        "created": "2026-01-24",
+        "updated": "2026-04-23",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart/pull/266"
+        ],
+        "pr_num": "266",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "6606484121555453523",
+        "created": "2026-01-24",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/402"
+        ],
+        "pr_num": "402",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7527806939886632720",
+        "created": "2026-01-24",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Code Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/401"
+        ],
+        "pr_num": "401",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16890227740922857946",
+        "created": "2026-01-24",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Codebase Guardian",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/400"
+        ],
+        "pr_num": "400",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "6377876107241223710",
+        "created": "2026-01-23",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Tuner",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/399"
+        ],
+        "pr_num": "399",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4205191187915074003",
+        "created": "2026-01-23",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: The Speed Tuner",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/397"
+        ],
+        "pr_num": "397",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9270573433546542315",
+        "created": "2026-01-23",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/398"
+        ],
+        "pr_num": "398",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15482424574082276548",
+        "created": "2026-01-23",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/396"
+        ],
+        "pr_num": "396",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8766689358085523224",
+        "created": "2026-01-23",
+        "updated": "2026-01-23",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security Fixes & Enhancements",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9017477477965643945",
+        "created": "2026-01-22",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt, Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/395"
+        ],
+        "pr_num": "395",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14373703525607249068",
+        "created": "2026-01-22",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/393"
+        ],
+        "pr_num": "393",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "5423711294781495368",
+        "created": "2026-01-22",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/392"
+        ],
+        "pr_num": "392",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4636112313544488837",
+        "created": "2026-01-21",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/391"
+        ],
+        "pr_num": "391",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7048942524902158717",
+        "created": "2026-01-21",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/389"
+        ],
+        "pr_num": "389",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "5293754981890352778",
+        "created": "2026-01-21",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/388"
+        ],
+        "pr_num": "388",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17358303940792033773",
+        "created": "2026-01-21",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Secure Code Mission",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/387"
+        ],
+        "pr_num": "387",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10623509739610348301",
+        "created": "2026-01-20",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Fast Code Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/386"
+        ],
+        "pr_num": "386",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11447153236546798419",
+        "created": "2026-01-20",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/384"
+        ],
+        "pr_num": "384",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "686412231727925104",
+        "created": "2026-01-19",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/382"
+        ],
+        "pr_num": "382",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9388648012633178359",
+        "created": "2026-01-19",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: The Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/381"
+        ],
+        "pr_num": "381",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13255147136928392700",
+        "created": "2026-01-19",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Optimize for Speed",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/379"
+        ],
+        "pr_num": "379",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "5332200199927366706",
+        "created": "2026-01-18",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/374"
+        ],
+        "pr_num": "374",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1289820399288125647",
+        "created": "2026-01-18",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Tuner",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/372"
+        ],
+        "pr_num": "372",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12945662143077051756",
+        "created": "2026-01-17",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/368"
+        ],
+        "pr_num": "368",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2642970291628456735",
+        "created": "2026-01-17",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/366"
+        ],
+        "pr_num": "366",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "6585185901479871409",
+        "created": "2026-01-17",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Vulnerability Fix or Security Enhancement",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/365"
+        ],
+        "pr_num": "365",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11664573999697863362",
+        "created": "2026-01-16",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/364"
+        ],
+        "pr_num": "364",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "68173942931404558",
+        "created": "2026-01-16",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Accelerator",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/363"
+        ],
+        "pr_num": "363",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7994159451274024109",
+        "created": "2026-01-16",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/362"
+        ],
+        "pr_num": "362",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14326039932958673003",
+        "created": "2026-01-16",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/361"
+        ],
+        "pr_num": "361",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15278563545656885866",
+        "created": "2026-01-15",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/359"
+        ],
+        "pr_num": "359",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9448722993346442867",
+        "created": "2026-01-15",
+        "updated": "2026-01-18",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "CI Test Stabilizer",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11752978906130889211",
+        "created": "2026-01-15",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Codebase Speedster",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/358"
+        ],
+        "pr_num": "358",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8263073239042237948",
+        "created": "2026-01-15",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/357"
+        ],
+        "pr_num": "357",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9213092384569778029",
+        "created": "2026-01-15",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Codebase Guardian",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/370"
+        ],
+        "pr_num": "370",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1824993900327402253",
+        "created": "2026-01-14",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Daily Speed Boost",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/356"
+        ],
+        "pr_num": "356",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15381953573576626321",
+        "created": "2026-01-14",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/354"
+        ],
+        "pr_num": "354",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12306995843349801229",
+        "created": "2026-01-14",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/355"
+        ],
+        "pr_num": "355",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3740259559944612388",
+        "created": "2026-01-14",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/353"
+        ],
+        "pr_num": "353",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17968893703396197960",
+        "created": "2026-01-14",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Securing the Codebase",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/352"
+        ],
+        "pr_num": "352",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "12259139989717214387",
+        "created": "2026-01-13",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Precision Performance",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/351"
+        ],
+        "pr_num": "351",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2186073639034751138",
+        "created": "2026-01-13",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/349"
+        ],
+        "pr_num": "349",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10662268328456014982",
+        "created": "2026-01-13",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/350"
+        ],
+        "pr_num": "350",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16158660724646974775",
+        "created": "2026-01-13",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Code Speedster",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/348"
+        ],
+        "pr_num": "348",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17022010527761244205",
+        "created": "2026-01-13",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Secure Code Protocol",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/347"
+        ],
+        "pr_num": "347",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4694431020105943367",
+        "created": "2026-01-12",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/346"
+        ],
+        "pr_num": "346",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "6653593264535777303",
+        "created": "2026-01-12",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/345"
+        ],
+        "pr_num": "345",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "6652540481037561350",
+        "created": "2026-01-12",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/344"
+        ],
+        "pr_num": "344",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "5181899111154008596",
+        "created": "2026-01-12",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/343"
+        ],
+        "pr_num": "343",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8306281758133771697",
+        "created": "2026-01-12",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Codebase Security Guardian",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/342"
+        ],
+        "pr_num": "342",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "18076606322863480435",
+        "created": "2026-01-11",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/341"
+        ],
+        "pr_num": "341",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3926118424421807123",
+        "created": "2026-01-11",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: One Optimization at a Time",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/340"
+        ],
+        "pr_num": "340",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8449104713119985854",
+        "created": "2026-01-11",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Codebase Guardian & Security Auditor",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/338"
+        ],
+        "pr_num": "338",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1011332200053263989",
+        "created": "2026-01-09",
+        "updated": "2026-01-09",
+        "source": "sources/github/MasumRab/gemini-fullstack-langgraph-quickstart",
+        "title": "Palette \ud83c\udfa8: Micro-UX & Maintenance Agent",
+        "pr_urls": [],
+        "pr_num": null,
+        "has_patch": false,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1496625492496076935",
+        "created": "2026-01-08",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Optimize for Speed",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/329"
+        ],
+        "pr_num": "329",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16294607023971894443",
+        "created": "2026-01-05",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Code Speedster",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/313"
+        ],
+        "pr_num": "313",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8783619865872562669",
+        "created": "2026-01-02",
+        "updated": "2026-04-12",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: The Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/300"
+        ],
+        "pr_num": "300",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4637069114393400978",
+        "created": "2025-12-31",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Codebase Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/290"
+        ],
+        "pr_num": "290",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14147381325537256669",
+        "created": "2025-12-30",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Code Accelerator",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/288"
+        ],
+        "pr_num": "288",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "3531886922800088779",
+        "created": "2025-12-29",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Daily Speed Boost",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/287"
+        ],
+        "pr_num": "287",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7371064084655869135",
+        "created": "2025-12-29",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Precision Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/286"
+        ],
+        "pr_num": "286",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15037186049489875523",
+        "created": "2025-12-29",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Precision Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/285"
+        ],
+        "pr_num": "285",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "6231852280372363933",
+        "created": "2025-12-29",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Tuner",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/284"
+        ],
+        "pr_num": "284",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4658261012249161886",
+        "created": "2025-12-28",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Codebase Speedster",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/283"
+        ],
+        "pr_num": "283",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "18364628782752433216",
+        "created": "2025-12-28",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Speed Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/282"
+        ],
+        "pr_num": "282",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13785923620579661510",
+        "created": "2025-12-28",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Accelerator",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/281"
+        ],
+        "pr_num": "281",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15805850328272477977",
+        "created": "2025-12-28",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/280"
+        ],
+        "pr_num": "280",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2130201209355575025",
+        "created": "2025-12-27",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Code Performance Tuner",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/278"
+        ],
+        "pr_num": "278",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "14503759546232995567",
+        "created": "2025-12-27",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Performance Tuner",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/277"
+        ],
+        "pr_num": "277",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4289177342969279404",
+        "created": "2025-12-27",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/276"
+        ],
+        "pr_num": "276",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4603287094980199613",
+        "created": "2025-12-26",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/273"
+        ],
+        "pr_num": "273",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "17910421624958019033",
+        "created": "2025-12-26",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Daily Speed Boost",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/274"
+        ],
+        "pr_num": "274",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4451395531356475301",
+        "created": "2025-12-26",
+        "updated": "2026-07-10",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "\u26a1 Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/272"
+        ],
+        "pr_num": "272",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "6748640558952412491",
+        "created": "2025-12-25",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/270"
+        ],
+        "pr_num": "270",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "8763531870244493916",
+        "created": "2025-12-25",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Tuner",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/269"
+        ],
+        "pr_num": "269",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13082334965048535301",
+        "created": "2025-12-24",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Optimizing for Speed",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/261"
+        ],
+        "pr_num": "261",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "18191042692309661512",
+        "created": "2025-12-24",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Codebase Security & Vulnerability Protection",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/259"
+        ],
+        "pr_num": "259",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "5445645170768295340",
+        "created": "2025-12-23",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security Hardening",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/258"
+        ],
+        "pr_num": "258",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15064892209789261562",
+        "created": "2025-12-22",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/257"
+        ],
+        "pr_num": "257",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4935874087585178417",
+        "created": "2025-12-22",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/256"
+        ],
+        "pr_num": "256",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15324826986015042196",
+        "created": "2025-12-21",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt \u26a1: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/252"
+        ],
+        "pr_num": "252",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2683351041288606945",
+        "created": "2025-12-21",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/251"
+        ],
+        "pr_num": "251",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13113702114495648408",
+        "created": "2025-12-21",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Security Guardian",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/248"
+        ],
+        "pr_num": "248",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "15467289512630244547",
+        "created": "2025-12-20",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "\u26a1 Bolt: The Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/247"
+        ],
+        "pr_num": "247",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "9548599365684661783",
+        "created": "2025-12-19",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/243"
+        ],
+        "pr_num": "243",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "13898385827395928192",
+        "created": "2025-12-19",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Performance Optimizer",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/241"
+        ],
+        "pr_num": "241",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "4150481951493984002",
+        "created": "2025-12-19",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Sentinel: Codebase Guardian",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/240"
+        ],
+        "pr_num": "240",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "16963304882334117573",
+        "created": "2025-12-18",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Code Accelerator",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/239"
+        ],
+        "pr_num": "239",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "2910743118532926696",
+        "created": "2025-12-18",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Optimization Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/237"
+        ],
+        "pr_num": "237",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "10172118564768457831",
+        "created": "2025-12-18",
+        "updated": "2026-04-12",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: The Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/236"
+        ],
+        "pr_num": "236",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "1700927354422257992",
+        "created": "2025-12-14",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Performance Agent",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/221"
+        ],
+        "pr_num": "221",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7609885797913100693",
+        "created": "2025-12-12",
+        "updated": "2026-02-16",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Make data directory configurable via environment variables or settings",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/473"
+        ],
+        "pr_num": "473",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "11300450617450864404",
+        "created": "2025-11-07",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "how can I get my application to correctly render on stackblitz so I can test in cloud? currently it fails\n",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/199"
+        ],
+        "pr_num": "199",
+        "has_patch": true,
+        "already_messaged": false
+      },
+      {
+        "session_id": "7687961848984352187",
+        "created": "2025-11-07",
+        "updated": "2026-07-08",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Main branch\nRecommendations\nConsolidate package.json files. Move all dependencies from client/package.json to the root p",
+        "pr_urls": [
+          "https://github.com/MasumRab/EmailIntelligence/pull/211"
+        ],
+        "pr_num": "211",
+        "has_patch": true,
+        "already_messaged": false
+      }
+    ],
+    "unposted_reviews_not_yet_recovered": [],
+    "in_progress_monitoring": [
+      {
+        "session_id": "7404018986702295062",
+        "state": "IN_PROGRESS",
+        "pr": "MasumRab/kaggle-notebooks-analysis#102",
+        "note": "Transitionsed from FAILED after our message. Check for new agent output."
+      }
+    ],
+    "failed_session_count": 342,
+    "failed_session_already_messaged": 3,
+    "queued_sessions": [
+      {
+        "session_id": "10304958435902448274",
+        "created": "2026-04-29",
+        "source": "sources/github/MasumRab/kaggle-notebooks-analysis",
+        "title": "\ud83d\udd12 Security Fix: Add Missing Network Timeout in kaggle_helper.py"
+      },
+      {
+        "session_id": "9445754006296005497",
+        "created": "2026-01-09",
+        "source": "sources/github/MasumRab/EmailIntelligence",
+        "title": "Bolt: Precision Performance"
+      }
+    ]
+  }
+}

@@ -13,6 +13,7 @@ Schema:
 
 import json
 import sqlite3
+import threading
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -21,9 +22,9 @@ STORE_DIR = Path.home() / ".jules"
 STORE_DB = STORE_DIR / "store.db"
 
 # Conservative defaults — caller must opt-in for heavy activity fetching
-DEFAULT_ACTIVITY_LIMIT = 0       # sessions to fetch activities for
-DEFAULT_ACTIVITY_MAX = 20        # max activities per session
-DEFAULT_FETCH_THRESHOLD = 20     # skip if known >= this + terminal state
+DEFAULT_ACTIVITY_LIMIT = 0  # sessions to fetch activities for
+DEFAULT_ACTIVITY_MAX = 20  # max activities per session
+DEFAULT_FETCH_THRESHOLD = 20  # skip if known >= this + terminal state
 
 SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS sessions (
@@ -111,8 +112,13 @@ def _extract_repo(s: dict) -> str:
 def _extract_activity_row(session_id: str, a: dict) -> dict:
     activity_type = "unknown"
     for key in (
-        "agentMessaged", "userMessaged", "planGenerated", "planApproved",
-        "progressUpdated", "sessionCompleted", "sessionFailed",
+        "agentMessaged",
+        "userMessaged",
+        "planGenerated",
+        "planApproved",
+        "progressUpdated",
+        "sessionCompleted",
+        "sessionFailed",
     ):
         if key in a:
             activity_type = key
@@ -170,14 +176,17 @@ class JulesSessionStore:
     def __init__(self, db_path: Optional[Path] = None) -> None:
         self.db_path = Path(db_path) if db_path else STORE_DB
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self._local = threading.local()
         self._init_db()
 
     def _conn(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(str(self.db_path))
-        conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA journal_mode=WAL")
-        conn.execute("PRAGMA synchronous=NORMAL")
-        return conn
+        if not hasattr(self._local, "conn") or self._local.conn is None:
+            conn = sqlite3.connect(str(self.db_path))
+            conn.row_factory = sqlite3.Row
+            conn.execute("PRAGMA journal_mode=WAL")
+            conn.execute("PRAGMA synchronous=NORMAL")
+            self._local.conn = conn
+        return self._local.conn
 
     def _init_db(self) -> None:
         with self._conn() as conn:
@@ -249,7 +258,13 @@ class JulesSessionStore:
             "INSERT OR REPLACE INTO sessions_fts (docid, session_id, title, prompt_snippet, notes) "
             "VALUES ((SELECT docid FROM sessions_fts WHERE session_id=?), "
             "?, ?, ?, ?)",
-            (session_id, session_id, row["title"] or "", row["prompt_snippet"] or "", row["notes"] or ""),
+            (
+                session_id,
+                session_id,
+                row["title"] or "",
+                row["prompt_snippet"] or "",
+                row["notes"] or "",
+            ),
         )
 
     def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
@@ -344,9 +359,7 @@ class JulesSessionStore:
             (session_id,),
         ).fetchall()
         # Clear old FTS entries for this session, then re-insert
-        conn.execute(
-            "DELETE FROM activities_fts WHERE session_id=?", (session_id,)
-        )
+        conn.execute("DELETE FROM activities_fts WHERE session_id=?", (session_id,))
         for r in rows:
             conn.execute(
                 "INSERT INTO activities_fts (session_id, create_time, activity_type, summary) "
@@ -559,13 +572,20 @@ class JulesSessionStore:
             if activity_limit and new_synced <= activity_limit:
                 sess_id = session.get("name", "").replace("sessions/", "")
                 known = self.get_activity_count(sess_id)
-                if not (known >= activity_max and session.get("state") in (
-                    "COMPLETED", "FAILED", "STATE_UNSPECIFIED",
-                )):
+                if not (
+                    known >= activity_max
+                    and session.get("state")
+                    in (
+                        "COMPLETED",
+                        "FAILED",
+                        "STATE_UNSPECIFIED",
+                    )
+                ):
                     try:
                         act_list = list(
                             client.list_activities(
-                                sess_id, page_size=min(activity_max, 50),
+                                sess_id,
+                                page_size=min(activity_max, 50),
                                 max_results=activity_max,
                             )
                         )
@@ -617,7 +637,8 @@ class JulesSessionStore:
                 client,
                 page_size=page_size,
                 activity_limit=activity_limit - sessions_synced
-                if activity_limit else 0,
+                if activity_limit
+                else 0,
                 activity_max=activity_max,
             )
             sessions_synced += result["new_synced"]
@@ -667,13 +688,16 @@ class JulesSessionStore:
             sess_id = session.get("name", "").replace("sessions/", "")
             known = self.get_activity_count(sess_id)
             if known >= activity_max and session.get("state") in (
-                "COMPLETED", "FAILED", "STATE_UNSPECIFIED",
+                "COMPLETED",
+                "FAILED",
+                "STATE_UNSPECIFIED",
             ):
                 continue
             try:
                 activities = list(
                     client.list_activities(
-                        sess_id, page_size=min(activity_max, 50),
+                        sess_id,
+                        page_size=min(activity_max, 50),
                         max_results=activity_max,
                     )
                 )
@@ -692,9 +716,9 @@ class JulesSessionStore:
     def stats(self) -> Dict[str, Any]:
         """Return summary statistics about the store."""
         with self._conn() as conn:
-            sessions = conn.execute(
-                "SELECT COUNT(*) as c FROM sessions"
-            ).fetchone()["c"]
+            sessions = conn.execute("SELECT COUNT(*) as c FROM sessions").fetchone()[
+                "c"
+            ]
             activities = conn.execute(
                 "SELECT COUNT(*) as c FROM activities"
             ).fetchone()["c"]
@@ -709,4 +733,6 @@ class JulesSessionStore:
             }
 
     def close(self) -> None:
-        pass
+        if hasattr(self._local, "conn") and self._local.conn is not None:
+            self._local.conn.close()
+            self._local.conn = None

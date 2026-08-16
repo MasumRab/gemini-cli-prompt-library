@@ -1,0 +1,28 @@
+name: Validate Forensics Data
+
+on:
+  push:
+    paths:
+      - 'docs/forensics/**'
+  pull_request:
+    paths:
+      - 'docs/forensics/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          
+      - name: Install jsonschema package
+        run: pip install jsonschema
+        
+      - name: Run validation script
+        run: python docs/forensics/validate_forensics.py

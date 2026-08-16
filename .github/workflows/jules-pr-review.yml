@@ -91,6 +91,14 @@ jobs:
               return;
             }
 
+            // Skip automated PRs (Dependabot, GitHub Actions, Mergify, Renovate bots)
+            const botAuthors = ['dependabot[bot]', 'github-actions[bot]', 'mergify[bot]', 'renovate[bot]'];
+            if (botAuthors.includes(pr.user.login) || pr.head.ref.startsWith('dependabot/')) {
+              core.info(`Automated PR by ${pr.user.login} (branch: ${pr.head.ref}) — skipping review`);
+              core.setOutput('skip', 'true');
+              return;
+            }
+
             const files = await github.paginate(github.rest.pulls.listFiles, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -101,6 +109,25 @@ jobs:
               path: f.filename, status: f.status,
               additions: f.additions, deletions: f.deletions,
             }));
+
+            // Skip trivial changes — lockfile-only, docs-only, or tiny diffs
+            const totalChanges = files.reduce((s, f) => s + f.additions + f.deletions, 0);
+            const nonLockfile = files.filter(f =>
+              !f.filename.endsWith('package-lock.json') &&
+              !f.filename.endsWith('yarn.lock') &&
+              !f.filename.endsWith('.gitignore') &&
+              !f.filename.includes('/migrations/')
+            );
+            if (files.length <= 2 && totalChanges < 50) {
+              core.info(`Trivial diff (${files.length} files, ${totalChanges} lines) — skipping review`);
+              core.setOutput('skip', 'true');
+              return;
+            }
+            if (nonLockfile.length === 0) {
+              core.info('Lockfile-only or migration-only changes — skipping review');
+              core.setOutput('skip', 'true');
+              return;
+            }
 
             // Fetch existing comments
             const allIssueComments = await github.paginate(github.rest.issues.listComments, {
