@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from tools.store.jules_store import JulesSessionStore
 from tools.api.jules_api_client import JulesAPIClient
+from tools.sessions.config import NO_ACTION_STATES
 
 # States that need user attention
 AWAITING_STATES = {
@@ -32,8 +33,6 @@ AWAITING_STATES = {
     "PAUSED",
     "FAILED",
 }
-
-NO_ACTION_STATES = {"COMPLETED", "QUEUED", "PLANNING", "STATE_UNSPECIFIED"}
 
 TRACKING_DIR = Path.home() / ".jules" / "session_tracking"
 

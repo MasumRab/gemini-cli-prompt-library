@@ -60,7 +60,7 @@ Each modality is a distinct way to interact with the Jules API (`jules.googleapi
 - **Source:** ~/.agents/commands/ (global), also copied to gemini-fullstack
 
 ### 6. Shell Command Wrappers
-- **Location:** `commands/` (10 wrappers)
+- **Location:** `commands/` (15 wrappers)
 - **Pattern:** Thin shell scripts that call Python tools with curl fallback
 - **Wrappers:**
   - `jules-list` — list sessions with grading
@@ -73,6 +73,11 @@ Each modality is a distinct way to interact with the Jules API (`jules.googleapi
   - `jules-triage-analyze` — analyze triage results
   - `jules-triage-list` — list triage items
   - `jules-triage-recover` — recovery from triage
+  - `jules-intent` — extract intent metadata (`jules_intent_metadata`)
+  - `jules-pending` — list sessions likely needing attention (`jules_list_sessions --pending`)
+  - `jules-create` — create a new Jules session (`jules-manager create`)
+  - `jules-ask` — ask a question and wait for the agent reply (`jules-manager ask`)
+  - `jules-pr-feedback` — post PR feedback (`post_pr_feedback`)
 - **All wrappers** differ from kaggle originals only in Python module path (`tools/...` vs `scripts/jules_tools/`)
 - **Source:** kaggle-notebooks-analysis `.agents/commands/`
 
@@ -148,8 +153,8 @@ Each modality is a distinct way to interact with the Jules API (`jules.googleapi
 | `jules_approve_plan.py` | Python Session Script | Approve pending plan via `:approvePlan` |
 | `jules_send_message.py` | Python Session Script | Send message to unblock agent via `:sendMessage` |
 | `analyze_unanswered.py` | Python Session Script | Detect if agent is waiting for user input |
-| `jules_intent_metadata.py` | Python Session Script | Generalized intent metadata extractor (state/repo/date/id filters; JSON/JSONL/table output) |
-| `config.py` | Shared Config | Scoring weights, base URL, `calculate_grade()`, `validate_config()` |
+| `jules_intent_metadata.py` | Python Session Script | Generalized intent metadata extractor (state/repo/date/id filters; classify/stale/anomaly flags; full-account `--snapshot`; JSON/JSONL/table output) |
+| `config.py` | Shared Config | Scoring weights, base URL, `calculate_grade()`, `validate_config()`, plus shared session-state constants (`NO_ACTION_STATES`, `likely_pending`, `normalize_state`) |
 
 ### `tools/pr/` — PR Analysis
 | File | Modality | Description |
@@ -210,7 +215,7 @@ Each modality is a distinct way to interact with the Jules API (`jules.googleapi
 | `test_jules_api.sh` | Tests | API connectivity shell test |
 | `fixtures/` | Test Data | 5 session mock fixtures (completed, awaiting_approval, awaiting_feedback, failed, in_progress) + activities_sample.json |
 
-### `commands/` — Shell Command Wrappers (10)
+### `commands/` — Shell Command Wrappers (15)
 | File | Calls | Fallback |
 |------|-------|----------|
 | `jules-list` | `jules_list_sessions.py` | Error message |
@@ -223,6 +228,11 @@ Each modality is a distinct way to interact with the Jules API (`jules.googleapi
 | `jules-triage-analyze` | Analyze triage | — |
 | `jules-triage-list` | List triage items | — |
 | `jules-triage-recover` | Recovery from triage | — |
+| `jules-intent` | `jules_intent_metadata.py` | — |
+| `jules-pending` | `jules_list_sessions.py --pending` | — |
+| `jules-create` | `jules-manager.py create` | — |
+| `jules-ask` | `jules-manager.py ask` | — |
+| `jules-pr-feedback` | `post_pr_feedback.py` | Error message |
 
 ### `extensions/` — Gemini CLI / MCP
 | File | Modality | Description |
@@ -263,11 +273,11 @@ All files in `jules/` were compared against their origin sources. Findings:
 |-----------|-------|--------|
 | Python module paths | All files | Expected — kaggle uses `scripts.jules_tools`, jules uses `tools.{api,sessions,pr,...}` |
 | Default repo values | Docstrings in `jules_api_client.py`, `jules_rebase_orchestrator.py`, `session_pr_triage.py` | Minor — jules uses generic `<owner>/<repo>` or `MasumRab/jules` instead of kaggle-specific |
-| Command script paths | All 10 commands | Expected — Python module paths updated |
+| Command script paths | All 15 commands | Expected — Python module paths updated |
 | Skill paths | `jules-session-manager`, `wrapup-session` | Expected — reference paths rewritten from scripts/ to tools/ |
 | New files in jules | `jules_pr_triage.py`, `jules-manager.py`, `auth_manager.py`, MCP server, Gemini extension, all skills, docs | New consolidation additions not in kaggle |
 
-**Original consolidation result:** At the time of the source comparison, all 17 Python tools and all 10 command wrappers from kaggle were present. Re-run an inventory before using this statement as current completeness evidence.
+**Original consolidation result:** At the time of the source comparison, all 17 Python tools and all 10 command wrappers from kaggle were present; the 5 extra wrappers (`jules-intent`, `jules-pending`, `jules-create`, `jules-ask`, `jules-pr-feedback`) are jules additions, not kaggle origins. Re-run an inventory before using this statement as current completeness evidence.
 
 ---
 

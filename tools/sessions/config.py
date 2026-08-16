@@ -1,5 +1,29 @@
 import os
 
+# JULES SESSION-STATE CONFIG
+# Single source of truth for shared session-state constants across tools.
+# Known non-action states — every other state (including unknown/future API
+# states) is surfaced as "pending" so edge cases stay visible.
+NO_ACTION_STATES = frozenset({"COMPLETED", "QUEUED", "PLANNING", "STATE_UNSPECIFIED"})
+
+
+def likely_pending(state: str) -> bool:
+    """Return True if a state likely needs user attention.
+
+    Only known no-action states return False. Every other state (including
+    unknown or future API states) returns True so the session is surfaced.
+    """
+    return state.upper() not in NO_ACTION_STATES
+
+
+def normalize_state(state) -> str:
+    """Uppercase a session state string, defaulting to "UNKNOWN"."""
+    if not state:
+        return "UNKNOWN"
+    upper = str(state).upper()
+    return upper if upper else "UNKNOWN"
+
+
 # JULES API CONFIG
 JULES_API_KEY = os.environ.get("JULES_API_KEY", "")
 JULES_API_BASE_URL = "https://jules.googleapis.com/v1alpha"  # Correct endpoint

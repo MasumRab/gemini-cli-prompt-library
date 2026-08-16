@@ -7,21 +7,7 @@ import sys
 from typing import Any, Dict, List, Optional
 
 from tools.api.jules_api_client import JulesAPIClient
-
-# Known non-action states — these are the only states we treat as definitively
-# not needing user attention. All other states (including unknown/future states)
-# are surfaced so edge cases are visible.
-NO_ACTION_STATES = {"COMPLETED", "QUEUED", "PLANNING", "STATE_UNSPECIFIED"}
-
-
-def likely_pending(state: str) -> bool:
-    """Return True if a state likely needs user attention.
-
-    Only known no-action states return False. Every other state
-    (including unknown or future API states) returns True so the
-    session is surfaced for review.
-    """
-    return state not in NO_ACTION_STATES
+from tools.sessions.config import NO_ACTION_STATES, likely_pending
 
 
 def get_session_pr(session: Dict[str, Any]) -> str:
