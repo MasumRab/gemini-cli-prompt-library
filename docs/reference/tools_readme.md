@@ -147,7 +147,7 @@ Each modality is a distinct way to interact with the Jules API (`jules.googleapi
 | File | Modality | Description |
 |------|----------|-------------|
 | `jules_list_sessions.py` | Python Session Script | List sessions with A+ grading, PR URL extraction, optional activity summary |
-| `jules_list_activities.py` | Python Session Script | Session chat history (plan steps, agent messages, progress, errors) |
+| `jules_list_activities.py` | Python Session Script | Session chat history (plan steps, agent messages, progress, errors); `--full` prints untruncated agent/user messages |
 | `jules_monitor.py` | Python Session Script | Background daemon with PID lock, periodic state checks, auto-recovery |
 | `jules_recovery_manager.py` | Python Session Script | State-based recovery: maps states → actions (retry/approve/AUDIT) |
 | `jules_approve_plan.py` | Python Session Script | Approve pending plan via `:approvePlan` |

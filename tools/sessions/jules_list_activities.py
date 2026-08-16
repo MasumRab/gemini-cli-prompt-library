@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""List activities for a given Jules session."""
+"""List activities for a given Jules session.
+
+By default agent/user messages are truncated to 100 characters. Use
+``--full`` to print the complete untruncated message text.
+"""
 
 import argparse
 import json
@@ -20,8 +24,12 @@ def list_activities(session_id: str, limit: int = None):
     return list(client.list_activities(session_id))
 
 
-def format_activity(act: dict) -> str:
-    """Format a single activity with rich details."""
+def format_activity(act: dict, full: bool = False) -> str:
+    """Format a single activity with rich details.
+
+    Agent/user messages are truncated to 100 chars unless ``full`` is
+    True, in which case the complete message text is emitted.
+    """
     orig = act.get("originator", "?")
     time = act.get("createTime", "")
 
@@ -47,11 +55,13 @@ def format_activity(act: dict) -> str:
 
     elif "agentMessaged" in act:
         msg = act["agentMessaged"].get("agentMessage", "")
-        return f"[{time}] {orig}: Agent Messaged - {msg[:100]}..."
+        text = msg if full else f"{msg[:100]}..."
+        return f"[{time}] {orig}: Agent Messaged - {text}"
 
     elif "userMessaged" in act:
         msg = act["userMessaged"].get("userMessage", "")
-        return f"[{time}] {orig}: User Messaged - {msg[:100]}..."
+        text = msg if full else f"{msg[:100]}..."
+        return f"[{time}] {orig}: User Messaged - {text}"
 
     elif "sessionFailed" in act:
         return f"[{time}] {orig}: Session Failed"
@@ -62,11 +72,12 @@ def format_activity(act: dict) -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="List activities for a Jules session")
+    parser = argparse.ArgumentParser(description="List activities for a Jules session (--full emits untruncated messages)")
     parser.add_argument("session_id", help="The Session ID")
     parser.add_argument("--limit", type=int, default=50, help="Max activities to fetch (default: 50; use -1 for all)")
     parser.add_argument("--all", action="store_true", help="Fetch all activities (overrides --limit)")
     parser.add_argument("--raw", action="store_true", help="Output raw JSON")
+    parser.add_argument("--full", action="store_true", help="Output full untruncated message text for agent/user messages")
     args = parser.parse_args()
 
     session_id = args.session_id.replace("sessions/", "")
@@ -85,7 +96,7 @@ def main():
     print("-" * 80)
 
     for act in activities:
-        print(format_activity(act))
+        print(format_activity(act, full=args.full))
 
 
 if __name__ == "__main__":
