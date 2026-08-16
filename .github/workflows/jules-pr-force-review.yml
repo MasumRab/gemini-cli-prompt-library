@@ -343,7 +343,7 @@ jobs:
           for i in $(seq 1 $MAX_ATTEMPTS); do
             sleep 15
             RESPONSE=$(curl -sS --fail-with-body --connect-timeout 10 --max-time 60 \
-              "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}?view=FULL" \
+              "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}" \
               -H "X-Goog-Api-Key: ${JULES_API_KEY}")
             STATE=$(echo "$RESPONSE" | jq -r '.state // "UNKNOWN"')
 
