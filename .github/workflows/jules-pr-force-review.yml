@@ -459,7 +459,7 @@ jobs:
           for i in $(seq 1 $MAX_ATTEMPTS); do
             sleep 15
             RESPONSE=$(curl_with_retry \
-              "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}?view=FULL" \
+              "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}" \
               -H "X-Goog-Api-Key: ${JULES_API_KEY}")
             STATE=$(echo "$RESPONSE" | jq -r '.state // "UNKNOWN"')
 
@@ -733,7 +733,7 @@ jobs:
           SESSION_RESOURCE: ${{ steps.find.outputs.session_resource }}
         run: |
           RESPONSE=$(curl -sS --fail-with-body --connect-timeout 10 --max-time 60 \
-            "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}?view=FULL" \
+            "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}" \
             -H "X-Goog-Api-Key: ${JULES_API_KEY}" 2>&1) || {
             echo "session_state=ERROR" >> "$GITHUB_OUTPUT"
             exit 0

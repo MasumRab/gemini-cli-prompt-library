@@ -347,7 +347,7 @@ jobs:
             sleep 15
 
             RESPONSE=$(poll_curl \
-              "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}?view=FULL" \
+              "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}" \
               -H "X-Goog-Api-Key: ${JULES_API_KEY}")
 
             STATE=$(echo "$RESPONSE" | jq -r '.state // "UNKNOWN"')
