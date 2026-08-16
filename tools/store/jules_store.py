@@ -188,7 +188,7 @@ class JulesSessionStore:
             self._local.conn = conn
         return self._local.conn
 
-    def _init_db(self) -> None:
+def _init_db(self) -> None:
         with self._conn() as conn:
             conn.executescript(SCHEMA_SQL)
 

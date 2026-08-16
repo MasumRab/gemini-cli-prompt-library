@@ -455,10 +455,11 @@ def _in_date_window(
 
 
 def filter_sessions(sessions: List[Dict[str, Any]], args) -> List[Dict[str, Any]]:
-    """Apply all client-side filters (state/exclude/pending/active/repo/dates)."""
+    """Apply all client-side filters (state/exclude/pending/active/repo/title/dates)."""
     include = [s.upper() for s in (args.state or [])]
     exclude = [s.upper() for s in (args.exclude_state or [])]
     repo_sub = (args.repo or "").lower()
+    title_keywords = [k.lower() for k in (args.title_match or [])]
     result = []
     for session in sessions:
         state = (session.get("state") or "UNKNOWN").upper()
@@ -473,6 +474,10 @@ def filter_sessions(sessions: List[Dict[str, Any]], args) -> List[Dict[str, Any]
         if repo_sub:
             repo = extract_repo(session) or ""
             if repo_sub not in repo.lower():
+                continue
+        if title_keywords:
+            title = (session.get("title") or "").lower()
+            if not any(k in title for k in title_keywords):
                 continue
         if not _in_date_window(session.get("createTime"), args.created_after, args.created_before):
             continue
@@ -521,6 +526,11 @@ def main():
         "--repo", metavar="REPO",
         help="Only sessions whose repo matches this substring (case-insensitive; matches 'emailintelligence' "
              "or 'MasumRab/EmailIntelligence')"
+    )
+    parser.add_argument(
+        "--title-match", nargs="*", metavar="KEYWORD",
+        help="Only sessions whose title contains ANY of these keywords (case-insensitive substring; "
+             "e.g. --title-match taskmaster cli linear)"
     )
     parser.add_argument(
         "--created-after", metavar="YYYY-MM-DD",
