@@ -15,6 +15,7 @@ Convenience wrappers for common Jules operations. All wrappers auto-detect `uv` 
 | `jules-triage-list` | List sessions (alias for jules-list) |
 | `jules-triage-recover` | Recovery triage wrapper |
 | `jules-pending` | List sessions likely needing attention (annotates with `!`; excludes only COMPLETED, QUEUED, PLANNING — unknown states are surfaced) |
+| `jules-intent` | Extract intent metadata for sessions (state/repo/date/id filters) |
 
 To filter by specific states: `jules-list --state FAILED PAUSED` or `jules-list --exclude-state COMPLETED`.
 | `jules-create <owner/repo> <prompt>` | Create a new Jules session |

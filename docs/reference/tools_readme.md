@@ -148,6 +148,7 @@ Each modality is a distinct way to interact with the Jules API (`jules.googleapi
 | `jules_approve_plan.py` | Python Session Script | Approve pending plan via `:approvePlan` |
 | `jules_send_message.py` | Python Session Script | Send message to unblock agent via `:sendMessage` |
 | `analyze_unanswered.py` | Python Session Script | Detect if agent is waiting for user input |
+| `jules_intent_metadata.py` | Python Session Script | Generalized intent metadata extractor (state/repo/date/id filters; JSON/JSONL/table output) |
 | `config.py` | Shared Config | Scoring weights, base URL, `calculate_grade()`, `validate_config()` |
 
 ### `tools/pr/` — PR Analysis
