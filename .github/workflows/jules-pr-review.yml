@@ -72,7 +72,8 @@ jobs:
           script: |
             // Propagate fork skip from the fork-check step
             if ('${{ steps.fork-check.outputs.skip }}' === 'true') {
-              core.setOutput('skip', 'true');
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
               return;
             }
 
@@ -87,7 +88,8 @@ jobs:
               issue_number: pr.number,
             });
             if (labels.some(l => l.name === 'jules-override')) {
-              core.setOutput('skip', 'true');
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
               return;
             }
 
@@ -95,7 +97,8 @@ jobs:
             const botAuthors = ['dependabot[bot]', 'github-actions[bot]', 'mergify[bot]', 'renovate[bot]'];
             if (botAuthors.includes(pr.user.login) || pr.head.ref.startsWith('dependabot/')) {
               core.info(`Automated PR by ${pr.user.login} (branch: ${pr.head.ref}) — skipping review`);
-              core.setOutput('skip', 'true');
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
               return;
             }
 
@@ -120,12 +123,14 @@ jobs:
             );
             if (files.length <= 2 && totalChanges < 50) {
               core.info(`Trivial diff (${files.length} files, ${totalChanges} lines) — skipping review`);
-              core.setOutput('skip', 'true');
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
               return;
             }
             if (nonLockfile.length === 0) {
               core.info('Lockfile-only or migration-only changes — skipping review');
-              core.setOutput('skip', 'true');
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
               return;
             }
 
@@ -144,7 +149,8 @@ jobs:
             );
             if (existingReview) {
               core.info('Review already posted for this HEAD SHA — skipping');
-              core.setOutput('skip', 'true');
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
               return;
             }
 
@@ -303,7 +309,7 @@ jobs:
               '<!-- FINDING severity="medium" file="..." line="..." -->',
               '',
               '### 🟢 Low - <path/file.ext:line> — <description>',
-              '<minor, stylistic, typos, docs. Author discretion.>',
+              '<minor, stylistic, typos, documentation. Author discretion.>',
               '<!-- FINDING severity="low" file="..." line="..." -->',
               '',
               '## Truncation',
@@ -342,7 +348,7 @@ jobs:
 
             const fs = require('fs');
             fs.writeFileSync('/tmp/jules-review-payload.json', JSON.stringify(payload));
-            core.setOutput('head_sha', headSha);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `head_sha=${headSha}\n`);
             core.info(`Payload written for PR #${pr.number}`);
 
       - name: Skip (fork or bypass label)
@@ -776,7 +782,8 @@ jobs:
 
             if (!deferredComment) {
               core.info('No deferred review marker found — nothing to post');
-              core.setOutput('skip', 'true');
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
               return;
             }
 
@@ -786,14 +793,16 @@ jobs:
             );
             if (!markerMatch) {
               core.info('Deferred marker malformed — cannot extract session');
-              core.setOutput('skip', 'true');
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
               return;
             }
 
-            core.setOutput('skip', 'false');
-            core.setOutput('session_resource', markerMatch[1]);
-            core.setOutput('head_sha', markerMatch[2]);
-            core.setOutput('pr_number', String(prNumber));
+            const fs = require('fs');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=false\n');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `session_resource=${markerMatch[1]}\n`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `head_sha=${markerMatch[2]}\n`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `pr_number=${prNumber}\n`);
             core.info(`Found deferred session: ${markerMatch[1]}`);
 
       - name: Check session state and fetch activities

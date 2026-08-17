@@ -8,21 +8,35 @@ on:
     paths:
       - 'docs/forensics/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Set up Python 3.x
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-          
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('docs/forensics/validate_forensics.py') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install jsonschema package
         run: pip install jsonschema
-        
+
       - name: Run validation script
         run: python docs/forensics/validate_forensics.py
