@@ -581,3 +581,26 @@ prompt_sent: |
   Important: do NOT close this task out. Instead, reply in chat with your findings so far plus guidance for the next steps — specifically, outline how to create a full branch alignment task MD structure. Continue with the taskmaster_report.md work as confirmed (repo root, Markdown table, show first 10 rows before finalizing), but keep the session open and deliver the findings and next-steps guidance as part of your reply.
 outcome: "SENT_OK"
 ```
+
+### Entry 2026-08-17-001
+
+```yaml
+session_id: "12998852914377637541"
+session_title: "Salvage: resolve CLI stubs/mocks on consolidate/cli-unification (PR #756)"
+timestamp: "2026-08-17T00:00:00Z"
+prompt_type: "infra_provided"
+prompt_sent: |
+  Two upstream fixes are now on your branch (PR #756 head = 651ef165):
+
+  1) setup/launch.py restored from blob bca47707 (branch orchestration-tools, commit 9cbe607d) — the launcher currently exits 1 because setup/launch.py was missing. I cherry-picked the cleanest error-free version; verify `python launch.py --help` works from the repo root.
+
+  2) Dependency-injection fill-ins so the analysis commands actually run instead of resolving injectable deps to None:
+  - NEW src/git/history.py: GitHistory.get_commits(branch, limit) + CommitClassifier (classify + analyze_history).
+  - ConflictDetector.detect_conflicts_between_branches(head, base) added (was awaited by analyze.py but did not exist).
+  - create_default_dependencies now provides history, classifier, planner, repository_ops, conflict_detector, analyzer, strategy_generator, resolver (+ git_wrapper/rebase_analyzer when GitPython present), with graceful degrade.
+  - strategy/reordering.py RiskLevel import fixed (was importing a nonexistent module).
+  - NLPService.calculate_with_feedback + find_matches cutoff relaxation so failed semantic queries log a WARNING and refine via extracted keywords instead of silently printing a verdict.
+
+  Please integrate these, verify plan-rebase / analyze-history / git-discover against live branches, and continue the incremental refactor — keep emailintelligence_cli.py line count falling per slice and commit atomically. Do not close the task out silently; reply with a progress summary + any module-wiring results in chat.
+outcome: "SENT_OK"
+```
