@@ -604,3 +604,15 @@ prompt_sent: |
   Please integrate these, verify plan-rebase / analyze-history / git-discover against live branches, and continue the incremental refactor — keep emailintelligence_cli.py line count falling per slice and commit atomically. Do not close the task out silently; reply with a progress summary + any module-wiring results in chat.
 outcome: "SENT_OK"
 ```
+
+### Entry 2026-08-17-002
+
+```yaml
+session_id: "18022405513725949457"
+session_title: "Taskmaster Issue and Branch Tracking via Linear and GitHub"
+timestamp: "2026-08-17T00:00:00Z"
+prompt_type: "resume_deliver_report"
+prompt_sent: |
+  Please resume now and actually EXECUTE your plan (you generated it three times on 08-16 but never ran it — zero outputs, no taskmaster_report.md anywhere). Deliver the report IN CHAT as a Markdown table, not as a file commit. Steps: (1) locate taskmaster-context in Linear (issues labeled/tagged taskmaster or the MAS-* issue set), (2) fetch those Linear issues, (3) fetch open EmailIntelligence PRs, (4) correlate by title/status/assignee/Linear URL, (5) print the full Markdown table in chat. Do not just re-plan — show the actual findings now.
+outcome: "SENT_OK"
+```

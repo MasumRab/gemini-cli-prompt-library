@@ -1,6 +1,6 @@
 ---
 name: jules-sessions
-description: "Analyze local Jules session JSON files to track PR status, completion state, and generate context-aware response messages for sessions needing action (approval, nudge, follow-up). Use when reviewing Jules work, responding to sessions, or checking what messages to send."
+description: "Analyze local Jules session JSON files and SQLite store to track PR status, completion state, and generate context-aware response messages for sessions needing action (approval, nudge, follow-up). Use when reviewing Jules work, responding to sessions, or checking what messages to send."
 category: [ai, analysis, session-management]
 type: [guide, analysis]
 tags: [jules, sessions, analysis, pr-tracking, status, responses, nudge]
@@ -27,7 +27,22 @@ auto_load: context
 
 # Jules Session Analysis
 
-Analyze local `jules_sessions/` directory to track work completed by Jules.
+Analyze local `jules_sessions/` directory and SQLite store to track work completed by Jules.
+
+## Dual Storage Approach
+
+The Jules session tracking system uses a dual storage approach for redundancy and performance:
+
+1. **Local JSON Files** (`jules_sessions/` directory): 
+   - Original storage format for session metadata and activities
+   - Human-readable and easily backupable
+   - Used for quick analysis and debugging
+
+2. **SQLite Store** (`jules_sessions_store.db`):
+   - Enhanced storage with additional fields and indexing
+   - Supports complex queries and filtering
+   - Maintains session history and retry tracking
+   - Provides utility functions for common operations
 
 ## Directory Structure
 
@@ -35,6 +50,8 @@ Analyze local `jules_sessions/` directory to track work completed by Jules.
 jules_sessions/
 ├── pr437_session.json      # Session metadata
 ├── pr437_activities.json   # Step-by-step actions
+├─┬ jules_sessions_store.db # SQLite store with enhanced fields
+│ └── (internal tables)
 ├── pr521_session.json
 ├── pr521_activities.json
 └── README.md
@@ -68,7 +85,21 @@ jules_sessions/
 }
 ```
 
-### Key Fields
+### SQLite Store Enhanced Fields
+
+The SQLite store includes all original fields plus these additional columns:
+
+| Field | Description |
+|-------|-------------|
+| `session_type` | Type of session (e.g., "initial", "retry", "follow-up") |
+| `outcome` | Final result of the session (e.g., "success", "failed", "timeout") |
+| `retry_of_session_id` | ID of the original session if this is a retry |
+| `retry_count` | Number of times this session has been retried |
+| `send_message_count` | Number of messages sent to this session |
+| `verdict` | Final assessment of the session quality |
+| `quality_score` | Numeric score (0-100) indicating session quality |
+
+### Key Fields (JSON Files)
 
 | Field | Description |
 |-------|-------------|
@@ -77,7 +108,69 @@ jules_sessions/
 | `outputs[].changeSet.gitPatch` | The actual diff |
 | `sourceContext.githubRepoContext.startingBranch` | Target branch |
 
----
+## JulesSessionStore API Examples
+
+### Filtering by New Fields
+
+```python
+from skills.jules-sessions.jules_session_store import JulesSessionStore
+
+# Initialize store
+store = JulesSessionStore("jules_sessions_store.db")
+
+# Find all retry sessions
+retries = store.find_sessions(session_type="retry")
+print(f"Found {len(retries)} retry sessions")
+
+# Find failed sessions that are retryable
+failed_retries = store.find_retryable_failed_sessions()
+print(f"Found {len(failed_retries)} retryable failed sessions")
+
+# Find sessions with low quality scores
+low_quality = store.find_sessions(quality_score__lt=50)
+print(f"Found {len(low_quality)} low quality sessions")
+
+# Find sessions with many message sends (potentially stuck)
+high_message_count = store.find_sessions(send_message_count__gt=10)
+print(f"Found {len(high_message_count)} sessions with high message count")
+
+# Find sessions by outcome
+timeouts = store.find_sessions(outcome="timeout")
+print(f"Found {len(timeouts)} timed out sessions")
+```
+
+### Using Utility Methods
+
+```python
+from skills.jules-sessions.jules_session_store import JulesSessionStore
+
+store = JulesSessionStore("jules_sessions_store.db")
+
+# Find stale sessions (no updates in last 24 hours)
+stale = store.find_stale_sessions(hours=24)
+print(f"Found {len(stale)} stale sessions")
+
+# Record sending a message to a session
+store.record_send_message("session_12345")
+print("Recorded message send for session 12345")
+
+# Record a retry session
+store.record_retry_session(
+    original_session_id="session_12345",
+    new_session_id="session_67890",
+    retry_count=1
+)
+print("Recorded retry session")
+
+# Finalize a session with outcome and quality score
+store.finalize_session(
+    session_id="session_12345",
+    outcome="success",
+    verdict="All objectives met",
+    quality_score=85
+)
+print("Finalized session 12345")
+```
 
 ## Query Commands
 
@@ -127,8 +220,6 @@ jq -r 'select(.state == "AWAITING_PLAN_APPROVAL" or .state == "IN_PROGRESS") | "
     jules_sessions/*_session.json
 ```
 
----
-
 ## Session Response Guide
 
 Determine what response/nudge to send based on session state and context.
@@ -163,13 +254,13 @@ python skills/jules-sessions/scripts/check_needs_response.py --json
 ```bash
 # Find sessions awaiting your action
 jq -r 'select(.state == "AWAITING_PLAN_APPROVAL" or .state == "IN_PROGRESS") |
-  "\(.name | split("/")[-1]) :: \(.state) :: \(.title)"' \
-  jules_sessions/*_session.json
+   "\(.name | split("/")[-1]) :: \(.state) :: \(.title)"' \
+   jules_sessions/*_session.json
 
 # Check if completed session has changes
 jq '{session: .name, has_changes: (.outputs[].changeSet.gitPatch | length > 0),
      has_pr: (.outputs[].pullRequest.url != null)}' \
-  jules_sessions/pr*_session.json
+   jules_sessions/pr*_session.json
 ```
 
 ### Message Templates
@@ -189,8 +280,6 @@ grep -A10 "AWAITING_PLAN_APPROVAL" references/response_templates.md
 - Current state and what happened
 - Suggested response incorporating context
 - Example with real session data
-
----
 
 ## Scripts
 
@@ -220,8 +309,6 @@ curl -s "https://jules.googleapis.com/v1alpha/sessions/$SESSION_ID" \
 
 ### `skills/jules-sessions/scripts/list_prs_by_deletions.py`
 
-Track PRs with aggressive code deletions (potential Jules over-deletion).
-
 ```bash
 # List PRs with >300 deletions
 python skills/jules-sessions/scripts/list_prs_by_deletions.py --threshold 300
@@ -235,8 +322,6 @@ python skills/jules-sessions/scripts/list_prs_by_deletions.py --json --threshold
 
 ### `skills/jules-sessions/scripts/branch_analysis_tool.py`
 
-Analyze branch sync status and detect issues.
-
 ```bash
 # Full branch analysis
 python skills/jules-sessions/scripts/branch_analysis_tool.py
@@ -249,8 +334,6 @@ python skills/jules-sessions/scripts/branch_analysis_tool.py --check-stale --max
 ```
 
 ### `skills/jules-sessions/scripts/check_needs_response.py`
-
-Check sessions needing response and generate suggested messages.
 
 ```bash
 # List sessions needing action
@@ -267,8 +350,6 @@ python skills/jules-sessions/scripts/check_needs_response.py --json
 - Session ID, title, state
 - Recommended action (approve/nudge/request PR/etc.)
 - Pre-generated message template with context
-
----
 
 ## Analysis Patterns
 
@@ -295,8 +376,6 @@ jq -r '.outputs[].changeSet.gitPatch' jules_sessions/pr437_session.json | \
   grep "^diff --git" | sed 's/diff --git a\///' | cut -d' ' -f1 | sort -u
 ```
 
----
-
 ## Bundled References
 
 The skill includes reference files in `references/`:
@@ -320,16 +399,12 @@ jq '.' references/task_schedule.json
 grep "^## Task" references/prompts.md
 ```
 
----
-
 ## Integration with Other Skills
 
 - **CLI**: Use [[jules-cli]] to create new sessions based on analysis
 - **API**: Use [[jules-api]] to fetch session data from Jules
 - **Workflows**: Use [[jules-workflows]] for follow-up patterns
 - **Scheduling**: Use [[jules-scheduling]] for multi-task orchestration
-
----
 
 ## References
 
@@ -345,8 +420,6 @@ grep "^## Task" references/prompts.md
   - Requesting PR creation
   - Restarting failed/timed-out sessions
 - Session files use the same schema as Jules API responses
-
----
 
 ## Prompt Tracking Workflow
 
