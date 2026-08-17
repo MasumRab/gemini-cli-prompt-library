@@ -51,14 +51,14 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0      - uses: actions/checkout@v4
         if: steps.fork-check.outputs.skip != 'true'
         with:
           fetch-depth: 0
 
       - name: Checkout helper scripts (trusted base branch)
         if: steps.fork-check.outputs.skip != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.base.ref }}
           sparse-checkout: |
@@ -67,7 +67,7 @@ jobs:
 
       - name: Prepare review prompt
         id: prepare
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0        uses: actions/github-script@v7
         with:
           script: |
             // Propagate fork skip from the fork-check step
@@ -415,7 +415,7 @@ jobs:
 
       - name: Notify session cap reached
         if: steps.create.outputs.quota_exhausted == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0        uses: actions/github-script@v7
         with:
           script: |
             await github.rest.issues.createComment({
@@ -507,7 +507,7 @@ jobs:
 
       - name: Post review and set commit status
         if: always() && steps.prepare.conclusion == 'success' && steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_exhausted != 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
@@ -735,7 +735,7 @@ jobs:
 
       - name: Upload session output
         if: always() && steps.prepare.conclusion == 'success' && steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_exhausted != 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2        uses: actions/upload-artifact@v4
         with:
           name: jules-review-${{ github.event.pull_request.number }}
           path: /tmp/jules-review-output.txt
@@ -764,7 +764,7 @@ jobs:
     steps:
       - name: Find deferred review marker and fetch session
         id: find
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0        uses: actions/github-script@v7
         with:
           script: |
             const prNumber = context.payload.issue.number;
@@ -841,7 +841,7 @@ jobs:
 
       - name: Post deferred review
         if: steps.find.outputs.skip != 'true' && steps.check.outputs.output_ready == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0        uses: actions/github-script@v7
         env:
           HEAD_SHA: ${{ steps.find.outputs.head_sha }}
           SESSION_STATE: ${{ steps.check.outputs.session_state }}
@@ -1011,7 +1011,7 @@ jobs:
 
       - name: Session still running
         if: steps.find.outputs.skip != 'true' && steps.check.outputs.output_ready != 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0        uses: actions/github-script@v7
         with:
           script: |
             const state = '${{ steps.check.outputs.session_state }}';
