@@ -15,6 +15,7 @@ import json
 import sqlite3
 import threading
 import time
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -39,6 +40,13 @@ CREATE TABLE IF NOT EXISTS sessions (
     activity_count INTEGER NOT NULL DEFAULT 0,
     notes         TEXT,
     tags          TEXT DEFAULT '[]',
+    session_type  TEXT NOT NULL DEFAULT 'unknown',
+    outcome       TEXT,
+    retry_of_session_id TEXT,
+    retry_count   INTEGER NOT NULL DEFAULT 0,
+    send_message_count INTEGER NOT NULL DEFAULT 0,
+    verdict       TEXT,
+    quality_score REAL,
     raw_path      TEXT,
     first_seen    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
     last_seen     TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
@@ -75,6 +83,10 @@ CREATE TABLE IF NOT EXISTS sync_meta (
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
 );
+
+CREATE INDEX IF NOT EXISTS idx_sessions_type ON sessions(session_type);
+CREATE INDEX IF NOT EXISTS idx_sessions_outcome ON sessions(outcome);
+CREATE INDEX IF NOT EXISTS idx_sessions_retry ON sessions(retry_of_session_id);
 """
 
 
@@ -89,6 +101,34 @@ def _extract_session_row(s: dict) -> dict:
     for o in s.get("outputs", []):
         pr_url = o.get("pullRequest", {}).get("url", "") or pr_url
     prompt_snippet = (s.get("prompt") or "")[:500]
+    # Extract new columns for forensics and operations
+    labels = s.get("labels", [])
+    # Map labels to session_type
+    session_type = "unknown"
+    if "auto-fix" in labels:
+        session_type = "auto-fix"
+    elif "force-review" in labels:
+        session_type = "force-review"
+    elif "walkthrough" in labels:
+        session_type = "walkthrough"
+    elif "rebuild" in labels:
+        session_type = "rebuild"
+    elif "resolve" in labels:
+        session_type = "resolve-conflicts"
+    elif "address" in labels:
+        session_type = "address-comments"
+    elif "backlog" in labels:
+        session_type = "backlog-review"
+    elif "triage" in labels:
+        session_type = "issue-triage"
+    else:
+        session_type = "review"
+    outcome = s.get("outcome")  # NULL if not present
+    retry_of_session_id = s.get("parentSessionId")
+    retry_count = s.get("retryCount", 0)
+    send_message_count = s.get("sendMessageCount", 0)
+    verdict = s.get("verdict")
+    quality_score = s.get("qualityScore")
     return dict(
         session_id=session_id,
         state=s.get("state", "UNKNOWN"),
@@ -98,6 +138,13 @@ def _extract_session_row(s: dict) -> dict:
         update_time=s.get("updateTime", ""),
         pr_url=pr_url,
         repo=repo,
+        session_type=session_type,
+        outcome=outcome,
+        retry_of_session_id=retry_of_session_id,
+        retry_count=retry_count,
+        send_message_count=send_message_count,
+        verdict=verdict,
+        quality_score=quality_score,
     )
 
 
@@ -216,8 +263,11 @@ class JulesSessionStore:
                 """INSERT INTO sessions
                    (session_id, state, title, prompt_snippet, create_time,
                     update_time, pr_url, repo, activity_count, notes, tags,
+                    session_type, outcome, retry_of_session_id, retry_count,
+                    send_message_count, verdict, quality_score,
                     last_seen, fetch_count)
-                   VALUES (?,?,?,?,?,?,?,?,?,?,?, strftime('%Y-%m-%dT%H:%M:%SZ','now'),
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,
+                           strftime('%Y-%m-%dT%H:%M:%SZ','now'),
                            COALESCE((SELECT fetch_count+1 FROM sessions WHERE session_id=?), 1))
                    ON CONFLICT(session_id) DO UPDATE SET
                        state=excluded.state,
@@ -227,6 +277,13 @@ class JulesSessionStore:
                        pr_url=excluded.pr_url,
                        repo=excluded.repo,
                        activity_count=excluded.activity_count,
+                       session_type=excluded.session_type,
+                       outcome=excluded.outcome,
+                       retry_of_session_id=excluded.retry_of_session_id,
+                       retry_count=excluded.retry_count,
+                       send_message_count=excluded.send_message_count,
+                       verdict=excluded.verdict,
+                       quality_score=excluded.quality_score,
                        last_seen=strftime('%Y-%m-%dT%H:%M:%SZ','now'),
                        fetch_count=excluded.fetch_count""",
                 (
@@ -241,6 +298,13 @@ class JulesSessionStore:
                     activity_count,
                     notes,
                     tags,
+                    row["session_type"],
+                    row["outcome"],
+                    row["retry_of_session_id"],
+                    row["retry_count"],
+                    row["send_message_count"],
+                    row["verdict"],
+                    row["quality_score"],
                     row["session_id"],
                 ),
             )
@@ -481,6 +545,104 @@ class JulesSessionStore:
         except (json.JSONDecodeError, TypeError):
             return []
 
+    def find_stale_sessions(self, hours: int = 2) -> List[Dict]:
+        """Sessions needing state refresh from API (outcome IS NULL, old last_seen)."""
+        cutoff = (
+            (datetime.now(timezone.utc) - timedelta(hours=hours))
+            .isoformat()
+            .replace("+00:00", "Z")
+        )
+        with self._conn() as conn:
+            rows = conn.execute(
+                """SELECT * FROM sessions
+                   WHERE outcome IS NULL
+                     AND last_seen < ?
+                   ORDER BY last_seen ASC""",
+                (cutoff,),
+            ).fetchall()
+        return [dict(r) for r in rows]
+
+    def find_retryable_failed_sessions(self, max_retries: int = 3) -> List[Dict]:
+        """Failed/timeout sessions eligible for free sendMessage retry (T-30)."""
+        with self._conn() as conn:
+            rows = conn.execute(
+                """SELECT * FROM sessions
+                   WHERE state IN ('FAILED', 'TIMEOUT')
+                     AND retry_count < ?
+                   ORDER BY update_time ASC""",
+                (max_retries,),
+            ).fetchall()
+        return [dict(r) for r in rows]
+
+    def record_send_message(self, session_id: str) -> None:
+        """Increment send_message_count after successful sendMessage API call."""
+        with self._conn() as conn:
+            conn.execute(
+                """UPDATE sessions
+                   SET send_message_count = send_message_count + 1,
+                       last_seen = strftime('%Y-%m-%dT%H:%M:%SZ','now')
+                   WHERE session_id = ?""",
+                (session_id,),
+            )
+            conn.commit()
+
+    def record_retry_session(self, new_session_id: str, parent_session_id: str) -> None:
+        """Link retry session to parent for chain tracking (T-29, T-30)."""
+        with self._conn() as conn:
+            # Set retry_of_session_id for the new session
+            conn.execute(
+                """UPDATE sessions
+                   SET retry_of_session_id = ?,
+                       retry_count = (SELECT retry_count + 1 FROM sessions WHERE session_id = ?),
+                       last_seen = strftime('%Y-%m-%dT%H:%M:%SZ','now')
+                   WHERE session_id = ?""",
+                (parent_session_id, parent_session_id, new_session_id),
+            )
+            # Increment parent's retry_count if tracking parent retries
+            conn.execute(
+                """UPDATE sessions
+                   SET retry_count = (
+                       SELECT COUNT(*) FROM sessions WHERE retry_of_session_id = ?
+                   ),
+                   last_seen = strftime('%Y-%m-%dT%H:%M:%SZ','now')
+                   WHERE session_id = ?""",
+                (parent_session_id, parent_session_id),
+            )
+            conn.commit()
+
+    def finalize_session(
+        self, session_id: str, verdict: str = None, quality_score: float = None
+    ) -> None:
+        """Set outcome/verdict/quality_score when session reaches terminal state."""
+        with self._conn() as conn:
+            # Determine outcome from state if not provided
+            outcome = None
+            if verdict is not None:
+                outcome = verdict  # Use verdict as outcome if provided
+            else:
+                # Map state to outcome for terminal states
+                row = conn.execute(
+                    "SELECT state FROM sessions WHERE session_id = ?", (session_id,)
+                ).fetchone()
+                if row:
+                    state = row["state"]
+                    if state in ("SUCCEEDED", "FAILED", "TIMEOUT", "CANCELLED"):
+                        outcome = state.lower()
+
+            conn.execute(
+                """UPDATE sessions
+                   SET outcome = COALESCE(?, outcome),
+                       verdict = COALESCE(?, verdict),
+                       quality_score = COALESCE(?, quality_score),
+                       last_seen = strftime('%Y-%m-%dT%H:%M:%SZ','now')
+                   WHERE session_id = ?""",
+                (outcome, verdict, quality_score, session_id),
+            )
+            conn.commit()
+
+    # ------------------------------------------------------------------
+    # High-Water Mark — incremental sync stop condition
+    # ------------------------------------------------------------------
     # ------------------------------------------------------------------
     # High-Water Mark — incremental sync stop condition
     # ------------------------------------------------------------------
@@ -636,21 +798,17 @@ class JulesSessionStore:
             result = self.sync_page(
                 client,
                 page_size=page_size,
-                activity_limit=activity_limit - sessions_synced
-                if activity_limit
-                else 0,
+                activity_limit=activity_limit,
                 activity_max=activity_max,
             )
             sessions_synced += result["new_synced"]
             activities_synced += result["activities"]
             pages += 1
-
             print(
                 f"  Page {pages}: {result['new_synced']} new, "
                 f"{result['before_hwm']} cached, "
                 f"{result['activities']} activities"
             )
-
             if result["caught_up"] or not result["next_page_token"]:
                 break
             if max_pages and pages >= max_pages:

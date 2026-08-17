@@ -183,10 +183,11 @@ md.append("")
 md.append("| Batch | Date (est.) | Sessions | Cumulative | Notes |")
 md.append("|-------|------------|----------|------------|-------|")
 
+cumulative = 0
 for batch in plan["failed_session_batches"]:
     bn = batch["batch_number"]
-    count = batch["session_count"]
-    cumulative = bn * 15
+    count = batch.get("session_count", len(batch["sessions"]))
+    cumulative += count
     date = f"2026-08-{14 + bn:02d}" if bn <= 17 else f"2026-09-{bn - 17:02d}"
     with_pr = sum(1 for s in batch["sessions"] if s["pr_num"])
     note = f"{with_pr} with PR" if with_pr else "no PRs"

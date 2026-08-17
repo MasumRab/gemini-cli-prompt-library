@@ -1,8 +1,8 @@
 import json
 import os
 
-schema_path = (
-    "/home/masum/github/remote/jules/docs/forensics/forensics_data_schema.json"
+schema_path = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "forensics_data_schema.json"
 )
 with open(schema_path, "r") as f:
     schema = json.load(f)

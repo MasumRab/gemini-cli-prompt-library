@@ -199,11 +199,18 @@ class ForensicsDataMigrator:
             with open(filepath, "r") as f:
                 data = json.load(f)
 
-            if not isinstance(data, list):
-                logger.warning("session_pr_integrated data is not a list")
+            if isinstance(data, list):
+                sessions = data
+            elif isinstance(data, dict):
+                sessions = data.get("sessions", [])
+            else:
+                sessions = []
+
+            if not sessions:
+                logger.warning("session_pr_integrated contains no sessions to process")
                 return
 
-            for session_data in data:
+            for session_data in sessions:
                 self._process_session_entry(session_data)
 
         except Exception as e:
@@ -232,64 +239,81 @@ class ForensicsDataMigrator:
             # Process PRs associated with this session
             if "prs" in session_data and isinstance(session_data["prs"], list):
                 for pr_data in session_data["prs"]:
-                    pr_key = (pr_data.get("number"), pr_data.get("repo"))
-                    if (
-                        pr_key not in self.pr_keys_seen
-                        and pr_data.get("number")
-                        and pr_data.get("repo")
-                    ):
-                        self.pr_keys_seen.add(pr_key)
+                    pr_number = pr_data.get("number")
+                    pr_repo = pr_data.get("repo")
+                    if pr_number is not None and pr_repo is not None:
+                        pr_key = (pr_number, pr_repo)
 
-                        # Add to pull_requests array
-                        pr = {
-                            "number": pr_data.get("number"),
-                            "repo": pr_data.get("repo"),
-                            "title": pr_data.get("title", ""),
-                            "state": pr_data.get("state", "UNKNOWN"),
-                            "head": pr_data.get("head", ""),
-                            "base": pr_data.get("base", ""),
-                            "created_at": pr_data.get("created", ""),
-                            "updated_at": pr_data.get("updated", ""),
-                            "merged_at": pr_data.get("merged"),
-                            "closed_at": pr_data.get("closed"),
-                            "url": pr_data.get("url", ""),
-                            "comment_count": pr_data.get("comment_count", 0),
-                            "review_count": pr_data.get("review_count", 0),
-                            "commit_count": pr_data.get("commit_count", 0),
-                            "associated_sessions": [session_id],
-                            "timeline": [],
-                        }
+                        # Add PR reference to session's associated_prs list (avoid duplicates)
+                        pr_ref = {"number": pr_number, "repo": pr_repo}
+                        if pr_ref not in session["associated_prs"]:
+                            session["associated_prs"].append(pr_ref)
 
-                        # Process timeline entries
-                        if "timeline" in pr_data and isinstance(
-                            pr_data["timeline"], list
-                        ):
-                            for tl_entry in pr_data["timeline"]:
-                                timeline_entry = {
-                                    "type": tl_entry.get("type", "comment"),
-                                    "time": tl_entry.get("time", ""),
-                                    "author": tl_entry.get("author", ""),
-                                    "text": tl_entry.get("text", ""),
-                                    "state": tl_entry.get("state"),
-                                    "location": tl_entry.get("location"),
-                                }
-                                # Remove None values
-                                timeline_entry = {
-                                    k: v
-                                    for k, v in timeline_entry.items()
-                                    if v is not None
-                                }
-                                pr["timeline"].append(timeline_entry)
+                        # Handle PR entry in pull_requests array
+                        if pr_key not in self.pr_keys_seen:
+                            # New PR: create entry and add to tracking set
+                            self.pr_keys_seen.add(pr_key)
 
-                        self.migrated_data["pull_requests"].append(pr)
-
-                        # Add PR reference to session
-                        session["associated_prs"].append(
-                            {
-                                "number": pr_data.get("number"),
-                                "repo": pr_data.get("repo"),
+                            # Build PR entry
+                            pr = {
+                                "number": pr_number,
+                                "repo": pr_repo,
+                                "title": pr_data.get("title", ""),
+                                "state": pr_data.get("state", "UNKNOWN"),
+                                "head": pr_data.get("head", ""),
+                                "base": pr_data.get("base", ""),
+                                "created_at": pr_data.get("created", ""),
+                                "updated_at": pr_data.get("updated", ""),
+                                "merged_at": pr_data.get("merged"),
+                                "closed_at": pr_data.get("closed"),
+                                "url": pr_data.get("url", ""),
+                                "comment_count": pr_data.get("comment_count", 0),
+                                "review_count": pr_data.get("review_count", 0),
+                                "commit_count": pr_data.get("commit_count", 0),
+                                "associated_sessions": [
+                                    session_id
+                                ],  # Start with current session
+                                "timeline": [],
                             }
-                        )
+
+                            # Process timeline entries if present
+                            if "timeline" in pr_data and isinstance(
+                                pr_data["timeline"], list
+                            ):
+                                for tl_entry in pr_data["timeline"]:
+                                    timeline_entry = {
+                                        "type": tl_entry.get("type", "comment"),
+                                        "time": tl_entry.get("time", ""),
+                                        "author": tl_entry.get("author", ""),
+                                        "text": tl_entry.get("text", ""),
+                                        "state": tl_entry.get("state"),
+                                        "location": tl_entry.get("location"),
+                                    }
+                                    # Remove None values
+                                    timeline_entry = {
+                                        k: v
+                                        for k, v in timeline_entry.items()
+                                        if v is not None
+                                    }
+                                    pr["timeline"].append(timeline_entry)
+
+                            self.migrated_data["pull_requests"].append(pr)
+                        else:
+                            # Existing PR: find it and update associated_sessions
+                            for existing_pr in self.migrated_data["pull_requests"]:
+                                if (
+                                    existing_pr.get("number") == pr_number
+                                    and existing_pr.get("repo") == pr_repo
+                                ):
+                                    # Avoid duplicate session references
+                                    if (
+                                        session_id
+                                        not in existing_pr["associated_sessions"]
+                                    ):
+                                        existing_pr["associated_sessions"].append(
+                                            session_id
+                                        )
+                                    break
 
             # Remove empty arrays if needed
             if not session["associated_prs"]:
