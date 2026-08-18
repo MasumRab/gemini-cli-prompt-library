@@ -1,3 +1,13 @@
+# Trunk's own config
+.trunk/
+
+# Agent outputs and data
+.graphite-agent/outputs/
+dspy_helm/data/
+
+# Scaffolding zip archives and extracted reference frameworks
+graphite-zips/
+
 # === Training/eval data ===
 # Generated datasets, not source code
 *.jsonl
@@ -16,3 +26,4 @@
 # === Agent-generated outputs ===
 # Produced by .graphite-agent runs, not hand-authored source
 .graphite-agent/outputs/
+
