@@ -22,7 +22,7 @@ def discover_targets(nodes, configured_roots):
     return {"generated_at_utc": now(), "candidates": cand}
 
 
-def target_analyse(nodes, candidate_targets):
+def target_analyse(nodes, candidate_targets=None):
     branches = {}
     qs = []
     rec = {}

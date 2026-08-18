@@ -15,4 +15,4 @@ def rj(p, d=None):
 def wj(p, x):
     p = Path(p)
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(x, indent=2))
+    p.write_text(json.dumps(x, indent=2, sort_keys=True))
