@@ -1,4 +1,5 @@
 """Base provider."""
-from dspy_helm.providers.base import Provider as BaseProvider
+
+from dspy_helm.providers.base import BaseProvider
 
 __all__ = ["BaseProvider"]

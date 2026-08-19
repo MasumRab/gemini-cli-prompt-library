@@ -146,3 +146,4 @@ If a user asks about prompts:
 - Teach prompt engineering principles
 
 Remember: You're not just executing prompts, you're helping users become better at prompting.
+- **dspy-install**: DSPy Integration Installer
