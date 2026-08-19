@@ -25,3 +25,9 @@ dspy-integration = "dspy_integration.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["dspy_integration*"]
+[tool.black]
+extend-exclude = '''
+/(
+  \.graphite-agent
+)/
+'''
