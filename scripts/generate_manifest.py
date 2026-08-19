@@ -2,11 +2,7 @@ import json
 import os
 import tomllib
 
-
 def generate_manifest():
-    """
-    Generates a manifest of all commands in the commands/ directory and updates the improve.toml prompt.
-    """
     print("Starting manifest generation...")
     manifest = {}
     commands_dir = "commands"
@@ -27,13 +23,15 @@ def generate_manifest():
                     with open(filepath, "rb") as f:
                         try:
                             data = tomllib.load(f)
-                            prompt_lines = data.get("prompt", "").strip().split("\n")
-                            description = "No description available."
-                            for line in prompt_lines:
-                                stripped_line = line.strip()
-                                if stripped_line.startswith("#"):
-                                    description = stripped_line[1:].strip()
-                                    break
+                            description = (data.get("description") or "").strip()
+                            if not description:
+                                prompt_lines = data.get("prompt", "").strip().split("\n")
+                                description = "No description available."
+                                for line in prompt_lines:
+                                    stripped_line = line.strip()
+                                    if stripped_line.startswith("#"):
+                                        description = stripped_line[1:].strip()
+                                        break
                             manifest[command_name] = description
                         except tomllib.TOMLDecodeError as e:
                             print(f"Error decoding {filepath}: {e}")
@@ -45,7 +43,7 @@ def generate_manifest():
     output_filename = "commands_manifest.json"
     print(f"Writing manifest to {output_filename}")
     with open(output_filename, "w") as f:
-        json.dump(manifest, f, indent=2)
+        json.dump(manifest, f, indent=2, sort_keys=True)
     print("Manifest file generation complete.")
 
     # Update the improve.toml prompt
@@ -55,13 +53,12 @@ def generate_manifest():
     with open(template_path, "r") as f:
         template_content = f.read()
 
-    manifest_json = json.dumps(manifest, indent=2)
+    manifest_json = json.dumps(manifest, indent=2, sort_keys=True)
     new_content = template_content.replace("{{COMMAND_MANIFEST}}", manifest_json)
 
     with open(output_path, "w") as f:
         f.write(new_content)
     print(f"{output_path} updated successfully.")
-
 
 if __name__ == "__main__":
     generate_manifest()
