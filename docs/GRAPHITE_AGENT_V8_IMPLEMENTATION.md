@@ -120,3 +120,34 @@ print('Semantic stack imports OK')
 # Run V8 verification script (exists on v8-surgical-integration)
 python .graphite-agent/tools/verify_v8_implementation.py
 ```
+
+## 📈 Verified Measured Results (Branch-Accurate, Re-Run)
+
+These numbers come from a branch-accurate re-analysis (per-branch `git archive` extraction compared against each zip's `.graphite-agent/` content by SHA256). They supersede any earlier estimates.
+
+### V8 ZIPs → Best Base (presence / fidelity)
+| ZIP Version | Best Base | Presence | Fidelity | Identical |
+|-------------|-----------|----------|----------|-----------|
+| `v8_semantic_final_patch` | `v8-surgical-integration` | 84% | 0% | 0/48 |
+| `v8_targeted_complete` | `v8-surgical-integration` | 81% | 0% | 0/42 |
+| `v8_complete_missing_features` | `v8-surgical-integration` | 77% | 0% | 0/41 |
+| `v8_full_implementation` | `origin/v8-surgical-integration` | 73% | 3% | **1/32** (semantic_questions.py) |
+| `v7_4_regenerated` | `v8-surgical-integration` | 78% | 0% | 0/18 |
+| `v8_semantic_scaffold_regenerated` | `v8-surgical-integration` | 72% | 0% | 0/18 |
+| `v7_4_to_v8_regenerated_all` | `v8-surgical-integration` | 72% | 0% | 0/18 |
+| `v8_capability_verification_pack` | — | — | — | no top-level `.graphite-agent` |
+
+> Presence = % of the zip's `.graphite-agent` paths present on the branch.
+> Fidelity = % of those with identical SHA256 content. 0% fidelity means all found
+> files evolved/renamed from the zip version (expected — the repo moved beyond the zip).
+
+### Cross-Version Context (for base selection)
+| ZIP Version | Best Base | Presence | Fidelity |
+|-------------|-----------|----------|----------|
+| `v7_3_full_bundle` | `fix/require-review-*`, `cto/*`, **`backup/*`** (all tie) | 100% | **97%** (59/61) |
+| `v6_4_framework` | `fix/require-review-comments-resolved` | 69% | **36%** (4/11) |
+| `v7_1_diagnostic_bundle` | all branches tie | 97% | 9% (3/32) |
+| `v7_diagnostic_bundle` | all branches tie | 100% | 4% (1/25) |
+| `v6_2` / `v6_3` | no viable base | 24% / 23% | 0% |
+
+**Key correction vs earlier docs:** the **V7.3 full bundle is equally well represented by all `fix/*`, `cto/*`, and `backup/*` branches** (all 97% / 59 identical files) — not uniquely `backup/pre-merge-20260705-043613`. The V8 ZIPs all base on `v8-surgical-integration` as its complete, coherent semantic stack is the only coherent lineage.
