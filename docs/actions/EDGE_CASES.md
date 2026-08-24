@@ -262,6 +262,39 @@ This aligns with transfer pattern **T2** (capability seeding — curated cherry-
 3. Answer the three STOP-sign questions from §9 before any cross-branch git operation
 4. Never recommend `git merge scientific` into `main` or vice versa — use T1/T2 cherry-picks instead
 
+### 30. CRITICAL — `?view=FULL` query parameter causes 400 on session polling (2026-08-16)
+
+| Field | Value |
+|-------|-------|
+| **Severity** | 🔴 CRITICAL — all Jules PR review workflows failing immediately after session creation |
+| **Date discovered** | 2026-08-16 |
+| **Status** | **FIXED** — `?view=FULL` removed from all polling URLs |
+| **Affected repos** | EmailIntelligence, kaggle-notebooks-analysis, gemini-cli-prompt-library |
+| **Affected workflows** | `jules-pr-review.yml`, `jules-pr-force-review.yml`, `jules-pr-rebuild.yml`, `jules-pr-walkthrough.yml` (4 per repo, 12 total) |
+
+**What happened:** The Jules API `GET /v1alpha/sessions/{id}` endpoint does not support the `?view=FULL` query parameter. When the polling step in each workflow included `?view=FULL` in the URL, the API returned `400 Bad Request`, causing `curl --fail-with-body` to exit with code 22. The workflow failed immediately on the first poll attempt — 15 seconds after successful session creation.
+
+**Symptom:** All recent `jules-pr-review.yml` runs show `failure` conclusion. The log shows:
+```
+Session created: sessions/2739128843849774554 (state: )
+curl: (22) The requested URL returned error: 400
+##[error]Process completed with exit code 1.
+```
+
+**Root cause:** The `?view=FULL` parameter was likely copied from the Jules API documentation's `list` endpoint (which does support `view` as a query parameter for controlling response verbosity) and applied to the `get` endpoint (which does not). The `get` endpoint returns the full session object by default.
+
+**Fix:** Remove `?view=FULL` from the polling URL in all 4 affected workflows:
+```diff
+- "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}?view=FULL" \
++ "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}" \
+```
+
+**Verification:** Tested locally — `curl` without `?view=FULL` returns `200 OK` with `state=QUEUED`. With `?view=FULL` it returns `400 Bad Request`.
+
+**Impact:** Every PR opened, synchronized, or reopened since the `?view=FULL` parameter was added failed to get a Jules review. The session was created (consuming daily quota) but the review output was never polled or posted.
+
+**Prevention:** Add a smoke-test step to workflows that verifies the polling URL works before entering the poll loop. Alternatively, use the Python API client (`tools/api/jules_api_client.py`) which correctly omits `?view=FULL`.
+
 ## Monitoring Recommendations
 
 Add a workflow that runs once daily and:

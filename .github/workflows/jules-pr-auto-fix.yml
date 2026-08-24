@@ -415,7 +415,7 @@ jobs:
               [ "$remaining" -gt 60 ] && remaining=60
               sleep 15
               response=$(curl -sS --fail-with-body --connect-timeout 10 --max-time "$remaining" \
-                "https://jules.googleapis.com/v1alpha/${resource}?view=FULL" \
+                "https://jules.googleapis.com/v1alpha/${resource}" \
                 -H "X-Goog-Api-Key: ${JULES_API_KEY}" 2>/dev/null) || {
                 consecutive_failures=$((consecutive_failures + 1))
                 echo "$label attempt $i/$max_attempts — GET failed (consecutive: $consecutive_failures)" >&2
@@ -833,7 +833,7 @@ jobs:
               [ "$remaining" -gt 60 ] && remaining=60
               sleep 15
               response=$(curl -sS --fail-with-body --connect-timeout 10 --max-time "$remaining" \
-                "https://jules.googleapis.com/v1alpha/${resource}?view=FULL" \
+                "https://jules.googleapis.com/v1alpha/${resource}" \
                 -H "X-Goog-Api-Key: ${JULES_API_KEY}" 2>/dev/null) || {
                 consecutive_failures=$((consecutive_failures + 1))
                 echo "$label attempt $i/$max_attempts — GET failed (consecutive: $consecutive_failures)" >&2
