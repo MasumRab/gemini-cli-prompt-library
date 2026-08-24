@@ -41,8 +41,13 @@ jules/
 ├── extensions/      # Gemini CLI extension
 └── CHECKLIST.md     # Consolidation checklist (170+ checkpoints)
 ```
+\n## Standardized Forensics Data Format
 
-## Key Design Decisions
+The `docs/forensics/` directory contains standardized forensics data in JSON format, including:
+- `migrated_forensics_data.json`: The migrated forensics data in the standardized format.
+- `forensics_data_schema.json`: The JSON schema defining the standardized format.
+
+\n## Key Design Decisions
 
 1. **Path mapping**: `scripts/jules_tools/` → `tools/`, `scripts/core/` → `tools/utils/`, `~/.agents/commands/` → `tools/cli/`
 2. **State names**: All files use official Jules API state enum (QUEUED, PLANNING, AWAITING_PLAN_APPROVAL, AWAITING_USER_FEEDBACK, IN_PROGRESS, PAUSED, COMPLETED, FAILED, STATE_UNSPECIFIED)

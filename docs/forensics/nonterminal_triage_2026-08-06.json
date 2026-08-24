@@ -1,0 +1,359 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2026-08-17",
+    "note": "Auto-generated metadata",
+    "generated_at": "2026-08-17T00:00:00Z"
+  },
+  "sessions": [],
+  "pull_requests": [
+    {
+      "id": "10304958435902448274",
+      "state": "OPEN",
+      "title": "\ud83d\udd12 Security Fix: Add Missing Network Timeout in kaggle_helper.py",
+      "repo": "MasumRab/kaggle-notebooks-analysis",
+      "branch": "",
+      "created": "2026-04-29T03:35:06.366182435Z",
+      "updated": "2026-04-29T03:35:08.214474Z",
+      "prs": [],
+      "last_activities": [],
+      "error": null,
+      "number": 10304958435902448274
+    },
+    {
+      "id": "14844012706076784544",
+      "state": "OPEN",
+      "title": "Fix Unclosed File Descriptor in scripts/inject_data_loader.py",
+      "repo": "MasumRab/kaggle-notebooks-analysis",
+      "branch": "",
+      "created": "2026-04-29T03:34:54.657734564Z",
+      "updated": "2026-07-28T04:34:38.032504Z",
+      "prs": [],
+      "last_activities": [
+        {
+          "originator": "agent",
+          "text": "I have analyzed the security vulnerability in `scripts/inject_data_loader.py` at line 552.\n\nThe issue is an unclosed file descriptor caused by `json.load(open(nb_path))`. My plan is to change this to:\n```python\nwith open(nb_path) as f:\n    nb = json.load(f)\n```\nThis is a standard security and resour",
+          "time": "2026-04-29T03:39:21.973591Z"
+        },
+        {
+          "originator": "user",
+          "text": "1. No special encoding needed \u2014 just `with open(nb_path) as f:`. 2. Only fix this specific line for this task. 3. The existing try/except around it is sufficient verification. Proceed.",
+          "time": "2026-04-29T04:21:28.884177449Z"
+        },
+        {
+          "originator": "agent",
+          "text": "PLAN: Fix unclosed file descriptor in `scripts/inject_data_loader.py`. | Verify the fix. | Complete pre commit steps",
+          "time": "2026-04-29T04:22:19.498830Z"
+        },
+        {
+          "originator": "user",
+          "text": "Your session is marked COMPLETED but no pull request was found. Please either: 1. Push your changes as a PR and reply with the PR URL, or 2. If you could not complete the task, explain specifically what blocked you so we can restart. Do not summarise \u2014 take action.",
+          "time": "2026-04-30T06:43:07.468950806Z"
+        },
+        {
+          "originator": "agent",
+          "text": "",
+          "time": "2026-04-30T06:44:15.839077Z"
+        }
+      ],
+      "error": null,
+      "number": 14844012706076784544
+    },
+    {
+      "id": "18254541687978082373",
+      "state": "OPEN",
+      "title": "Pre-compile Regex Patterns in ANCHOR_PATTERNS",
+      "repo": "MasumRab/kaggle-notebooks-analysis",
+      "branch": "",
+      "created": "2026-04-29T03:34:35.443999277Z",
+      "updated": "2026-07-28T14:45:19.360202Z",
+      "prs": [],
+      "last_activities": [
+        {
+          "originator": "agent",
+          "text": "I'm analyzing the performance optimization task.\nI understand that the goal is to optimize the `ShapePropagationHeuristic.find_anchors` method by pre-compiling the regular expressions defined in `ANCHOR_PATTERNS`.\n\nTo ensure I have crystal-clear requirements, I have a few questions for you:\n1. Shoul",
+          "time": "2026-04-29T03:42:41.225479Z"
+        },
+        {
+          "originator": "user",
+          "text": "1. Modify ANCHOR_PATTERNS directly to store compiled re.Pattern objects. No backward compat needed \u2014 it's internal. 2. Use pat.pattern to keep the string in the returned dict. 3. Yes, check other regex patterns in forensics.py loops too \u2014 this is the same PR as #22 which was already merged. Check if",
+          "time": "2026-04-29T04:21:31.451484208Z"
+        },
+        {
+          "originator": "agent",
+          "text": "PLAN: Optimize `ShapePropagationHeuristic.find_anchors` by pre-compiling `ANCHOR_PATTE | Review and pre-compile other regexes in loops across `forensics.py` | Measure the performance impact",
+          "time": "2026-04-29T04:37:24.597468Z"
+        },
+        {
+          "originator": "user",
+          "text": "1. Compile in-place \u2014 replace the strings in ANCHOR_PATTERNS with re.compile() objects directly. Nothing external imports this list. 2. Use pat.pattern in the returned dict so it stays a string. 3. Scope to ANCHOR_PATTERNS only \u2014 do not touch other files. Proceed.",
+          "time": "2026-04-29T04:43:21.968195195Z"
+        },
+        {
+          "originator": "agent",
+          "text": "PLAN: Optimize `ShapePropagationHeuristic.find_anchors` by pre-compiling `ANCHOR_PATTE | Measure the performance impact | Verify functionality via testing",
+          "time": "2026-04-29T04:43:30.543389Z"
+        }
+      ],
+      "error": null,
+      "number": 18254541687978082373
+    },
+    {
+      "id": "5824169116591251349",
+      "state": "OPEN",
+      "title": "Fix failing CI checks in MasumRab/EmailIntelligence",
+      "repo": "MasumRab/EmailIntelligence",
+      "branch": "main",
+      "created": "2026-04-13T14:29:19.788614915Z",
+      "updated": "2026-05-01T02:48:17.822983Z",
+      "prs": [],
+      "last_activities": [
+        {
+          "originator": "agent",
+          "text": "I have been working on fixing the CI tests in PR 647. The PR modifies the `SmartFilterManager` and the `_EmailContext` class to use lazy evaluation.\nI noticed a bunch of things failed, specifically `test_filter_api.py`.\n1. The codebase uses `server.python_backend` in `test_filter_api.py` which was i",
+          "time": "2026-04-13T15:01:11.665015Z"
+        },
+        {
+          "originator": "user",
+          "text": "Your session needs input. IMPORTANT: 1) Find YOUR branch: git log -1 --format='%D' 2) Stay on that branch ONLY 3) Do NOT push to other PRs. Work on your session branch only. What do you need to continue?",
+          "time": "2026-04-13T17:52:45.875649208Z"
+        },
+        {
+          "originator": "agent",
+          "text": "I've made good progress fixing the tests on the `test_filter_api.py` file for PR 647.\n\nI've fixed these issues:\n1. `filter_manager` mock needed to be `MagicMock` instead of `AsyncMock`.\n2. I fixed `PathValidator.validate_and_resolve_db_path` so it handles `:memory:` paths correctly without mangling ",
+          "time": "2026-04-13T18:33:01.197975Z"
+        },
+        {
+          "originator": "user",
+          "text": "Continue. If merge conflict markers remain in setup/launch.py or setup/services.py, restore those files from origin/main with: git checkout origin/main -- setup/launch.py setup/services.py. Then re-run the tests. Push when CI passes.",
+          "time": "2026-05-01T02:17:04.350176171Z"
+        },
+        {
+          "originator": "agent",
+          "text": "I've made the updates you suggested. I restored `setup/launch.py` and `setup/services.py` from `origin/main` to remove any conflict markers.\n\nHowever, I'm currently running into an issue when I test the filter API locally. The `SmartFilterManager` tries to initialize a database connection, but becau",
+          "time": "2026-05-01T02:41:04.515948Z"
+        }
+      ],
+      "error": null,
+      "number": 5824169116591251349
+    },
+    {
+      "id": "11760979078520753675",
+      "state": "OPEN",
+      "title": "Fix failing CI checks for Pull Requests in MasumRab/EmailIntelligence",
+      "repo": "MasumRab/EmailIntelligence",
+      "branch": "main",
+      "created": "2026-04-04T14:57:51.163732952Z",
+      "updated": "2026-05-01T02:38:26.129256Z",
+      "prs": [],
+      "last_activities": [
+        {
+          "originator": "agent",
+          "text": "I've investigated the failing checks for PR 610. The main issue was a `SyntaxError: unterminated triple-quoted string literal` in `setup/launch.py` and `SyntaxError: unterminated string literal` in `setup/services.py`, which appear to be related to improperly resolved merge conflicts or malformed co",
+          "time": "2026-04-04T15:12:38.159144Z"
+        },
+        {
+          "originator": "user",
+          "text": "Continue. If merge conflict markers remain in setup/launch.py or setup/services.py, restore those files from origin/main with: git checkout origin/main -- setup/launch.py setup/services.py. Then re-run the tests. Push when CI passes.",
+          "time": "2026-05-01T02:17:07.886295103Z"
+        },
+        {
+          "originator": "agent",
+          "text": "I've been trying to fix the syntax errors in `setup/launch.py` resulting from merge conflict markers. When I restore the file from `origin/main` to remove the local modifications, it contains `<<<<<<< HEAD` markers that are causing a `SyntaxError: unterminated triple-quoted string literal`. When I r",
+          "time": "2026-05-01T02:31:40.122182Z"
+        }
+      ],
+      "error": null,
+      "number": 11760979078520753675
+    },
+    {
+      "id": "5852715954766644480",
+      "state": "OPEN",
+      "title": "Fix failing CI checks in EmailIntelligence",
+      "repo": "MasumRab/EmailIntelligence",
+      "branch": "main",
+      "created": "2026-04-04T13:08:14.398857040Z",
+      "updated": "2026-05-01T02:43:21.019537Z",
+      "prs": [],
+      "last_activities": [
+        {
+          "originator": "agent",
+          "text": "I have been trying to resolve the failing CI tests for PR 610. The failure was caused by `AttributeError: type object 'PathValidator' has no attribute 'validate_database_path'` in `tests/test_launcher.py`. I renamed the usage of `validate_database_path` to `validate_and_resolve_db_path` in `src/back",
+          "time": "2026-04-04T13:23:06.285201Z"
+        },
+        {
+          "originator": "user",
+          "text": "Continue. If merge conflict markers remain in setup/launch.py or setup/services.py, restore those files from origin/main with: git checkout origin/main -- setup/launch.py setup/services.py. Then re-run the tests. Push when CI passes.",
+          "time": "2026-05-01T02:17:09.064096413Z"
+        },
+        {
+          "originator": "agent",
+          "text": "I have successfully fixed the `AttributeError: type object 'PathValidator' has no attribute 'validate_database_path'` bug by renaming it to `validate_and_resolve_db_path` in `src/backend/python_nlp/smart_filters.py` and `src/backend/python_nlp/gmail_integration.py`. I also had to delete the malforme",
+          "time": "2026-05-01T02:36:08.716584Z"
+        }
+      ],
+      "error": null,
+      "number": 5852715954766644480
+    },
+    {
+      "id": "6052746651524889133",
+      "state": "OPEN",
+      "title": "Sentinel: Autonomous Security Hardening Agent",
+      "repo": "MasumRab/EmailIntelligence",
+      "branch": "orchestration-tools",
+      "created": "2026-04-03T15:43:01.731976486Z",
+      "updated": "2026-05-01T03:05:12.758300Z",
+      "prs": [],
+      "last_activities": [
+        {
+          "originator": "agent",
+          "text": "PLAN: Identify the problem: The memory instructions state: \"For security and reliabili | Modify `src/context_control/models.py`: | Modify `src/main.py`:",
+          "time": "2026-04-03T15:47:48.264882Z"
+        },
+        {
+          "originator": "user",
+          "text": "",
+          "time": "2026-04-03T15:47:51.434683Z"
+        },
+        {
+          "originator": "agent",
+          "text": "",
+          "time": "2026-04-03T15:47:59.301902Z"
+        },
+        {
+          "originator": "agent",
+          "text": "",
+          "time": "2026-04-03T15:48:12.700991Z"
+        },
+        {
+          "originator": "agent",
+          "text": "",
+          "time": "2026-04-03T15:48:27.457648Z"
+        }
+      ],
+      "error": null,
+      "number": 6052746651524889133
+    },
+    {
+      "id": "647582418723672708",
+      "state": "OPEN",
+      "title": "You are working on Pull Requests in repository MasumRab/EmailIntelligence.\n\nSelect exactly one open pull request targeti",
+      "repo": "MasumRab/EmailIntelligence",
+      "branch": "scientific",
+      "created": "2026-04-02T13:56:27.475048561Z",
+      "updated": "2026-05-01T02:42:20.898220Z",
+      "prs": [],
+      "last_activities": [
+        {
+          "originator": "agent",
+          "text": "I have identified the CI failure for PR 589. The tests are failing with an `ImportError` on `SentimentModel` and `TopicModel` within `src/backend/python_nlp/nlp_engine.py`. This issue arose because my script to remove merge conflict markers incorrectly cleared the contents of `src/backend/python_nlp",
+          "time": "2026-04-02T14:08:07.810775Z"
+        },
+        {
+          "originator": "user",
+          "text": "Continue. If merge conflict markers remain in setup/launch.py or setup/services.py, restore those files from origin/main with: git checkout origin/main -- setup/launch.py setup/services.py. Then re-run the tests. Push when CI passes.",
+          "time": "2026-05-01T02:17:10.166957590Z"
+        },
+        {
+          "originator": "agent",
+          "text": "I have successfully run a script to remove leftover merge conflict markers (`<<<<<<< HEAD`, `=======`, `>>>>>>>`) from the files in `src/` and `setup/` to resolve the `SyntaxError` that broke tests for PR 589. \n\nHowever, `src/core/auth.py` has a `NameError: name 'logging' is not defined` because the",
+          "time": "2026-05-01T02:35:16.580072Z"
+        }
+      ],
+      "error": null,
+      "number": 647582418723672708
+    },
+    {
+      "id": "17065719860896443446",
+      "state": "OPEN",
+      "title": "PRIORITY PR REPAIR: #300",
+      "repo": "MasumRab/EmailIntelligence",
+      "branch": "",
+      "created": "2026-03-24T14:11:07.476051888Z",
+      "updated": "2026-04-13T18:59:33.800738Z",
+      "prs": [],
+      "last_activities": [
+        {
+          "originator": "agent",
+          "text": "PLAN: Fix ContextIsolator regex compilation in `src/context_control/isolation.py`. | Run pytest to verify the changes. | Complete pre-commit steps.",
+          "time": "2026-03-24T14:24:13.062171Z"
+        },
+        {
+          "originator": "user",
+          "text": "",
+          "time": "2026-03-24T14:27:19.178720795Z"
+        },
+        {
+          "originator": "user",
+          "text": "",
+          "time": "2026-03-24T14:41:52.020556Z"
+        },
+        {
+          "originator": "user",
+          "text": "where you changes pushed ?",
+          "time": "2026-03-24T14:42:16.559909062Z"
+        },
+        {
+          "originator": "agent",
+          "text": "I haven't made or pushed any changes yet! I just finished exploring the issue and outlining my approach. I will now proceed to implement the fix in `src/context_control/isolation.py`, verify it with tests, and then I will push the changes to the PR branch.",
+          "time": "2026-03-24T14:55:30.111538Z"
+        }
+      ],
+      "error": null,
+      "number": 17065719860896443446
+    },
+    {
+      "id": "9445754006296005497",
+      "state": "OPEN",
+      "title": "Bolt: Precision Performance",
+      "repo": "MasumRab/EmailIntelligence",
+      "branch": "main",
+      "created": "2026-01-09T20:24:53.634084491Z",
+      "updated": "2026-08-06T19:51:05.014050Z",
+      "prs": [],
+      "last_activities": [],
+      "error": null,
+      "number": 9445754006296005497
+    },
+    {
+      "id": "15151693654808820502",
+      "state": "OPEN",
+      "title": "Find duplicate logic across files",
+      "repo": "(none)",
+      "branch": "",
+      "created": "2025-06-13T18:02:36.345677976Z",
+      "updated": "",
+      "prs": [],
+      "last_activities": [
+        {
+          "originator": "agent",
+          "text": "PLAN: Refactor `_execute_async_command` function. | Analyze and refactor smart filter logic. | Analyze and refactor Gmail service logic.",
+          "time": "2025-06-13T18:03:11.339260Z"
+        },
+        {
+          "originator": "agent",
+          "text": "I've created a plan to find and refactor duplicate logic in the codebase. Please review the plan and let me know if you have any feedback. If you're happy with the plan, let me know and I'll get started.",
+          "time": "2025-06-13T18:03:14.426401Z"
+        },
+        {
+          "originator": "user",
+          "text": "fix venv install no activate and correct python version install via local conda",
+          "time": "2025-06-13T18:04:17.080231554Z"
+        },
+        {
+          "originator": "agent",
+          "text": "I've created a plan to find and refactor duplicate logic in the codebase. Please review the plan and let me know if you have any feedback. If you're happy with the plan, let me know and I'll get started.",
+          "time": "2025-06-13T18:04:21.756245Z"
+        },
+        {
+          "originator": "user",
+          "text": "",
+          "time": "2025-06-13T18:04:48.652770130Z"
+        }
+      ],
+      "error": null,
+      "number": 15151693654808820502
+    }
+  ],
+  "interventions": []
+}

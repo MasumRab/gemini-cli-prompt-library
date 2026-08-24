@@ -1,0 +1,20 @@
+name: Robin AI Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  robin-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Robin AI Code Review
+        uses: antongulin/robin@main
+        with:
+          llm_api_key: ${{ secrets.LLM_API_KEY }}
+          llm_base_url: ${{ secrets.LLM_BASE_URL }}
+          llm_model: ${{ secrets.LLM_MODEL }}

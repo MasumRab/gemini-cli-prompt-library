@@ -50,6 +50,15 @@ defines how to join a GitHub trigger/run to the exact Jules session content and 
 GitHub side effects. Use it for Actions instrumentation and historical investigations;
 it does not merge the separate Actions-readiness and operations-readiness decisions.
 
+## Forensics Data Standardization
+
+The `docs/forensics/` directory contains standardized forensics data in JSON format:
+- `migrated_forensics_data.json` - Unified forensics data containing sessions, pull requests, and interventions
+- `forensics_data_schema.json` - JSON Schema defining the standardized format
+- `migrate_forensics.py` - Script to convert legacy forensics files to the standardized format
+
+This standardization enables efficient storage, quick retrieval, and consistent analysis of Jules session and PR data.
+
 ## Historical material
 
 [`actions/artifacts/README.md`](actions/artifacts/README.md) indexes superseded plans,

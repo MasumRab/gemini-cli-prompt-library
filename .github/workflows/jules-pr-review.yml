@@ -51,14 +51,14 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0      - uses: actions/checkout@v4
         if: steps.fork-check.outputs.skip != 'true'
         with:
           fetch-depth: 0
 
       - name: Checkout helper scripts (trusted base branch)
         if: steps.fork-check.outputs.skip != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.base.ref }}
           sparse-checkout: |
@@ -67,12 +67,13 @@ jobs:
 
       - name: Prepare review prompt
         id: prepare
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0        uses: actions/github-script@v7
         with:
           script: |
             // Propagate fork skip from the fork-check step
             if ('${{ steps.fork-check.outputs.skip }}' === 'true') {
-              core.setOutput('skip', 'true');
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
               return;
             }
 
@@ -87,7 +88,17 @@ jobs:
               issue_number: pr.number,
             });
             if (labels.some(l => l.name === 'jules-override')) {
-              core.setOutput('skip', 'true');
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
+              return;
+            }
+
+            // Skip automated PRs (Dependabot, GitHub Actions, Mergify, Renovate bots)
+            const botAuthors = ['dependabot[bot]', 'github-actions[bot]', 'mergify[bot]', 'renovate[bot]'];
+            if (botAuthors.includes(pr.user.login) || pr.head.ref.startsWith('dependabot/')) {
+              core.info(`Automated PR by ${pr.user.login} (branch: ${pr.head.ref}) — skipping review`);
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
               return;
             }
 
@@ -101,6 +112,27 @@ jobs:
               path: f.filename, status: f.status,
               additions: f.additions, deletions: f.deletions,
             }));
+
+            // Skip trivial changes — lockfile-only, docs-only, or tiny diffs
+            const totalChanges = files.reduce((s, f) => s + f.additions + f.deletions, 0);
+            const nonLockfile = files.filter(f =>
+              !f.filename.endsWith('package-lock.json') &&
+              !f.filename.endsWith('yarn.lock') &&
+              !f.filename.endsWith('.gitignore') &&
+              !f.filename.includes('/migrations/')
+            );
+            if (files.length <= 2 && totalChanges < 50) {
+              core.info(`Trivial diff (${files.length} files, ${totalChanges} lines) — skipping review`);
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
+              return;
+            }
+            if (nonLockfile.length === 0) {
+              core.info('Lockfile-only or migration-only changes — skipping review');
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
+              return;
+            }
 
             // Fetch existing comments
             const allIssueComments = await github.paginate(github.rest.issues.listComments, {
@@ -117,7 +149,8 @@ jobs:
             );
             if (existingReview) {
               core.info('Review already posted for this HEAD SHA — skipping');
-              core.setOutput('skip', 'true');
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
               return;
             }
 
@@ -276,7 +309,7 @@ jobs:
               '<!-- FINDING severity="medium" file="..." line="..." -->',
               '',
               '### 🟢 Low - <path/file.ext:line> — <description>',
-              '<minor, stylistic, typos, docs. Author discretion.>',
+              '<minor, stylistic, typos, documentation. Author discretion.>',
               '<!-- FINDING severity="low" file="..." line="..." -->',
               '',
               '## Truncation',
@@ -315,7 +348,7 @@ jobs:
 
             const fs = require('fs');
             fs.writeFileSync('/tmp/jules-review-payload.json', JSON.stringify(payload));
-            core.setOutput('head_sha', headSha);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `head_sha=${headSha}\n`);
             core.info(`Payload written for PR #${pr.number}`);
 
       - name: Skip (fork or bypass label)
@@ -382,7 +415,7 @@ jobs:
 
       - name: Notify session cap reached
         if: steps.create.outputs.quota_exhausted == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0        uses: actions/github-script@v7
         with:
           script: |
             await github.rest.issues.createComment({
@@ -474,7 +507,7 @@ jobs:
 
       - name: Post review and set commit status
         if: always() && steps.prepare.conclusion == 'success' && steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_exhausted != 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
@@ -626,31 +659,63 @@ jobs:
             const body = `<!-- jules-pr-reviewer -->\n<!-- head_sha: ${headSha} -->\n${sessionResource ? `<!-- jules-session: ${sessionResource} -->` : ''}\n\n${mainReview}${deferredNotice}${timeoutNotice}`;
 
             let reviewEvent = 'COMMENT';
-            if (verdict === 'approve') reviewEvent = 'APPROVE';
-            else if (verdict === 'block') reviewEvent = 'REQUEST_CHANGES';
+            if (sessionState === 'COMPLETED' && verdict === 'approve') reviewEvent = 'APPROVE';
+            else if (sessionState === 'COMPLETED' && verdict === 'block') reviewEvent = 'REQUEST_CHANGES';
 
+            // Stale SHA guard: re-fetch PR head to ensure no new commits arrived
+            // during polling. If the SHA is stale, don't post inline comments or
+            // formal approve/request-changes against outdated work.
+            let currentSha = headSha;
             try {
-              const reviewParams = {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
+              const currentPr = (await github.rest.pulls.get({
+                owner: context.repo.owner, repo: context.repo.repo,
                 pull_number: prNumber,
-                commit_id: headSha,
-                event: reviewEvent,
-                body,
-              };
-              if (comments.length > 0) {
-                reviewParams.comments = comments;
-              }
-              await github.rest.pulls.createReview(reviewParams);
-              core.info(`Review posted with ${comments.length} per-line comments`);
+              })).data;
+              currentSha = currentPr.head.sha;
             } catch (e) {
-              core.warning(`PR review failed, falling back to batch comment: ${e.message}`);
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-                body,
-              });
+              core.warning(`Could not re-fetch PR for SHA check: ${e.message}`);
+            }
+
+            if (currentSha !== headSha) {
+              core.warning(`PR head changed during review: was ${headSha}, now ${currentSha} — posting COMMENT only, no inline comments`);
+              const staleBody = `⚠️ **Review posted as comment — PR was updated during review.**\n\nThe review session ran against commit \`${headSha}\`, but the PR head is now \`${currentSha}\`. Inline comments and formal approve/block were skipped to avoid targeting outdated code.\n\n${body}`;
+              try {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner, repo: context.repo.repo,
+                  issue_number: prNumber, body: staleBody,
+                });
+              } catch (e2) {
+                core.error(`Failed to post stale-review comment: ${e2.message}`);
+              }
+            } else {
+              try {
+                const reviewParams = {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                  commit_id: headSha,
+                  event: reviewEvent,
+                  body,
+                };
+                if (comments.length > 0) {
+                  reviewParams.comments = comments;
+                }
+                await github.rest.pulls.createReview(reviewParams);
+                core.info(`Review posted with ${comments.length} per-line comments`);
+              } catch (e) {
+                core.warning(`PR review failed (${reviewEvent}), falling back to batch comment: ${e.message}`);
+                const fallbackBody = `<!-- jules-pr-reviewer -->\n<!-- head_sha: ${headSha} -->\n<!-- intended_review_event: ${reviewEvent} -->\n<!-- review_post_failed: ${e.message.slice(0, 200)} -->\n\n${body}`;
+                try {
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: prNumber,
+                    body: fallbackBody,
+                  });
+                } catch (e2) {
+                  core.error(`Both createReview and fallback createComment failed: ${e2.message}`);
+                }
+              }
             }
 
             // Post walkthrough as separate issue comment if generated
@@ -670,7 +735,7 @@ jobs:
 
       - name: Upload session output
         if: always() && steps.prepare.conclusion == 'success' && steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_exhausted != 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2        uses: actions/upload-artifact@v4
         with:
           name: jules-review-${{ github.event.pull_request.number }}
           path: /tmp/jules-review-output.txt
@@ -699,7 +764,7 @@ jobs:
     steps:
       - name: Find deferred review marker and fetch session
         id: find
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0        uses: actions/github-script@v7
         with:
           script: |
             const prNumber = context.payload.issue.number;
@@ -709,15 +774,16 @@ jobs:
             });
 
             // Find the most recent deferred review marker
-            // Match the full deferred marker form (must include session="..." attribute),
-            // so a stray pending comment cannot collide with this filter.
+            // Match the full deferred marker form (must include both session and sha attributes),
+            // so a malformed or stray pending comment cannot collide with this filter.
             const deferredComment = comments
-              .filter(c => /<!--\s*jules-review-deferred\s+session="/.test(c.body || ''))
+              .filter(c => /<!--\s*jules-review-deferred\s+session="[^"]+"\s+sha="[^"]+"\s*-->/.test(c.body || ''))
               .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
 
             if (!deferredComment) {
               core.info('No deferred review marker found — nothing to post');
-              core.setOutput('skip', 'true');
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
               return;
             }
 
@@ -727,14 +793,16 @@ jobs:
             );
             if (!markerMatch) {
               core.info('Deferred marker malformed — cannot extract session');
-              core.setOutput('skip', 'true');
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=true\n');
               return;
             }
 
-            core.setOutput('skip', 'false');
-            core.setOutput('session_resource', markerMatch[1]);
-            core.setOutput('head_sha', markerMatch[2]);
-            core.setOutput('pr_number', String(prNumber));
+            const fs = require('fs');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skip=false\n');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `session_resource=${markerMatch[1]}\n`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `head_sha=${markerMatch[2]}\n`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `pr_number=${prNumber}\n`);
             core.info(`Found deferred session: ${markerMatch[1]}`);
 
       - name: Check session state and fetch activities
@@ -764,7 +832,7 @@ jobs:
               (.activities // [])[]
               | select(.agentMessaged.agentMessage != null)
               | .agentMessaged.agentMessage
-            ] | join("\n\n---\n\n") // "Review unavailable"' > /tmp/jules-deferred-output.txt
+            ] | if length == 0 then "Review unavailable" else join("\n\n---\n\n") end' > /tmp/jules-deferred-output.txt
             echo "output_ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "output_ready=false" >> "$GITHUB_OUTPUT"
@@ -773,10 +841,11 @@ jobs:
 
       - name: Post deferred review
         if: steps.find.outputs.skip != 'true' && steps.check.outputs.output_ready == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0        uses: actions/github-script@v7
         env:
           HEAD_SHA: ${{ steps.find.outputs.head_sha }}
           SESSION_STATE: ${{ steps.check.outputs.session_state }}
+          SESSION_RESOURCE: ${{ steps.find.outputs.session_resource }}
         with:
           script: |
             const fs = require('fs');
@@ -784,6 +853,7 @@ jobs:
             const prNumber = parseInt(process.env.PR_NUMBER || '${{ steps.find.outputs.pr_number }}');
             const headSha = process.env.HEAD_SHA;
             const sessionState = process.env.SESSION_STATE;
+            const sessionResource = process.env.SESSION_RESOURCE;
 
             const pr = (await github.rest.pulls.get({
               owner: context.repo.owner, repo: context.repo.repo,
@@ -800,6 +870,18 @@ jobs:
                 body: `⚠️ **Deferred review skipped — PR was updated.**\n\nThe review session was recorded against commit \`${headSha}\`, but the PR head is now \`${pr.head.sha}\`. The review may be outdated. Please trigger a new review for the current commit.`,
               });
               core.info(`SHA mismatch: marker=${headSha}, current=${pr.head.sha} — skipping deferred post`);
+              return;
+            }
+
+            // FAILED session: post diagnostic comment, not a formal review.
+            // Preserve session/SHA for recovery; don't consume the deferred marker.
+            if (sessionState === 'FAILED') {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: prNumber,
+                body: `❌ **Jules review session failed.**\n\nSession: \`${sessionResource}\`\nCommit: \`${headSha}\`\n\nThe session did not complete successfully. Raw output (for evidence):\n\n<details><summary>Session output</summary>\n\n${reviewText.slice(0, 4000)}\n\n</details>\n\nThe deferred review marker is preserved so recovery remains possible.`,
+              });
+              core.info('Session FAILED — posted diagnostic comment, deferred marker preserved');
               return;
             }
 
@@ -890,8 +972,8 @@ jobs:
             // Post the review
             const body = `<!-- jules-pr-reviewer -->\n<!-- head_sha: ${headSha} -->\n<!-- jules-deferred-review-posted -->\n\n${mainReview}`;
             let reviewEvent = 'COMMENT';
-            if (verdict === 'approve') reviewEvent = 'APPROVE';
-            else if (verdict === 'block') reviewEvent = 'REQUEST_CHANGES';
+            if (sessionState === 'COMPLETED' && verdict === 'approve') reviewEvent = 'APPROVE';
+            else if (sessionState === 'COMPLETED' && verdict === 'block') reviewEvent = 'REQUEST_CHANGES';
 
             try {
               const reviewParams = {
@@ -903,11 +985,16 @@ jobs:
               await github.rest.pulls.createReview(reviewParams);
               core.info(`Deferred review posted with ${comments.length} per-line comments`);
             } catch (e) {
-              core.warning(`PR review failed, falling back to batch comment: ${e.message}`);
-              await github.rest.issues.createComment({
-                owner: context.repo.owner, repo: context.repo.repo,
-                issue_number: prNumber, body,
-              });
+              core.warning(`Deferred review failed (${reviewEvent}), falling back to batch comment: ${e.message}`);
+              const fallbackBody = `<!-- jules-pr-reviewer -->\n<!-- head_sha: ${headSha} -->\n<!-- jules-deferred-review-posted -->\n<!-- intended_review_event: ${reviewEvent} -->\n<!-- review_post_failed: ${e.message.slice(0, 200)} -->\n\n${mainReview}`;
+              try {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner, repo: context.repo.repo,
+                  issue_number: prNumber, body: fallbackBody,
+                });
+              } catch (e2) {
+                core.error(`Both createReview and fallback createComment failed: ${e2.message}`);
+              }
             }
 
             if (walkthroughText) {
@@ -924,7 +1011,7 @@ jobs:
 
       - name: Session still running
         if: steps.find.outputs.skip != 'true' && steps.check.outputs.output_ready != 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0        uses: actions/github-script@v7
         with:
           script: |
             const state = '${{ steps.check.outputs.session_state }}';

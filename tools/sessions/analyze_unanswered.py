@@ -4,6 +4,7 @@ import sys
 from typing import Any, Dict, List, Optional
 
 from tools.api.jules_api_client import JulesAPIClient
+from tools.sessions.config import NO_ACTION_STATES, likely_pending
 
 # Official SDK state names (REST API SCREAMING_SNAKE_CASE → meaning)
 STATE_AWAITING_PLAN_APPROVAL = "AWAITING_PLAN_APPROVAL"
@@ -15,16 +16,6 @@ STATE_QUEUED = "QUEUED"
 STATE_PLANNING = "PLANNING"
 STATE_PAUSED = "PAUSED"
 STATE_UNSPECIFIED = "STATE_UNSPECIFIED"
-
-# Known no-action states. Any state NOT in this set (including unknown or
-# future API states) is treated as potentially needing attention, ensuring
-# edge cases are surfaced rather than silently excluded.
-NO_ACTION_STATES = {STATE_COMPLETED, STATE_QUEUED, STATE_PLANNING, STATE_UNSPECIFIED}
-
-
-def likely_pending(state: str) -> bool:
-    """Return True if a state likely needs user attention."""
-    return state not in NO_ACTION_STATES
 
 # Activity type constants matching the REST API union fields
 ACTIVITY_AGENT_MESSAGED = "agentMessaged"

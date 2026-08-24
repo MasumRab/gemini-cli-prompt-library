@@ -1,3 +1,3 @@
-from tools.store.jules_store import JulesSessionStore
+from .jules_store import JulesSessionStore
 
 __all__ = ["JulesSessionStore"]

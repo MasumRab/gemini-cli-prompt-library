@@ -1,0 +1,15 @@
+reviews:
+  path_filters:
+    - "**"
+    - "!*.md"
+    - "!*.json"
+    - "!*.db"
+    - "!*.txt"
+    - "!*.lock"
+    - "!*.bak"
+    - "!data/**"
+    - "!.github/emailintelligence/**"
+    - "!docs/forensics/migrated_forensics_data.json"
+    - "!docs/forensics/session_pr_integrated_2026-08-06.json"
+    - "!docs/forensics/**/*.json"
+    - "!data/**/*.json"

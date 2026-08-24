@@ -1,0 +1,20 @@
+# Line-ending policy: store all text as LF; check out as LF everywhere.
+# This travels with the repo, so clones behave identically on any OS
+# regardless of local core.autocrlf settings.
+* text=auto eol=lf
+
+# Windows-only script formats require CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary assets — never normalize or diff
+*.db binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.gz binary
+*.whl binary

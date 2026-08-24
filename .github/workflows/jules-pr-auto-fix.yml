@@ -19,7 +19,7 @@ jobs:
        startsWith(github.event.comment.body, '/jules-fix') &&
        contains('OWNER,MEMBER,COLLABORATOR', github.event.comment.author_association))
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     permissions:
       contents: write
       pull-requests: write
@@ -195,8 +195,6 @@ jobs:
               } catch (e) { /* file is optional */ }
             }
 
-            const fs = require('fs');
-
             const customInstr = process.env.CUSTOM_INSTRUCTIONS || '';
             let prompt = [
               ...(customInstr ? [`## User instructions`, customInstr, ``] : []),
@@ -357,6 +355,8 @@ jobs:
             exit 1
           fi
 
+          echo "session_name=$SESSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "session_id=$SESSION_ID" >> "$GITHUB_OUTPUT"
           echo "Session created: ${SESSION_NAME:-sessions/${SESSION_ID}}"
 
       - name: Post session-started marker
@@ -365,13 +365,189 @@ jobs:
         with:
           script: |
             const headSha = '${{ steps.fork-check.outputs.head_sha }}';
+            const sessionName = '${{ steps.create.outputs.session_name }}';
+            const sessionId = '${{ steps.create.outputs.session_id }}';
+            const sessionResource = sessionName || (sessionId ? `sessions/${sessionId}` : '');
             const prNumber = context.payload.pull_request?.number || context.payload.issue?.number;
-            if (!prNumber) return;
+            if (!prNumber) {
+              core.warning('No PR number found in payload — cannot post session started comment');
+              return;
+            }
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
-              body: `🔧 **Jules auto-fix session started.** The fix PR will appear shortly.\n\n<!-- jules-auto-fix -->\n<!-- head_sha: ${headSha} -->`,
+              body: `🔧 **Jules auto-fix session started.** The fix PR will appear shortly.\n\n<!-- jules-auto-fix -->\n<!-- head_sha: ${headSha} -->\n<!-- session: ${sessionResource} -->`,
+            });
+
+      - name: Poll planning session (with one retry on failure)
+        id: poll-planning
+        if: steps.create.outputs.quota_exhausted != 'true' && steps.prepare.outputs.skip != 'true'
+        shell: bash
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+          SESSION_NAME: ${{ steps.create.outputs.session_name }}
+          SESSION_ID: ${{ steps.create.outputs.session_id }}
+          HEAD_SHA: ${{ steps.fork-check.outputs.head_sha }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.fork-check.outputs.pr_number }}
+        run: |
+          SESSION_RESOURCE="${SESSION_NAME:-sessions/${SESSION_ID}}"
+          if [ -z "$SESSION_RESOURCE" ] || [ "$SESSION_RESOURCE" = "sessions/" ]; then
+            echo "final_state=ERROR" >> "$GITHUB_OUTPUT"
+            echo "No session resource to poll" >&2
+            exit 0
+          fi
+
+          poll_session() {
+            local resource="$1" max_attempts="$2" label="$3" deadline_s="$4"
+            local consecutive_failures=0 state response elapsed remaining
+            local start_time=$SECONDS
+            for i in $(seq 1 "$max_attempts"); do
+              elapsed=$((SECONDS - start_time))
+              if [ -n "$deadline_s" ] && [ "$elapsed" -ge "$deadline_s" ]; then
+                echo "$label — wall-clock deadline (${deadline_s}s) reached after ${elapsed}s" >&2
+                break
+              fi
+              remaining=$((deadline_s - elapsed))
+              [ "$remaining" -lt 15 ] && remaining=15
+              [ "$remaining" -gt 60 ] && remaining=60
+              sleep 15
+              response=$(curl -sS --fail-with-body --connect-timeout 10 --max-time "$remaining" \
+                "https://jules.googleapis.com/v1alpha/${resource}" \
+                -H "X-Goog-Api-Key: ${JULES_API_KEY}" 2>/dev/null) || {
+                consecutive_failures=$((consecutive_failures + 1))
+                echo "$label attempt $i/$max_attempts — GET failed (consecutive: $consecutive_failures)" >&2
+                if [ "$consecutive_failures" -ge 5 ]; then
+                  printf '%s' "TRANSPORT_FAILURE"
+                  return 0
+                fi
+                continue
+              }
+              consecutive_failures=0
+              state=$(printf '%s' "$response" | jq -r '.state // "UNKNOWN"')
+              if [ "$state" = "COMPLETED" ] || [ "$state" = "FAILED" ] || [ "$state" = "AWAITING_USER_FEEDBACK" ]; then
+                printf '%s' "$state"
+                return 0
+              fi
+              echo "$label attempt $i/$max_attempts — state: $state (elapsed: ${elapsed}s)" >&2
+            done
+            printf '%s' "TIMEOUT"
+          }
+
+          STATE=$(poll_session "$SESSION_RESOURCE" 40 "planning" 1200)
+          ATTEMPT=1
+
+          if [ "$STATE" = "FAILED" ]; then
+            echo "Planning session FAILED — fetching error context" >&2
+            ERROR_CONTEXT=$(curl -sS --fail-with-body --connect-timeout 10 --max-time 60 \
+              "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}/activities?pageSize=50" \
+              -H "X-Goog-Api-Key: ${JULES_API_KEY}" 2>/dev/null \
+              | jq -r '[.activities[]? | select(.agentMessaged.agentMessage != null) | .agentMessaged.agentMessage] | last // "No error message captured"' 2>/dev/null || echo "Failed to fetch error context")
+            printf '%s' "$ERROR_CONTEXT" > /tmp/jules-planning-error.txt
+
+            # Dedup: skip if a retry marker already exists for this SHA
+            # Fail closed: if comment retrieval fails, skip retry rather than risk duplicate
+            if ! COMMENT_BODIES=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" \
+              --paginate -q '.[].body' 2>/dev/null); then
+              echo "Could not retrieve PR comments for dedup check — skipping retry" >&2
+              echo "final_state=FAILED_NO_RETRY" >> "$GITHUB_OUTPUT"
+              echo "attempt=1" >> "$GITHUB_OUTPUT"
+              echo "session_resource=$SESSION_RESOURCE" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            EXISTING_RETRY=$(printf '%s' "$COMMENT_BODIES" | grep -c "<!-- jules-auto-fix-retry head_sha: ${HEAD_SHA} -->" || true)
+            if [ "${EXISTING_RETRY:-0}" -gt 0 ]; then
+              echo "Retry already attempted for this SHA — not creating another" >&2
+              echo "final_state=FAILED_NO_RETRY" >> "$GITHUB_OUTPUT"
+              echo "attempt=1" >> "$GITHUB_OUTPUT"
+              echo "session_resource=$SESSION_RESOURCE" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            # Build retry payload with error context prepended
+            jq --arg ctx "$ERROR_CONTEXT" \
+              '.prompt = ("## Retry: Previous planning session failed\n\nThe previous Jules planning session failed with this error:\n\n" + $ctx + "\n\n---\n\n## Original task\n\n" + .prompt)' \
+              /tmp/jules-auto-fix-payload.json > /tmp/jules-auto-fix-retry-payload.json
+
+            set +e
+            RETRY_RESPONSE=$(curl -sS --fail-with-body --connect-timeout 10 --max-time 60 -X POST \
+              "https://jules.googleapis.com/v1alpha/sessions" \
+              -H "Content-Type: application/json" \
+              -H "X-Goog-Api-Key: ${JULES_API_KEY}" \
+              -d @/tmp/jules-auto-fix-retry-payload.json)
+            RETRY_RC=$?
+            set -e
+            if [ "$RETRY_RC" -ne 0 ]; then
+              echo "Retry session creation failed: $RETRY_RESPONSE" >&2
+              echo "final_state=FAILED_NO_RETRY" >> "$GITHUB_OUTPUT"
+              echo "attempt=1" >> "$GITHUB_OUTPUT"
+              echo "session_resource=$SESSION_RESOURCE" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            RETRY_NAME=$(printf '%s' "$RETRY_RESPONSE" | jq -r '.name // empty')
+            RETRY_ID=$(printf '%s' "$RETRY_RESPONSE" | jq -r '.id // empty')
+            RETRY_RESOURCE="${RETRY_NAME:-sessions/${RETRY_ID}}"
+            ATTEMPT=2
+            echo "Retry session created: $RETRY_RESOURCE" >&2
+
+            # Post retry marker (durable dedup signal)
+            gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" \
+              -f body="🔄 **Planning session failed — automatic retry started.**<br>Original session: \`$SESSION_RESOURCE\`<br>Retry session: \`$RETRY_RESOURCE\`<!-- jules-auto-fix-retry head_sha: ${HEAD_SHA} -->" \
+              2>/dev/null || true
+
+            # Poll retry session
+            RETRY_STATE=$(poll_session "$RETRY_RESOURCE" 40 "retry-planning" 600)
+            STATE="$RETRY_STATE"
+            SESSION_RESOURCE="$RETRY_RESOURCE"
+          fi
+
+          echo "final_state=$STATE" >> "$GITHUB_OUTPUT"
+          echo "session_resource=$SESSION_RESOURCE" >> "$GITHUB_OUTPUT"
+          echo "attempt=$ATTEMPT" >> "$GITHUB_OUTPUT"
+
+      - name: Post planning session result
+        if: always() && steps.create.outputs.quota_exhausted != 'true' && steps.prepare.outputs.skip != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const state = '${{ steps.poll-planning.outputs.final_state }}';
+            const resource = '${{ steps.poll-planning.outputs.session_resource }}';
+            const attempt = '${{ steps.poll-planning.outputs.attempt }}';
+            const headSha = '${{ steps.fork-check.outputs.head_sha }}';
+            const prNumber = context.payload.pull_request?.number || context.payload.issue?.number;
+            if (!prNumber) {
+              core.warning('No PR number found in payload — cannot post planning result comment');
+              return;
+            }
+
+            let errorContext = '';
+            try { errorContext = fs.readFileSync('/tmp/jules-planning-error.txt', 'utf8').replace(/-->/g, '--\\>'); } catch {}
+
+            const marker = `<!-- jules-auto-fix-result -->`;
+            const meta = `<!-- head_sha: ${headSha} --><!-- session: ${resource} --><!-- state: ${state} --><!-- attempt: ${attempt} -->`;
+
+            let body;
+            if (!state && !resource) {
+              body = `❌ **Jules planning session was not created or polling was skipped.**\n\nThe PR is **not closed**. To retry, push a new commit or re-apply the \`jules-fix\` label.\n\n${marker}\n${meta}`;
+            } else if (state === 'COMPLETED') {
+              body = `✅ **Jules planning session completed.** The plan should appear as a separate comment above.\n\n${marker}\n${meta}`;
+            } else if (state === 'FAILED' || state === 'FAILED_NO_RETRY') {
+              body = `❌ **Jules planning session failed${attempt === '2' ? ' (after retry)' : ''}.**\n\nSession: \`${resource}\`\n${errorContext ? `\n> ${errorContext.slice(0, 500).split('\n').join('\n> ')}\n` : ''}\nThe PR is **not closed**. To retry, push a new commit or re-apply the \`jules-fix\` label.\n\n${marker}\n${meta}`;
+            } else if (state === 'AWAITING_USER_FEEDBACK') {
+              body = `⏳ **Jules planning session is awaiting user feedback.**\n\nSession: \`${resource}\`\n\n${marker}\n${meta}`;
+            } else if (state === 'TIMEOUT') {
+              body = `⏱️ **Jules planning session timed out (still running).**\n\nSession: \`${resource}\`\nThe session may still produce a plan. Check the session status manually.\n\n${marker}\n${meta}`;
+            } else if (state === 'TRANSPORT_FAILURE') {
+              body = `⚠️ **Could not poll planning session — repeated API failures.**\n\nSession: \`${resource}\`\nThe session may still be running. Check the session status manually.\n\n${marker}\n${meta}`;
+            } else {
+              body = `⚠️ **Planning session poll ended with state: ${state || 'UNKNOWN'}.**\n\nSession: \`${resource || 'unknown'}\`\n\n${marker}\n${meta}`;
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: prNumber, body,
             });
 
       - name: Notify session cap reached
@@ -411,7 +587,7 @@ jobs:
       github.event.issue.pull_request &&
       contains('OWNER,MEMBER,COLLABORATOR', github.event.comment.author_association)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 35
     permissions:
       contents: write
       pull-requests: write
@@ -597,7 +773,14 @@ jobs:
           fi
 
           SESSION_NAME=$(echo "$RESPONSE" | jq -r '.name // empty')
-          echo "Session created: ${SESSION_NAME:-sessions/$(echo "$RESPONSE" | jq -r '.id // empty')}"
+          SESSION_ID=$(echo "$RESPONSE" | jq -r '.id // empty')
+          if [ -z "$SESSION_NAME" ] && [ -z "$SESSION_ID" ]; then
+            echo "Error: $RESPONSE"
+            exit 1
+          fi
+          echo "session_name=$SESSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "session_id=$SESSION_ID" >> "$GITHUB_OUTPUT"
+          echo "Session created: ${SESSION_NAME:-sessions/${SESSION_ID}}"
 
       - name: Post execution-started comment
         if: steps.create.outputs.quota_exhausted != 'true' && steps.prepare.outputs.target_branch
@@ -605,11 +788,179 @@ jobs:
         with:
           script: |
             const headSha = '${{ steps.plan.outputs.head_sha }}';
+            const sessionName = '${{ steps.create.outputs.session_name }}';
+            const sessionId = '${{ steps.create.outputs.session_id }}';
+            const sessionResource = sessionName || (sessionId ? `sessions/${sessionId}` : '');
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.issue.number,
-              body: `🔧 **Plan approved — Jules execution session started.**\n\n<!-- jules-auto-fix -->\n<!-- head_sha: ${headSha} -->`,
+              body: `🔧 **Plan approved — Jules execution session started.**\n\n<!-- jules-auto-fix -->\n<!-- head_sha: ${headSha} -->\n<!-- session: ${sessionResource} -->`,
+            });
+
+      - name: Poll execution session (with one retry on failure)
+        id: poll-execution
+        if: steps.create.outputs.quota_exhausted != 'true' && steps.prepare.outputs.target_branch
+        shell: bash
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+          SESSION_NAME: ${{ steps.create.outputs.session_name }}
+          SESSION_ID: ${{ steps.create.outputs.session_id }}
+          HEAD_SHA: ${{ steps.plan.outputs.head_sha }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          SESSION_RESOURCE="${SESSION_NAME:-sessions/${SESSION_ID}}"
+          if [ -z "$SESSION_RESOURCE" ] || [ "$SESSION_RESOURCE" = "sessions/" ]; then
+            echo "final_state=ERROR" >> "$GITHUB_OUTPUT"
+            echo "No session resource to poll" >&2
+            exit 0
+          fi
+
+          poll_session() {
+            local resource="$1" max_attempts="$2" label="$3" deadline_s="$4"
+            local consecutive_failures=0 state response elapsed remaining
+            local start_time=$SECONDS
+            for i in $(seq 1 "$max_attempts"); do
+              elapsed=$((SECONDS - start_time))
+              if [ -n "$deadline_s" ] && [ "$elapsed" -ge "$deadline_s" ]; then
+                echo "$label — wall-clock deadline (${deadline_s}s) reached after ${elapsed}s" >&2
+                break
+              fi
+              remaining=$((deadline_s - elapsed))
+              [ "$remaining" -lt 15 ] && remaining=15
+              [ "$remaining" -gt 60 ] && remaining=60
+              sleep 15
+              response=$(curl -sS --fail-with-body --connect-timeout 10 --max-time "$remaining" \
+                "https://jules.googleapis.com/v1alpha/${resource}" \
+                -H "X-Goog-Api-Key: ${JULES_API_KEY}" 2>/dev/null) || {
+                consecutive_failures=$((consecutive_failures + 1))
+                echo "$label attempt $i/$max_attempts — GET failed (consecutive: $consecutive_failures)" >&2
+                if [ "$consecutive_failures" -ge 5 ]; then
+                  printf '%s' "TRANSPORT_FAILURE"
+                  return 0
+                fi
+                continue
+              }
+              consecutive_failures=0
+              state=$(printf '%s' "$response" | jq -r '.state // "UNKNOWN"')
+              if [ "$state" = "COMPLETED" ] || [ "$state" = "FAILED" ] || [ "$state" = "AWAITING_USER_FEEDBACK" ]; then
+                printf '%s' "$state"
+                return 0
+              fi
+              echo "$label attempt $i/$max_attempts — state: $state (elapsed: ${elapsed}s)" >&2
+            done
+            printf '%s' "TIMEOUT"
+          }
+
+          STATE=$(poll_session "$SESSION_RESOURCE" 60 "execution" 1500)
+          ATTEMPT=1
+
+          if [ "$STATE" = "FAILED" ]; then
+            echo "Execution session FAILED — fetching error context" >&2
+            ERROR_CONTEXT=$(curl -sS --fail-with-body --connect-timeout 10 --max-time 60 \
+              "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}/activities?pageSize=50" \
+              -H "X-Goog-Api-Key: ${JULES_API_KEY}" 2>/dev/null \
+              | jq -r '[.activities[]? | select(.agentMessaged.agentMessage != null) | .agentMessaged.agentMessage] | last // "No error message captured"' 2>/dev/null || echo "Failed to fetch error context")
+            printf '%s' "$ERROR_CONTEXT" > /tmp/jules-execution-error.txt
+
+            # Dedup: skip if a retry marker already exists for this SHA
+            # Fail closed: if comment retrieval fails, skip retry rather than risk duplicate
+            if ! COMMENT_BODIES=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" \
+              --paginate -q '.[].body' 2>/dev/null); then
+              echo "Could not retrieve PR comments for dedup check — skipping retry" >&2
+              echo "final_state=FAILED_NO_RETRY" >> "$GITHUB_OUTPUT"
+              echo "attempt=1" >> "$GITHUB_OUTPUT"
+              echo "session_resource=$SESSION_RESOURCE" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            EXISTING_RETRY=$(printf '%s' "$COMMENT_BODIES" | grep -c "<!-- jules-auto-fix-exec-retry head_sha: ${HEAD_SHA} -->" || true)
+            if [ "${EXISTING_RETRY:-0}" -gt 0 ]; then
+              echo "Retry already attempted for this SHA — not creating another" >&2
+              echo "final_state=FAILED_NO_RETRY" >> "$GITHUB_OUTPUT"
+              echo "attempt=1" >> "$GITHUB_OUTPUT"
+              echo "session_resource=$SESSION_RESOURCE" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            # Build retry payload with error context prepended
+            jq --arg ctx "$ERROR_CONTEXT" \
+              '.prompt = ("## Retry: Previous execution session failed\n\nThe previous Jules execution session failed with this error:\n\n" + $ctx + "\n\n---\n\n## Original approved plan\n\n" + .prompt)' \
+              /tmp/jules-approve-payload.json > /tmp/jules-approve-retry-payload.json
+
+            set +e
+            RETRY_RESPONSE=$(curl -sS --fail-with-body --connect-timeout 10 --max-time 60 -X POST \
+              "https://jules.googleapis.com/v1alpha/sessions" \
+              -H "Content-Type: application/json" \
+              -H "X-Goog-Api-Key: ${JULES_API_KEY}" \
+              -d @/tmp/jules-approve-retry-payload.json)
+            RETRY_RC=$?
+            set -e
+            if [ "$RETRY_RC" -ne 0 ]; then
+              echo "Retry session creation failed: $RETRY_RESPONSE" >&2
+              echo "final_state=FAILED_NO_RETRY" >> "$GITHUB_OUTPUT"
+              echo "attempt=1" >> "$GITHUB_OUTPUT"
+              echo "session_resource=$SESSION_RESOURCE" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            RETRY_NAME=$(printf '%s' "$RETRY_RESPONSE" | jq -r '.name // empty')
+            RETRY_ID=$(printf '%s' "$RETRY_RESPONSE" | jq -r '.id // empty')
+            RETRY_RESOURCE="${RETRY_NAME:-sessions/${RETRY_ID}}"
+            ATTEMPT=2
+            echo "Retry session created: $RETRY_RESOURCE" >&2
+
+            # Post retry marker (durable dedup signal)
+            gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" \
+              -f body="🔄 **Execution session failed — automatic retry started.**<br>Original session: \`$SESSION_RESOURCE\`<br>Retry session: \`$RETRY_RESOURCE\`<!-- jules-auto-fix-exec-retry head_sha: ${HEAD_SHA} -->" \
+              2>/dev/null || true
+
+            # Poll retry session
+            RETRY_STATE=$(poll_session "$RETRY_RESOURCE" 60 "retry-execution" 600)
+            STATE="$RETRY_STATE"
+            SESSION_RESOURCE="$RETRY_RESOURCE"
+          fi
+
+          echo "final_state=$STATE" >> "$GITHUB_OUTPUT"
+          echo "session_resource=$SESSION_RESOURCE" >> "$GITHUB_OUTPUT"
+          echo "attempt=$ATTEMPT" >> "$GITHUB_OUTPUT"
+
+      - name: Post execution session result
+        if: always() && steps.create.outputs.quota_exhausted != 'true' && steps.prepare.outputs.target_branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const state = '${{ steps.poll-execution.outputs.final_state }}';
+            const resource = '${{ steps.poll-execution.outputs.session_resource }}';
+            const attempt = '${{ steps.poll-execution.outputs.attempt }}';
+            const headSha = '${{ steps.plan.outputs.head_sha }}';
+
+            let errorContext = '';
+            try { errorContext = fs.readFileSync('/tmp/jules-execution-error.txt', 'utf8').replace(/-->/g, '--\\>'); } catch {}
+
+            const marker = `<!-- jules-auto-fix-result -->`;
+            const meta = `<!-- head_sha: ${headSha} --><!-- session: ${resource} --><!-- state: ${state} --><!-- attempt: ${attempt} -->`;
+
+            let body;
+            if (!state && !resource) {
+              body = `❌ **Jules execution session was not created or polling was skipped.**\n\nThe PR is **not closed**. To retry, push a new commit or re-apply the \`jules-fix\` label and approve the new plan.\n\n${marker}\n${meta}`;
+            } else if (state === 'COMPLETED') {
+              body = `✅ **Jules execution session completed.** The fix PR should appear shortly.\n\n${marker}\n${meta}`;
+            } else if (state === 'FAILED' || state === 'FAILED_NO_RETRY') {
+              body = `❌ **Jules execution session failed${attempt === '2' ? ' (after retry)' : ''}.**\n\nSession: \`${resource}\`\n${errorContext ? `\n> ${errorContext.slice(0, 500).split('\n').join('\n> ')}\n` : ''}\nThe PR is **not closed**. To retry, push a new commit or re-apply the \`jules-fix\` label and approve the new plan.\n\n${marker}\n${meta}`;
+            } else if (state === 'AWAITING_USER_FEEDBACK') {
+              body = `⏳ **Jules execution session is awaiting user feedback.**\n\nSession: \`${resource}\`\n\n${marker}\n${meta}`;
+            } else if (state === 'TIMEOUT') {
+              body = `⏱️ **Jules execution session timed out (still running).**\n\nSession: \`${resource}\`\nThe session may still be running. Check the session status manually.\n\n${marker}\n${meta}`;
+            } else if (state === 'TRANSPORT_FAILURE') {
+              body = `⚠️ **Could not poll execution session — repeated API failures.**\n\nSession: \`${resource}\`\nThe session may still be running. Check the session status manually.\n\n${marker}\n${meta}`;
+            } else {
+              body = `⚠️ **Execution session poll ended with state: ${state || 'UNKNOWN'}.**\n\nSession: \`${resource || 'unknown'}\`\n\n${marker}\n${meta}`;
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.issue.number, body,
             });
 
       - name: Notify session cap reached

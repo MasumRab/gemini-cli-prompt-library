@@ -1,0 +1,418 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Jules Forensics Data Schema",
+  "description": "Standardized schema for Jules forensics data including sessions, PRs, and interventions",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "$ref": "#/definitions/Metadata"
+    },
+    "sessions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Session"
+      }
+    },
+    "pull_requests": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/PullRequest"
+      }
+    },
+    "interventions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Intervention"
+      }
+    }
+  },
+  "required": ["metadata", "sessions", "pull_requests", "interventions"],
+  "definitions": {
+"Metadata": {
+       "type": "object",
+       "properties": {
+         "generated_at": {
+           "type": "string",
+           "format": "date-time",
+           "description": "Timestamp when the forensics data was generated"
+         },
+         "analysis_thread": {
+           "type": "string",
+           "description": "Identifier for the analysis thread or batch"
+         },
+         "version": {
+           "type": "string",
+           "description": "Schema version"
+         },
+         "total_sessions": {
+           "type": "integer",
+           "description": "Total number of sessions in the dataset"
+         },
+         "total_prs": {
+           "type": "integer",
+           "description": "Total number of pull requests in the dataset"
+         },
+         "total_interventions": {
+           "type": "integer",
+           "description": "Total number of interventions in the dataset"
+         },
+"migrations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "version": {
+                  "type": "string",
+                  "description": "The version this migration brings the schema to"
+                },
+                "date": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "When the migration was applied (YYYY-MM-DD)"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Brief description of what changed"
+                },
+                "script": {
+                  "type": ["string", "null"],
+                  "description": "Optional reference to migration script if one exists"
+                }
+              },
+              "required": ["version", "date", "description"]
+            },
+            "description": "History of schema migrations",
+            "default": [
+              {
+                "version": "1.0.0",
+                "date": "2026-08-17",
+                "description": "Initial schema release with core forensics data structures",
+                "script": null
+              }
+            ]
+          }
+       },
+       "required": ["generated_at", "version"]
+     },
+    "Session": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "type": "string",
+          "description": "Unique identifier for the session"
+        },
+        "session_state": {
+          "type": "string",
+          "enum": ["COMPLETED", "FAILED", "IN_PROGRESS", "QUEUED", "AWAITING_USER_FEEDBACK", "UNKNOWN", "NOT_FOUND", "ERROR"],
+          "description": "Current state of the session"
+        },
+        "session_title": {
+          "type": "string",
+          "description": "Title or description of the session"
+        },
+        "session_repo": {
+          "type": "string",
+          "description": "Repository associated with the session (format: owner/repo)"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the session was created"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the session was last updated"
+        },
+        "associated_prs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "number": {
+                "type": "integer"
+              },
+              "repo": {
+                "type": "string"
+              }
+            },
+            "required": ["number", "repo"]
+          },
+          "description": "PR numbers associated with this session"
+        },
+        "timeline": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TimelineEntry"
+          },
+          "description": "Timeline of events in the session"
+        }
+      },
+      "required": ["session_id", "session_state", "session_repo"]
+    },
+    "PullRequest": {
+      "type": "object",
+      "properties": {
+        "number": {
+          "type": "integer",
+          "description": "Pull request number"
+        },
+        "repo": {
+          "type": "string",
+          "description": "Repository (format: owner/repo)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Pull request title"
+        },
+        "state": {
+          "type": "string",
+          "enum": ["OPEN", "CLOSED", "MERGED"],
+          "description": "Current state of the pull request"
+        },
+        "head": {
+          "type": "string",
+          "description": "Head branch or commit SHA"
+        },
+        "base": {
+          "type": "string",
+          "description": "Base branch"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the PR was created"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the PR was last updated"
+        },
+        "merged_at": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Timestamp when the PR was merged"
+        },
+        "closed_at": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Timestamp when the PR was closed"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the pull request on GitHub"
+        },
+        "comment_count": {
+          "type": "integer",
+          "description": "Number of comments on the PR"
+        },
+        "review_count": {
+          "type": "integer",
+          "description": "Number of reviews on the PR"
+        },
+        "commit_count": {
+          "type": "integer",
+          "description": "Number of commits in the PR"
+        },
+        "associated_sessions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Session IDs associated with this PR"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of the PR (e.g., merge_conflict)"
+        },
+        "needs": {
+          "type": "string",
+          "description": "Action needed for the PR (e.g., rebase)"
+        },
+        "live_mergeable": {
+          "type": "string",
+          "description": "Current mergeable status from live check"
+        },
+        "live_merge_state_status": {
+          "type": "string",
+          "description": "Current merge state status from live check"
+        },
+        "live_base": {
+          "type": "string",
+          "description": "Base branch from live check"
+        }
+      },
+      "required": ["number", "repo", "state"]
+    },
+    "Intervention": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "type": "string",
+          "description": "ID of the session this intervention applies to"
+        },
+        "repo": {
+          "type": "string",
+          "description": "Repository (format: owner/repo)"
+        },
+        "pr": {
+          "type": ["string", "null"],
+          "description": "PR number or identifier (can be empty string or null for no PR)"
+        },
+        "title": {
+          "type": ["string", "null"],
+          "description": "Title of the session or PR"
+        },
+        "created": {
+          "type": "string",
+          "format": "date",
+          "description": "Creation date of the session"
+        },
+        "intervention_type": {
+          "type": "string",
+          "description": "Type of intervention (e.g., sendMessage, recovered_review_comment)"
+        },
+        "intervention_intent": {
+          "type": "string",
+          "description": "Intent behind the intervention"
+        },
+        "pre_state": {
+          "type": "string",
+          "description": "State of the session before intervention"
+        },
+        "immediate_post_state": {
+          "type": "string",
+          "description": "State of the session immediately after intervention"
+        },
+        "current_state": {
+          "type": "string",
+          "description": "Current state of the session"
+        },
+        "current_updated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when current state was last updated"
+        },
+        "state_changed": {
+          "type": "boolean",
+          "description": "Whether the state changed as a result of the intervention"
+        },
+        "agent_produced_output": {
+          "type": "boolean",
+          "description": "Whether the agent produced output during the session"
+        },
+        "output_posted": {
+          "type": "boolean",
+          "description": "Whether output was posted to a PR or other location"
+        },
+        "outcome_class": {
+          "type": "string",
+          "description": "Classification of the intervention outcome (A-J)"
+        },
+        "evidence": {
+          "type": "string",
+          "description": "Evidence supporting the outcome classification"
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "description": "Confidence level in the outcome classification"
+        },
+        "new_activities": {
+          "type": ["integer", "null"],
+          "description": "Number of new activities after intervention (for sendMessage)"
+        },
+        "has_agent_messages": {
+          "type": ["boolean", "null"],
+          "description": "Whether agent messages were present (for sendMessage)"
+        },
+        "agent_message_count": {
+          "type": ["integer", "null"],
+          "description": "Count of agent messages (for sendMessage)"
+        },
+        "note": {
+          "type": ["string", "null"],
+          "description": "Additional notes about the intervention"
+        },
+        "pr_state": {
+          "type": ["string", "null"],
+          "description": "State of the PR after comment posting"
+        },
+        "recovery_comments_posted": {
+          "type": ["integer", "null"],
+          "description": "Number of recovery comments posted"
+        },
+        "has_duplicate": {
+          "type": ["boolean", "null"],
+          "description": "Whether duplicates were detected"
+        },
+        "jules_bot_duplicate_count": {
+          "type": ["integer", "null"],
+          "description": "Count of Jules bot duplicates"
+        },
+        "post_intervention_comments": {
+          "type": ["integer", "null"],
+          "description": "Number of comments after intervention"
+        },
+        "post_intervention_reviews": {
+          "type": ["integer", "null"],
+          "description": "Number of reviews after intervention"
+        },
+        "post_intervention_commits": {
+          "type": ["integer", "null"],
+          "description": "Number of commits after intervention"
+        },
+        "posted_to_correct_pr": {
+          "type": ["boolean", "null"],
+          "description": "Whether comments were posted to the correct PR"
+        },
+        "formatting_valid": {
+          "type": ["boolean", "null"],
+          "description": "Whether formatting was valid"
+        },
+        "dedup_marker_present": {
+          "type": ["boolean", "null"],
+          "description": "Whether deduplication marker was present"
+        },
+        "detailed_analysis": {
+          "type": ["string", "null"],
+          "description": "Detailed analysis of the intervention outcome"
+        }
+      },
+      "required": ["session_id", "repo", "intervention_type", "intervention_intent", "pre_state", "immediate_post_state", "current_state", "outcome_class", "evidence", "confidence"]
+    },
+    "TimelineEntry": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["comment", "review"],
+          "description": "Type of timeline entry"
+        },
+        "time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the timeline entry"
+        },
+        "author": {
+          "type": "string",
+          "description": "Author of the timeline entry"
+        },
+        "text": {
+          "type": "string",
+          "description": "Content of the timeline entry"
+        },
+        "state": {
+          "type": ["string", "null"],
+          "description": "State for review entries (e.g., COMMENTED, APPROVED, CHANGES_REQUESTED)"
+        },
+        "location": {
+          "type": ["string", "null"],
+          "description": "Location for review comments"
+        }
+      },
+      "required": ["type", "time", "author", "text"]
+    }
+  }
+}

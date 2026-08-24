@@ -31,3 +31,5 @@ build/
 
 # Jules API debug captures
 activities_*.json
+
+# Forensics bulk data (large generated/exported captures; keep local only)
