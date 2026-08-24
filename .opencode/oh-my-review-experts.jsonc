@@ -1,0 +1,154 @@
+{
+  "$schema": "https://raw.githubusercontent.com/zapsaang/oh-my-review-experts/main/schemas/oh-my-review-experts.schema.json",
+  "enabled": true,
+  "command": {
+    "enabled": true,
+    "name": "review-code",
+    "aliases": [
+      "rc"
+    ],
+    "injection": "both",
+    "scopeResolution": "auto"
+  },
+  "agents": {},
+  "slicing": {
+    "enabled": true,
+    "maxSlices": 4,
+    "skipDocsOnly": true,
+    "skipTestOnlyHeavyReview": true,
+    "forceWholeTargetAboveSlices": 12
+  },
+  "partialRerun": {
+    "enabled": true,
+    "maxRetriesPerTask": 1
+  },
+  "costGuardrail": {
+    "enabled": true,
+    "maxEstimatedTasks": 24,
+    "compactModeThreshold": 20,
+    "hardStopThreshold": 60
+  },
+  "arbitration": {
+    "hierarchicalThreshold": 3
+  },
+  "report": {
+    "enabled": true,
+    "directory": ".omre/reports",
+    "latestMarkdown": "latest.md",
+    "latestJson": "latest.json",
+    "timestamped": true
+  },
+  "handoff": {
+    "enabled": true,
+    "directory": ".omre/handoffs"
+  },
+  "reviewers": {
+    "default": [
+      "spec",
+      "quality",
+      "security",
+      "performance",
+      "concurrency"
+    ],
+    "bySliceType": {
+      "api-contract": [
+        "spec",
+        "security",
+        "concurrency"
+      ],
+      "migration": [
+        "spec",
+        "performance",
+        "concurrency"
+      ],
+      "business-module": [
+        "spec",
+        "security",
+        "performance",
+        "concurrency"
+      ],
+      "shared-library": [
+        "spec",
+        "quality",
+        "security",
+        "concurrency"
+      ],
+      "dependency-change": [
+        "security",
+        "performance"
+      ],
+      "infra-change": [
+        "security",
+        "performance"
+      ],
+      "test-only": [
+        "spec",
+        "quality"
+      ],
+      "docs-only": []
+    }
+  },
+  "memory": {
+    "enabled": true,
+    "directory": ".omre/memory",
+    "indexing": {
+      "maxFileSizeKb": 512,
+      "includePatterns": [
+        "**/*.{ts,tsx,js,jsx,py,go,rs,java}"
+      ],
+      "excludePatterns": [
+        "node_modules/**",
+        "dist/**",
+        ".git/**",
+        "coverage/**"
+      ],
+      "autoIndexAfterReview": true
+    },
+    "retrieval": {
+      "enabled": false,
+      "defaultTopK": 5,
+      "similarityThreshold": 0.75,
+      "crossRunDeduplication": true,
+      "maxContextItems": 6,
+      "maxContextChars": 8000,
+      "includeFixedAsRegressionCandidates": true,
+      "includeFalsePositive": false,
+      "byReviewer": {}
+    },
+    "dedupe": {
+      "fingerprintThreshold": 0.92,
+      "contentHashThreshold": 0.85
+    },
+    "similarity": {
+      "tokenWeight": 0.6,
+      "semanticWeight": 0.4
+    },
+    "compaction": {
+      "enabled": true,
+      "minRawSegments": 50,
+      "minRawSegmentBytes": 1048576,
+      "maxCompactDurationMs": 3000,
+      "autoCompactAfterReview": true
+    },
+    "retention": {
+      "maxEventsPerFinding": 100,
+      "maxFindings": 5000,
+      "maxAgeDays": 365,
+      "rawSegmentKeepDays": 30,
+      "tmpFileMaxAgeHours": 24,
+      "maxRawSegments": 200,
+      "keepConfirmed": true,
+      "keepHighSeverity": true
+    },
+    "privacy": {
+      "redactEvidence": true,
+      "redactProblem": false,
+      "allowedTokensInSearchable": []
+    },
+    "suggestions": {
+      "enabled": true,
+      "timeDecayDays": 90,
+      "skipImportSource": true
+    }
+  }
+}

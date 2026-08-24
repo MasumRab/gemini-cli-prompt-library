@@ -1,0 +1,15 @@
+{
+  "agents": {
+    "omre-reviewer-spec":          { "model": "ph/poolside/laguna-s-2.1" },
+    "omre-reviewer-quality":       { "model": "ph/poolside/laguna-s-2.1" },
+    "omre-reviewer-security":      { "model": "ph/poolside/laguna-s-2.1" },
+    "omre-reviewer-performance":   { "model": "ph/poolside/laguna-s-2.1" },
+    "omre-reviewer-concurrency":   { "model": "ph/poolside/laguna-s-2.1" },
+    "omre-slice-planner":          { "model": "ph/poolside/laguna-s-2.1" },
+    "omre-slice-plan-validator":   { "model": "ph/poolside/laguna-xs-2.1" },
+    "omre-result-validator":       { "model": "ph/poolside/laguna-xs-2.1" },
+    "omre-slice-arbiter":          { "model": "ph/poolside/laguna-s-2.1" },
+    "omre-global-arbiter":         { "model": "ph/poolside/laguna-s-2.1" },
+    "omre-report-writer":          { "model": "ph/poolside/laguna-xs-2.1" }
+  }
+}
