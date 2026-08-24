@@ -1,6 +1,6 @@
 {
   "session_id": "3620294950430015682",
-  "title": "Bolt ⚡ - Performance Optimization Agent",
+  "title": "Bolt \u26a1 - Performance Optimization Agent",
   "state": "AWAITING_USER_FEEDBACK",
   "last_update": "2026-07-15T23:03:51.161788Z",
   "activity_count": 127,
@@ -38,5 +38,12 @@
     "lint-only CI check",
     "Multiple modules with unused imports"
   ],
-  "tags": ["performance", "ci-fixes", "lint", "awaiting-approval", "scheduled-run"]
+  "tags": [
+    "performance",
+    "ci-fixes",
+    "lint",
+    "awaiting-approval",
+    "scheduled-run"
+  ],
+  "forensics_analysis_note": "For aggregated forensics analysis of sessions, see the migrated_forensics_data.json file in the docs/forensics/ directory."
 }

@@ -34,5 +34,12 @@
     "src/core/model_registry.py",
     "validate_path_safety function"
   ],
-  "tags": ["security", "deserialization", "joblib", "awaiting-approval", "scheduled-run"]
+  "tags": [
+    "security",
+    "deserialization",
+    "joblib",
+    "awaiting-approval",
+    "scheduled-run"
+  ],
+  "forensics_analysis_note": "For aggregated forensics analysis of sessions, see the migrated_forensics_data.json file in the docs/forensics/ directory."
 }
