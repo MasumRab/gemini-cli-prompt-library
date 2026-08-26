@@ -1,0 +1,3 @@
+advisors:
+  - name: default
+    model: nvidia/minimaxai/minimax-m2.7
