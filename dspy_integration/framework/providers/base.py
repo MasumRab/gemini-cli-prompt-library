@@ -1,4 +1,10 @@
 """Base provider."""
-from dspy_helm.providers.base import Provider as BaseProvider
 
-__all__ = ["BaseProvider"]
+from dspy_helm.providers.base import (
+    BaseProvider,
+    ProviderResponse,
+    RateLimitConfig,
+    ProviderChain,
+)
+
+__all__ = ["BaseProvider", "ProviderResponse", "RateLimitConfig", "ProviderChain"]
