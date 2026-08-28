@@ -33,7 +33,7 @@ Analyze local `jules_sessions/` directory and SQLite store to track work complet
 
 The Jules session tracking system uses a dual storage approach for redundancy and performance:
 
-1. **Local JSON Files** (`jules_sessions/` directory): 
+1. **Local JSON Files** (`jules_sessions/` directory):
    - Original storage format for session metadata and activities
    - Human-readable and easily backupable
    - Used for quick analysis and debugging
@@ -75,13 +75,15 @@ jules_sessions/
   },
   "prompt": "...",
   "url": "https://jules.google.com/session/...",
-  "outputs": [{
-    "changeSet": { "gitPatch": "diff --git a/..." },
-    "pullRequest": {
-      "url": "https://github.com/MasumRab/EmailIntelligence/pull/437",
-      "title": "⚡ Bolt: Optimize Database Search"
+  "outputs": [
+    {
+      "changeSet": { "gitPatch": "diff --git a/..." },
+      "pullRequest": {
+        "url": "https://github.com/MasumRab/EmailIntelligence/pull/437",
+        "title": "⚡ Bolt: Optimize Database Search"
+      }
     }
-  }]
+  ]
 }
 ```
 
@@ -89,24 +91,24 @@ jules_sessions/
 
 The SQLite store includes all original fields plus these additional columns:
 
-| Field | Description |
-|-------|-------------|
-| `session_type` | Type of session (e.g., "initial", "retry", "follow-up") |
-| `outcome` | Final result of the session (e.g., "success", "failed", "timeout") |
-| `retry_of_session_id` | ID of the original session if this is a retry |
-| `retry_count` | Number of times this session has been retried |
-| `send_message_count` | Number of messages sent to this session |
-| `verdict` | Final assessment of the session quality |
-| `quality_score` | Numeric score (0-100) indicating session quality |
+| Field                 | Description                                                        |
+| --------------------- | ------------------------------------------------------------------ |
+| `session_type`        | Type of session (e.g., "initial", "retry", "follow-up")            |
+| `outcome`             | Final result of the session (e.g., "success", "failed", "timeout") |
+| `retry_of_session_id` | ID of the original session if this is a retry                      |
+| `retry_count`         | Number of times this session has been retried                      |
+| `send_message_count`  | Number of messages sent to this session                            |
+| `verdict`             | Final assessment of the session quality                            |
+| `quality_score`       | Numeric score (0-100) indicating session quality                   |
 
 ### Key Fields (JSON Files)
 
-| Field | Description |
-|-------|-------------|
-| `state` | `QUEUED`, `IN_PROGRESS`, `AWAITING_PLAN_APPROVAL`, `COMPLETED`, `FAILED` |
-| `outputs[].pullRequest.url` | GitHub PR link |
-| `outputs[].changeSet.gitPatch` | The actual diff |
-| `sourceContext.githubRepoContext.startingBranch` | Target branch |
+| Field                                            | Description                                                              |
+| ------------------------------------------------ | ------------------------------------------------------------------------ |
+| `state`                                          | `QUEUED`, `IN_PROGRESS`, `AWAITING_PLAN_APPROVAL`, `COMPLETED`, `FAILED` |
+| `outputs[].pullRequest.url`                      | GitHub PR link                                                           |
+| `outputs[].changeSet.gitPatch`                   | The actual diff                                                          |
+| `sourceContext.githubRepoContext.startingBranch` | Target branch                                                            |
 
 ## JulesSessionStore API Examples
 
@@ -226,15 +228,15 @@ Determine what response/nudge to send based on session state and context.
 
 ### Response Categories
 
-| Category | State | Action | Priority |
-|----------|-------|--------|----------|
-| Plan Approval | `AWAITING_PLAN_APPROVAL` | Approve plan | 1 |
-| Nudge | `IN_PROGRESS` > 30min | Check status | 2 |
-| No Changes | `COMPLETED` no diff | Ask what happened | 3 |
-| No PR | `COMPLETED` no PR | Request PR creation | 3 |
-| PR Stale | `COMPLETED` PR exists | Review/merge | 4 |
-| Failed | `FAILED` | Restart refined | 2 |
-| Timeout | Timed out | Restart refined | 2 |
+| Category      | State                    | Action              | Priority |
+| ------------- | ------------------------ | ------------------- | -------- |
+| Plan Approval | `AWAITING_PLAN_APPROVAL` | Approve plan        | 1        |
+| Nudge         | `IN_PROGRESS` > 30min    | Check status        | 2        |
+| No Changes    | `COMPLETED` no diff      | Ask what happened   | 3        |
+| No PR         | `COMPLETED` no PR        | Request PR creation | 3        |
+| PR Stale      | `COMPLETED` PR exists    | Review/merge        | 4        |
+| Failed        | `FAILED`                 | Restart refined     | 2        |
+| Timeout       | Timed out                | Restart refined     | 2        |
 
 ### Quick Check Command
 
@@ -276,6 +278,7 @@ grep -A10 "AWAITING_PLAN_APPROVAL" references/response_templates.md
 ```
 
 **Template includes:**
+
 - Original session intent from prompt
 - Current state and what happened
 - Suggested response incorporating context
@@ -347,6 +350,7 @@ python skills/jules-sessions/scripts/check_needs_response.py --json
 ```
 
 **Output includes:**
+
 - Session ID, title, state
 - Recommended action (approve/nudge/request PR/etc.)
 - Pre-generated message template with context
@@ -380,11 +384,11 @@ jq -r '.outputs[].changeSet.gitPatch' jules_sessions/pr437_session.json | \
 
 The skill includes reference files in `references/`:
 
-| File | Usage |
-|------|-------|
-| `wip_analysis.md` | Patterns for recovering timed-out Jules sessions |
-| `task_schedule.json` | Example 11-task orchestration schedule |
-| `prompts.md` | Pre-formatted prompts for EmailIntelligence |
+| File                 | Usage                                            |
+| -------------------- | ------------------------------------------------ |
+| `wip_analysis.md`    | Patterns for recovering timed-out Jules sessions |
+| `task_schedule.json` | Example 11-task orchestration schedule           |
+| `prompts.md`         | Pre-formatted prompts for EmailIntelligence      |
 
 Load when needed:
 
@@ -423,6 +427,11 @@ grep "^## Task" references/prompts.md
 
 ## Prompt Tracking Workflow
 
+> See also `docs/runbooks/workspace_isolation.md` for the per-repo prompt log at
+> `workspaces/<owner>/<repo>/prompts/sent_responses.md`. Prefer the workspace log
+> when operating on sessions for a specific repo; fall back to
+> `references/sent_responses.md` only for global/cross-repo prompts.
+
 After sending a response, log it for future reference:
 
 ```bash
@@ -455,15 +464,17 @@ If the outcome was undesirable and required follow-up to fix:
 
 **Recorded patterns from WIP analysis:**
 
-| Problem | Prevention |
-|---------|-----------|
-| Timeout from broad scope | Break into subtasks, specify files |
-| Over-deletion | "Do NOT delete, only modify" |
-| Broken test paths | "Verify these paths remain valid" |
-| Circular dependencies | "Avoid circular imports between X and Y" |
-| Lost documentation content | "Preserve ALL content from source" |
+| Problem                                      | Prevention                                                                                             |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Timeout from broad scope                     | Break into subtasks, specify files                                                                     |
+| Over-deletion                                | "Do NOT delete, only modify"                                                                           |
+| Broken test paths                            | "Verify these paths remain valid"                                                                      |
+| Circular dependencies                        | "Avoid circular imports between X and Y"                                                               |
+| Lost documentation content                   | "Preserve ALL content from source"                                                                     |
+| Session ID / repo context lost to compaction | "Re-read AGENTS.md § Operating guardrails; recover session ID from `session_tracking/` or `jules-api`" |
 
 **Why track?**
+
 - Learn what prompts lead to success
 - Reference similar past situations
 - Avoid repeating failed approaches
