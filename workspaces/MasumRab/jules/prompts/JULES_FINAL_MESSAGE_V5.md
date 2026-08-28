@@ -204,6 +204,7 @@ Confirm: "I understand the critical steering corrections: tools consolidate to o
 ---
 
 ## Key Steering Additions Summary:
+
 1. **Tool consolidation → orchestration-tools** (not taskmaster directly)
 2. **Multi-step dynamic evidence-gathering** (not one-shot)
 3. **Semantic/git topology tools** as central workflow engine

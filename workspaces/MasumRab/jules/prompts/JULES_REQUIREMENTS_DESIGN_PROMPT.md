@@ -1,20 +1,24 @@
 # Prompt to Generate Jules-Version Requirements and Design Documents
 
 ## Objective
+
 Instruct Jules to generate its own canonical versions of REQUIREMENTS.md and DESIGN.md for the taskmaster branch alignment work, based on its analysis and understanding, so these can be downloaded and compared with the rough scaffold versions in scratch_branch_alignment_scaffold/.
 
 ## Context
+
 The files in scratch_branch_alignment_scaffold/ (REQUIREMENTS.md, DESIGN.md, PRD_BRANCH_ALIGNMENT.md) were created as a preliminary scaffold for investigation. Jules session 596003508416904399 has completed the discovery and analysis phase and has developed a detailed understanding of:
+
 - The isolated nature of the origin/taskmaster branch
 - The locations of correct tooling (in main-rooted branches that mistakenly contained taskmaster work)
 - The state preserved in future_advanced_state/
 - The required next steps for implementation
 
 ## Recommended Message to Send to Jules
+
 Send this message to an active Jules session (or use it to create a new session focused on documentation generation):
 
 ```
-Please generate canonical REQUIREMENTS.md and DESIGN.md documents for the taskmaster branch alignment work based on your analysis from session 596003508416904399 and the investigation in scratch_branch_alignment_scaffold/. 
+Please generate canonical REQUIREMENTS.md and DESIGN.md documents for the taskmaster branch alignment work based on your analysis from session 596003508416904399 and the investigation in scratch_branch_alignment_scaffold/.
 
 For REQUIREMENTS.md:
 - Extract and formalize the hard constraints (REQ-01 through REQ-08) that you've identified as necessary for safe and correct execution
@@ -35,12 +39,15 @@ These documents should represent your current, canonical understanding based on 
 ## How to Use This Prompt
 
 ### Option 1: Send to Existing Session
+
 If you have an active Jules session you want to use for this documentation work:
+
 ```bash
 python tools/sessions/jules_send_message.py <SESSION_ID> "$(cat JULES_REQUIREMENTS_DESIGN_PROMPT.md)"
 ```
 
 ### Option 2: Create New Session for Documentation Generation
+
 ```bash
 # First, get the repository URL for EmailIntelligence (adjust as needed)
 REPO_URL="https://github.com/MasumRab/EmailIntelligence"
@@ -83,11 +90,13 @@ Based on the PRD_BRANCH_ALIGNMENT.md "Step-to-file responsibility map", Jules is
 Once Jules has processed your message and generated the documents, you can retrieve them using standard Git operations once they're committed to the branch, or by:
 
 1. **Checking the session activities** for file creation/modification events:
+
    ```bash
    python tools/sessions/jules_list_activities.py <SESSION_ID> --full | grep -i "created\|modified\|updated"
    ```
 
 2. **Monitoring for specific document mentions** in Jules messages:
+
    ```bash
    python tools/sessions/jules_list_activities.py <SESSION_ID> --full | grep -i "requirements\|design"
    ```
@@ -97,6 +106,7 @@ Once Jules has processed your message and generated the documents, you can retri
 ## Comparison Process
 
 After Jules generates the documents:
+
 1. Download/compare the Jules-generated REQUIREMENTS.md with scratch_branch_alignment_scaffold/REQUIREMENTS.md
 2. Download/compare the Jules-generated DESIGN.md with scratch_branch_alignment_scaffold/DESIGN.md
 3. Note any differences in:

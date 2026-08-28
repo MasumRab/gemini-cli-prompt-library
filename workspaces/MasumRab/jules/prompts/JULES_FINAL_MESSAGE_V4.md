@@ -136,10 +136,11 @@ Confirm: "I understand the critical steering corrections: tools consolidate to o
 ---
 
 ## Key Steering Additions:
+
 1. **Tool consolidation → orchestration-tools** (not taskmaster directly)
 2. **Multi-step dynamic evidence-gathering** (not one-shot)
 3. **Semantic/git topology tools** as central workflow engine
 4. **Dynamic rebase/resolution** with validator gates
 5. **Commit message + code change semantic alignment**
-5. **Validator-gated iterative progression** with Linear MCP
-6. **Feedback loops** throughout the process
+6. **Validator-gated iterative progression** with Linear MCP
+7. **Feedback loops** throughout the process
