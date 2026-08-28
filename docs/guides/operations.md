@@ -5,6 +5,7 @@ This document establishes the official workflows for managing, updating, and rec
 ---
 
 ## Workflow 1: Metadata Synchronization
+
 **Goal:** Ensure local `.json` files in `jules_sessions/` match the ground truth in the Jules API.
 
 1.  **Sync Single Session:**
@@ -21,6 +22,7 @@ This document establishes the official workflows for managing, updating, and rec
 ---
 
 ## Workflow 2: Triage & Action
+
 **Goal:** Resolve sessions in "blocking" states (`AWAITING_PLAN_APPROVAL`, `AWAITING_USER_FEEDBACK`).
 
 1.  **Identify Blockers:**
@@ -44,6 +46,7 @@ This document establishes the official workflows for managing, updating, and rec
 ---
 
 ## Workflow 3: PR Quality Guard
+
 **Goal:** Ensure Jules PRs are high-quality and free of common pitfalls.
 
 1.  **Forward PR Comments:**
@@ -58,6 +61,7 @@ This document establishes the official workflows for managing, updating, and rec
 ---
 
 ## Workflow 4: Schedule Management
+
 **Goal:** Track long-term progress against `jules_sessions/task_schedule.json`.
 
 1.  **Mark Tasks Complete:**
@@ -72,6 +76,7 @@ This document establishes the official workflows for managing, updating, and rec
 ---
 
 ## Workflow 5: WIP & Timeout Recovery
+
 **Goal:** Continue work from sessions that timed out or were interrupted.
 
 1.  **Detect Timeout:**
@@ -84,10 +89,19 @@ This document establishes the official workflows for managing, updating, and rec
 ---
 
 ## Logging Standards
-All prompts sent to Jules (nudges, approvals, rectifications) **must** be logged in:
-`/home/masum/.agents/skills/jules-sessions/references/sent_responses.md`
+
+All prompts sent to Jules (nudges, approvals, rectifications) **must** be logged
+in the per-repo prompt log. Preferred location:
+
+```text
+workspaces/<owner>/<repo>/prompts/sent_responses.md
+```
+
+Fallback (global): `skills/jules-sessions/references/sent_responses.md`.
+See `docs/runbooks/workspace_isolation.md` for the workspace convention.
 
 **Format:**
+
 ```yaml
 session_id: "<id>"
 prompt_type: "nudge|rectification|approve"

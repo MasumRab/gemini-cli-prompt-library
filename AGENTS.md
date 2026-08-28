@@ -9,10 +9,54 @@ These instructions govern the entire repository.
    - distributable GitHub Actions;
    - Jules REST/operator tools, triage, repair, or session archives; or
    - cross-system GitHub-run/Jules-session traceability.
-3. Read only the canonical review and task tracker for that subsystem.
+3. Read the mode→runbook index below **and** the canonical review/task tracker for that
+   subsystem. If none of the rows apply, state the reason in one line before proceeding.
 
 Do not treat these modes as one implementation. A review or readiness decision for one
 does not make another mode ready.
+
+### Mode → runbook index
+
+| Mode (step 2 class)                          | Read first                                               | Then                                                                                                                               |
+| -------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Distributable GitHub Actions                 | `docs/actions/REVIEW_RECOMMENDATION.md`                  | `docs/actions/HANDOFF.md` (tasks), `docs/actions/SMOKE_TEST_PLAN.md` (validation), `docs/actions/TARGET_REPOSITORY_ADJUSTMENTS.md` |
+| Jules REST ops / triage / repair             | `docs/reviews/JULES_OPERATIONS_REVIEW_RECOMMENDATION.md` | `docs/reference/rest_api_reference.md`, `docs/runbooks/session_recovery.md`, `docs/guides/operations.md`                           |
+| Session archives & summaries                 | `docs/guides/session_summary_standard.md`                | `docs/reviews/JULES_OPERATIONS_REVIEW_RECOMMENDATION.md` (ARC findings)                                                            |
+| Cross-system traceability & forensics        | `docs/guides/workflow_session_traceability.md`           | `docs/runbooks/session_recovery.md`                                                                                                |
+| Session operations on a specific remote repo | `docs/runbooks/workspace_isolation.md`                   | `docs/runbooks/session_recovery.md`, `docs/runbooks/session_runbook.md`                                                            |
+| Task failure / timeout / over-deletion       | `docs/runbooks/failure_runbook.md`                       | `docs/runbooks/session_recovery.md`                                                                                                |
+
+### Operating guardrails (re-read & re-assert after ANY context compaction)
+
+RESUME PROTOCOL (run before continuing): re-derive **repo**, **session id**,
+**subsystem**, and **current phase**; if any is unknown, recover it:
+
+- Session IDs: `session_tracking/<owner>/<repo>/YYYY/MM/` → SQLite store → API
+  `sessions?pageSize=`
+- Repo of a session: store `repo` column or `sourceContext.source`
+
+SESSION OPS — repo scoping & logging:
+
+- Scope every Jules query by repo (the session store is global).
+- Work in a per-repo workspace: `workspaces/<owner>/<repo>/{sessions,analysis,prompts,state}/`.
+  Global store = canonical read-only truth; workspace = disposable projection.
+- **Log every message sent to a live Jules session** to
+  `workspaces/<owner>/<repo>/prompts/sent_responses.md` (or the store)
+  _before or immediately after_ sending. Format: the existing YAML-ish
+  `session_id / prompt_type / prompt_sent / outcome` convention
+  (`skills/jules-sessions/references/sent_responses.md`).
+  **Invariants:** unlogged message = lost context; never hand-edit scratch in
+  repo root or `/tmp` — valuable artifacts promoted to `analysis/`.
+- Transports (all write to the same workspace): REST client
+  (`tools/api`) → fallback SDK bridge (`node tools/sdk/dist/bridge.js`) on poll
+  timeouts → Jules CLI (`jules remote list|pull`) on auth failure.
+- Skills check: before session analysis or messaging, load
+  `skills/jules-sessions/SKILL.md` — it defines the analysis patterns,
+  response templates, and logging formats.
+
+DISCIPLINE (all tasks): classify at start; re-classify when scope changes;
+fear severity as proof; prefer exact IDs; run `trunk check --no-fix` and
+`git diff --check`; never commit credentials/prompts; preserve uncommitted work.
 
 ## Distributable GitHub Actions
 
