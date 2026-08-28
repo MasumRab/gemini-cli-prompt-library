@@ -11,7 +11,7 @@ Please confirm the following for each generated document:
 
 ## DOCUMENT EXISTENCE & COMPLETENESS
 - [ ] REQUIREMENTS.md exists and is complete
-- [ ] DESIGN.md exists and is complete  
+- [ ] DESIGN.md exists and is complete
 - [ ] BRANCH_ALIGNMENT_REVIEW.md exists and is complete (exhaustive PRD)
 
 ## NO RE-ANALYSIS PERFORMED
