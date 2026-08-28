@@ -1,18 +1,35 @@
 #!/usr/bin/env python3
-import argparse, json
-from agent_core import record_decision
+"""Record a root refresh policy decision.
 
-p = argparse.ArgumentParser()
-p.add_argument("--question", required=True)
-p.add_argument("--target", required=True)
-p.add_argument("--choice", required=True)
-p.add_argument("--reason", required=True)
+This script records a root_refresh_policy decision event.
+"""
+
+import argparse, json, sys
+from pathlib import Path
+
+# Ensure the local lib directory is on the path
+lib_path = Path(__file__).parent.resolve()
+if str(lib_path) not in sys.path:
+    sys.path.insert(0, str(lib_path))
+
+try:
+    from agent_core import record_decision
+except ImportError as e:
+    print(f"Error loading agent_core: {e}", file=sys.stderr)
+    sys.exit(1)
+
+p = argparse.ArgumentParser(description="Record root refresh policy decision")
+p.add_argument("--question", required=True, help="Question ID")
+p.add_argument("--target", required=True, help="Target root")
+p.add_argument("--choice", required=True, help="Chosen option")
+p.add_argument("--reason", required=True, help="Reason for choice")
 a = p.parse_args()
-print(
-    json.dumps(
-        record_decision(
-            a.question, a.target, a.choice, a.reason, "root_refresh_policy"
-        ),
-        indent=2,
+
+try:
+    result = record_decision(
+        a.question, a.target, a.choice, a.reason, "root_refresh_policy"
     )
-)
+    print(json.dumps(result, indent=2))
+except Exception as e:
+    print(f"Root decision recording failed: {e}", file=sys.stderr)
+    sys.exit(1)

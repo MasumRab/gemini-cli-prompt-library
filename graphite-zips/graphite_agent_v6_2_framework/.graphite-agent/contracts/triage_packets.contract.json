@@ -1,0 +1,14 @@
+{
+  "schema_version": "6.2",
+  "required_top_level_keys": ["schema_version", "packets"],
+  "packet_required_keys": [
+    "id",
+    "branch",
+    "status",
+    "primary_reason",
+    "relationship_edges",
+    "candidate_parents",
+    "recommended_action",
+    "detail_refs"
+  ]
+}

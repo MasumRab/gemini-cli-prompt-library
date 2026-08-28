@@ -1,0 +1,9 @@
+{
+  "schema_version": "6.2",
+  "required_top_level_keys": [
+    "schema_version",
+    "counts",
+    "by_status",
+    "indexes"
+  ]
+}
