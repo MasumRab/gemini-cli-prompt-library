@@ -52,7 +52,7 @@ def _validate_not_placeholder(name: str, value: str) -> None:
     for pattern in placeholders:
         if pattern.search(value):
             print(
-                f'ERROR: {name} value "{value[:40]}" looks like a placeholder '
+                f"ERROR: {name} value looks like a placeholder "
                 f"(matched: {pattern.pattern}). Set the real API key via env var.",
                 file=sys.stderr,
             )
