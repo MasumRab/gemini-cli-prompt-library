@@ -56,6 +56,58 @@ the workspace isolation reorganization (2026-08-29) to ensure continuity.
 | Unified SDK facade | ❌ Not created | Optional: single client for REST + SDK |
 | GEMINI_JULES_ANALYSIS.md Section 10 | ⚠️ Stale | Lists issues 10.1-10.5 as open but all addressed |
 
+### Auto-Triggering and Session Reuse (from `docs/actions/HANDOFF.md`)
+
+**Problem:** Previous implementations fired too many reviews that did not complete actual review work. Sessions were created for PRs that already had COMPLETED sessions, or duplicate sessions for the same task.
+
+| Finding | Severity | Status | Description | Tasks |
+|---------|----------|--------|-------------|-------|
+| W-09 | Major | ❌ Open | Backlog review timeout excludes retry delays (210min worst-case vs 90min timeout) | T-19 |
+| W-10 | Major | ❌ Open | Address-comments dedup missing `submittedReview.id` — causes duplicate @jules comments | T-20 |
+| W-18 | Major | ❌ Open | Rebuild silently skips on FAILED state with no notification | T-28 |
+| W-19 | Medium | ❌ Open | **Cross-workflow session awareness** — creates duplicate sessions for same SHA+task | T-29 |
+| W-20 | Medium | ❌ Open | Should retry FAILED sessions via `sendMessage` before creating new | T-30 |
+| W-21 | Medium | ❌ Open | Should auto-approve AWAITING_USER_FEEDBACK sessions | T-31 |
+| W-22 | Medium | ❌ Open | Batch sessions fail (25/37) causing duplicate individual sessions | T-32 |
+| W-23 | Major | ❌ Open | **33 COMPLETED sessions had unposted output** — should reuse instead of new session | T-33 |
+
+#### W-19: Cross-Workflow Session Awareness (HIGH PRIORITY)
+
+**Evidence:** 12 redundant + batch overlap out of 117 multi-session PRs (105 are legitimate multi-session).
+
+**Current behavior:** Workflow creates new session without checking for existing sessions with same SHA+task.
+
+**Required fix:**
+1. Before creating session, check PR comments for existing `jules-*` markers
+2. Match by `head_sha` AND task type (review, auto-fix, resolve-conflicts)
+3. If COMPLETED session exists with same SHA+task: fetch activities and post output
+4. If non-terminal session exists: monitor it, do not create new
+5. **Do NOT block different task types** — multi-session PRs are by design
+
+**Still causing issues:** Workflows W-09, W-10, W-18 still fire regardless of prior COMPLETED sessions.
+
+#### W-23: Reuse Completed Output (HIGH PRIORITY)
+
+**Evidence:** 33 COMPLETED review sessions had unposted output — manually recovered without new sessions.
+
+**Required fix:**
+1. Search for COMPLETED sessions for same repo+branch
+2. Fetch `/activities` for those sessions
+3. If SHA matches or output still relevant: post to PR without creating new session
+4. Eliminates need for new session, saves quota
+
+**Still causing issues:** All review workflows can create redundant sessions for PRs that already have COMPLETED review output.
+
+#### What Still Causes Redundant Sessions
+
+| Workflow | Trigger | Issue | Status |
+|----------|---------|-------|--------|
+| `jules-pr-review.yml` | PR open/sync | Creates session without checking for prior COMPLETED | ❌ Open |
+| `jules-pr-force-review.yml` | Label/command | Creates session without checking for prior COMPLETED | ❌ Open |
+| `jules-backlog-review.yml` | Schedule | Creates batch sessions without checking individual PR history | ❌ Open |
+| `jules-pr-auto-fix.yml` | Label/command | Creates session without checking for prior COMPLETED fix | ❌ Open |
+| `jules-pr-resolve-conflicts.yml` | Label/command | Creates session without checking for prior COMPLETED resolution | ❌ Open |
+
 
 ### GitHub Actions API Usage (from `docs/planning/OFFICIAL_JULES_ACTION_AUDIT.md`)
 
@@ -252,5 +304,3 @@ Before starting new work:
 | Document | Purpose |
 |----------|---------|
 | `docs/planning/OFFICIAL_JULES_ACTION_AUDIT.md` | Full audit with official action analysis |
-| `docs/actions/EDGE_CASES.md` | `?view=FULL` issue documented |
-| `docs/actions/HANDOFF.md` | Open GitHub Actions tasks |
