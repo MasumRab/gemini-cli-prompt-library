@@ -1,0 +1,67 @@
+# Forensics Data Summary Manifest
+# Generated: 2026-08-29
+# Session: 596003508416904399
+# Repository: EmailIntelligence
+
+session:
+  id: "596003508416904399"
+  title: "Integrate Taskmaster Branches and Reorganize Task Files"
+  repository: "EmailIntelligence"
+  created: "2026-08-06T00:00:00Z"
+  updated: "2026-08-29T19:50:00Z"
+  status: completed
+  source: "pr"
+
+purpose: >
+  Analyze Jules session patterns, interventions, and outcomes to establish
+  forensics standards and migration strategies for EmailIntelligence repository.
+
+summary: |
+  This forensics collection documents the investigation and analysis of
+  EmailIntelligence repository session patterns including:
+  
+  - Root cause analysis of session failures and recovery patterns
+  - Intervention E2E outcomes and effectiveness metrics
+  - PR conversation evolution tracking
+  - Session reuse evidence and patterns
+  - High line count PR alignment auditing
+  - Session priority batch planning
+
+files:
+  - file: "forensics/FAILURE_ROOT_CAUSE_ANALYSIS_2026-08-06.md"
+    summary: "Root cause analysis of session failures"
+    change_type: migrated
+    
+  - file: "forensics/HIGH_LINECOUNT_PR_ALIGNMENT_AUDIT_2026-08-14.md"
+    summary: "Audit of high line count PR alignment patterns"
+    change_type: migrated
+    
+  - file: "forensics/INTERVENTION_E2E_OUTCOME_ANALYSIS_2026-08-07.md"
+    summary: "End-to-end analysis of intervention outcomes"
+    change_type: migrated
+    
+  - file: "forensics/PR_CONVERSATION_EVOLUTION_2026-08-06.md"
+    summary: "Tracking PR conversation patterns over time"
+    change_type: migrated
+    
+  - file: "forensics/SESSION_FOLLOWUP_TRACKER_2026-08-06.md"
+    summary: "Session follow-up action tracking"
+    change_type: migrated
+    
+  - file: "forensics/SESSION_INVESTIGATION_2026-08-06.md"
+    summary: "Investigation findings for session patterns"
+    change_type: migrated
+    
+  - file: "forensics/SESSION_PRIORITY_BATCH_PLAN_2026-08-14.md"
+    summary: "Batch planning for session priority handling"
+    change_type: migrated
+    
+  - file: "forensics/SESSION_REUSE_EVIDENCE_2026-08-06.md"
+    summary: "Evidence of session reuse patterns"
+    change_type: migrated
+
+compliance:
+  format_version: "1.0.0"
+  schema_compliant: true
+  session_summary_standard: compliant
+  traceability: partial
