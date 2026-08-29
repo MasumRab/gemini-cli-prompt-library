@@ -9,6 +9,11 @@ readiness for the other.
 Start at [`actions/README.md`](actions/README.md) for the workflows under `.github/`
 that replace or extend the deprecated Gemini Actions in target repositories.
 
+Distribution-staging copies of these documents live in
+[`.github/docs/`](../.github/docs/) for deployment to target repos
+(EmailIntelligence, Kaggle, Gemini); `docs/actions/` remains the canonical origin —
+keep the two in sync.
+
 Current authorities:
 
 - [`actions/REVIEW_RECOMMENDATION.md`](actions/REVIEW_RECOMMENDATION.md) —
