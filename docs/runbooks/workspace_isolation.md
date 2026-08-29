@@ -11,22 +11,29 @@ truth.
 
 ## Workspace layout
 
+`workspaces/` is for **target repositories being operated on** — each subdirectory
+is named after the repo (not the owner). The jules repo itself uses its own
+`session_tracking/` structure; it does not nest under `workspaces/`.
+
 ```text
-workspaces/<owner>/<repo>/
+workspaces/<repo-name>/
 ├── sessions/        read-only projections (materialized via sync)
 ├── analysis/        local findings — disposable, never committed
 ├── prompts/         sent_responses.md (the prompt log)
 └── state/           per-agent scratch (patches, worktrees)
 ```
 
-Example: `workspaces/MasumRab/EmailIntelligence/`
+Examples:
+- `workspaces/EmailIntelligence/` — target repo workspace
+- `workspaces/kaggle-notebooks-analysis/` — target repo workspace
+- `session_tracking/` — **jules repo own** session artifacts, prompts, and analysis
 
 ## Rules
 
 1. **Repo scoping first.** Every query/list/activity-pull must filter by repo
    (store `repo` column or `sourceContext.source`).
 2. **Logging invariant.** Every message sent to a live Jules session is appended
-   to `workspaces/<owner>/<repo>/prompts/sent_responses.md` (or the store) _before
+   to `workspaces/<repo-name>/prompts/sent_responses.md` (or the store) _before
    or immediately after_ sending. Format follows
    `skills/jules-sessions/references/sent_responses.md`:
    ```yaml
@@ -54,9 +61,9 @@ All transports write into the same workspace layout.
 
 ## Session-ID recovery (if lost to compaction)
 
-1. Check `session_tracking/<owner>/<repo>/YYYY/MM/` for a JSON/YAML pair.
-2. Query the store: `SELECT session_id FROM sessions WHERE repo='<owner>/<repo>'`
-3. List live: `python3 tools/sessions/jules_list_sessions.py --repo <owner/repo>`
+1. Check `session_tracking/YYYY/MM/` for a JSON/YAML pair.
+2. Query the store: `SELECT session_id FROM sessions WHERE repo='<repo-name>'`
+3. List live: `python3 tools/sessions/jules_list_sessions.py --repo <repo-name>`
 4. Last resort: `python3 tools/sessions/sync_all_sessions.py` then retry.
 
 ## See also

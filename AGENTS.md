@@ -31,17 +31,17 @@ does not make another mode ready.
 RESUME PROTOCOL (run before continuing): re-derive **repo**, **session id**,
 **subsystem**, and **current phase**; if any is unknown, recover it:
 
-- Session IDs: `session_tracking/<owner>/<repo>/YYYY/MM/` → SQLite store → API
+- Session IDs: `session_tracking/YYYY/MM/` → SQLite store → API
   `sessions?pageSize=`
 - Repo of a session: store `repo` column or `sourceContext.source`
 
 SESSION OPS — repo scoping & logging:
 
 - Scope every Jules query by repo (the session store is global).
-- Work in a per-repo workspace: `workspaces/<owner>/<repo>/{sessions,analysis,prompts,state}/`.
+- Work in a per-repo workspace: `workspaces/<repo-name>/{sessions,analysis,prompts,state}/`.
   Global store = canonical read-only truth; workspace = disposable projection.
 - **Log every message sent to a live Jules session** to
-  `workspaces/<owner>/<repo>/prompts/sent_responses.md` (or the store)
+  `workspaces/<repo-name>/prompts/sent_responses.md` (or the store)
   _before or immediately after_ sending. Format: the existing YAML-ish
   `session_id / prompt_type / prompt_sent / outcome` convention
   (`skills/jules-sessions/references/sent_responses.md`).
