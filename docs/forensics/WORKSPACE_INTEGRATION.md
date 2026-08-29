@@ -94,13 +94,16 @@ python3 tools/forensics/generate_report.py \
   --output workspaces/EmailIntelligence/analysis/forensics/
 ```
 
-### 5.2 Validate Existing Reports
+### 5.2 Validate Forensics JSON
 
 ```bash
-# Validate all forensics in a workspace
-python3 tools/forensics/validate_schema.py \
-  --workspace workspaces/EmailIntelligence/analysis/forensics/
+# Validate all forensics JSON data files in tools/forensics/
+python3 tools/forensics/validate_schema.py
 ```
+
+Note: `validate_schema.py` validates the JSON data files (sessions, pull_requests,
+interventions) against `forensics_data_schema.json`. It does **not** accept a
+`--workspace` argument and does not validate Markdown report frontmatter.
 
 ### 5.3 List Available Reports
 

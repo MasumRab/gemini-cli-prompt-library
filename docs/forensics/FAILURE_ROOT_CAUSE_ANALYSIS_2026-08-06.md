@@ -418,7 +418,7 @@ For each fix, add a regression test fixture:
 
 ## 7. Connection to migration plan
 
-The PR migration plan ([`PR_MIGRATION_PLAN_2026-08-06.md`](PR_MIGRATION_PLAN_2026-06.md))
+The PR migration plan ([`PR_MIGRATION_PLAN_2026-08-06.md`](../../workspaces/EmailIntelligence/analysis/PR_MIGRATION_PLAN_2026-08-06.md))
 addresses the **symptoms** (385 actionable PRs needing migration). This analysis
 addresses the **root causes** (workflow defects that created the backlog).
 
