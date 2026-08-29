@@ -57,7 +57,6 @@ the workspace isolation reorganization (2026-08-29) to ensure continuity.
 | GEMINI_JULES_ANALYSIS.md Section 10 | ⚠️ Stale | Lists issues 10.1-10.5 as open but all addressed |
 
 ### Auto-Triggering and Session Reuse (from `docs/actions/HANDOFF.md`)
-### Auto-Triggering and Session Reuse (from `docs/actions/HANDOFF.md`)
 
 > ⚠️ **ROOT CAUSE NOTE:** The session reuse checks (W-19, W-23) are designed to prevent redundant sessions, but the **fundamental issue is extended processing time** causing reviews to timeout before completing. This means:
 > - Sessions take too long to reach COMPLETED state
@@ -204,6 +203,70 @@ Before starting new work:
 - [ ] Check for new guidance in `docs/README.md`
 
 ---
+
+---
+
+## Tools Inventory and Required Tasks
+
+### Overview
+
+Multiple Python/TypeScript tools were identified in the workflow todos but need proper documentation and implementation tasks defined.
+
+### Current Tools Status
+
+| Tool | Path | Status | Purpose |
+|------|------|--------|---------|
+| `generate_report.py` | `tools/forensics/` | ⚠️ Partial | Generates forensics reports but dead import |
+| `validate_schema.py` | `tools/forensics/` | ✅ Created | Validates forensics data schema |
+| `jules_api_client.py` | `tools/api/` | ✅ Created | REST API client |
+| `jules_store.py` | `tools/store/` | ✅ Created | Session storage/SQLite |
+| `jules_pr_triage.py` | `tools/pr/` | ✅ Created | PR triage operations |
+| `jules_recovery_manager.py` | `tools/sessions/` | ⚠️ Partial | Session recovery |
+| `jules_monitor.py` | `tools/sessions/` | ⚠️ Partial | Session monitoring |
+
+### Missing Tools with Implementation Tasks
+
+| Tool | Status | Implementation Task | Requirements |
+|------|--------|---------------------|--------------|
+| `analyze_failures.py` | ❌ Not created | **T-TOOL-01:** Create evidence-driven failure analysis | 1. Query FAILED sessions from Jules API<br>2. Categorize failures by error type<br>3. Generate actionable recommendations<br>4. Output structured JSON for dashboards |
+| `analyze_patterns.py` | ❌ Not created | **T-TOOL-02:** Session reuse/redundancy analysis | 1. Query sessions by repo+branch<br>2. Detect duplicate sessions for same SHA+task<br>3. Identify patterns in multi-session PRs<br>4. Generate redundancy metrics |
+| `session_state_checker.py` | ❌ Not created | **T-TOOL-03:** API-based session state checker | 1. Query session state via `GET /sessions/{id}`<br>2. Return state: RUNNING\|COMPLETED\|FAILED<br>3. Support batch checking for multiple sessions<br>4. Used by W-19/W-23 implementations |
+| `batch_session_monitor.py` | ❌ Not created | **T-TOOL-04:** Async session completion monitor | 1. Poll sessions asynchronously<br>2. Post comments when COMPLETED<br>3. Handle timeout gracefully (P-2 from proposals)<br>4. Support webhook integration |
+| `unified_sdk_facade.py` | ❌ Not created | **T-TOOL-05:** Optional unified client | 1. Wrap REST client + SDK streaming<br>2. Provide single interface for workflows<br>3. Handle polling vs streaming transparently |
+
+### Tools Wiring Requirements
+
+| Issue | Status | Required Action |
+|-------|--------|-----------------|
+| `generate_report.py` dead import | ❌ Not wired | Wire `JulesAPIClient` to fetch session data for reports |
+| Session polling in workflows | ⚠️ Pending | Replace with SDK streaming when available |
+| Forensics schema validation | ✅ Done | `validate_schema.py` functional |
+
+### Tool Documentation Standards
+
+Each tool must have:
+1. **README.md** in its directory explaining purpose and usage
+2. **CLI interface** with `--help` and argument parsing
+3. **Structured output** (JSON/YAML) for programmatic consumption
+4. **Error handling** with descriptive messages
+5. **Tests** in `tools/tests/` directory
+
+### SDK Migration Path
+
+**Current:** Polling loops in workflows
+**Target:** SDK streaming (see `tools/sdk/`)
+
+| Phase | Task | Description |
+|-------|------|-------------|
+| 1 | Map current polling points | Identify all `while` loops in workflows |
+| 2 | SDK streaming research | Determine SDK capabilities for real-time updates |
+| 3 | Prototype migration | Test SDK in non-critical workflow |
+| 4 | Rollout | Replace polling with streaming progressively |
+
+---
+
+## Related Documents
+
 
 ## Related Documents
 
