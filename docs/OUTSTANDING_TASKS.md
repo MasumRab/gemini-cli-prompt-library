@@ -45,7 +45,6 @@ the workspace isolation reorganization (2026-08-29) to ensure continuity.
 |-------|--------|-------|
 | Session-summary implementation | ⚠️ Open ARC findings | Do not claim archive compliance until fixed |
 | TRACE-01 through TRACE-07 | ❌ Not uniformly implemented | See `docs/guides/workflow_session_traceability.md` |
-### SDK Integration (from `docs/planning/SDK_INTEGRATION_PLAN.md`)
 | `GEMINI_JULES_ANALYSIS.md Section 10` | ⚠️ Stale | Lists issues 10.1-10.5 as open but all addressed |
 
 | Issue | Status | Notes |
