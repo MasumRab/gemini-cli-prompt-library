@@ -200,7 +200,7 @@ events with truncated comment/review text). Note: This data is now available in 
 
 ## 8. PR migration plan (never close, always migrate)
 
-See [`PR_MIGRATION_PLAN_2026-08-06.md`](PR_MIGRATION_PLAN_2026-08-06.md) for the full migration plan. Note: This plan is now available in the standardized format in `migrated_forensics_data.json`.
+See [`PR_MIGRATION_PLAN_2026-08-06.md`](../PR_MIGRATION_PLAN_2026-08-06.md) for the full migration plan. Note: This plan is now available in the standardized format in `migrated_forensics_data.json`.
 full migration plan.
 
 **Principle:** Every Jules-created PR represents work to be preserved and advanced.

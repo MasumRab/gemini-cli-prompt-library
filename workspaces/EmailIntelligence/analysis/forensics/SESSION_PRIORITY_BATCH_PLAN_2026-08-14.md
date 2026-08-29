@@ -296,7 +296,7 @@ several unsupported claims that should be corrected:
 ## Files
 
 - **Batch plan data:** `docs/forensics/session_priority_batch_plan_2026-08-14.json`
-- **Follow-up message drafts:** `docs/forensics/SESSION_FOLLOWUP_MESSAGE_DRAFTS_2026-08-14.md`
+- **Follow-up message drafts:** `../../prompts/SESSION_FOLLOWUP_MESSAGE_DRAFTS_2026-08-14.md`
 - **Prior intervention ledger:** `docs/forensics/intervention_e2e_ledger_2026-08-07.json`
 - **Prior e2e report:** `docs/forensics/INTERVENTION_E2E_OUTCOME_ANALYSIS_2026-08-07.md` (Note: This data is now available in the standardized format in `migrated_forensics_data.json`)
 - **Session tracker:** `docs/forensics/SESSION_FOLLOWUP_TRACKER_2026-08-06.json` (Note: This data is now available in the standardized format in `migrated_forensics_data.json`)

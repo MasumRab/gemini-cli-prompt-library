@@ -1,11 +1,12 @@
-# Forensics Directory — Migrated
+# Forensics Directory — Legacy Jules-Tooling Copies
 
-**Status:** This directory has been migrated to `workspaces/EmailIntelligence/analysis/forensics/`
+**Status:** The authoritative forensics reports now live in `workspaces/EmailIntelligence/analysis/forensics/` (YAML-frontmatter versions). The copies below are the legacy Jules-tooling originals and are slated for deprecation (see `WORKSPACE_INTEGRATION.md`, Phase 5).
 
 ## Migration Summary (2026-08-29)
 
-All forensics documents have been moved to the EmailIntelligence workspace and updated
-with YAML frontmatter following the session summary standard.
+The forensics reports were **copied** to the EmailIntelligence workspace and updated
+with YAML frontmatter following the session summary standard. These original copies
+remain here as legacy until deprecated; they are not the canonical location.
 
 ### New Location
 
