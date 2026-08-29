@@ -57,6 +57,16 @@ the workspace isolation reorganization (2026-08-29) to ensure continuity.
 | GEMINI_JULES_ANALYSIS.md Section 10 | ⚠️ Stale | Lists issues 10.1-10.5 as open but all addressed |
 
 ### Auto-Triggering and Session Reuse (from `docs/actions/HANDOFF.md`)
+### Auto-Triggering and Session Reuse (from `docs/actions/HANDOFF.md`)
+
+> ⚠️ **ROOT CAUSE NOTE:** The session reuse checks (W-19, W-23) are designed to prevent redundant sessions, but the **fundamental issue is extended processing time** causing reviews to timeout before completing. This means:
+> - Sessions take too long to reach COMPLETED state
+> - Comment-posting checks fail because sessions never completed
+> - Auto-fire mechanisms that check for prior comments may incorrectly skip valid reviews
+>
+> **Do NOT remove the session reuse checks** — they are correct for deduplication. Instead, address the root cause below.
+
+**Problem:** Previous implementations fired too many reviews that did not complete actual review work. Sessions were created for PRs that already had COMPLETED sessions, or duplicate sessions for the same task.
 
 **Problem:** Previous implementations fired too many reviews that did not complete actual review work. Sessions were created for PRs that already had COMPLETED sessions, or duplicate sessions for the same task.
 
@@ -102,11 +112,11 @@ the workspace isolation reorganization (2026-08-29) to ensure continuity.
 
 | Workflow | Trigger | Issue | Status |
 |----------|---------|-------|--------|
-| `jules-pr-review.yml` | PR open/sync | Creates session without checking for prior COMPLETED | ❌ Open |
-| `jules-pr-force-review.yml` | Label/command | Creates session without checking for prior COMPLETED | ❌ Open |
+| `jules-pr-review.yml` | PR open/sync | Creates session without checking for prior COMPLETED (use API state, not comments) | ❌ Open |
+| `jules-pr-force-review.yml` | Label/command | Creates session without checking for prior COMPLETED (use API state, not comments) | ❌ Open |
 | `jules-backlog-review.yml` | Schedule | Creates batch sessions without checking individual PR history | ❌ Open |
-| `jules-pr-auto-fix.yml` | Label/command | Creates session without checking for prior COMPLETED fix | ❌ Open |
-| `jules-pr-resolve-conflicts.yml` | Label/command | Creates session without checking for prior COMPLETED resolution | ❌ Open |
+| `jules-pr-auto-fix.yml` | Label/command | Creates session without checking for prior COMPLETED (use API state, not comments) fix | ❌ Open |
+| `jules-pr-resolve-conflicts.yml` | Label/command | Creates session without checking for prior COMPLETED (use API state, not comments) resolution | ❌ Open |
 
 
 ### GitHub Actions API Usage (from `docs/planning/OFFICIAL_JULES_ACTION_AUDIT.md`)
@@ -304,3 +314,25 @@ Before starting new work:
 | Document | Purpose |
 |----------|---------|
 | `docs/planning/OFFICIAL_JULES_ACTION_AUDIT.md` | Full audit with official action analysis |
+#### Proposals to Address Extended Processing Time
+
+**Root Cause:** Reviews take longer than GitHub Actions timeout allows, causing sessions to be marked incomplete and comments to never post.
+
+| Proposal | Description | Trade-offs |
+|----------|-------------|------------|
+| **P-1: Increase Workflow Timeout** | Extend GitHub Actions timeout from 90min to 360min+ to match session duration | Increases GitHub Actions minutes consumption |
+| **P-2: Implement Session Monitoring** | Instead of timeout, monitor sessions asynchronously and post comments when COMPLETED | Requires separate monitoring workflow or webhook integration |
+| **P-3: Check Session State via API** | For session reuse, check session.state via API instead of checking PR comments | More reliable than comment parsing |
+| **P-4: Graceful Degradation** | If session is still RUNNING after timeout, store sessionId in comment and defer posting | Requires new retry workflow, potential stale output |
+| **P-5: Priority Queue** | Short-circuit processing for simple PRs, longer for complex | Requires complexity estimation |
+
+**Recommended Approach:** Combine P-3 and P-4
+1. Check session state via API (not comments) for deduplication
+2. If session is RUNNING but workflow times out, post a "review in progress" comment with sessionId
+3. Use a separate "check-session-completion" workflow triggered on schedule to post final output
+
+**Implementation Notes:**
+- W-09 timeout fix must account for max session duration
+- Session state API returns state: RUNNING | COMPLETED | FAILED
+- Deferred posting requires durable marker with sessionId for later retrieval
+
