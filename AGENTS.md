@@ -14,6 +14,38 @@ These instructions govern the entire repository.
 
 Do not treat these modes as one implementation. A review or readiness decision for one
 does not make another mode ready.
+### NEW SESSION ONBOARDING — Target Repo Context Loading
+
+When starting a new Jules session on a target repository (not this jules repo):
+
+1. **Identify target repo context:**
+   - Determine which target repo the session operates on (e.g., EmailIntelligence, kaggle-notebooks-analysis)
+   - Load the workspace: `workspaces/<repo-name>/README.md` (if exists)
+   - Check for target-specific guidelines: `.jules/INSTRUCTIONS.md`, `.jules/*`, `.github/jules-review-rules.md`
+
+2. **Load target repo norms and guidelines:**
+   - Read any `INSTRUCTIONS.md` or review rules from the target's **base branch** (trusted)
+   - Check for branch governance: `.taskmaster/`, `BRANCH_GOVERNANCE.md`, `CONTRIBUTING.md`
+   - Look for project-specific constraints: no-merge rules, PR size limits, security requirements
+
+3. **Correlate with session history:**
+   - Check `workspaces/<repo-name>/sessions/` for prior session summaries
+   - Check `workspaces/<repo-name>/analysis/` for prior work products
+   - Check `workspaces/<repo-name>/prompts/` for prior prompt patterns
+
+4. **Document new session context:**
+   - Log session start to `workspaces/<repo-name>/prompts/sent_responses.md`
+   - Record the target repo, task type, and any loaded guidelines
+   - If continuing prior work, cite the prior session ID
+
+**CRITICAL:** Do not assume target repos follow the same conventions as this jules repo.
+Each target repo has its own:
+- Branch governance (main/scientific isolation, no-merge rules)
+- Review policies (.jules/INSTRUCTIONS.md, jules-review-rules.md)
+- Tooling (cluster_branches.py, validation frameworks)
+- State preservation (future_advanced_state/, quarantine paths)
+
+
 
 ### Mode → runbook index
 
