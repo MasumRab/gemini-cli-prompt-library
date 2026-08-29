@@ -63,6 +63,52 @@ the workspace isolation reorganization (2026-08-29) to ensure continuity.
 | Missing `automationMode` field | ❌ Not set | May prevent auto-create-PR in workflows |
 | Missing `requirePlanApproval` | ❌ Not set | Should be explicit for clarity |
 | `?view=FULL` polling issue | ⚠️ Documented | EDGE_CASES.md flags this |
+
+#### `automationMode` Considerations
+
+**Context:** The official Jules action sets `"automationMode": "AUTO_CREATE_PR"`, but adding this requires careful consideration:
+
+| Workflow | Current Behavior | Recommended `automationMode` | Rationale |
+|----------|-----------------|------------------------------|-----------|
+| `jules-pr-review.yml` | No PR creation | `null` or omit | Review-only, no code changes |
+| `jules-pr-auto-fix.yml` | ❌ May fail to create PR | `"AUTO_CREATE_PR"` | Must create fix PR |
+| `jules-pr-resolve-conflicts.yml` | ❌ May fail to create PR | `"AUTO_CREATE_PR"` | Must create fix PR |
+| `jules-backlog-review.yml` | No PR creation | `null` or omit | Review-only |
+| Scheduled cleanup | N/A (fire-and-forget) | `"AUTO_CREATE_PR"` | Optional, adds PR |
+
+**⚠️ Critical:** `automationMode: "AUTO_CREATE_PR"` without proper scope limits can cause Jules to:
+- Create unintended PRs for minor fixes
+- Generate noise PRs that waste reviewer time
+- Open PRs for changes that don't align with project conventions
+
+**Mitigation:** Ensure prompts clearly specify:
+- Only create PR if fix is meaningful (> X lines changed)
+- Follow project PR conventions (branch naming, description template)
+- Run tests before creating PR
+- Don't create PR if CI would fail
+
+#### `requirePlanApproval` Considerations
+
+**Context:** The official action sets `"requirePlanApproval": false`. For automation workflows:
+
+| Use Case | Current Behavior | Recommended `requirePlanApproval` | Rationale |
+|----------|-----------------|----------------------------------|-----------|
+| Auto-fix (untrusted contributors) | Defaults to false | `true` | Require human review before changes |
+| Auto-fix (trusted team) | Defaults to false | `false` | Trust the bot, faster turnaround |
+| CI failure fix | Defaults to false | `false` | Time-sensitive, CI failures are clear |
+| Scheduled cleanup | Defaults to false | `false` | Already reviewed prompts |
+
+**Recommendation:**
+- **Review workflows:** `requirePlanApproval: false` (user already reviewing)
+- **Auto-fix workflows:** Consider `requirePlanApproval: true` for noisy projects, `false` for trusted teams
+- **Always set explicitly** rather than relying on defaults for clarity
+### GitHub Actions API Usage (from `docs/planning/OFFICIAL_JULES_ACTION_AUDIT.md`)
+
+| Issue | Status | Notes |
+|-------|--------|-------|
+| Missing `automationMode` field | ❌ Not set | May prevent auto-create-PR in workflows |
+| Missing `requirePlanApproval` | ❌ Not set | Should be explicit for clarity |
+| `?view=FULL` polling issue | ⚠️ Documented | EDGE_CASES.md flags this |
 ---
 
 ## Session Context
@@ -180,11 +226,17 @@ Before starting new work:
 
 ### Recommended Actions
 
-| Priority | Action | Files |
-|----------|--------|-------|
-| **Critical** | Add `automationMode: "AUTO_CREATE_PR"` | `jules-pr-auto-fix.yml`, `jules-pr-resolve-conflicts.yml` |
-| **High** | Remove `?view=FULL` from polling URLs | `jules-backlog-review.yml` |
-| **Medium** | Add `requirePlanApproval` explicitly | All workflows |
+| Priority | Action | Files | Risk/Consideration |
+|----------|--------|-------|-------------------|
+| **Critical** | Add `automationMode: "AUTO_CREATE_PR"` | `jules-pr-auto-fix.yml`, `jules-pr-resolve-conflicts.yml` | ⚠️ **Noise PR risk** — prompts must limit scope |
+| **High** | Remove `?view=FULL` from polling URLs | `jules-backlog-review.yml` | API reliability |
+| **Medium** | Add `requirePlanApproval: false` explicitly | Auto-fix (trusted), CI fix | Faster turnaround, no blocking |
+| **Medium** | Add `requirePlanApproval: true` explicitly | Auto-fix (noisy/untrusted) | Human review gate, less noise |
+
+**⚠️ automationMode Risk Assessment:**
+- **Without it:** Jules may not create PRs (current state)
+- **With it:** Jules creates PRs but may create noise
+- **Mitigation required:** Prompts must include guardrails (min change size, test pass, convention compliance)
 
 ### Open Questions
 
