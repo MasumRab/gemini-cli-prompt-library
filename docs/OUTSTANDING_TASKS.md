@@ -55,6 +55,14 @@ the workspace isolation reorganization (2026-08-29) to ensure continuity.
 | `analyze_patterns.py` | ❌ Not created | Need session reuse/redundancy analysis |
 | Unified SDK facade | ❌ Not created | Optional: single client for REST + SDK |
 
+
+### GitHub Actions API Usage (from `docs/planning/OFFICIAL_JULES_ACTION_AUDIT.md`)
+
+| Issue | Status | Notes |
+|-------|--------|-------|
+| Missing `automationMode` field | ❌ Not set | May prevent auto-create-PR in workflows |
+| Missing `requirePlanApproval` | ❌ Not set | Should be explicit for clarity |
+| `?view=FULL` polling issue | ⚠️ Documented | EDGE_CASES.md flags this |
 ---
 
 ## Session Context
