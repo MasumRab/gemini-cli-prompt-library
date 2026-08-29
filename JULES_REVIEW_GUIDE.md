@@ -27,7 +27,7 @@ Do not use target parity as a reason to copy an unvalidated canonical revision.
 
 A repo-specific recovery and migration strategy with per-repository analysis,
 session-creation quota budgeting, and never-close guardrails is in
-[`docs/forensics/REPO_SPECIFIC_STRATEGY_2026-08-06.md`](docs/forensics/REPO_SPECIFIC_STRATEGY_2026-08-06.md).
+[`workspaces/EmailIntelligence/analysis/REPO_SPECIFIC_STRATEGY_2026-08-06.md`](docs/forensics/REPO_SPECIFIC_STRATEGY_2026-08-06.md).
 
 ### REST operations and archives
 
