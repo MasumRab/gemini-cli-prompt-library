@@ -330,6 +330,55 @@ Before starting new work:
 2. If session is RUNNING but workflow times out, post a "review in progress" comment with sessionId
 3. Use a separate "check-session-completion" workflow triggered on schedule to post final output
 
+### Session State Reference
+
+Jules sessions have the following states and purposes:
+
+| State | Description | Workflow Action | Tracking Required |
+|-------|-------------|-----------------|-------------------|
+| **RUNNING** | Session actively processing | Monitor via polling until COMPLETED or FAILED | ✅ Yes — track sessionId per PR+SHA+task |
+| **COMPLETED** | Session finished successfully | Fetch `/activities`, post review output to PR | ✅ Yes — reuse existing before creating new |
+| **FAILED** | Session encountered error | Retry via `sendMessage` or create new with error context | ✅ Yes — don't create duplicate; attempt recovery first |
+| **AWAITING_USER_FEEDBACK** | Session waiting for human input | Auto-approve via `approvePlan` | ⚠️ Optional — can auto-unblock or leave for user |
+
+### Session Tracking Matrix
+
+**Which sessions to track for which workflows:**
+
+| Workflow | Session Type | Track | Match By | Action if Match Found |
+|----------|--------------|-------|----------|----------------------|
+| `jules-pr-review.yml` | Review | `jules:session:review:STATE:ID` | SHA + review type | Reuse COMPLETED output |
+| `jules-pr-force-review.yml` | Review | `jules:session:review:STATE:ID` | SHA + review type | Reuse COMPLETED output |
+| `jules-pr-auto-fix.yml` | Auto-fix | `jules:session:autofix:STATE:ID` | SHA + task type | Reuse COMPLETED, retry FAILED |
+| `jules-pr-resolve-conflicts.yml` | Resolve-conflicts | `jules:session:resolve:STATE:ID` | SHA + task type | Reuse COMPLETED, retry FAILED |
+| `jules-backlog-review.yml` | Batch review | `jules:session:batch:STATE:ID` | SHA + task type | Check individual PR coverage |
+
+### Marker Format for Session Tracking
+
+Use durable markers in PR comments to track session state:
+
+```
+<!-- jules:session:type:state:sha:SHA_VALUE:id:SESSION_ID:timestamp:TS -->
+```
+
+**Examples:**
+```
+<!-- jules:session:review:RUNNING:sha:abc123:id:ses_xyz:timestamp:2026-08-29T10:00:00Z -->
+<!-- jules:session:review:COMPLETED:sha:abc123:id:ses_xyz:timestamp:2026-08-29T10:15:00Z -->
+<!-- jules:session:autofix:FAILED:sha:def456:id:ses_abc:timestamp:2026-08-29T09:45:00Z -->
+```
+
+### Robust Tracking Implementation Requirements
+
+For session tracking to be robust:
+
+1. **Unique per task type** — Review sessions and auto-fix sessions are different; don't deduplicate across types
+2. **Unique per SHA** — Same PR with new commits = new SHA = new session (don't reuse stale output)
+3. **State-aware** — Only COMPLETED sessions should have their output reused
+4. **Persist sessionId** — Store in marker for later retrieval via API
+5. **Update on state change** — Update marker when session transitions (RUNNING → COMPLETED/FAILED)
+
+
 **Implementation Notes:**
 - W-09 timeout fix must account for max session duration and incorporate security safeguards (see P-1 above)
 - Session state API returns state: RUNNING | COMPLETED | FAILED
