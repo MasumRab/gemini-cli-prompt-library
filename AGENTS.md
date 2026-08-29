@@ -51,7 +51,7 @@ Each target repo has its own:
 
 | Mode (step 2 class)                          | Read first                                               | Then                                                                                                                               |
 | -------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Distributable GitHub Actions                 | `docs/actions/REVIEW_RECOMMENDATION.md`                  | `docs/actions/HANDOFF.md` (tasks), `docs/actions/SMOKE_TEST_PLAN.md` (validation), `docs/actions/TARGET_REPOSITORY_ADJUSTMENTS.md` |
+| Distributable GitHub Actions                 | `.github/docs/REVIEW_RECOMMENDATION.md` (canonical origin: `docs/actions/`) | `.github/docs/HANDOFF.md` (tasks), `.github/docs/SMOKE_TEST_PLAN.md` (validation), `.github/docs/TARGET_REPOSITORY_ADJUSTMENTS.md` |
 | Jules REST ops / triage / repair             | `docs/reviews/JULES_OPERATIONS_REVIEW_RECOMMENDATION.md` | `docs/reference/rest_api_reference.md`, `docs/runbooks/session_recovery.md`, `docs/guides/operations.md`                           |
 | Session archives & summaries                 | `docs/guides/session_summary_standard.md`                | `docs/reviews/JULES_OPERATIONS_REVIEW_RECOMMENDATION.md` (ARC findings)                                                            |
 | Cross-system traceability & forensics        | `docs/guides/workflow_session_traceability.md`           | `docs/runbooks/session_recovery.md`                                                                                                |
@@ -94,17 +94,21 @@ fear severity as proof; prefer exact IDs; run `trunk check --no-fix` and
 
 - Executable source of truth: `.github/workflows/jules-*.yml` and
   `.github/scripts/jules-comment-classifier.cjs`.
-- Review authority: `docs/actions/REVIEW_RECOMMENDATION.md`.
-- Active task tracker: `docs/actions/HANDOFF.md`.
-- Validation: `docs/actions/SMOKE_TEST_PLAN.md`.
+- Review authority: `.github/docs/REVIEW_RECOMMENDATION.md` (canonical origin: `docs/actions/`).
+- Active task tracker: `.github/docs/HANDOFF.md`.
+- Validation: `.github/docs/SMOKE_TEST_PLAN.md`.
 - Target overlays and branch dispositions:
-  `docs/actions/TARGET_REPOSITORY_ADJUSTMENTS.md`.
-- Legacy worktree migration: `docs/actions/WORKTREE_MIGRATION.md`.
+  `docs/actions/TARGET_REPOSITORY_ADJUSTMENTS.md` (staged copy: `.github/docs/`).
+- Legacy worktree migration: `.github/docs/WORKTREE_MIGRATION.md`.
 
 Never restore executable copies under `docs/actions/workflows/` or
 `docs/actions/scripts/`. Do not distribute canonical workflows until the review's open
 findings, target-policy integration, and live-validation gates are complete. Never
 blindly overwrite a target repository's instructions or branch-governance checks.
+
+`.github/docs/` holds the distribution-staging copies of all Actions documentation,
+for deployment to target repos (EmailIntelligence, Kaggle, Gemini). `docs/actions/`
+remains the canonical origin; keep the two in sync when either changes.
 
 ## Jules REST operations and session archives
 
