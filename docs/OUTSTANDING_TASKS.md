@@ -45,6 +45,15 @@ the workspace isolation reorganization (2026-08-29) to ensure continuity.
 |-------|--------|-------|
 | Session-summary implementation | ⚠️ Open ARC findings | Do not claim archive compliance until fixed |
 | TRACE-01 through TRACE-07 | ❌ Not uniformly implemented | See `docs/guides/workflow_session_traceability.md` |
+### SDK Integration (from `docs/planning/SDK_INTEGRATION_PLAN.md`)
+
+| Issue | Status | Notes |
+|-------|--------|-------|
+| Forensics tools dead import | ❌ Not wired | `generate_report.py` imports but never uses `JulesAPIClient` |
+| Session polling workarounds | ⚠️ Pending | Replace polling loops with SDK streaming |
+| `analyze_failures.py` | ❌ Not created | Need evidence-driven failure analysis |
+| `analyze_patterns.py` | ❌ Not created | Need session reuse/redundancy analysis |
+| Unified SDK facade | ❌ Not created | Optional: single client for REST + SDK |
 | GEMINI_JULES_ANALYSIS.md Section 10 | ⚠️ Stale | Lists issues 10.1-10.5 as open but all addressed |
 
 ---
