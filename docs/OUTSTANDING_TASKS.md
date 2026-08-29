@@ -320,7 +320,7 @@ Before starting new work:
 
 | Proposal | Description | Trade-offs |
 |----------|-------------|------------|
-| **P-1: Increase Workflow Timeout** | Extend GitHub Actions timeout from 90min to 360min+ to match session duration | Increases GitHub Actions minutes consumption |
+| **P-1: Increase Workflow Timeout** | Extend GitHub Actions timeout from 90min to 360min+ to match session duration | ⚠️ **Security considerations:** Long-running workflows with `contents: write` permissions increase attack surface. Required safeguards: (1) Scope permissions to minimum required per workflow, (2) Implement quota exhaustion checks (W-08) to prevent runaway sessions, (3) Sanitize all API response text before posting (HTML injection via `-->` replacement, W-16/W-17), (4) Use fail-closed dedup patterns (`if !`) to prevent duplicate session creation, (5) Set explicit per-session deadlines rather than global timeout. |
 | **P-2: Implement Session Monitoring** | Instead of timeout, monitor sessions asynchronously and post comments when COMPLETED | Requires separate monitoring workflow or webhook integration |
 | **P-3: Check Session State via API** | For session reuse, check session.state via API instead of checking PR comments | More reliable than comment parsing |
 | **P-4: Graceful Degradation** | If session is still RUNNING after timeout, store sessionId in comment and defer posting | Requires new retry workflow, potential stale output |
@@ -332,7 +332,7 @@ Before starting new work:
 3. Use a separate "check-session-completion" workflow triggered on schedule to post final output
 
 **Implementation Notes:**
-- W-09 timeout fix must account for max session duration
+- W-09 timeout fix must account for max session duration and incorporate security safeguards (see P-1 above)
 - Session state API returns state: RUNNING | COMPLETED | FAILED
 - Deferred posting requires durable marker with sessionId for later retrieval
 
