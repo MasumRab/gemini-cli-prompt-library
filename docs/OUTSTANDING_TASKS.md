@@ -56,6 +56,14 @@ the workspace isolation reorganization (2026-08-29) to ensure continuity.
 | Unified SDK facade | ❌ Not created | Optional: single client for REST + SDK |
 | GEMINI_JULES_ANALYSIS.md Section 10 | ⚠️ Stale | Lists issues 10.1-10.5 as open but all addressed |
 
+
+### GitHub Actions API Usage (from `docs/planning/OFFICIAL_JULES_ACTION_AUDIT.md`)
+
+| Issue | Status | Notes |
+|-------|--------|-------|
+| Missing `automationMode` field | ❌ Not set | May prevent auto-create-PR in workflows |
+| Missing `requirePlanApproval` | ❌ Not set | Should be explicit for clarity |
+| `?view=FULL` polling issue | ⚠️ Documented | EDGE_CASES.md flags this |
 ---
 
 ## Session Context
