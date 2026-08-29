@@ -116,4 +116,88 @@ Before starting new work:
 1. **Merge PR #2** — Contains workspace isolation reorganization
 2. **Address W-09/W-10/W-18** — Cross-session awareness in workflows
 3. **Complete TRACE implementation** — Workflow session traceability
-4. **Fix session-summary ARC findings** — Archive compliance
+---
+
+## Pattern Analysis: Our Workflows vs Official Jules Action
+
+### Source
+- Official: `google-labs-code/jules-action` (229 stars)
+- Our patterns: Custom workflows in `.github/workflows/jules-*.yml`
+
+### Pattern Comparison
+
+| Aspect | Official Pattern | Our Pattern | Consequence |
+|--------|-----------------|-------------|-------------|
+| **Session creation** | `POST /sessions` | `POST /sessions` | Same |
+| **Authentication** | `X-Goog-Api-Key` header | `X-Goog-Api-Key` header | Same |
+| **`automationMode`** | `"AUTO_CREATE_PR"` | ❌ Not set | **Jules may not auto-create PRs** |
+| **`requirePlanApproval`** | `false` (explicit) | ❌ Not set | Defaults to `false` (probably fine) |
+| **Polling for results** | ❌ Fire-and-forget | ✅ Custom polling loop | **We get results, they don't** |
+| **Result delivery** | ❌ None (session runs async) | ✅ Post to PR comments | **We deliver value immediately** |
+| **`?view=FULL`** | N/A (no polling) | ⚠️ Used in backlog | Can cause API issues |
+| **Timeout handling** | ❌ Not handled | ✅ Wall-clock + retry logic | **We handle failures gracefully** |
+| **Quota handling** | ❌ Not handled | ✅ 429 detection + user notification | **We inform users of limits** |
+
+### Detailed Limitation Analysis
+
+#### 1. Missing `automationMode: "AUTO_CREATE_PR"`
+
+**Consequences:**
+| Scenario | Official | Our Workflows |
+|----------|----------|---------------|
+| Jules completes fix | Creates PR automatically | ❌ May not create PR |
+| Check session state | N/A (async) | Session completes but no PR |
+
+**When this matters:** Auto-fix, CI failure fix, scheduled cleanup
+**When it doesn't:** Review-only workflows (no PR creation expected)
+
+#### 2. Fire-and-Forget vs Polling
+
+| Factor | Fire-and-Forget | Polling |
+|--------|-----------------|---------|
+| GitHub Actions minutes | Low (completes fast) | Higher (polls for minutes) |
+| User experience | Must check Jules dashboard | Results appear in PR |
+| Real-time feedback | ❌ None | ✅ Status updates |
+| Failure handling | ❌ Silent | ✅ Can notify user |
+| Workflow complexity | Simple | Complex |
+
+**When fire-and-forget is preferred:** Quick tasks, batch operations, reduced Actions minutes
+**When polling is preferred:** User expects results in PR, compliance/audit trail needed
+
+#### 3. `?view=FULL` in Polling URLs
+
+**Issue:** Can cause polling to fail intermittently, causing false timeouts.
+**Fix:** Remove `?view=FULL` from polling URLs (per EDGE_CASES.md).
+
+### Decision Matrix: When to Use Which Pattern
+
+| Use Case | Recommended | Reason |
+|----------|------------|--------|
+| PR Review | Polling | Results should appear in PR |
+| Auto-fix | Polling + `automationMode` | Results + PR creation |
+| Scheduled cleanup | Fire-and-forget | Don't need immediate results |
+| Batch operations | Fire-and-forget | Reduce Actions minutes |
+
+### Recommended Actions
+
+| Priority | Action | Files |
+|----------|--------|-------|
+| **Critical** | Add `automationMode: "AUTO_CREATE_PR"` | `jules-pr-auto-fix.yml`, `jules-pr-resolve-conflicts.yml` |
+| **High** | Remove `?view=FULL` from polling URLs | `jules-backlog-review.yml` |
+| **Medium** | Add `requirePlanApproval` explicitly | All workflows |
+
+### Open Questions
+
+1. Is `automationMode` required for PR creation, or just recommended?
+2. Should we add an optional fire-and-forget mode for long-running tasks?
+3. Can we use SDK streaming instead of polling for local tools?
+
+---
+
+## Related Documents
+
+| Document | Purpose |
+|----------|---------|
+| `docs/planning/OFFICIAL_JULES_ACTION_AUDIT.md` | Full audit with official action analysis |
+| `docs/actions/EDGE_CASES.md` | `?view=FULL` issue documented |
+| `docs/actions/HANDOFF.md` | Open GitHub Actions tasks |
