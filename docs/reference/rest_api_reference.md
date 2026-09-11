@@ -95,6 +95,7 @@ curl -s -X POST \
 
 ## Notes
 - Session IDs may be provided with or without the `sessions/` prefix (both work)
+- `:sendMessage` is accepted on sessions in **any** state — including `FAILED` and `COMPLETED` — and is the standard recovery path for failed/stuck sessions (see `runbooks/session_recovery.md`). Once a session is terminal, it may eventually reject new messages; the rejection is a per-session symptom, not a state rule
 - All timestamps are in RFC3339 format (e.g., `2023-01-01T12:34:56.789Z`)
 - For paging, use `nextPageToken` from previous response
 - Rate limits apply; implement exponential backoff for 429 responses

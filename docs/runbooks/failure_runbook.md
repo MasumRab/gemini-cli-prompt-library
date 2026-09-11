@@ -50,7 +50,7 @@ However, if a session is completely broken, you may need to abandon it.
 
 **Indicators that a session MIGHT need to be abandoned:**
 *   Jules has made the exact same mistake 4+ times in a row despite explicit corrections via `sendMessage`.
-*   The session status is permanently `FAILED` due to an internal server error and the UI/API refuses to accept new messages.
+*   The session status is permanently `FAILED` and the API **refuses new messages** on that specific session (e.g. returns 4xx/5xx the moment you call `sendMessage`). Note: a `FAILED` state **alone does not block messaging** — `sendMessage` is accepted on `FAILED` sessions and is the standard recovery path (see `session_recovery.md`). Only treat a session as terminal if the live API call is actually rejected.
 
 **Action:**
 1.  **Do NOT close the session automatically via a script.**
