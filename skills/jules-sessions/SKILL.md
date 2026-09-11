@@ -384,11 +384,12 @@ jq -r '.outputs[].changeSet.gitPatch' jules_sessions/pr437_session.json | \
 
 The skill includes reference files in `references/`:
 
-| File                 | Usage                                            |
-| -------------------- | ------------------------------------------------ |
-| `wip_analysis.md`    | Patterns for recovering timed-out Jules sessions |
-| `task_schedule.json` | Example 11-task orchestration schedule           |
-| `prompts.md`         | Pre-formatted prompts for EmailIntelligence      |
+| File                  | Usage                                              |
+| --------------------- | -------------------------------------------------- |
+| `wip_analysis.md`     | Patterns for recovering timed-out Jules sessions   |
+| `task_schedule.json`  | Example 11-task orchestration schedule              |
+| `prompts.md`          | Pre-formatted prompts for EmailIntelligence        |
+| `prompt_templates.md` | Workspace-generic prompt library (fill and send)    |
 
 Load when needed:
 
@@ -417,6 +418,7 @@ grep "^## Task" references/prompts.md
 - `references/task_schedule.json` — Schedule schema example
 - `references/prompts.md` — Pre-formatted task prompts (planned)
 - `references/sent_responses.md` — **Log of actual prompts sent** (continuously updated)
+- `references/prompt_templates.md` — **Workspace-generic prompt library** — parameterized templates (nudge, rectification, verification, requirements-generation, analysis-only, task assignment) usable for any `workspaces/<repo>/`; fill placeholders, log the sent instance in the workspace
 - `references/response_templates.md` — Context-aware message templates for:
   - Plan approval
   - Nudging stuck sessions
