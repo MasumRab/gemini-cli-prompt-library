@@ -9,26 +9,106 @@ These instructions govern the entire repository.
    - distributable GitHub Actions;
    - Jules REST/operator tools, triage, repair, or session archives; or
    - cross-system GitHub-run/Jules-session traceability.
-3. Read only the canonical review and task tracker for that subsystem.
+3. Read the mode→runbook index below **and** the canonical review/task tracker for that
+   subsystem. If none of the rows apply, state the reason in one line before proceeding.
 
 Do not treat these modes as one implementation. A review or readiness decision for one
 does not make another mode ready.
+### NEW SESSION ONBOARDING — Target Repo Context Loading
+
+When starting a new Jules session on a target repository (not this jules repo):
+
+1. **Identify target repo context:**
+   - Determine which target repo the session operates on (e.g., EmailIntelligence, kaggle-notebooks-analysis)
+   - Load the workspace: `workspaces/<repo-name>/README.md` (if exists)
+   - Check for target-specific guidelines: `.jules/INSTRUCTIONS.md`, `.jules/*`, `.github/jules-review-rules.md`
+
+2. **Load target repo norms and guidelines:**
+   - Read any `INSTRUCTIONS.md` or review rules from the target's **base branch** (trusted)
+   - Check for branch governance: `.taskmaster/`, `BRANCH_GOVERNANCE.md`, `CONTRIBUTING.md`
+   - Look for project-specific constraints: no-merge rules, PR size limits, security requirements
+
+3. **Correlate with session history:**
+   - Check `workspaces/<repo-name>/sessions/` for prior session summaries
+   - Check `workspaces/<repo-name>/analysis/` for prior work products
+   - Check `workspaces/<repo-name>/prompts/` for prior prompt patterns
+
+4. **Document new session context:**
+   - Log session start to `workspaces/<repo-name>/prompts/sent_responses.md`
+   - Record the target repo, task type, and any loaded guidelines
+   - If continuing prior work, cite the prior session ID
+
+**CRITICAL:** Do not assume target repos follow the same conventions as this jules repo.
+Each target repo has its own:
+- Branch governance (main/scientific isolation, no-merge rules)
+- Review policies (.jules/INSTRUCTIONS.md, jules-review-rules.md)
+- Tooling (cluster_branches.py, validation frameworks)
+- State preservation (future_advanced_state/, quarantine paths)
+
+
+
+### Mode → runbook index
+
+| Mode (step 2 class)                          | Read first                                               | Then                                                                                                                               |
+| -------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Distributable GitHub Actions                 | `.github/docs/REVIEW_RECOMMENDATION.md` (canonical origin: `docs/actions/`) | `.github/docs/HANDOFF.md` (tasks), `.github/docs/SMOKE_TEST_PLAN.md` (validation), `.github/docs/TARGET_REPOSITORY_ADJUSTMENTS.md` |
+| Jules REST ops / triage / repair             | `docs/reviews/JULES_OPERATIONS_REVIEW_RECOMMENDATION.md` | `docs/reference/rest_api_reference.md`, `docs/runbooks/session_recovery.md`, `docs/guides/operations.md`                           |
+| Session archives & summaries                 | `docs/guides/session_summary_standard.md`                | `docs/reviews/JULES_OPERATIONS_REVIEW_RECOMMENDATION.md` (ARC findings)                                                            |
+| Cross-system traceability & forensics        | `docs/guides/workflow_session_traceability.md`           | `docs/runbooks/session_recovery.md`                                                                                                |
+| Session operations on a specific remote repo | `docs/runbooks/workspace_isolation.md`                   | `docs/runbooks/session_recovery.md`, `docs/runbooks/session_runbook.md`                                                            |
+| Task failure / timeout / over-deletion       | `docs/runbooks/failure_runbook.md`                       | `docs/runbooks/session_recovery.md`                                                                                                |
+
+### Operating guardrails (re-read & re-assert after ANY context compaction)
+
+RESUME PROTOCOL (run before continuing): re-derive **repo**, **session id**,
+**subsystem**, and **current phase**; if any is unknown, recover it:
+
+- Session IDs: `session_tracking/YYYY/MM/` → SQLite store → API
+  `sessions?pageSize=`
+- Repo of a session: store `repo` column or `sourceContext.source`
+
+SESSION OPS — repo scoping & logging:
+
+- Scope every Jules query by repo (the session store is global).
+- Work in a per-repo workspace: `workspaces/<repo-name>/{sessions,analysis,prompts,state}/`.
+  Global store = canonical read-only truth; workspace = disposable projection.
+- **Log every message sent to a live Jules session** to
+  `workspaces/<repo-name>/prompts/sent_responses.md` (or the store)
+  _before or immediately after_ sending. Format: the existing YAML-ish
+  `session_id / prompt_type / prompt_sent / outcome` convention
+  (`skills/jules-sessions/references/sent_responses.md`).
+  **Invariants:** unlogged message = lost context; never hand-edit scratch in
+  repo root or `/tmp` — valuable artifacts promoted to `analysis/`.
+- Transports (all write to the same workspace): REST client
+  (`tools/api`) → fallback SDK bridge (`node tools/sdk/dist/bridge.js`) on poll
+  timeouts → Jules CLI (`jules remote list|pull`) on auth failure.
+- Skills check: before session analysis or messaging, load
+  `skills/jules-sessions/SKILL.md` — it defines the analysis patterns,
+  response templates, and logging formats.
+
+DISCIPLINE (all tasks): classify at start; re-classify when scope changes;
+fear severity as proof; prefer exact IDs; run `trunk check --no-fix` and
+`git diff --check`; never commit credentials/prompts; preserve uncommitted work.
 
 ## Distributable GitHub Actions
 
 - Executable source of truth: `.github/workflows/jules-*.yml` and
   `.github/scripts/jules-comment-classifier.cjs`.
-- Review authority: `docs/actions/REVIEW_RECOMMENDATION.md`.
-- Active task tracker: `docs/actions/HANDOFF.md`.
-- Validation: `docs/actions/SMOKE_TEST_PLAN.md`.
+- Review authority: `.github/docs/REVIEW_RECOMMENDATION.md` (canonical origin: `docs/actions/`).
+- Active task tracker: `.github/docs/HANDOFF.md`.
+- Validation: `.github/docs/SMOKE_TEST_PLAN.md`.
 - Target overlays and branch dispositions:
-  `docs/actions/TARGET_REPOSITORY_ADJUSTMENTS.md`.
-- Legacy worktree migration: `docs/actions/WORKTREE_MIGRATION.md`.
+  `docs/actions/TARGET_REPOSITORY_ADJUSTMENTS.md` (staged copy: `.github/docs/`).
+- Legacy worktree migration: `.github/docs/WORKTREE_MIGRATION.md`.
 
 Never restore executable copies under `docs/actions/workflows/` or
 `docs/actions/scripts/`. Do not distribute canonical workflows until the review's open
 findings, target-policy integration, and live-validation gates are complete. Never
 blindly overwrite a target repository's instructions or branch-governance checks.
+
+`.github/docs/` holds the distribution-staging copies of all Actions documentation,
+for deployment to target repos (EmailIntelligence, Kaggle, Gemini). `docs/actions/`
+remains the canonical origin; keep the two in sync when either changes.
 
 ## Jules REST operations and session archives
 

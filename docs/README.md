@@ -9,6 +9,11 @@ readiness for the other.
 Start at [`actions/README.md`](actions/README.md) for the workflows under `.github/`
 that replace or extend the deprecated Gemini Actions in target repositories.
 
+Distribution-staging copies of these documents live in
+[`.github/docs/`](../.github/docs/) for deployment to target repos
+(EmailIntelligence, Kaggle, Gemini); `docs/actions/` remains the canonical origin —
+keep the two in sync.
+
 Current authorities:
 
 - [`actions/REVIEW_RECOMMENDATION.md`](actions/REVIEW_RECOMMENDATION.md) —
@@ -18,6 +23,25 @@ Current authorities:
 - [`actions/EDGE_CASES.md`](actions/EDGE_CASES.md) — edge-case catalog; verify status
   against runtime code and the active tracker
 
+## Multi-repo session operations & workspace isolation
+
+All Jules sessions are stored in a single global SQLite store and JSON
+archive, keyed by repo (see `jules_sessions_store.db.sessions.repo`). When working
+on a session for a specific repository, first establish a per-repo workspace:
+
+```text
+workspaces/<owner>/<repo>/{sessions,analysis,prompts,state}/
+```
+
+- `sessions/` — repo-scoped read-only projections of activities
+- `analysis/` — local findings (scratch; disposable)
+- `prompts/` — `sent_responses.md` log for every message sent to a live session
+- `state/` — per-agent scratch (patches, checkouts); never shared across repos
+
+See [`runbooks/workspace_isolation.md`](runbooks/workspace_isolation.md) for the
+full runbook (scoping rule, logging invariant, transport fallback matrix,
+parallel-agent etiquette).
+
 ## Jules REST operations, triage, and repair
 
 Start with the document matching the operation:
@@ -25,6 +49,8 @@ Start with the document matching the operation:
 - [`reference/rest_api_reference.md`](reference/rest_api_reference.md) — REST endpoint,
   authentication, and request reference
 - [`runbooks/session_recovery.md`](runbooks/session_recovery.md) — state-to-action recovery
+- [`runbooks/workspace_isolation.md`](runbooks/workspace_isolation.md) — repo-scoped
+  workspace layout, prompt logging, transport fallback
 - [`runbooks/pr_verification_runbook.md`](runbooks/pr_verification_runbook.md) — verify
   session-created pull requests
 - [`guides/operations.md`](guides/operations.md) — common operator workflows
@@ -53,6 +79,7 @@ it does not merge the separate Actions-readiness and operations-readiness decisi
 ## Forensics Data Standardization
 
 The `docs/forensics/` directory contains standardized forensics data in JSON format:
+
 - `migrated_forensics_data.json` - Unified forensics data containing sessions, pull requests, and interventions
 - `forensics_data_schema.json` - JSON Schema defining the standardized format
 - `migrate_forensics.py` - Script to convert legacy forensics files to the standardized format

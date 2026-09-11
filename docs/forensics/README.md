@@ -1,120 +1,44 @@
-# Standardized Forensics Data Format
+# Forensics Directory — Legacy Jules-Tooling Copies
 
-## Purpose
+**Status:** The authoritative forensics reports now live in `workspaces/EmailIntelligence/analysis/forensics/` (YAML-frontmatter versions). The copies below are the legacy Jules-tooling originals and are slated for deprecation (see `WORKSPACE_INTEGRATION.md`, Phase 5).
 
-This standardized forensics data format provides a consistent structure for storing and analyzing software development forensics data. By establishing a common schema, we enable:
+## Migration Summary (2026-08-29)
 
-- Cross-repository analysis of development patterns
-- Consistent intervention tracking and outcome measurement
-- Reliable migration of legacy forensic data
-- Improved collaboration between analysis teams
-- Long-term preservation of forensic insights
+The forensics reports were **copied** to the EmailIntelligence workspace and updated
+with YAML frontmatter following the session summary standard. These original copies
+remain here as legacy until deprecated; they are not the canonical location.
 
-## Schema Description
+### New Location
 
-The standardized format consists of four main sections:
-
-### Sessions
-Contains data about development sessions, including:
-- Session identifiers and timestamps
-- Participant information
-- Context and objectives
-- Related pull requests and interventions
-
-### Pull Requests
-Tracks pull request data associated with sessions:
-- PR identifiers, URLs, and metadata
-- Review and discussion metrics
-- Code change statistics
-- Status and resolution information
-
-### Interventions
-Records intentional actions taken during development:
-- Intervention type and description
-- Timing and duration
-- Actor responsible
-- Expected and actual outcomes
-- Effectiveness metrics
-
-### Metadata
-Provides contextual information about the dataset:
-- Collection methodology and timeframe
-- Schema version and validation info
-- Data quality indicators
-- Transformation history
-
-## Using the migrated_forensics_data.json File
-
-The `migrated_forensics_data.json` file contains all legacy forensics data converted to the standardized format. To use this file:
-
-1. **Direct consumption**: Load the JSON file in your analysis tools using standard JSON parsing libraries
-2. **Schema validation**: Validate against `forensics_data_schema.json` to ensure data integrity
-3. **Querying**: Use JSON query tools (jq, JQ, or programming language libraries) to extract specific insights
-4. **Integration**: Incorporate into existing analysis pipelines by mapping standardized fields to your metrics
-
-Example usage with jq:
-```bash
-# Count total sessions
-jq '.sessions | length' migrated_forensics_data.json
-
-# List all intervention types
-jq '.interventions[].type | unique' migrated_forensics_data.json
-
-# Find sessions with specific PR counts
-jq '.sessions[] | select(.pull_requests | length > 5)' migrated_forensics_data.json
+```
+workspaces/EmailIntelligence/analysis/forensics/
+├── INDEX.yaml                    # Master index
+├── FORENSICS_SUMMARY.yaml        # Summary manifest
+├── FAILURE_ROOT_CAUSE_ANALYSIS_2026-08-06.md
+├── HIGH_LINECOUNT_PR_ALIGNMENT_AUDIT_2026-08-14.md
+├── INTERVENTION_E2E_OUTCOME_ANALYSIS_2026-08-07.md
+├── PR_CONVERSATION_EVOLUTION_2026-08-06.md
+├── SESSION_FOLLOWUP_TRACKER_2026-08-06.md
+├── SESSION_INVESTIGATION_2026-08-06.md
+├── SESSION_PRIORITY_BATCH_PLAN_2026-08-14.md
+└── SESSION_REUSE_EVIDENCE_2026-08-06.md
 ```
 
-## Contributing New Forensics Data
+### Why This Change
 
-To contribute new forensics data to the standardized format:
+Per `docs/runbooks/workspace_isolation.md`:
+- This jules repo is for Jules tooling only
+- Target repo work belongs in `workspaces/<repo-name>/`
+- EmailIntelligence forensics are now in the EmailIntelligence workspace
 
-### Policies for Storing New Data
+### Data Files
 
-1. **Format compliance**: All new data must conform to the current schema version in `forensics_data_schema.json`
-2. **Data quality**: Ensure complete, accurate, and verifiable data entries
-3. **Privacy considerations**: Remove or anonymize sensitive personal information according to organizational policies
-4. **Temporal consistency**: Use ISO 8601 format for all timestamps (YYYY-MM-DDTHH:MM:SSZ)
-5. **Identifier standards**: Use established naming conventions for sessions, PRs, and interventions
-6. **Validation**: Run data through the migration script to verify compatibility before submission
+The JSON data files (`migrated_forensics_data.json`, etc.) remain here as they are
+generic tooling and not specific to EmailIntelligence. They may be moved to a
+`workspaces/jules/` directory in a future cleanup.
 
-### Submission Process
+### Session Context
 
-1. Prepare your data in JSON format following the schema
-2. Validate using: `python migrate_forensics.py --validate your_data.json`
-3. Submit validated data through the designated contribution channel
-4. Include documentation about data collection methodology and scope
-
-## Reference to Schema File
-
-The definitive schema definition is maintained in [`forensics_data_schema.json`](forensics_data_schema.json). This file specifies:
-
-- Required and optional fields for each section
-- Data types and format constraints
-- Enumerated values where applicable
-- Relationships between entities
-- Versioning information
-
-Always refer to the latest schema version when creating or validating forensics data.
-
-## Note About the Migration Script
-
-The [`migrate_forensics.py`](migrate_forensics.py) script provides tools for:
-
-- **Conversion**: Transforming legacy forensics data formats to the current standardized schema
-- **Validation**: Checking compliance with the schema definition
-- **Transformation**: Applying schema updates to existing standardized data
-- **Quality assurance**: Identifying data inconsistencies or completeness issues
-
-To use the migration script:
-```bash
-# Validate data against schema
-python migrate_forensics.py --validate input_data.json
-
-# Convert legacy format to standardized format
-python migrate_forensics.py --convert legacy_data.json output_data.json
-
-# Check schema version and migration history
-python migrate_forensics.py --info
-```
-
-The script maintains backward compatibility and logs all transformations for auditability.
+| Session ID | Repository | Status |
+|-----------|------------|--------|
+| 596003508416904399 | EmailIntelligence | COMPLETED |

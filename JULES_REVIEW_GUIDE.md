@@ -8,9 +8,9 @@ documents remain in `docs/` so there is one maintained copy of each authority.
 
 | Task                                                 | Start here                                                                                                                                                                      | Runtime/source authority                                                              |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Review or modify Jules GitHub Actions                | [`docs/actions/REVIEW_RECOMMENDATION.md`](docs/actions/REVIEW_RECOMMENDATION.md), then [`docs/actions/HANDOFF.md`](docs/actions/HANDOFF.md)                                     | [`.github/workflows/`](.github/workflows/) and [`.github/scripts/`](.github/scripts/) |
-| Validate Actions behavior                            | [`docs/actions/SMOKE_TEST_PLAN.md`](docs/actions/SMOKE_TEST_PLAN.md)                                                                                                            | Exact GitHub run and trace evidence                                                   |
-| Distribute Actions to target repositories            | [`docs/actions/TARGET_REPOSITORY_ADJUSTMENTS.md`](docs/actions/TARGET_REPOSITORY_ADJUSTMENTS.md) and [`docs/actions/WORKTREE_MIGRATION.md`](docs/actions/WORKTREE_MIGRATION.md) | Validated canonical revision plus repository-owned policy                             |
+| Review or modify Jules GitHub Actions                | [`.github/docs/REVIEW_RECOMMENDATION.md`](.github/docs/REVIEW_RECOMMENDATION.md), then [`.github/docs/HANDOFF.md`](.github/docs/HANDOFF.md)                                     | [`.github/workflows/`](.github/workflows/) and [`.github/scripts/`](.github/scripts/) |
+| Validate Actions behavior                            | [`.github/docs/SMOKE_TEST_PLAN.md`](.github/docs/SMOKE_TEST_PLAN.md)                                                                                                            | Exact GitHub run and trace evidence                                                   |
+| Distribute Actions to target repositories            | [`.github/docs/TARGET_REPOSITORY_ADJUSTMENTS.md`](.github/docs/TARGET_REPOSITORY_ADJUSTMENTS.md) and [`.github/docs/WORKTREE_MIGRATION.md`](.github/docs/WORKTREE_MIGRATION.md) | Validated canonical revision plus repository-owned policy                             |
 | Review Jules REST tools, triage, repair, or archives | [`docs/reviews/JULES_OPERATIONS_REVIEW_RECOMMENDATION.md`](docs/reviews/JULES_OPERATIONS_REVIEW_RECOMMENDATION.md)                                                              | `tools/`, `commands/`, `skills/`, `scripts/`, and current API behavior                |
 | Correlate Actions runs and Jules sessions            | [`docs/guides/workflow_session_traceability.md`](docs/guides/workflow_session_traceability.md)                                                                                  | GitHub run/event IDs plus exact Jules session/API evidence                            |
 | Review archive-summary requirements                  | [`docs/guides/session_summary_standard.md`](docs/guides/session_summary_standard.md) and the operations review                                                                  | Raw archive provenance plus validated producer/generator behavior                     |
@@ -27,7 +27,7 @@ Do not use target parity as a reason to copy an unvalidated canonical revision.
 
 A repo-specific recovery and migration strategy with per-repository analysis,
 session-creation quota budgeting, and never-close guardrails is in
-[`docs/forensics/REPO_SPECIFIC_STRATEGY_2026-08-06.md`](docs/forensics/REPO_SPECIFIC_STRATEGY_2026-08-06.md).
+[`workspaces/EmailIntelligence/analysis/REPO_SPECIFIC_STRATEGY_2026-08-06.md`](workspaces/EmailIntelligence/analysis/REPO_SPECIFIC_STRATEGY_2026-08-06.md).
 
 ### REST operations and archives
 

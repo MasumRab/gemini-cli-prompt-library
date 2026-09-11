@@ -2,7 +2,33 @@
 
 This log tracks enhancements and updates to the Jules tools runbooks.
 
+## [2026-08-26] Workspace isolation + prompt-logging convention
+
+**Problem:** A session operating on a Jules session for a specific repo (e.g.
+EmailIntelligence) improvised scratch locations (`/tmp/session_checkout/`),
+did not log sent messages to the existing prompt log
+(`skills/jules-sessions/references/sent_responses.md`), and lost the session ID
+to context compaction with no documented recovery path. The global session
+store was queried without repo scoping.
+
+**Fix:**
+
+- Added `docs/runbooks/workspace_isolation.md` — per-repo workspace convention
+  (`workspaces/<owner>/<repo>/{sessions,analysis,prompts,state}/`), prompt-logging
+  invariant, transport fallback matrix, parallel-agent etiquette, session-ID
+  recovery paths.
+- Added mode→runbook index + operating guardrails to `AGENTS.md` (re-read after
+  any compaction; logging invariant; transport fallbacks).
+- Updated `docs/README.md`, `docs/guides/operations.md`,
+  `docs/runbooks/session_recovery.md`, `docs/runbooks/session_runbook.md`, and
+  `docs/runbooks/failure_runbook.md` to point at the new runbook and the
+  workspace prompt log.
+
+**Prompt improvement:** Future sessions should check `AGENTS.md` § Operating
+guardrails before sending any message to a live session.
+
 ## [2024-05-16] A+ Suite Implementation
+
 - Standardized on `JULES_API_KEY`.
 - Introduced class-based API client with exponential backoff.
 - Added A+ grading logic for session sorting.

@@ -1,0 +1,1 @@
+Three reviewers returned. Their path claims conflict in places (some say `analysis/`, others `analysis/forensics/`), and one references files I haven't seen (`WORKSPACE_INTEGRATION.md`, `tools/forensics/validate_schema.py`). Before I trust and synthesize, I'll verify the highest-value claims directly.

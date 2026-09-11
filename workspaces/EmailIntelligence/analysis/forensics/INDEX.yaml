@@ -1,0 +1,63 @@
+---
+session:
+  id: "596003508416904399"
+  title: "Forensics Data Collection"
+  repository: "EmailIntelligence"
+  created: "2026-08-06T00:00:00Z"
+  updated: "2026-08-29T19:50:00Z"
+  status: completed
+  source: "analysis"
+
+purpose: >
+  Standardized forensics data for EmailIntelligence repository, migrated from
+  docs/forensics/ to follow session summary conventions.
+
+summary: |
+  This collection contains 8 forensics analysis documents migrated to the
+  EmailIntelligence workspace. Each document now has YAML frontmatter following
+  the session summary standard for traceability.
+  
+  Documents cover: failure analysis, intervention outcomes, PR evolution,
+  session reuse evidence, and batch planning.
+
+changes:
+  - file: "forensics/FAILURE_ROOT_CAUSE_ANALYSIS_2026-08-06.md"
+    summary: "Root cause analysis of session failures"
+    change_type: migrated
+    
+  - file: "forensics/HIGH_LINECOUNT_PR_ALIGNMENT_AUDIT_2026-08-14.md"
+    summary: "Audit of high line count PR alignment patterns"
+    change_type: migrated
+    
+  - file: "forensics/INTERVENTION_E2E_OUTCOME_ANALYSIS_2026-08-07.md"
+    summary: "End-to-end analysis of intervention outcomes"
+    change_type: migrated
+    
+  - file: "forensics/PR_CONVERSATION_EVOLUTION_2026-08-06.md"
+    summary: "Tracking PR conversation patterns over time"
+    change_type: migrated
+    
+  - file: "forensics/SESSION_FOLLOWUP_TRACKER_2026-08-06.md"
+    summary: "Session follow-up action tracking"
+    change_type: migrated
+    
+  - file: "forensics/SESSION_INVESTIGATION_2026-08-06.md"
+    summary: "Investigation findings for session patterns"
+    change_type: migrated
+    
+  - file: "forensics/SESSION_PRIORITY_BATCH_PLAN_2026-08-14.md"
+    summary: "Batch planning for session priority handling"
+    change_type: migrated
+    
+  - file: "forensics/SESSION_REUSE_EVIDENCE_2026-08-06.md"
+    summary: "Evidence of session reuse patterns"
+    change_type: migrated
+
+plan:
+  steps:
+    - "Identify forensics files in docs/forensics/"
+    - "Copy to workspaces/EmailIntelligence/analysis/forensics/"
+    - "Add YAML frontmatter to each document"
+    - "Create INDEX.yaml and FORENSICS_SUMMARY.yaml"
+    - "Validate format compliance"
+---
