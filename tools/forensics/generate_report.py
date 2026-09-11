@@ -101,13 +101,13 @@ def fetch_session_data(
         data["activities"] = list(client.list_activities(session_id, page_size=100))
 
     if repo:
-        # list_sessions yields all sessions; filter client-side by repo
-        all_sessions = list(client.list_sessions(page_size=50))
-        data["sessions"] = [
-            s for s in all_sessions
-            if repo.lower() in str(s.get("repository", "")).lower()
-            or repo.lower() in str(s.get("name", "")).lower()
-        ]
+        # list_sessions yields all sessions; filter client-side by repo.
+        # Capped: full enumeration can take minutes on accounts with
+        # many sessions (each page is a slow API round-trip).
+        from tools.forensics.analyze_patterns import _session_in_repo
+
+        all_sessions = list(client.list_sessions(page_size=50, max_results=100))
+        data["sessions"] = [s for s in all_sessions if _session_in_repo(s, repo)]
 
     return data
 
@@ -179,15 +179,19 @@ def render_session_section(session: Optional[Dict[str, Any]]) -> str:
     """Render the session metadata section."""
     if not session:
         return ""
+    from tools.forensics.analyze_patterns import _session_repo
+
     sid = session.get("name", "").replace("sessions/", "")
+    sc = session.get("sourceContext") or {}
+    gh = sc.get("githubRepoContext") or {}
     lines = [
         "## Session",
         "",
         f"- **ID:** `{sid}`",
         f"- **State:** {session.get('state', 'N/A')}",
         f"- **Title:** {session.get('title', 'N/A')}",
-        f"- **Repository:** {session.get('repository', 'N/A')}",
-        f"- **Branch:** {session.get('headBranch', 'N/A')}",
+        f"- **Repository:** {_session_repo(session) or 'N/A'}",
+        f"- **Branch:** {gh.get('startingBranch', 'N/A')}",
         "",
     ]
     pr = session.get("pullRequest") or {}

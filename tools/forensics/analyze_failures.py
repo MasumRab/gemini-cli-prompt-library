@@ -74,22 +74,28 @@ def analyze_session_failure(
 
 
 def analyze_failed_sessions(
-    sessions: List[Dict[str, Any]],
+    sessions: Optional[List[Dict[str, Any]]] = None,
     client: Optional[JulesAPIClient] = None,
     limit: int = 10,
+    fetch_cap: int = 100,
 ) -> List[Dict[str, Any]]:
     """Analyze the most recent FAILED sessions.
 
     Args:
-        sessions: Pre-fetched session list (filtered to FAILED upstream,
-            or any list — FAILED entries are selected here).
-        client: Optional client for activity fetching.
-        limit: Max sessions to analyze.
+        sessions: Pre-fetched session list. When omitted, fetched from
+            the live API (capped at ``fetch_cap``).
+        client: Optional client for fetching.
+        limit: Max FAILED sessions to analyze.
+        fetch_cap: Session fetch cap when fetching from the API.
 
     Returns:
         List of per-session failure analyses, most recent first.
     """
     client = client or JulesAPIClient()
+    if sessions is None:
+        sessions = list(
+            client.list_sessions(page_size=50, max_results=fetch_cap)
+        )
     failed = [s for s in sessions if s.get("state") == "FAILED"]
 
     results = []
@@ -129,8 +135,7 @@ def main():
     client = JulesAPIClient()
 
     if args.failed_batch:
-        sessions = list(client.list_sessions(page_size=50))
-        results = analyze_failed_sessions(sessions, client=client, limit=args.limit)
+        results = analyze_failed_sessions(client=client, limit=args.limit)
         payload: Any = results
     else:
         payload = analyze_session_failure(args.session_id, client=client)
