@@ -41,8 +41,7 @@ def main() -> None:
         sessions = resp.get("sessions", [])
         for sess in sessions:
             try:
-                row = store._extract_session_row(sess)
-                store.upsert_session(row)
+                store.upsert_session(sess)
                 upserted += 1
             except Exception as e:
                 sid = sess.get("name", "unknown").replace("sessions/", "")

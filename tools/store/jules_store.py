@@ -12,6 +12,7 @@ Schema:
 """
 
 import json
+import re
 import sqlite3
 import threading
 import time
@@ -101,28 +102,29 @@ def _extract_session_row(s: dict) -> dict:
     for o in s.get("outputs", []):
         pr_url = o.get("pullRequest", {}).get("url", "") or pr_url
     prompt_snippet = (s.get("prompt") or "")[:500]
-    # Extract new columns for forensics and operations
-    labels = s.get("labels", [])
-    # Map labels to session_type
-    session_type = "unknown"
-    if "auto-fix" in labels:
-        session_type = "auto-fix"
-    elif "force-review" in labels:
-        session_type = "force-review"
-    elif "walkthrough" in labels:
-        session_type = "walkthrough"
-    elif "rebuild" in labels:
-        session_type = "rebuild"
-    elif "resolve" in labels:
-        session_type = "resolve-conflicts"
-    elif "address" in labels:
-        session_type = "address-comments"
-    elif "backlog" in labels:
-        session_type = "backlog-review"
-    elif "triage" in labels:
-        session_type = "issue-triage"
-    else:
-        session_type = "review"
+    # Derive session_type from prompt/title content — the API has no labels field.
+    # Workflow prompts carry distinguishing phrases; classify by first match.
+    _text = (prompt_snippet + " " + (s.get("title") or "")).lower()
+    _TYPE_PATTERNS = [
+        ("auto-fix", r"auto-fix|autofix|fix the pull request"),
+        ("walkthrough", r"walkthrough"),
+        ("rebuild", r"rebuild"),
+        ("resolve-conflicts", r"resolve.*conflict|merge conflict"),
+        ("address-comments", r"address.*comment|review comment"),
+        ("backlog-review", r"backlog"),
+        ("issue-triage", r"triage"),
+        ("ci-fix", r"failing required ci|failing ci|fix failing ci"),
+        ("perf-optimization", r"performance-obsessed|performance optimi[sz]ation|codebase faster"),
+        ("security-patch", r"security-focused|vulnerability|security remediation"),
+        ("maintenance", r"repository.?maintenance|deterministic.*cleanup"),
+        ("test-stabilization", r"test suite stabili[sz]ation"),
+        ("review", r"review the pull request|pr review|code review"),
+    ]
+    session_type = "other"
+    for _stype, _pat in _TYPE_PATTERNS:
+        if re.search(_pat, _text):
+            session_type = _stype
+            break
     outcome = s.get("outcome")  # NULL if not present
     retry_of_session_id = s.get("parentSessionId")
     retry_count = s.get("retryCount", 0)
