@@ -931,3 +931,29 @@ All verification done against live PR heads (776: f885970a2, 775: 4e825c8ddc, 79
 **Rule summary**: Fix commits touching >200 lines in a file not in the PR's original scope should trigger a stale-paste check — re-read current file from disk, apply minimal edit, not wholesale replacement. Red flags: >500 line changes, function renames/deletions, recent fix commits from other sessions.
 
 **Rationale**: Pattern observed across multiple PRs (776, 775, 791) where session "fix" commits pasted older cached versions, regressing work done by sibling sessions or main.
+
+## 2026-09-13: Full Download + Aggregated Batch — Remaining 11 Open PRs (11/11 sent)
+
+**Full download**: All 108 review sessions across 46 branches downloaded to /tmp/jules-all-reviews/ (per-branch combined files + download-summary.txt). Trunk-merge branches (10) had NO review content — consistent with workflow failure #31 (orphaned sessions). Rate-limiter-dos branches (3) also empty.
+
+**Aggregated messages sent** (one per PR to most recent session, findings deduplicated from all sibling sessions):
+
+| PR | Branch | Session | Siblings |
+|----|--------|---------|----------|
+| #570 | bolt-optimize-query-result-cache | 17109930827741917931 | 1 |
+| #761 | dependabot/npm_and_yarn-4a5a8f34f1 | 9635359179354443625 | 4 |
+| #778 | fix/ci-infrastructure | 2513098196663975862 | 5 |
+| #612 | mergify/configuration-deprecated-update | 731118369922790088 | 1 |
+| #788 | perf-emaillist-react-memo-bolt-v2 | 1501238287897315088 | 1 |
+| #575 | pr-562 | 4688065471183365603 | 2 |
+| #666 | sentinel-fix-path-traversal | 15182315018848459082 | 1 |
+| #663 | sentinel-fix-utcnow | 17081540647053958394 | 1 |
+| #665 | sentinel/fix-missing-auth | 3971178889713665128 | 1 |
+| #732 | bolt/search-debounce (REOPENED) | 12017438274060233457 | 2 |
+| #762 | perf-emaillist-react-memo-bolt (REOPENED) | 4988362068140647539 | 1 |
+
+**Message template includes**: deduped findings, prior verdicts, drift protocol for CONFLICTING PRs, [VERDICT] chat-reply contract, stale-paste guard.
+
+**Excluded**: trunk-merge branches (workflow failure #31), no-PR branches (closed/merged), top-5 batch (already sent).
+
+**Total coverage now**: 16 of 16 open EI PRs + prompt-lib#57 + langgraph#381 pending (not in review-session store — separate handling if needed).
