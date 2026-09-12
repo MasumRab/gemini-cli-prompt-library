@@ -873,3 +873,15 @@ Side effect: session 74040189 (told to close out) instead pushed PR #121 "Diagno
 **Failure**: session's "revert to origin/main" used its Aug 16 snapshot reference → deleted 7 workflow files present on CURRENT main (ci.yml, 5x gemini-*.yml, pr-check.yml, 1450 lines). Earlier "stale commit OID" API failures = same root cause, NOT token issues. Push access verified working (2 commits landed).
 **Also confirmed good**: artifact removals (5 throwaway files) + lodash strict pin landed correctly.
 **Message**: re-fetch main, restore 7 files from FETCHED origin/main, keep artifact+lodash fixes, verify diff shows only intended changes, chat reply with [VERDICT].
+
+## 2026-09-13: Closed-PR Reopening Decisions (5 candidates from review-session audit)
+
+| PR | Content | Decision | Evidence |
+|----|---------|----------|----------|
+| #732 | Bolt debounce search input (+154/-15, 11 files) | **REOPENED** — MERGEABLE | no debounce on main; not superseded |
+| #762 | React.memo EmailList (+5/-12, 1 file) | **REOPENED** — CONFLICTING | no memo on main; not superseded |
+| #662 | drizzle-orm 0.45.2 bump | stays closed — superseded | drizzle 0.45.2 already on main package.json; disposition comment posted |
+| #736 | Sentinel command injection (HIGH) | stays closed — superseded | fixes on main via c097f60a/d7ee911e + #791 b1aee58d; disposition comment posted |
+| #737 | ruff linting errors (49 files) | stays closed — redundant | OPEN #775 carries newer active linting work; disposition comment posted |
+
+Refresh target list now: 16 open-PR branches (14 EI: 570,575,612,663,665,666,761,775,776,778,788,790,791,792 + reopened 732,762 = 16 EI) + prompt-lib#57 + langgraph#381 = 18 latest sessions to message with aggregated findings.
