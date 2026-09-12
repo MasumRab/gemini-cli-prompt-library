@@ -95,14 +95,14 @@ async function streamActivities(sessionId: string) {
 
   const session = jules.session(sessionId);
 
-  // Print history first
+  // Print history first (flush each line for pipe consumers)
   for await (const activity of session.history()) {
-    console.log(JSON.stringify(activity));
+    process.stdout.write(JSON.stringify(activity) + "\n");
   }
 
-  // Then stream updates
+  // Then stream updates (flush each line)
   for await (const activity of session.updates()) {
-    console.log(JSON.stringify(activity));
+    process.stdout.write(JSON.stringify(activity) + "\n");
   }
 }
 
@@ -153,8 +153,7 @@ async function runTask(repo: string, branch: string, prompt: string) {
   });
 
   // Print session ID immediately so callers can capture it
-  const info = await run.session.info();
-  console.log(JSON.stringify({ sessionId: info.id, state: info.state }));
+  console.log(JSON.stringify({ sessionId: run.id }));
 }
 
 /**

@@ -17,5 +17,9 @@
     "build:sdk": "tsc -p tools/sdk/tsconfig.json",
     "build": "npm run build:mcp && npm run build:sdk",
     "test": "npm run build && pytest tools/tests/"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "typescript": "^7.0.2"
   }
 }
