@@ -295,6 +295,44 @@ curl: (22) The requested URL returned error: 400
 
 **Prevention:** Add a smoke-test step to workflows that verifies the polling URL works before entering the poll loop. Alternatively, use the Python API client (`tools/api/jules_api_client.py`) which correctly omits `?view=FULL`.
 
+## Workflow Failure Modes Identified 2026-09-13 (from session-steering audit)
+
+### 31. Review sessions spawned for trunk-merge sub-PRs (should never happen)
+
+| Symptom | Code Review Request sessions exist targeting `trunk-merge/pr-N/*` branches (e.g. sessions 10759997676130822408, 14970126622961835953, 4227155626214895348, 6289750792488543569 → PR#803; 3066004504936610335 → PR#777; 5958407664361578225 → PR#794; 4011484320208761877 → PR#787) |
+|---------|-----------------------|
+| Root cause | The pr-review workflow triggers on ALL PR events with no branch filter — trunk-merge sub-PRs (internal merge machinery, user-invisible) get reviewed like normal PRs, consuming quota and producing orphaned reviews |
+| Impact | 7+ sessions burned on branches that should never be Jules-reviewed; their chat reviews are orphaned (never posted, never actionable) |
+| Fix | Add branch exclusion to `jules-pr-review.yml` trigger: `branches-ignore: ['trunk-merge/**']` (and consider `paths-ignore` for `.github/`-only changes). Same exclusion for auto-fix, walkthrough, force-review workflows |
+| Verified | 2026-09-13: no Jules-authored reviews exist on trunk PRs #803/794/789/777/787 — sessions produced chat-only output, confirming both the failure (sessions spawned) and that posting correctly never happened |
+
+### 32. Posted review comments lack `@jules` mention — invisible to sessions
+
+| Symptom | Review comments posted to PRs (by workflow or human) carry no `@jules` mention, so the Jules session associated with the PR never sees them |
+|---------|-----------------------|
+| Root cause | `@jules` mentions route ONLY to the session that created the PR, and only on Jules-created PRs (author `app/google-labs-jules`). On user-created PRs (#775, #790 are MasumRab-authored) there is NO session to route to. Comments without the mention are invisible to ALL sessions regardless |
+| Impact | Follow-up review feedback (e.g. MasumRab's 2026-09-12T17:49Z comment on #776 with actionable findings) sat unseen by all 9 reviewing sessions until manually bridged via sendMessage |
+| Fix | (a) address-comments workflow already handles review-thread replies; extend the classifier to also surface new issue comments to the creating session. (b) For human comments intended for Jules, document that they must start with `@jules`. (c) Add a comment-bridge step: when a new non-bot comment lands on a Jules-created PR with an active session, forward it via `:sendMessage` |
+| Verified | 2026-09-13: checked comments on #775/776/790/791/792 — none carry `@jules`; only one Jules-authored comment on #776 (Aug 14) exists |
+
+### 33. Sessions hallucinate GitHub-side actions ("posted via gh CLI")
+
+| Symptom | Session claims "I have successfully posted the review to PR #X via the GitHub CLI" / "task complete" when nothing was posted |
+|---------|-----------------------|
+| Root cause | Session VMs have NO GitHub write access for comments/reviews. Sessions can push to PR branches (verified: session 16572236002364851031 pushed fixes to #790) but cannot post comments. Sessions confabulate success |
+| Impact | False completion claims stall the pipeline — orchestrator believes review posted, PR waits forever |
+| Fix | (a) Workflow prompt should state explicitly: "You cannot post to GitHub. Post your review as a chat reply; the workflow retrieves it from session activity." (b) Orchestrator must verify claims against GitHub (comment authors/timestamps) before trusting session completion. (c) Session prompt should require reporting actual command output on failure |
+| Verified | 2026-09-13: session 14762459779177632124 claimed posting to #776; GitHub shows no Jules comment after Aug 14. Correction message sent |
+
+### 34. Sandbox bash wrapper blinds sessions on large diffs
+
+| Symptom | Session reports "bash wrapper hook intercepts ALL command executions, outputting a warning about git diff size instead of actual command result" — cannot read file contents or diffs |
+|---------|-----------------------|
+| Root cause | The repo's pre-commit/shell hook setup (large-diff guard) fires inside the Jules sandbox for every command, replacing stdout with the warning. Session becomes functionally blind |
+| Impact | Session 8325835181618095509 (PR#775) stuck AWAITING_USER_FEEDBACK, unable to review `src/main.py` after head moved to 4e825c8ddc |
+| Fix | (a) Session prompts should include a workaround: read files via Python `open()` in a single `python -c` (bypasses bash wrapper), or request file contents via sendMessage. (b) Investigate whether the hook can detect the Jules sandbox environment and skip the guard. (c) Workaround delivered: forward file contents or targeted diffs via sendMessage |
+| Verified | 2026-09-13: session's own report at 2026-09-12T17:30Z |
+
 ## Monitoring Recommendations
 
 Add a workflow that runs once daily and:
