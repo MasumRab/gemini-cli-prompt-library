@@ -923,3 +923,11 @@ All verification done against live PR heads (776: f885970a2, 775: 4e825c8ddc, 79
 **Message to creating session**: aggregated findings from all 12 review sessions + notification of surgical fix + request for [VERDICT]: approve.
 
 **Pattern identified**: "fix kwargs" / "fix test" commits that rewrite large files are high-risk for stale-paste regressions. Should add to EDGE_CASES.md.
+
+### Memory Update Request (session 15014477667741021080)
+
+**Request**: Add "Stale-Paste Guard" rule to session's working memory to prevent recurrence of large-file regression pattern observed in 70fe3316.
+
+**Rule summary**: Fix commits touching >200 lines in a file not in the PR's original scope should trigger a stale-paste check — re-read current file from disk, apply minimal edit, not wholesale replacement. Red flags: >500 line changes, function renames/deletions, recent fix commits from other sessions.
+
+**Rationale**: Pattern observed across multiple PRs (776, 775, 791) where session "fix" commits pasted older cached versions, regressing work done by sibling sessions or main.
