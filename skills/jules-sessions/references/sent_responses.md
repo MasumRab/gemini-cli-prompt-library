@@ -905,3 +905,21 @@ All verification done against live PR heads (776: f885970a2, 775: 4e825c8ddc, 79
 **Trigger**: GitHub token updated on Jules side; this session's createCommitOnBranch/git push had failed on authorization.
 **Key guard in message**: session's locally-committed fixes are likely REDUNDANT — sibling session 10602007366444539739 already landed equivalent changes (446b040b artifacts, 33142194/2b3ece71/f885970a workflow reverts, 0f663c9d lodash pin). Instructed: fetch first, compare against FETCHED state, drop local commits if covered, only push genuinely novel changes. Blind retry would duplicate/conflict.
 **Also flagged**: the one remaining open finding (setup/launch.py "python" hardcode) is owned by the other session — no duplication.
+
+## 2026-09-13: Surgical Fix + Aggregated Review Delivery (PR#776, creating session 15014477667741021080)
+
+**Discovery**: Session 10602007366444539739's 70fe3316 "fix kwargs" regressed launch.py by pasting an older version, reintroducing hardcoded "python3" instead of sys.executable. This undid its own 9e95b4ec fix.
+
+**Root cause**: Stale-snapshot paste during conflict resolution — the session's sandbox had an older launch.py cached, and it pasted that instead of editing the current file.
+
+**Surgical fix applied** (commit beada219, pushed directly to PR branch):
+- run_command: `["python3", *args]` → `[sys.executable, *args]`
+- start_backend: `["python3", *args]` → `[sys.executable, *args]`
+- start_gradio_ui: `["python3", *args]` → `[sys.executable, *args]`
+- check_uvicorn_installed: restored `get_python_executable()` usage
+
+**Tests**: 10 passed in 41.87s
+
+**Message to creating session**: aggregated findings from all 12 review sessions + notification of surgical fix + request for [VERDICT]: approve.
+
+**Pattern identified**: "fix kwargs" / "fix test" commits that rewrite large files are high-risk for stale-paste regressions. Should add to EDGE_CASES.md.
