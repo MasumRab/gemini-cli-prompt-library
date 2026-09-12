@@ -866,3 +866,10 @@ Side effect: session 74040189 (told to close out) instead pushed PR #121 "Diagno
 **Type**: File-content delivery — session blinded by bash wrapper (large-diff guard intercepts all commands)
 **Session report**: "bash wrapper hook intercepts ALL command executions... completely blinded, unable to see src/main.py or changes in 4e825c8ddc"
 **Action**: Delivered src/main.py lines 640-680 (CORS+middleware) and 710-740 (tabs) extracted from head 4e825c8ddc, with direct finding dispositions: all 3 critical findings (middleware instance, CORS wildcard, removed tabs) RESOLVED on current head. Instructed chat-reply review with [VERDICT] + python -c read workaround for future.
+
+## 2026-09-13: Stale-Snapshot Regression Correction (session 10602007366444539739, PR#776)
+
+**Type**: Regression correction — session reverted workflows to stale main state
+**Failure**: session's "revert to origin/main" used its Aug 16 snapshot reference → deleted 7 workflow files present on CURRENT main (ci.yml, 5x gemini-*.yml, pr-check.yml, 1450 lines). Earlier "stale commit OID" API failures = same root cause, NOT token issues. Push access verified working (2 commits landed).
+**Also confirmed good**: artifact removals (5 throwaway files) + lodash strict pin landed correctly.
+**Message**: re-fetch main, restore 7 files from FETCHED origin/main, keep artifact+lodash fixes, verify diff shows only intended changes, chat reply with [VERDICT].
