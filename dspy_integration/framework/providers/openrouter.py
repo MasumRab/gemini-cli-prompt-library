@@ -1,4 +1,4 @@
-"""Openrouter provider."""
-from dspy_helm.providers.openrouter import Provider as OpenrouterProvider
+"""openrouter provider."""
+from dspy_helm.providers.openrouter import OpenRouterProvider
 
-__all__ = ["OpenrouterProvider"]
+__all__ = ["OpenRouterProvider"]
