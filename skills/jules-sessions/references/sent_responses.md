@@ -885,3 +885,17 @@ Side effect: session 74040189 (told to close out) instead pushed PR #121 "Diagno
 | #737 | ruff linting errors (49 files) | stays closed — redundant | OPEN #775 carries newer active linting work; disposition comment posted |
 
 Refresh target list now: 16 open-PR branches (14 EI: 570,575,612,663,665,666,761,775,776,778,788,790,791,792 + reopened 732,762 = 16 EI) + prompt-lib#57 + langgraph#381 = 18 latest sessions to message with aggregated findings.
+
+## 2026-09-13: Aggregated Rereview Batch — Top 5 PRs (5 messages, 5/5 sent)
+
+**Pattern**: one message per PR to the most relevant session, with findings aggregated from ALL sibling sessions and verified against current PR head before sending.
+
+| PR | Session | Siblings aggregated | Findings ledger | Action authorized |
+|----|---------|--------------------:|-----------------|------------------|
+| #776 | 10602007366444539739 (mid-task worker, freshest state — avoids push race) | 12 | 4 resolved (lodash pin, artifacts, workflows, version mismatch), 1 open (setup/launch.py "python" hardcode → sys.executable), 1 unknown (test_launcher.py) | implement + push |
+| #775 | 16664311153430594112 (latest-created) | 9 | 4 resolved (middleware class, CORS allowlist, tabs, backend_adapter path guard), 1 open (no create_app tests — follow-up) | review-only |
+| #791 | 6236298220428978887 | 1 | 1 resolved (conflict markers), 1 open (ci.yml mypy continue-on-error missing vs main) | implement + push |
+| #790 | 16572236002364851031 | 1 | labels crash RESOLVED (own fix verified); conflict with main remains | implement + drift-protocol conflict resolution |
+| #792 | 2739128843849774554 | 1 | no findings, prior approve; MERGEABLE | review-only confirm |
+
+All verification done against live PR heads (776: f885970a2, 775: 4e825c8ddc, 791: b1aee58de2, 790: 236aa7eac, 792: 8cd230771). Quota: 5 messages, 5s spacing, no 429s.
