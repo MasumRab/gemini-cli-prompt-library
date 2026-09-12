@@ -899,3 +899,9 @@ Refresh target list now: 16 open-PR branches (14 EI: 570,575,612,663,665,666,761
 | #792 | 2739128843849774554 | 1 | no findings, prior approve; MERGEABLE | review-only confirm |
 
 All verification done against live PR heads (776: f885970a2, 775: 4e825c8ddc, 791: b1aee58de2, 790: 236aa7eac, 792: 8cd230771). Quota: 5 messages, 5s spacing, no 429s.
+
+## 2026-09-13: Push Retry After Token Refresh (session 2541715540196410520, PR#776)
+
+**Trigger**: GitHub token updated on Jules side; this session's createCommitOnBranch/git push had failed on authorization.
+**Key guard in message**: session's locally-committed fixes are likely REDUNDANT — sibling session 10602007366444539739 already landed equivalent changes (446b040b artifacts, 33142194/2b3ece71/f885970a workflow reverts, 0f663c9d lodash pin). Instructed: fetch first, compare against FETCHED state, drop local commits if covered, only push genuinely novel changes. Blind retry would duplicate/conflict.
+**Also flagged**: the one remaining open finding (setup/launch.py "python" hardcode) is owned by the other session — no duplication.
