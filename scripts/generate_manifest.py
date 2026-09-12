@@ -28,12 +28,15 @@ def generate_manifest():
                         try:
                             data = tomllib.load(f)
                             prompt_lines = data.get("prompt", "").strip().split("\n")
-                            description = "No description available."
-                            for line in prompt_lines:
-                                stripped_line = line.strip()
-                                if stripped_line.startswith("#"):
-                                    description = stripped_line[1:].strip()
-                                    break
+                            description = (data.get('description') or '').strip()
+                            if not description:
+                                for line in prompt_lines:
+                                    stripped_line = line.strip()
+                                    if stripped_line.startswith("#"):
+                                        description = stripped_line[1:].strip()
+                                        break
+                            if not description:
+                                description = "No description available."
                             manifest[command_name] = description
                         except tomllib.TOMLDecodeError as e:
                             print(f"Error decoding {filepath}: {e}")
