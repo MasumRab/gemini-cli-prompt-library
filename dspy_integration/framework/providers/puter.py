@@ -1,4 +1,4 @@
-"""Puter provider."""
-from dspy_helm.providers.puter import Provider as PuterProvider
+"""puter provider."""
+from dspy_helm.providers.puter import PuterFreeProvider
 
-__all__ = ["PuterProvider"]
+__all__ = ["PuterFreeProvider"]
