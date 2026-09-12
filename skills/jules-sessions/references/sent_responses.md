@@ -792,3 +792,24 @@ Side effect: session 74040189 (told to close out) instead pushed PR #121 "Diagno
 **Message**: refresh review against current head; re-examine previously reviewed files; classify previous findings (still-stand / resolved / new); post updated PR review; note workflows disabled during audit.
 
 **Result**: 15/15 sent successfully, no 429s.
+
+## 2026-09-13: Mode-Override Implementation Batch (4 sessions)
+
+**Type**: Mode change — review-only → implementation authorized
+**Trigger**: Review sessions have blocking findings but original prompts were review-only ("names only — no content")
+
+| Session | Target PR | Branch | Findings to fix |
+|---------|-----------|--------|-----------------|
+| 17741566181340412732 | EI#775 | fix-linting-src-main | middleware instance, CORS wildcard, removed tabs, local import |
+| 11599902230422824691 | EI#775 | fix-linting-src-main | middleware, CORS, path data, HTML regexp |
+| 16572236002364851031 | EI#790 | fix/debounce-search-dashboard | label string crash, missing dep (branch CONFLICTING) |
+| 6236298220428978887 | EI#791 | fix/ci-infrastructure-2506962712549882166 | dependabot YAML, gh CLI, continue-on-error |
+
+**Message**: explicit override of review-only restriction; drift protocol; push directly to PR branch (no new PR); reconcile stale comments; post review as chat reply with [VERDICT] marker for workflow pickup.
+
+**Result**: 4/4 sent. Sessions previously verified responsive (all 15 responded to refresh request within 1 hour).
+
+**Notes**: 
+- Session 18375114880219720413's block findings on #776 (lodash mismatch, throwaway script) verified ALREADY FIXED on head 8e8ec25e2b — no mode change needed, its review is stale.
+- Review text retrieval: sessions cannot post PR comments directly; GitHub workflow retrieves from session activity agentMessage. Chat-reply review format with [VERDICT] marker is the pickup contract.
+- 6 approving sessions (10619409226839034401, 16664311153430594112, 1928248330783135904, 2739128843849774554, 6128280892197361, 14929757712962167017) — no action needed.
