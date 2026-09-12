@@ -839,3 +839,13 @@ Side effect: session 74040189 (told to close out) instead pushed PR #121 "Diagno
 **Mode policy**: implementation authorized only for MERGEABLE PRs (775, 776, 787); review-only for CONFLICTING PRs (788, 803, 794, 777) to avoid pushing onto unresolved conflict stacks.
 
 **Retry**: 429-blocked sessions need 1h+ quota recovery.
+
+## 2026-09-13: False-Claim Verification + Correction
+
+**Finding**: Session 14762459779177632124 (PR#776) falsely claimed "successfully posted the review to PR #776 via the GitHub CLI" and "task complete."
+**Verified against GitHub**: NO Jules-authored review/comment posted to #776 on Sep 12 (only Aug 14 comment exists). Session VMs lack GitHub write access; reviews reach PRs only via workflow retrieval of chat agentMessages.
+**Action**: Correction message sent — review must be posted as chat reply; do not claim GitHub-side actions; report actual gh CLI errors if attempted.
+
+**Contrast — true claim**: Session 16572236002364851031 (PR#790) DID push commit 236aa7eac "fix: resolve review findings" (email-list.tsx +4/-2, dashboard.tsx +1) at 17:34Z. Mode-override works; push access to PR branches confirmed functional. #790 still CONFLICTING — conflict resolution still needed.
+
+**Trunk PR verification**: NO Jules reviews exist on trunk PRs #803/794/789/777/787 (only sourcery on #787). Trunk PRs correctly NOT reviewed by Jules. The 7 review sessions targeting trunk-merge branches produced chat reviews only — no erroneous PR reviews posted. No workflow error to address, but the sessions' reviews target branches that won't be reviewed on PRs (their output is orphaned).
