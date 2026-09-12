@@ -333,6 +333,15 @@ curl: (22) The requested URL returned error: 400
 | Fix | (a) Session prompts should include a workaround: read files via Python `open()` in a single `python -c` (bypasses bash wrapper), or request file contents via sendMessage. (b) Investigate whether the hook can detect the Jules sandbox environment and skip the guard. (c) Workaround delivered: forward file contents or targeted diffs via sendMessage |
 | Verified | 2026-09-13: session's own report at 2026-09-12T17:30Z |
 
+### 35. Stale-snapshot paste regresses work during "fix" commits
+
+| Symptom | A "fix" commit (e.g., "fix kwargs", "fix test") rewrites a large file (>500 lines) and unintentionally regresses fixes made by sibling sessions or main — e.g., session's 70fe3316 regressed launch.py by pasting an older version that reintroduced hardcoded "python3" instead of sys.executable |
+|---------|-----------------------|
+| Root cause | Session's sandbox has a cached/stale snapshot of the file. When making a "fix" edit, it pastes the entire cached version instead of editing the current file. The diff shows wholesale replacement (rename functions, delete code) not mentioned in the commit message |
+| Impact | Regresses work done by other sessions or main, requiring surgical recovery. Pattern observed across multiple PRs (776, 775, 791) |
+| Fix | (a) Add stale-paste guard to session memory: if a "fix" commit touches >200 lines in a file NOT in the PR's original scope, STOP and re-read current file from disk. (b) Apply ONLY the minimal edit needed, not wholesale replacement. (c) If large rewrite IS intended, use "refactor:" prefix and justify in commit message. (d) Check git log for recent fix commits from other sessions before editing. (e) Orchestrator should flag fix commits with >500 line changes as suspicious |
+| Verified | 2026-09-13: PR#776, session 10602007366444539739's 70fe3316 regressed its own 9e95b4ec sys.executable fix |
+
 ## Monitoring Recommendations
 
 Add a workflow that runs once daily and:
