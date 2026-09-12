@@ -849,3 +849,14 @@ Side effect: session 74040189 (told to close out) instead pushed PR #121 "Diagno
 **Contrast — true claim**: Session 16572236002364851031 (PR#790) DID push commit 236aa7eac "fix: resolve review findings" (email-list.tsx +4/-2, dashboard.tsx +1) at 17:34Z. Mode-override works; push access to PR branches confirmed functional. #790 still CONFLICTING — conflict resolution still needed.
 
 **Trunk PR verification**: NO Jules reviews exist on trunk PRs #803/794/789/777/787 (only sourcery on #787). Trunk PRs correctly NOT reviewed by Jules. The 7 review sessions targeting trunk-merge branches produced chat reviews only — no erroneous PR reviews posted. No workflow error to address, but the sessions' reviews target branches that won't be reviewed on PRs (their output is orphaned).
+
+## 2026-09-13: PR Comment Delivery Batch (9 sessions, PR#776)
+
+**Type**: Comment bridge — forwarding unseen PR comment to sessions
+**Trigger**: Verified routing model — comments without @jules mentions are invisible to sessions; @jules routes only to the session that CREATED the PR, only on Jules-created PRs. MasumRab's 17:49Z review comment on #776 (throwaway artifacts findings) was unseen by all 9 review sessions.
+
+**Sessions**: 18375114880219720413, 14762459779177632124, 14929757712962167017, 10602007366444539739, 12765633192073474654, 13114731366410335314, 17535480346835014263, 17599982793927763939, 2541715540196410520
+
+**Message**: forwarded comment inline with FORWARDED markers + action items (remove fix_sonarcloud_7.py, cr_review_prompts.txt; revert workflow mods; chat reply with [VERDICT]).
+
+**Result**: 9/9 sent.
