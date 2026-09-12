@@ -7,6 +7,7 @@ import time
 from .config import MONITOR_INTERVAL, PID_FILE
 from .jules_recovery_manager import JulesRecoveryManager
 from tools.api.jules_api_client import JulesAPIClient
+from tools.sdk.bridge import JulesSDKBridge
 
 
 def create_pid_file():
@@ -27,6 +28,23 @@ def is_running():
             except (ValueError, ProcessLookupError):
                 return False
     return False
+
+def stream_session(session_id: str):
+    """Stream activities for a single session in real-time using SDK.
+    
+    Emits each activity as JSON as it arrives. Runs until the session
+    reaches a terminal state or Ctrl+C.
+    """
+    bridge = JulesSDKBridge()
+    print(f"Streaming activities for session {session_id}...", file=sys.stderr)
+    
+    try:
+        for activity in bridge.stream(session_id):
+            # Emit each activity as a JSON line to stdout
+            import json
+            print(json.dumps(activity), flush=True)
+    except KeyboardInterrupt:
+        print("\nStream stopped.", file=sys.stderr)
 
 def monitor_loop(once=False):
     client = JulesAPIClient()
@@ -59,8 +77,14 @@ def main():
     parser.add_argument("--interval", type=int, default=MONITOR_INTERVAL, help="Monitoring interval")
     parser.add_argument("--once", action="store_true", help="Run once and exit")
     parser.add_argument("--stop", action="store_true", help="Stop the running daemon")
+    parser.add_argument("--session", type=str, help="Stream activities for a single session (SDK mode)")
 
     args = parser.parse_args()
+    
+    if args.session:
+        # SDK streaming mode for a single session
+        stream_session(args.session)
+        return
 
     if args.stop:
         if os.path.exists(PID_FILE):
