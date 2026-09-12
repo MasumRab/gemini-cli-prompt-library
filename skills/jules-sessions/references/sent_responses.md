@@ -738,3 +738,57 @@ prompt_sent: |
   PR #711 (sentinel → orchestration-tools) has a REAL conflict across ~59 files and SonarCloud gate failures. Merge origin/orchestration-tools into your branch and resolve the conflicts systematically (focus on src/core/security.py, src/backend/python_nlp/nlp_engine.py, src/backend/python_backend/*, setup/launch.py). Note the base branch orchestration-tools was recently fixed (broken .gitmodules gitlinks removed, commit 15ec9829) and the stale jules-pr-review workflow was renamed to .DISABLED there — fetch origin first so you rebase on the healthy base. After resolving, push and report which files were most conflict-heavy so we can review them.
 outcome: "SENT_OK"
 ```
+
+## 2026-09-12 — Session Progress Sweep (8 actionable of 1,435)
+
+Sent to 5 sessions (correct payload: {"prompt": text} — NOT {"message"}):
+
+| Session | State | Message Sent |
+|---------|-------|--------------|
+| 7404018986702295062 | AWAITING_USER_FEEDBACK | PR #102 now MERGEABLE — close out |
+| 14195041561349038232 | AWAITING_USER_FEEDBACK | PR #56 (CLI_ALTERNATIVES_INVESTIGATION.md) OPEN+MERGEABLE — finalize |
+| 2088004130054247653 | IN_PROGRESS | PR 707 CLOSED, CI fixes went to main — superseded, close out |
+| 12677098441080260336 | IN_PROGRESS | CORS Option A already merged via #548/#816 — close out |
+| 18254541687978082373 | AWAITING_USER_FEEDBACK | Plan executed 2026-05-01, NO PR pushed — push now with URL |
+
+Not messaged (no action needed):
+- 10304958435902448274 (QUEUED, Apr 29): kaggle_helper.py no longer exists in repo — obsolete
+- 9445754006296005497 (QUEUED, Sep 12): fresh Bolt session, still processing
+- 15151693654808820502 (state=None, Jun 2025): ancient, artifacts committed long ago
+
+### Follow-up 2026-09-12 (later same day)
+
+First-sweep results: 4/5 resolved (74040189, 20880041, 12677098, 18254541 → COMPLETED). 1 stuck (14195041 still AWAITING).
+
+Re-messaged 2:
+- 18254541687978082373: pushed branch optimize-forensics-regex-...-18254541687978082373 (4 commits: forensics.py, benchmark_regex.py) but NO PR opened. Told to open PR now.
+- 14195041561349038232: no response to first message. Told task complete (PR #56 MERGEABLE), confirm and close.
+
+Side effect: session 74040189 (told to close out) instead pushed PR #121 "Diagnose Sandbox Auth & Fix PR #102" (MERGEABLE, OPEN) — it interpreted close-out as a final fix task. PR #121 needs review/triage.
+
+## 2026-09-13: Review Refresh Batch (15 sessions)
+
+**Type**: Review refresh — stale code reviews vs updated PR heads
+**Trigger**: PR conflict resolutions (Sep 12) moved PR heads after reviews were performed
+
+| Session | Target PR | Reviewed SHA | Current Head |
+|---------|-----------|--------------|--------------|
+| 17741566181340412732 | EI#775 | aee2eb12f5 | 4e825c8ddc |
+| 11599902230422824691 | EI#775 | 24dddd7b91 | 4e825c8ddc |
+| 6236298220428978887 | EI#791 | 5f957a034 | b1aee58de2 |
+| 3610602972477821477 | EI#775 | 4c29a8fe56 | 4e825c8ddc |
+| 8325835181618095509 | EI#775 | 476c6fb3e4 | 4e825c8ddc |
+| 13562239120519700863 | EI#778 | b07807711c | 1d52fcc5f5 |
+| 16664311153430594112 | EI#775 | 1d8a350885 | 4e825c8ddc |
+| 6128280892197361 | EI#775 | 6f3a316ad3 | 4e825c8ddc |
+| 10619409226839034401 | EI#775 | 8754eaa143 | 4e825c8ddc |
+| 16572236002364851031 | EI#790 | ae188179bc | d37391be8b |
+| 2739128843849774554 | EI#792 | bd2860a7f2 | 8cd2307719 |
+| 1928248330783135904 | EI#775 | 2278b952b4 | 4e825c8ddc |
+| 18375114880219720413 | EI#776 | (stale) | 8e8ec25e2b |
+| 14762459779177632124 | EI#776 | (stale) | 8e8ec25e2b |
+| 14929757712962167017 | EI#776 | (stale) | 8e8ec25e2b |
+
+**Message**: refresh review against current head; re-examine previously reviewed files; classify previous findings (still-stand / resolved / new); post updated PR review; note workflows disabled during audit.
+
+**Result**: 15/15 sent successfully, no 429s.
