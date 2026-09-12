@@ -813,3 +813,29 @@ Side effect: session 74040189 (told to close out) instead pushed PR #121 "Diagno
 - Session 18375114880219720413's block findings on #776 (lodash mismatch, throwaway script) verified ALREADY FIXED on head 8e8ec25e2b — no mode change needed, its review is stale.
 - Review text retrieval: sessions cannot post PR comments directly; GitHub workflow retrieves from session activity agentMessage. Chat-reply review format with [VERDICT] marker is the pickup contract.
 - 6 approving sessions (10619409226839034401, 16664311153430594112, 1928248330783135904, 2739128843849774554, 6128280892197361, 14929757712962167017) — no action needed.
+
+## 2026-09-13: Comprehensive Rereview Batch (15 sessions, 8 sent / 7 quota-blocked)
+
+**Type**: Full rereview — all new+old comments, stale line refs updated, outstanding findings addressed, CI/CD recommendations
+
+| Session | Target PR | Mode | Status |
+|---------|-----------|------|--------|
+| 10208990780319493503 | EI#775 | impl | SENT |
+| 1501238287897315088 | EI#788 | review-only | SENT |
+| 10602007366444539739 | EI#776 | impl | SENT |
+| 12765633192073474654 | EI#776 | impl | SENT |
+| 13114731366410335314 | EI#776 | impl | SENT |
+| 17535480346835014263 | EI#776 | impl | SENT |
+| 17599982793927763939 | EI#776 | impl | SENT |
+| 2541715540196410520 | EI#776 | impl | SENT |
+| 10759997676130822408 | EI#803 | review-only | 429 |
+| 14970126622961835953 | EI#803 | review-only | 429 |
+| 4227155626214895348 | EI#803 | review-only | 429 |
+| 6289750792488543569 | EI#803 | review-only | 429 |
+| 3066004504936610335 | EI#777 | review-only | 429 |
+| 5958407664361578225 | EI#794 | review-only | 429 |
+| 4011484320208761877 | EI#787 | review-only | 429 |
+
+**Mode policy**: implementation authorized only for MERGEABLE PRs (775, 776, 787); review-only for CONFLICTING PRs (788, 803, 794, 777) to avoid pushing onto unresolved conflict stacks.
+
+**Retry**: 429-blocked sessions need 1h+ quota recovery.
