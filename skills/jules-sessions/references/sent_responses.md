@@ -957,3 +957,13 @@ All verification done against live PR heads (776: f885970a2, 775: 4e825c8ddc, 79
 **Excluded**: trunk-merge branches (workflow failure #31), no-PR branches (closed/merged), top-5 batch (already sent).
 
 **Total coverage now**: 16 of 16 open EI PRs + prompt-lib#57 + langgraph#381 pending (not in review-session store — separate handling if needed).
+
+## 2026-09-13: Durable Memory Rules — Disabled Workflow Protection (session 10602007366444539739)
+
+**Two rules requested for durable memory**:
+1. NEVER re-enable disabled workflows (no renaming .DISABLED → .yml, no deleting, no "restoring" from branch copies, keep .DISABLED version in conflicts, report diffs touching .DISABLED as findings)
+2. NEVER edit contents of disabled workflows (content frozen, must match main, no version bumps/steps changes — zero effect + merge noise)
+
+**Evidence cited**: 10+ violating commits across branches (ebf9e3e8, 3d4602cc, 9e63c1c9, 1f33eda7, fe2aeb99, 79ec422b, 1cc13107, ed0c544f, 4f0d3ae3, 4101448e), each requiring manual surgical recovery.
+
+**Root cause explained to session**: sessions' snapshots predate the disabling decision, so disabled files look like accidents to them. The disabled state IS the intent.
