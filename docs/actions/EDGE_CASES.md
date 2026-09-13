@@ -342,6 +342,15 @@ curl: (22) The requested URL returned error: 400
 | Fix | (a) Add stale-paste guard to session memory: if a "fix" commit touches >200 lines in a file NOT in the PR's original scope, STOP and re-read current file from disk. (b) Apply ONLY the minimal edit needed, not wholesale replacement. (c) If large rewrite IS intended, use "refactor:" prefix and justify in commit message. (d) Check git log for recent fix commits from other sessions before editing. (e) Orchestrator should flag fix commits with >500 line changes as suspicious |
 | Verified | 2026-09-13: PR#776, session 10602007366444539739's 70fe3316 regressed its own 9e95b4ec sys.executable fix |
 
+### 36. Sessions re-enable or edit deliberately disabled workflows
+
+| Symptom | Commits rename `.github/workflows/*.yml.DISABLED` back to `*.yml` (re-enabling), delete them, or edit their contents (action version bumps like `actions/setup-python@v7`, step restructuring) during conflict resolution or "CI fixes" |
+|---------|-----------------------|
+| Root cause | Session snapshots predate the disabling decision, so `.DISABLED` files look like accidents to the session — it "fixes" them. The disabled state IS a deliberate owner decision. Also: sessions see active copies on stale branches and assume the missing active file on main is the anomaly |
+| Impact | 10+ violating commits across branches (ebf9e3e8, 3d4602cc, 9e63c1c9, 1f33eda7, fe2aeb99, 79ec422b, 1cc13107, ed0c544f, 4f0d3ae3, 4101448e), each requiring manual surgical recovery. Merging a branch with a re-enabled workflow silently reverts the disable decision |
+| Fix | (a) Session memory rules: NEVER re-enable (no renaming .DISABLED→.yml, no deleting, no "restoring" from branch copies, keep .DISABLED version in conflicts, report diffs touching .DISABLED as findings); NEVER edit contents (frozen, must match main, version bumps have zero effect on non-running workflows). (b) Workflow-level guard: add a CI check that fails any PR whose diff touches `*.DISABLED` paths. (c) Orchestrator: treat any .DISABLED path in a session's push as a regression requiring immediate revert |
+| Verified | 2026-09-13: `git log --all` shows 10+ commits touching .DISABLED since Aug 1; memory rules sent to session 10602007366444539739 |
+
 ## Monitoring Recommendations
 
 Add a workflow that runs once daily and:
