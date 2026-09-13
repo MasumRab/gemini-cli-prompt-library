@@ -1033,3 +1033,20 @@ Skipped: drizzle review (PR#662, closed/superseded).
 **Runbooks updated** (committed):
 - `workspace_isolation.md`: Session Worktree Checkout (CLI pull semantics, worktree manual-fix flow, lock-file conflict resolution, content extraction from artifacts/git history)
 - `pr_verification_runbook.md`: Session-Created PR Validation (detection, blocking checklist, timestamp staleness check)
+
+## 2026-09-13: Review Delivery to Sessions (6/6 sent)
+
+Posted reviews are plain comments (no @jules) — invisible to sessions. Delivered each to the LATEST review session per PR via sendMessage with the forwarded-review bridge pattern.
+
+**All 6 sessions are stale**: July 27–Aug 9 snapshots = 104–135 commits of drift on main. Each delivery includes the drift protocol + per-PR specific changes:
+
+| PR | Session | Snapshot | Drift | Guidance |
+|----|---------|----------|-------|----------|
+| #570 | 17109930827741917931 | Aug 9 | 104 commits | max_capacity kwarg fix + validation restore (session already pushed via CLI pull — verify) |
+| #612 | 731118369922790088 | Aug 9 | 104 commits | None — approved; verify merge cleanliness |
+| #666 | 15182315018848459082 | Jul 27 | 135 commits | Path traversal fix pushed as PR#836 — verify and verdict on #836 |
+| #663 | 17081540647053958394 | Jul 28 | 126 commits | None — approved; verify applies cleanly |
+| #732 | 12017438274060233457 | Jul 27 | 135 commits | 4 ESLint fixes; WARNING: session's 27,263-line CLI pull = stale paste, discard large pushes |
+| #761 | 9635359179354443625 | Aug 9 | 104 commits | Restore @eslint/js + react plugins, lockfile sync (Dependabot branch) |
+
+Every message includes: forwarded review body, specific changes needed, stale-snapshot drift protocol, disabled-workflow rules.
