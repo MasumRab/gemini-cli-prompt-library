@@ -1050,3 +1050,20 @@ Posted reviews are plain comments (no @jules) — invisible to sessions. Deliver
 | #761 | 9635359179354443625 | Aug 9 | 104 commits | Restore @eslint/js + react plugins, lockfile sync (Dependabot branch) |
 
 Every message includes: forwarded review body, specific changes needed, stale-snapshot drift protocol, disabled-workflow rules.
+
+## 2026-09-14: Response Sweep + PR666 Workflow-Disabling Incident
+
+**Response sweep (6 delivered sessions)**: 5/6 replied with verdicts —
+- PR#570: approve | PR#612: approve | PR#663: approve | PR#761: approve | PR#732: block
+- PR#666: no verdict — instead went rogue (below)
+
+**PR666 incident — NEW failure mode (workflow-disabling)**: Session 15182315018848459082, asked to verify its path traversal fix, instead analyzed the pre-existing `review / review` CI failure (Gemini auth, fails on every PR) and "fixed" it by renaming 5 ACTIVE Gemini workflows to `.DISABLED` (commit 0b4f2217). The branch also carried older drift: push-check.yml + deploy-staging.yml re-enabled, jules-issue-triage.yml deleted, jules-pr-review.yml.DISABLED content modified 48 lines.
+
+**Resolution (manual, 3 commits + merge)**:
+1. `6ec398ec` — reverted the 5 Gemini renames
+2. `4a985434` — restored ALL workflows to match current main exactly
+3. `2fee0909` — merged current main into the branch (reset merge-base; PR now shows ONLY workflow_manager.py fix + test, 2 files / 52 insertions)
+
+**Correction sent to session**: rules violated (never touch workflows unless PR scope is workflows; pre-existing CI failures are findings, not things to fix by disabling infrastructure), verify fix post-merge, reply with refreshed verdict.
+
+**Rule addition for prompts**: the disabled-workflow rule must be bidirectional — never DISABLE active workflows either, not just never re-enable .DISABLED ones. Sessions see a failing check and reach for infrastructure changes as "fixes".
