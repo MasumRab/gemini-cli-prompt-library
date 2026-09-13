@@ -66,6 +66,77 @@ All transports write into the same workspace layout.
 3. List live: `python3 tools/sessions/jules_list_sessions.py --repo <repo-name>`
 4. Last resort: `python3 tools/sessions/sync_all_sessions.py` then retry.
 
+## Session Worktree Checkout
+
+Retrieve a session's work locally for inspection or manual conflict resolution.
+
+### When to use CLI pull
+
+`jules remote pull --session <id>` returns a patch for **any session that made
+commits/pushes** — implementation *or* review. Sessions that only chatted (no
+pushes) return "No diff found". The session type does not matter; whether the
+session pushed changes does.
+
+```bash
+# Inspect the patch (no changes applied)
+jules remote pull --session <session_id> > /tmp/session-patch.diff
+
+# Apply to local repo (review the patch FIRST)
+jules remote pull --session <session_id> --apply
+```
+
+### Worktree-based manual fix (for conflicts the session cannot resolve)
+
+```bash
+# 1. Create isolated worktree from the PR branch
+git worktree add wt/pr-fix/pr-$pr origin/$branch -b fix/pr-$pr-rebase
+
+# 2. Merge current base to surface conflicts
+cd wt/pr-fix/pr-$pr
+git merge origin/$base --no-edit
+
+# 3. Resolve per hunk (3-way: merge-base, ours, theirs) — never checkout --ours/--theirs wholesale
+
+# 4. Verify: git diff origin/$base...HEAD must show ONLY intended changes
+
+# 5. Push back to the PR branch
+git push origin HEAD:$branch
+```
+
+### Lock file conflicts (package-lock.json, client/package-lock.json, uv.lock)
+
+Stale session snapshots produce massive lock-file churn: the session's cached
+lockfile predates dependency updates on main, so its "conflict resolution"
+regresses dependency state. Identify and discard:
+
+```bash
+# What changed on main since the session's snapshot?
+git diff $(git merge-base HEAD origin/main)..origin/main -- <lockfile>
+
+# If the session's lockfile changes are pure snapshot noise (no intentional
+# dependency changes in the PR scope), take MAIN's version:
+git checkout origin/main -- <lockfile>
+```
+
+Take main's lockfile when the PR does not intentionally change dependencies.
+Take the session's version only when the PR's scope explicitly includes
+dependency updates — then regenerate the lockfile from the manifest
+(`npm install` / `uv lock`) rather than hand-merging.
+
+### Extracting file content not present in activities/messages
+
+Review comments only sometimes migrate to session `agentMessage` entries. When
+the full content (per-finding severity tags, suggestion blocks, AI prompts) is
+missing from session chat:
+
+1. **GitHub is authoritative**: `gh pr view <n> --json comments,reviews` and
+   `gh api repos/<owner>/<repo>/pulls/<n>/comments`
+2. **Session artifacts**: activity entries with `artifacts[].changeSet.gitPatch.unidiffPatch`
+   contain the session's actual diff — pull via CLI (above)
+3. **Branch git history**: throwaway artifacts sessions committed
+   (e.g. `cr_review_prompts.txt`) are recoverable from the commit before deletion:
+   `git show <deletion-commit>^:<file>`
+
 ## See also
 
 - `docs/guides/operations.md` — the original prompt-logging directive

@@ -28,6 +28,47 @@ These indicate the PR may need further work but are not strictly blocking:
 - [ ] No regression in existing functionalities.
 - [ ] Documentation updated if necessary.
 
+## Session-Created PR Validation
+
+Review sessions have push access and CAN create PRs from their branches. A
+stale review session woken by a refresh request may push its weeks-old snapshot
+as "fixes" — creating PRs with wrong bases or stale-pasted files.
+
+### Detection
+
+```bash
+# Find PRs created by Jules sessions (head branch carries session-ID suffix)
+gh pr list --state all --author "app/google-labs-jules" --json number,headRefName,baseRefName,createdAt
+# head branch pattern: <original-branch>-<session-id>
+```
+
+### Validation checklist (blocking)
+
+1. **Base branch**: must target the session's PR branch, NOT main. A review
+   session's PR targeting main is invalid — close immediately.
+2. **Scope**: diff must contain only changes the session was authorized to make.
+   A 43-file diff in response to a 3-finding request = stale snapshot paste.
+3. **Stale-paste check**: `git show <pr-head>:<file> | wc -l` vs main's version.
+   Files shrunk drastically (e.g. launch.py 1209→677 lines) with hardcoded
+   values returning = stale paste. Compare against main, not the merge-base.
+4. **Lockfile churn**: lock-file changes with no dependency changes in PR scope
+   = snapshot noise (see workspace_isolation.md).
+5. **Artifacts**: throwaway files (`cr_review_prompts.txt`, `fix_*.py`,
+   `plan.md`) should not be added. Flag if present.
+6. **.DISABLED workflows**: any diff touching `*.DISABLED` paths is a
+   regression requiring immediate revert (EDGE_CASES #36).
+
+### Timestamp staleness check
+
+Compare the session's snapshot date (session `createTime`) against the PR's
+recent commits. If the session predates significant main changes, verify each
+touched file against CURRENT main — not the merge-base:
+
+```bash
+git fetch origin main
+git diff origin/main <pr-head> -- <touched-file>   # direct comparison
+```
+
 ## Multi-Repo Verification
 If the changes affect multiple repositories, use the multi-repo tool to check consistency:
 ```bash
