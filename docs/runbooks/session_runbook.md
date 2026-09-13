@@ -2,6 +2,45 @@
 
 This runbook guides you through managing and recovering Jules sessions using the **Jules Tools A+ Upgrade & Restoration** suite.
 
+## Review-Session Pipeline (`tools/reviews/`)
+
+The code-review session lifecycle has dedicated tooling — use these instead of ad-hoc scripts. All commands support `--json` for machine-readable output; send commands support `--dry-run`.
+
+```bash
+# 1. Discover review sessions (store query — no API key needed)
+uv run python -m tools.reviews.cli discover [--repo EmailIntelligence]
+
+# 2. Download all review content from session chat into per-branch files
+uv run python -m tools.reviews.cli download --repo EmailIntelligence --output-dir /tmp/jules-reviews
+
+# 3. Audit completeness: find sessions whose reviews are malformed/incomplete
+#    (missing verdict, summary, AI-prompt block, or suggestion:finding ratio < 1)
+uv run python -m tools.reviews.cli audit --repo EmailIntelligence
+
+# 4. Aggregate: show the ONE session to message per PR (never message duplicates)
+uv run python -m tools.reviews.cli aggregate --repo EmailIntelligence --reviews-dir /tmp/jules-reviews
+
+# 5. Poll for responses + extract [VERDICT] lines
+uv run python -m tools.reviews.cli check-responses --session-ids <id1> <id2>
+
+# 6. Deliver a posted review to a session (bridge pattern — sessions can't see plain PR comments)
+uv run python -m tools.reviews.cli deliver --pr 570 --session <id> --review-file /tmp/jules-reviews/PR570.md
+
+# 7. Authorize a blocking session to implement fixes (includes drift protocol)
+uv run python -m tools.reviews.cli authorize-fix --pr 791 --session <id> --findings "1. CRITICAL - ..."
+
+# 8. Refresh a stale review (PR head moved since the review)
+uv run python -m tools.reviews.cli refresh --pr-ref EmailIntelligence#775 --session <id> --current-head abc123 --reviewed-head def456
+```
+
+**Library** (`tools/reviews/pipeline.py`): session discovery, completeness signals, one-per-PR routing, quota-aware sending with 429 backoff. **Templates** (`tools/reviews/templates.py`): single source of truth for the drift protocol, stale-paste guard, and disabled-workflow rules — every outbound message to a stale session MUST go through `with_protocols()` or a `build_*` function so the protocol blocks cannot drift between scripts.
+
+**Key invariants encoded in the tooling:**
+- One message per PR, to the most recent session — never message N duplicate sessions
+- Sessions cannot see plain PR comments (no @jules mention) — use `deliver`
+- Sessions cannot post to GitHub — refresh/aggregate templates never instruct posting; chat reply with `[VERDICT]` is the review channel
+- Old snapshots are stale — every template appends the drift protocol automatically
+
 ## Environment Setup
 
 Ensure the Jules API key is set in your environment:

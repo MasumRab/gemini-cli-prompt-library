@@ -144,3 +144,4 @@ missing from session chat:
 - `docs/runbooks/session_runbook.md` — daily triage & recovery playbook
 - `docs/guides/workflow_session_traceability.md` — cross-system correlation
 - `skills/jules-sessions/SKILL.md` — local analysis patterns & templates
+- `tools/reviews/` — review-session pipeline CLI (discover/download/audit/aggregate/deliver/authorize-fix/refresh); see `docs/runbooks/session_runbook.md` § Review-Session Pipeline
