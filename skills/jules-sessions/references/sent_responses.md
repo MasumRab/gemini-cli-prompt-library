@@ -967,3 +967,13 @@ All verification done against live PR heads (776: f885970a2, 775: 4e825c8ddc, 79
 **Evidence cited**: 10+ violating commits across branches (ebf9e3e8, 3d4602cc, 9e63c1c9, 1f33eda7, fe2aeb99, 79ec422b, 1cc13107, ed0c544f, 4f0d3ae3, 4101448e), each requiring manual surgical recovery.
 
 **Root cause explained to session**: sessions' snapshots predate the disabling decision, so disabled files look like accidents to them. The disabled state IS the intent.
+
+## 2026-09-13: Global Knowledge Update — AGENTS.md Session Guards (PR#835)
+
+**Correction to earlier approach**: per-session memory rules are NOT global — new workflow-spawned sessions don't inherit them. The durable global mechanism is **AGENTS.md** (repo-level instruction file every Jules session reads at start).
+
+**Added to AGENTS.md** (PR #835, branch docs/agents-md-session-guards):
+1. 🚫 Disabled Workflow Rules (NON-NEGOTIABLE) — never re-enable/edit .DISABLED files, conflict handling, report-as-finding
+2. 🧊 Stale-Snapshot Guards — fetch before revert, stale-paste guard (>200 lines), never trust remembered state
+
+**Note**: main's AGENTS.md is a completely different document from the session branches' copies (1091 diff lines divergence) — the branch copies are stale. Edit applied to main's structure (after "Important Notes" section).
