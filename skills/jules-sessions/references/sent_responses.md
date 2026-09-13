@@ -977,3 +977,34 @@ All verification done against live PR heads (776: f885970a2, 775: 4e825c8ddc, 79
 2. 🧊 Stale-Snapshot Guards — fetch before revert, stale-paste guard (>200 lines), never trust remembered state
 
 **Note**: main's AGENTS.md is a completely different document from the session branches' copies (1091 diff lines divergence) — the branch copies are stale. Edit applied to main's structure (after "Important Notes" section).
+
+## 2026-09-13: Session-Created PR Audit — Validity Assessment & Closure
+
+**Recall finding**: The 17:16Z "Review refresh request" to session 14929757712962167017 was sent by ME in a pre-compaction batch (`/tmp/jules_review_refresh.py`, task `bash_19`). It was part of a 15-session broadcast (8 for #775, 3 for #776, 1 each for #791/#778/#790/#792) — predating the user's "one message per PR" correction.
+
+**Session-created PRs found**:
+
+| PR | Session | Type | Base | Scope | Verdict | Action |
+|----|---------|------|------|-------|---------|--------|
+| **#831** | 14929757712962167017 | review | main ❌ | 43 files, +4501/-6288 | INVALID — wrong base, stale-paste launch.py (677 lines, hardcoded python3) | **CLOSED** |
+| **#834** | 14929757712962167017 | review | PR#776 branch | 43 files, same content | INVALID — correct base but stale launch.py, artifacts removed but nothing new | **CLOSED** |
+| **#832** | 6236298220428978887 | review | PR#791 branch | 43 files, +5869/-5463 | PARTIAL — CI fixes valid, launch.py security hardening toward main, but **re-added cr_review_prompts.txt** artifact | OPEN, needs artifact removed |
+| **#836** | 15182315018848459082 | review | PR#666 branch | 5 files, +52/-20 | VALID — path traversal fix, pytest test, removed plan.md artifact | OPEN, CONFLICTING (needs rebase) |
+| **#829** | 2506962712549882166 | impl (FAILED) | main | — | NOT REVIEW — session FAILED | **CLOSED** |
+| **#830** | 6114338323508528670 | impl (COMPLETED) | main | — | NOT REVIEW — targets main from feature branch | **CLOSED** |
+
+**Key learnings**:
+
+1. **Review sessions can create PRs** — they have push access to their branch. The rogue session (#14929757712962167017) created TWO PRs from its stale snapshot.
+2. **Stale-paste pattern recurs** — the same launch.py regression (677 lines, hardcoded python3) appeared in both #831 and #834, matching the Aug 15 mangled version.
+3. **My earlier template had hallucinated instructions** — "post your review as PR comments" is impossible (sessions have no GitHub write access). The AGENTS.md update corrects this.
+4. **Multi-session broadcast was the pre-correction pattern** — the 15-session batch and later 9-session broadcast both violated the "one per PR" rule.
+5. **Gemini review workflow has auth gap** — PR#836's review check failed due to missing GEMINI_API_KEY (separate from Jules work).
+
+**Artifacts downloaded**: Full GitHub PR comments/reviews/inline threads for all 16 open PRs saved to `/tmp/jules-full-pr-content/` (5KB–162KB each). Session chat content incomplete — GitHub is authoritative source for review comments.
+
+**Actions taken**:
+- Closed #831, #834, #829, #830 with disposition comments
+- Documented the origin of the 17:16Z trigger (my batch, not external)
+- Updated AGENTS.md with session guards (PR#835)
+- Logged EDGE_CASES #35/#36
