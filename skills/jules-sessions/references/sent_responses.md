@@ -1008,3 +1008,28 @@ All verification done against live PR heads (776: f885970a2, 775: 4e825c8ddc, 79
 - Documented the origin of the 17:16Z trigger (my batch, not external)
 - Updated AGENTS.md with session guards (PR#835)
 - Logged EDGE_CASES #35/#36
+
+## 2026-09-13: Unposted Review Recovery — Root Cause + 6 PRs Posted
+
+**Root cause identified**: `jules-pr-review.yml` was disabled on main Aug 17, 2026 ("chore: disable auto Jules review until handoff recommendations implemented"). Every review session spawned after that date completed reviews in session chat, but the posting workflow never ran — severity-tagged findings and AI prompts NEVER reached the PRs.
+
+**Audit method**: Completeness signals per session (verdict, summary, AI-prompt block, findings/suggestions ratio) + GitHub cross-check for Jules-authored comments. 40+ sessions had incomplete chat content or unposted reviews.
+
+**Recovered via jules CLI pull** (`jules remote pull --session <id>` — works for any session with commits, not type-dependent):
+- PR570 session: 27-line diff (max_capacity fix already pushed)
+- PR666 session: 113-line diff (path traversal fix)
+- PR732 session: 27,263-line diff (massive stale snapshot — flagged)
+
+**Full reviews extracted from session chat** (most complete message per session) and **posted to PRs**:
+- PR#612: https://github.com/MasumRab/EmailIntelligence/pull/612#issuecomment-5651086612
+- PR#666: https://github.com/MasumRab/EmailIntelligence/pull/666#issuecomment-5651087124
+- PR#663: https://github.com/MasumRab/EmailIntelligence/pull/663#issuecomment-5651087538
+- PR#761: https://github.com/MasumRab/EmailIntelligence/pull/761#issuecomment-5651087939
+- PR#570: https://github.com/MasumRab/EmailIntelligence/pull/570#issuecomment-5651091790
+- PR#732: https://github.com/MasumRab/EmailIntelligence/pull/732#issuecomment-5651092358
+
+Skipped: drizzle review (PR#662, closed/superseded).
+
+**Runbooks updated** (committed):
+- `workspace_isolation.md`: Session Worktree Checkout (CLI pull semantics, worktree manual-fix flow, lock-file conflict resolution, content extraction from artifacts/git history)
+- `pr_verification_runbook.md`: Session-Created PR Validation (detection, blocking checklist, timestamp staleness check)
