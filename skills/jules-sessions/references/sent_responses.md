@@ -1104,3 +1104,20 @@ All messages include drift protocol + stale-paste guard + disabled-workflow rule
 - 2960310825137265296 (Nov 2025, next-task query): any unfinished follow-on work
 
 All old-session messages are STATUS CHECK ONLY — no code modification unless a real gap is confirmed; every message carries the drift protocol (snapshots 5 weeks to 6 months stale).
+
+## 2026-09-14: No-PR CLI Session Instructions (4/4 sent)
+
+Directive: sessions that worked on CLI unification without creating PRs must convert their
+work to inheritable form. CLI branch is PORTABLE — must import into either scientific or
+main; no hard-entanglement with branch-specific backends (DI via create_default_dependencies).
+
+- 15849735980747386761 (Jul 12, gap analysis): convert Phase 1.5 findings into 2 PRs —
+  dependency fixes (libcst/networkx/psutil/python-dotenv) + gap-analysis/production-readiness docs
+- 12339942557859330507 (May 6, spec alignment): land missing spec/mapping content as PR vs
+  cli-unification, or confirm absorbed with diff evidence; answer own open questions
+- 4786476835892279965 (May 4, feature unification): same pattern — PR the unabsorbed
+  000-integrated-specs content or confirm absorbed
+- 16610982362272230087 (May 29, FAILED scripts-to-services): recover chat-only architecture,
+  assess vs implemented Command-pattern framework, PR the doc or record supersession
+
+All target consolidate/cli-unification (NOT main). All carry portability requirement + full protocols.
