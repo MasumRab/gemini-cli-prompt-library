@@ -1086,3 +1086,21 @@ Batch nudge to every session with an open action item:
 - 3971178889713665128 (PR#665 review): check PR#650 state, verdict accordingly
 
 All messages include drift protocol + stale-paste guard + disabled-workflow rules (bidirectional).
+
+## 2026-09-14: Nudge ALL Taskmaster Sessions — Old and New (12/12 sent)
+
+**New (Aug 2026, 4 sessions)** — verification nudges on active work:
+- 18022405513725949457 (tracking): verify Linear MAS-* states
+- 10041449041565916881 (MAS-125/126/127, PR#808): re-verify vs current main, verdict
+- 2506962712549882166 (MAS-171/169, PR#791): fix 3 review findings
+- 15014477667741021080 (MAS-121, PR#776): final pre-merge verification
+
+**Old (Jul 2026 and earlier, 8 sessions)** — status wake-ups, explicitly read-only:
+- 12998852914377637541 (Aug 8, CLI salvage): what survived vs main evolution
+- 596003508416904399 (Jul 25, task file reorg): is reorg still current; .taskmaster now a submodule
+- 12339942557859330507 (May 6, CLI spec alignment): does alignment still hold
+- 14432945922325525432, 18095420007057529466, 8312407700305908496 (May 4, deprecated-terminology trio): did later work reintroduce deprecated terms
+- 16961981115510330540 (Mar 22, branch clustering): re-assess vs formalized BRANCH_MANAGEMENT_MODEL
+- 2960310825137265296 (Nov 2025, next-task query): any unfinished follow-on work
+
+All old-session messages are STATUS CHECK ONLY — no code modification unless a real gap is confirmed; every message carries the drift protocol (snapshots 5 weeks to 6 months stale).
