@@ -1121,3 +1121,20 @@ main; no hard-entanglement with branch-specific backends (DI via create_default_
   assess vs implemented Command-pattern framework, PR the doc or record supersession
 
 All target consolidate/cli-unification (NOT main). All carry portability requirement + full protocols.
+
+## 2026-09-14: CLI Session Goal Alignment (5/5 sent)
+
+North star broadcast to ALL CLI-unification sessions: consolidate/cli-unification =
+complete, fully-implemented, PORTABLE unified CLI (importable into scientific or main).
+Non-overlapping lane assignments:
+
+| Session | Lane | Key addition beyond prior instructions |
+|---------|------|----------------------------------------|
+| 15849735980747386761 | DEPENDENCIES + DOCS | production-readiness plan = shared roadmap, tasks labeled by lane |
+| 12998852914377637541 | FRAMEWORK | answered its pending question: main is NOT target; complete registry wire-up + emailintelligence_cli.py retirement plan |
+| 12339942557859330507 | SPECS | open questions become decisions (argparse over typer for portability; execution layer on Command interface); spec the DI boundary |
+| 4786476835892279965 | ABSORPTION | sweep other branches for unported CLI features, port as Command modules |
+| 16610982362272230087 | ARCHITECTURE | define the DI boundary contract (services layer, per-branch adapters) |
+
+Coordination: single target branch (cli-unification), no cross-lane file edits, shared
+roadmap, portability rule (no branch-specific backend imports in src/cli/**, DI only).
