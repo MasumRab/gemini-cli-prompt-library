@@ -1067,3 +1067,22 @@ Every message includes: forwarded review body, specific changes needed, stale-sn
 **Correction sent to session**: rules violated (never touch workflows unless PR scope is workflows; pre-existing CI failures are findings, not things to fix by disabling infrastructure), verify fix post-merge, reply with refreshed verdict.
 
 **Rule addition for prompts**: the disabled-workflow rule must be bidirectional — never DISABLE active workflows either, not just never re-enable .DISABLED ones. Sessions see a failing check and reach for infrastructure changes as "fixes".
+
+## 2026-09-14: Nudge All Active Sessions (9/9 sent)
+
+Batch nudge to every session with an open action item:
+
+**Taskmaster/MAS sessions:**
+- 2506962712549882166 (MAS-171/169 impl, PR#791): fix the 3 review findings on the PR branch
+- 10041449041565916881 (MAS-125/126/127 impl, PR#808): re-verify against current main (Aug 15 snapshot, ~1 month stale), reply with verdict — PR has no review yet
+- 15014477667741021080 (MAS-121 impl, PR#776): final verification before merge (lodash CVE fix, approved+mergeable)
+- 18022405513725949457 (Taskmaster tracking): verify Linear MAS-* issues reflect current PR states
+
+**Pending-fix review sessions:**
+- 6236298220428978887 (PR#791 review): proceed with authorized fixes
+- 2513098196663975862 (PR#778 review): merge main first (CONFLICTING), then apply 4 authorized fixes
+- 12017438274060233457 (PR#732 review): 4 ESLint fixes; reminded to discard 27K-line stale pushes
+- 9635359179354443625 (PR#761 review): approved but PR CONFLICTING — merge main, discard lockfile noise
+- 3971178889713665128 (PR#665 review): check PR#650 state, verdict accordingly
+
+All messages include drift protocol + stale-paste guard + disabled-workflow rules (bidirectional).
