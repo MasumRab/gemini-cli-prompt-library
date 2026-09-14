@@ -1138,3 +1138,23 @@ Non-overlapping lane assignments:
 
 Coordination: single target branch (cli-unification), no cross-lane file edits, shared
 roadmap, portability rule (no branch-specific backend imports in src/cli/**, DI only).
+
+## 2026-09-14: Failed Session Restores (8/8 sent)
+
+Root cause: sessions received wake-up messages, tried to act on 4-month-old
+stale branch snapshots, and FAILED under the diff/clone burden. Fix: send
+restores with CURRENT branch state baked in.
+
+| Session | Lane | Restore message |
+|---------|------|-----------------|
+| 12339942557859330507 | SPECS | Current tip + correction (000-integrated-specs content corrupted, nothing to land) + lane tasks |
+| 4786476835892279965 | ABSORPTION | Current tip + correction (000 absorbed) + lane tasks (branch sweep for unported features) |
+| 16610982362272230087 | ARCHITECTURE | Restore probe first (least critical lane) |
+| 14432945922325525432 | status-check | deprecated-terminology check (read-only) |
+| 18095420007057529466 | status-check | deprecated-terminology check (read-only) |
+| 8312407700305908496 | status-check | deprecated-terminology check (read-only) |
+| 16961981115510330540 | status-check | clustering vs BRANCH_MANAGEMENT_MODEL (read-only) |
+| 2960310825137265296 | status-check | Nov 2025 next-task follow-on check (read-only) |
+
+All restores carry: (1) explicit current branch tip, (2) instruction to fetch first,
+(3) no trust in snapshot, (4) lane-specific tasks.
