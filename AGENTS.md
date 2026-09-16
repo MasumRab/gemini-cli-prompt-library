@@ -50,7 +50,8 @@ Each target repo has its own:
 ### Repository and review scope boundary
 
 - The current checkout (`/home/masum/github/remote/jules`) is the Jules orchestration repository. Relative paths resolve here by default.
-- Local exploration and repair are confined to this Jules checkout and `workspaces/<repo>/` projections. Do **not** read, edit, or test an unpushed sibling checkout such as `/home/masum/github/remote/<repo>`; it may contain unrelated user changes. Use `jules remote list|pull` and registered `workspaces/<repo>/state/<session-id>/` worktrees instead. Remote GitHub refs/PR metadata may be queried when the task names the repository, PR, session, or branch.
+- Local exploration and repair are confined to this Jules checkout and `workspaces/<repo>/` projections. Do **not** read, edit, or test an unpushed sibling checkout such as `/home/masum/github/remote/<repo>` by default; it may contain unrelated user changes. A sibling target checkout is not a Jules workspace. Use `jules remote list|pull` and registered `workspaces/<repo>/state/<session-id>/` worktrees instead. Remote GitHub refs/PR metadata may be queried when the task names the repository, PR, session, or branch.
+- `workspaces/<repo>/state/<session-id>/` may be a registered detached or branch-attached target-repository worktree. Treat it as disposable target state, not Jules source; read `state/INDEX.yaml` for verified session/branch/base/head metadata and do not reuse a state path.
 - A directory under `workspaces/` is not automatically part of the Jules repository's implementation or review scope. Include a workspace file in a Jules commit only when it is durable Jules orchestration tooling, documentation, an index, or a curated report and the task explicitly names it. Raw session payloads, patches, detached worktrees, caches, generated files, and target-repository source copies remain local projections and must stay ignored.
 - `workspaces/<repo>/sessions/` contains local raw session material and curated summaries; `workspaces/<repo>/state/` contains disposable registered worktrees. Neither is application source.
 - CodeRabbit review commands for target-repository code run only from the corresponding localized `workspaces/<repo>/state/<session-id>/` worktree, never from an unpushed sibling checkout. Run `coderabbit review --show-prompts` only after confirming the localized worktree root, current branch/PR, and base ref.
@@ -171,3 +172,48 @@ retention boundaries rather than claiming universal coverage.
 - Run focused `trunk check --no-fix` on changed documentation and `git diff --check`.
 - Do not claim live validation unless a run URL and trace evidence were actually
   inspected.
+
+<!-- gitnexus:start -->
+# GitNexus — Code Intelligence
+
+This project is indexed by GitNexus as **jules** (4515 symbols, 6103 relationships, 151 execution flows).
+
+> Index stale? Run `node .gitnexus/run.cjs analyze --index-only` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? Bootstrap with `npx`, `bunx`, or `pnpm dlx` — e.g. `bunx gitnexus@latest analyze` (npm 11 npx crash; #1939).
+
+## Always Do
+
+- **MUST run impact before editing.** Use `impact({target: "symbolName", direction: "upstream"})` or `node .gitnexus/run.cjs impact "symbolName" --direction upstream --repo .`; report callers, processes, and risk. Never substitute grep for graph analysis.
+- **MUST analyze graph changes before committing.** Use `detect_changes({scope: "all"})` (MCP) or `node .gitnexus/run.cjs detect-changes --scope all --repo .` (CLI fallback). `partial: true` or `truncated: true` is not a clean check — a zero means unseen, not unaffected; re-run it. For regression review: `detect_changes({scope: "compare", base_ref: "main"})` or `node .gitnexus/run.cjs detect-changes --scope compare --base-ref "main" --repo .`.
+- MUST warn on HIGH/CRITICAL `risk` pre-edit; never use `riskSharedAxes` to waive a HIGH/CRITICAL `risk` warning. Compare File/symbol: MCP File omits axes; Graph-RAG expands File.
+- **MUST treat `risk: UNKNOWN` as unresolved, not as low.** An empty caller set is not evidence the symbol is unused — it can also mean the callers are not resolvable by the index (plain-object property access, dynamic dispatch, cross-language calls). `impact` pairs `UNKNOWN` with a `riskNote` saying so. Confirm with a text search before treating the symbol as safe to change or delete; do not proceed on the strength of a zero.
+- **MUST use `query({search_query: "concept"})` for concepts/flows, `context({name: "symbolName"})` for a named symbol, or `impact` for blast radius, on read-only callers, dependencies, imports, or execution flow.** Graph first; text search only for empty/`UNKNOWN`/literals.
+- For security review, `explain({target: "fileOrSymbol"})` lists taint findings (source→sink flows; needs `analyze --pdg`).
+
+## Never Do
+
+- NEVER edit a function, class, or method before MCP/CLI impact analysis.
+- NEVER ignore HIGH or CRITICAL risk warnings from impact analysis, and never read `UNKNOWN` as an all-clear — it means the walk could not answer, which is the one verdict that requires confirming by other means.
+- NEVER rename symbols with find-and-replace — use `rename` which understands the call graph.
+- NEVER commit before MCP/CLI graph change analysis.
+
+## Resources
+
+| Resource | Use for |
+| --- | --- |
+| `gitnexus://repo/jules/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/jules/clusters` | All functional areas |
+| `gitnexus://repo/jules/processes` | All execution flows |
+| `gitnexus://repo/jules/process/{name}` | Step-by-step execution trace |
+
+## CLI
+
+| Task | Read this skill file |
+| --- | --- |
+| Understand architecture / "How does X work?" | `.claude/skills/gitnexus-exploring/SKILL.md` |
+| Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus-impact-analysis/SKILL.md` |
+| Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus-debugging/SKILL.md` |
+| Rename / extract / split / refactor | `.claude/skills/gitnexus-refactoring/SKILL.md` |
+| Tools, resources, schema reference | `.claude/skills/gitnexus-guide/SKILL.md` |
+| Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus-cli/SKILL.md` |
+
+<!-- gitnexus:end -->

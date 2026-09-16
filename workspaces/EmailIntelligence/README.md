@@ -23,7 +23,8 @@ workspaces/EmailIntelligence/
 │   ├── JULES_FINAL_MESSAGE*.md  # Drafts for final message
 │   ├── JULES_UPDATE_MESSAGE.md
 │   └── SESSION_GUIDANCE_REPORT.md
-└── state/            # Per-session editable worktrees, isolated by branch
+├── state/INDEX.yaml  # Tracked session/worktree coordination metadata
+└── state/<session-id>/ # Ignored editable worktrees, isolated by branch
 ```
 
 ## Canonical paths and operations
@@ -38,13 +39,21 @@ in place during this pass;
 see the migration note in `docs/README.md` before relocating any dirty worktree.
 
 ```bash
+# Run from /home/masum/github/remote/jules.
 jules remote list --repo
 jules remote list --session
-jules remote pull --session <session-id>
+mkdir -p workspaces/EmailIntelligence/sessions/<session-id>
+jules remote pull --session <session-id> \\
+  > workspaces/EmailIntelligence/sessions/<session-id>/pull.diff
 jules teleport <session-id>
-git -C /home/masum/github/remote/EmailIntelligence worktree add \\
-  /home/masum/github/remote/jules/workspaces/EmailIntelligence/state/<session-id> <branch-or-commit>
+# Confirm teleport used the matching localized state worktree.
+git worktree list --porcelain
 ```
+
+Do not run `git worktree add` from the unpushed sibling checkout. If explicit
+creation is necessary, use the existing repository worktree administration and
+record the resulting path and verified base in `state/INDEX.yaml`; never reuse a
+state directory for another session or branch.
 
 `jules teleport` is available; run `jules teleport --help` for current options.
 The canonical remote is `https://github.com/MasumRab/EmailIntelligence.git`.

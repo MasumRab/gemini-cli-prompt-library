@@ -1,0 +1,26 @@
+# Schema for tracked per-repository Jules state indexes.
+version: 1
+required:
+  - version
+  - repository
+  - canonical_remote
+  - workspace
+  - worktree_root
+  - sessions
+session_required:
+  - session_id
+  - role
+  - worktree
+  - branch
+  - base_ref
+  - status
+fields:
+  branch: existing remote branch name or null for detached inspection
+  base_ref: verified commit/ref used to create the worktree
+  status: detached_inspection | active_repair | pushed | blocked | superseded
+  artifact_dir: ignored relative session artifact directory or null
+rules:
+  - Track this metadata schema and INDEX.yaml files.
+  - Ignore worktree contents, patches, caches, logs, credentials, and raw API/SDK exports.
+  - Record a branch or pushed state only after verifying it against the target remote.
+  - One index entry identifies one repository/session/worktree; do not reuse entries.

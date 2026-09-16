@@ -42,9 +42,10 @@ activities_*.json
 # Put durable findings and curated summaries in workspaces/<repo>/analysis/.
 # Keep the entire sessions directory ignored; do not store tracked summaries here.
 /workspaces/*/sessions/
-# Per-session state contains disposable registered worktrees. Keep the state
-# directory itself visible; only its contents are ignored.
+# Per-session state contains disposable registered worktrees. Track only the
+# portable coordination index; ignore each materialized worktree's contents.
 /workspaces/*/state/*/**
+!/workspaces/*/state/INDEX.yaml
 # Workspace-local caches, generated output, and temporary exports.
 .jules/cache/**
 /workspaces/*/.cache/**

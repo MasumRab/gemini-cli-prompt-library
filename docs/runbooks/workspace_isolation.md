@@ -17,10 +17,11 @@ is named after the repo (not the owner). The jules repo itself uses its own
 
 ```text
 workspaces/<repo-name>/
-├── sessions/        read-only projections (materialized via sync)
-├── analysis/        local findings — disposable, never committed
-├── prompts/         sent_responses.md (the prompt log)
-└── state/           per-agent scratch (patches, worktrees)
+├── sessions/        fully ignored raw session projections
+├── analysis/        tracked findings and summaries
+├── prompts/         sent_responses.md and message proposals
+├── state/INDEX.yaml tracked session/worktree coordination metadata
+└── state/<id>/      ignored per-session worktree
 ```
 
 Examples:
@@ -44,9 +45,10 @@ Examples:
    ```
 3. **Scratch hygiene.** Scratch artifacts never live in repo root or `/tmp`
    alone. Promote anything valuable to `analysis/`.
-4. **Parallel-agent etiquette.** Each agent uses its own `state/` subdir; the
-   `sessions/` and `prompts/` dirs are append-safe (SQLite handles concurrency,
-   and `sent_responses.md` is append-only).
+4. **Parallel-agent etiquette.** Each agent uses its own `state/<session-id>/`
+   subdir; `state/INDEX.yaml` records only verified portable metadata. The
+   materialized worktree contents and `sessions/` are ignored local state;
+   `prompts/sent_responses.md` is append-only when tracked.
 
 ## Transport fallback matrix
 

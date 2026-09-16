@@ -14,6 +14,7 @@ jules/workspaces/
     ├── sessions/<session-id>/        # fully ignored raw session projections
     ├── analysis/                     # tracked findings, summaries, and reports
     ├── prompts/                      # tracked message proposals/logs
+    ├── state/INDEX.yaml              # tracked session/worktree coordination state
     └── state/<session-id>/           # ignored registered editable worktree
 ```
 
@@ -27,9 +28,10 @@ Current repository projections:
 Each `<repo>` directory is only a local Jules operations namespace. Its
 `sessions/` is fully ignored: raw pulls, patches, REST/SDK exports, summaries,
 and generated session state are local-only projections. Move durable findings to
-`analysis/`. `state/` contains disposable worktrees and is also ignored. Only
-explicitly curated analysis, prompt logs, indexes, and workspace documentation
-outside those directories may be tracked. Raw patches, generated files, caches,
+`analysis/`. `state/INDEX.yaml` is tracked coordination metadata; the
+materialized `state/<session-id>/` worktrees remain ignored. Only explicitly
+curated analysis, prompt logs, indexes, and workspace documentation outside
+those disposable directories may be tracked. Raw patches, generated files, caches,
 temporary files, and target-source copies must remain ignored.
 
 ## Repository and review boundary

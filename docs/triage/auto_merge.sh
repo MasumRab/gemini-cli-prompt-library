@@ -6,8 +6,11 @@
 set -euo pipefail
 
 DRY_RUN="${1:---no-dry-run}"
-REPO_DIR="/home/masum/github/remote/EmailIntelligence"
-JULES_SCRIPTS_DIR="/home/masum/github/remote/jules/jules-scratch"
+# Historical target-repo automation. This script must not touch an unpushed
+# sibling checkout unless the operator explicitly authorizes that target and
+# confirms it is clean. Prefer gh/remote refs and a localized state worktree.
+REPO_DIR="${REPO_DIR:?Set REPO_DIR to an explicitly authorized clean target checkout}"
+JULES_SCRIPTS_DIR="${JULES_SCRIPTS_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
 
 merge_pr() {
     local pr_number="$1"

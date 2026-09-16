@@ -45,7 +45,8 @@ source tree and not a substitute for the target repository checkout.
 
 ### Scope and review boundary
 
-- Never explore, edit, test, or stage an unpushed sibling checkout such as `/home/masum/github/remote/EmailIntelligence`. It may contain unrelated user changes.
+- Never explore, edit, test, or stage an unpushed sibling checkout such as `/home/masum/github/remote/EmailIntelligence` by default. It may contain unrelated user changes. The sibling path is the canonical target checkout, not a Jules workspace or a safe default worktree.
+- `workspaces/EmailIntelligence/state/<session-id>/` is a registered localized worktree projection for session inspection/fixes; it may contain detached or branch-attached copies of the target repository. It is not Jules source and its contents are ignored. Use `state/INDEX.yaml` to identify verified ownership/base/head metadata.
 - For target-repository work, use `jules remote list|pull` and the localized `workspaces/<repo>/state/<session-id>/` worktree. Verify its root, branch, PR, and base ref before acting.
 - Running `coderabbit review` anywhere under this Jules checkout—including `workspaces/`—reviews Jules repository changes. It does **not** review the target repository represented by a workspace folder.
 - Do not include workspace files in a Jules commit unless they are explicitly named durable orchestration docs/tooling, an index, or a curated report. Raw artifacts, patches, target-source copies, detached worktrees, caches, generated output, and temporary exports are excluded and ignored.

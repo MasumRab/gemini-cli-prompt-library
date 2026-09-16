@@ -1,0 +1,54 @@
+# Tracked session-state index for EmailIntelligence.
+# The directories named by session ID are disposable registered Git worktrees;
+# this file is the portable coordination state agents should read first.
+version: 1
+repository: MasumRab/EmailIntelligence
+canonical_remote: https://github.com/MasumRab/EmailIntelligence.git
+workspace: workspaces/EmailIntelligence
+worktree_root: workspaces/EmailIntelligence/state
+sessions:
+  - session_id: "12998852914377637541"
+    role: inspection
+    worktree: state/12998852914377637541
+    branch: null
+    base_ref: 0859e07
+    status: detached_inspection
+    artifact_dir: sessions/12998852914377637541
+  - session_id: "15849735980747386761"
+    role: inspection
+    worktree: state/15849735980747386761
+    branch: null
+    base_ref: 0859e07
+    status: detached_inspection
+    artifact_dir: sessions/15849735980747386761
+  - session_id: "18095420007057529466"
+    role: inspection
+    worktree: state/18095420007057529466
+    branch: null
+    base_ref: 0859e07
+    status: detached_inspection
+    artifact_dir: sessions/18095420007057529466
+  - session_id: "2960310825137265296"
+    role: inspection
+    worktree: state/2960310825137265296
+    branch: null
+    base_ref: 0859e07
+    status: detached_inspection
+    artifact_dir: sessions/2960310825137265296
+  - session_id: "596003508416904399"
+    role: inspection
+    worktree: state/596003508416904399
+    branch: null
+    base_ref: 0859e07
+    status: detached_inspection
+    artifact_dir: sessions/596003508416904399
+  - session_id: "session-audit-20260916"
+    role: audit
+    worktree: state/session-audit-20260916
+    branch: null
+    base_ref: 0859e07
+    status: detached_inspection
+    artifact_dir: null
+
+# Update this index only with verified refs. Never record credentials, raw API
+# payloads, or claims of a push without a remote SHA and command evidence.
