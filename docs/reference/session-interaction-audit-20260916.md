@@ -124,7 +124,7 @@ Read-only commands run exactly as `jules remote pull --session ID`; no `--apply`
 | `12339942557859330507` | no diff/chat-only | `No diff found in the remote VM.` (exit 0) | `/tmp/session-artifacts-12339942557859330507.txt` |
 | `4786476835892279965` | no diff/chat-only | `No diff found in the remote VM.` (exit 0) | `/tmp/session-artifacts-4786476835892279965.txt` |
 | `16610982362272230087` | no diff/chat-only | `No diff found in the remote VM.` (exit 0) | `/tmp/session-artifacts-16610982362272230087.txt` |
-| `18022420007057529457` | error | `Error: api error: status 404 ... Requested entity was not found.` (exit 0) | `/tmp/session-artifacts-18022420007057529457.txt` |
+| `18022420007057529457` | invalid lookup (mistyped ID; tracked session is `18022405513725949457`) | `Error: api error: status 404 ... Requested entity was not found.` (exit 0) | `/tmp/session-artifacts-18022420007057529457.txt` |
 | `18022405513725949457` | no diff/chat-only | `No diff found in the remote VM.` (exit 0) | `/tmp/session-artifacts-18022405513725949457.txt` |
 | `2960310825137265296` | pullable diff | `diff --git ...` (non-empty patch; exit 0) | `/tmp/session-artifacts-2960310825137265296.txt` |
 | `596003508416904399` | pullable diff | `diff --git ...` (non-empty patch; exit 0) | `/tmp/session-artifacts-596003508416904399.txt` |

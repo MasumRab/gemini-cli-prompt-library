@@ -24,6 +24,7 @@ import os
 import sys
 import time
 from pathlib import Path
+from urllib.parse import quote
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -53,6 +54,11 @@ def _api() -> JulesAPIClient:
 
 def _print_json(data) -> None:
     print(json.dumps(data, indent=2, default=str))
+
+
+def _safe_branch_key(key: str) -> str:
+    """Encode a branch key injectively for use in a filename."""
+    return quote(key, safe="")
 
 
 # ---------------------------------------------------------------------------
@@ -98,7 +104,7 @@ def cmd_download(args: argparse.Namespace) -> None:
     summary_lines: list[str] = []
 
     for key, group in sorted(group_by_branch(sessions).items()):
-        safe_key = key.replace("/", "__").replace("\\", "__")
+        safe_key = _safe_branch_key(key)
         combined = out_dir / f"{safe_key}-all-reviews.md"
         with open(combined, "w") as f:
             for s in group:
@@ -200,7 +206,7 @@ def cmd_aggregate(args: argparse.Namespace) -> None:
 
     targets: list[dict] = []
     for key, latest in sorted(latest_map.items()):
-        safe = key.replace("/", "__").replace("\\", "__")
+        safe = _safe_branch_key(key)
         review_file = reviews_dir / f"{safe}-all-reviews.md"
         has_file = review_file.exists()
         targets.append(

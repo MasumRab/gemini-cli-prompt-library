@@ -7,7 +7,7 @@ Every completed session should undergo an automated safety audit before manual r
 
 **Run the auditor:**
 ```bash
-python3 -m tools.pr.jules_audit_session_pr --session <SESSION_ID>
+uv run python -m tools.pr.jules_audit_session_pr --session <SESSION_ID>
 ```
 
 ### Safety Triggers (Blocking)

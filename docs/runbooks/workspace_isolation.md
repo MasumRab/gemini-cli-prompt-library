@@ -63,8 +63,8 @@ All transports write into the same workspace layout.
 
 1. Check `session_tracking/YYYY/MM/` for a JSON/YAML pair.
 2. Query the store: `SELECT session_id FROM sessions WHERE repo='<repo-name>'`
-3. List live: `python3 tools/sessions/jules_list_sessions.py --repo <repo-name>`
-4. Last resort: `python3 tools/sessions/sync_all_sessions.py` then retry.
+3. List live: `uv run python -m tools.sessions.jules_list_sessions --repo <repo-name> --json`
+4. Last resort: `uv run python -m tools.sessions.sync_all_sessions` then retry.
 
 ## Session Worktree Checkout
 
@@ -78,21 +78,27 @@ pushes) return "No diff found". The session type does not matter; whether the
 session pushed changes does.
 
 ```bash
-# Inspect the patch (no changes applied)
-jules remote pull --session <session_id> > /tmp/session-patch.diff
+# Inspect the patch (no changes applied); keep raw output in the ignored workspace
+mkdir -p workspaces/<repo>/sessions/<session_id>
+jules remote pull --session <session_id> \
+  > workspaces/<repo>/sessions/<session_id>/pull.diff
 
-# Apply to local repo (review the patch FIRST)
+# Apply only after verifying a clean localized worktree
+ git -C workspaces/<repo>/state/<session_id> status --short
 jules remote pull --session <session_id> --apply
 ```
 
 ### Worktree-based manual fix (for conflicts the session cannot resolve)
 
 ```bash
-# 1. Create isolated worktree from the PR branch
-git worktree add wt/pr-fix/pr-$pr origin/$branch -b fix/pr-$pr-rebase
+# 1. Create isolated worktree from the PR branch under the Jules workspace
+mkdir -p workspaces/<repo>/state
+git worktree add \
+  workspaces/<repo>/state/session-$pr-fix \
+  origin/$branch -b fix/pr-$pr-rebase
 
 # 2. Merge current base to surface conflicts
-cd wt/pr-fix/pr-$pr
+cd workspaces/<repo>/state/session-$pr-fix
 git merge origin/$base --no-edit
 
 # 3. Resolve per hunk (3-way: merge-base, ours, theirs) — never checkout --ours/--theirs wholesale
@@ -110,17 +116,17 @@ lockfile predates dependency updates on main, so its "conflict resolution"
 regresses dependency state. Identify and discard:
 
 ```bash
-# What changed on main since the session's snapshot?
-git diff $(git merge-base HEAD origin/main)..origin/main -- <lockfile>
+# What changed on the actual target base since the session's snapshot?
+git diff $(git merge-base HEAD origin/$base)..origin/$base -- <lockfile>
 
 # If the session's lockfile changes are pure snapshot noise (no intentional
-# dependency changes in the PR scope), take MAIN's version:
-git checkout origin/main -- <lockfile>
+# dependency changes in the PR scope), take the verified target-base version:
+git restore --source=origin/$base -- <lockfile>
 ```
 
-Take main's lockfile when the PR does not intentionally change dependencies.
-Take the session's version only when the PR's scope explicitly includes
-dependency updates — then regenerate the lockfile from the manifest
+Take `origin/$base`'s lockfile when the PR does not intentionally change
+dependencies. Take the session's version only when the PR's scope explicitly
+includes dependency updates — then regenerate the lockfile from the manifest
 (`npm install` / `uv lock`) rather than hand-merging.
 
 ### Extracting file content not present in activities/messages

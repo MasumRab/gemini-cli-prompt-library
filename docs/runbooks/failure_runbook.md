@@ -22,7 +22,7 @@ First, determine why the session failed. Was it a bash command error? A linter f
 Use the activities list to find the last action:
 
 ```bash
-python tools/sessions/jules_list_activities.py <SESSION_ID>
+uv run python -m tools.sessions.jules_list_activities <SESSION_ID>
 ```
 
 Look for the `progressUpdated` or `artifacts.bashOutput.exitCode` in the most recent activities.
@@ -39,7 +39,7 @@ Look for the `progressUpdated` or `artifacts.bashOutput.exitCode` in the most re
 If the session is still active but stuck, or if you want to course-correct Jules before it completes:
 
 ```bash
-python tools/sessions/jules_send_message.py <SESSION_ID> "Your recovery prompt here"
+uv run python -m tools.sessions.jules_send_message <SESSION_ID> "Your recovery prompt here"
 ```
 
 ### Effective Prompting for Recovery
@@ -57,7 +57,7 @@ If Jules repeatedly fails or introduces regressions, it may be operating on outd
 
 **Diagnosis Workflow:**
 
-1. Run `python tools/sessions/jules_list_activities.py <SESSION_ID> --raw | grep -i "planGenerated"`
+1. Run `uv run python -m tools.sessions.jules_list_activities <SESSION_ID> --raw | grep -i "planGenerated"`
 2. If Jules says "I will add X to `old_file.py`" but `old_file.py` was renamed to `new_file.py` days ago, Jules is using outdated memory.
 
 **Resolution Strategy (Via `sendMessage`):**

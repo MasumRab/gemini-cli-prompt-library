@@ -39,7 +39,8 @@ activities_*.json
 # Canonical Jules workspace policy
 # Session projections are local-only: raw pulls, patches, REST/SDK exports,
 # summaries, and generated session state never belong in the Jules repo.
-# Put durable findings in workspaces/<repo>/analysis/ instead.
+# Put durable findings and curated summaries in workspaces/<repo>/analysis/.
+# Keep the entire sessions directory ignored; do not store tracked summaries here.
 /workspaces/*/sessions/
 # Per-session state contains disposable registered worktrees. Keep the state
 # directory itself visible; only its contents are ignored.

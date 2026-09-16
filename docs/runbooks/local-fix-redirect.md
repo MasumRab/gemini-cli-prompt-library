@@ -32,7 +32,7 @@ uv run python3 -m tools.sessions.jules_list_sessions --state FAILED AWAITING_USE
 
 | Need | Command | Result |
 |------|---------|--------|
-| Inspect only | `jules remote pull --session <id> > workspaces/<repo>/sessions/<id>/pull.diff` | Session diff to ignored local storage |
+| Inspect only | `mkdir -p workspaces/<repo>/sessions/<id> && jules remote pull --session <id> > workspaces/<repo>/sessions/<id>/pull.diff` | Session diff to ignored local storage |
 | **Editable isolated copy (recommended)** | `jules teleport <id>` | Create/inspect only under the matching `workspaces/<repo>/state/<id>/` worktree |
 | Apply into an existing worktree | `git -C workspaces/<repo>/state/<id> status --short` then `jules remote pull --session <id> --apply` | First require an empty status. Apply only inside the verified target-repo worktree under `workspaces/<repo>/state/`, **never** an unpushed sibling or canonical checkout; stop if status is not clean |
 

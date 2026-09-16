@@ -17,13 +17,13 @@ commands/jules_audit.sh <SESSION_ID>
 ## Stage 3: Sequence Planning
 Identify PRs that passed the audit and determine their dependency sequence. Add them to the rebase queue:
 ```bash
-python tools/rebase/jules_rebase_orchestrator.py --add "jules-xxxxx-yyyyy"
+uv run python -m tools.rebase.jules_rebase_orchestrator --add "jules-xxxxx-yyyyy"
 ```
 
 ## Stage 4: Safe Rebase
 Execute the rebase orchestration. The orchestrator will attempt a `git merge-tree` or safe rebase, followed by a post-rebase `pytest` verification.
 ```bash
-python tools/rebase/jules_rebase_orchestrator.py --limit 1
+uv run python -m tools.rebase.jules_rebase_orchestrator --limit 1
 ```
 
 ## Stage 5: Record Keeping

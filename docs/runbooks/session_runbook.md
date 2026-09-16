@@ -90,17 +90,17 @@ fi
 
    ```bash
    # Find stale sessions (no activity for more than 2 hours)
-   python3 -m tools.sessions.find_stale_sessions --hours 2
+   uv run python -m tools.sessions.jules_list_sessions --state IN_PROGRESS AWAITING_USER_FEEDBACK --json
    ```
 
    ```bash
    # Find failed sessions that are retryable
-   python3 -m tools.sessions.find_retryable_failed_sessions
+   uv run python -m tools.sessions.jules_list_sessions --state FAILED --json
    ```
 
    ```bash
    # List sessions with specific labels
-   python3 -m tools.sessions.list_sessions --label "bug" --label "urgent"
+   uv run python -m tools.sessions.jules_list_sessions --state IN_PROGRESS --json
    ```
 
    These commands help identify sessions that need attention during daily triage.
@@ -110,8 +110,8 @@ fi
 | State                    | Issue                          | Action                                                                    |
 | ------------------------ | ------------------------------ | ------------------------------------------------------------------------- |
 | `FAILED`                 | Transient error                | Run recovery manager to trigger retry.                                    |
-| `PAUSED`                 | Waiting for approval           | `python3 -m tools.sessions.jules_approve_plan <SESSION_ID>`               |
-| `AWAITING_PLAN_APPROVAL` | Plan generated, needs approval | `python3 -m tools.sessions.jules_approve_plan <SESSION_ID>`               |
+| `PAUSED`                 | Waiting for approval           | `uv run python -m tools.sessions.jules_approve_plan <SESSION_ID>`               |
+| `AWAITING_PLAN_APPROVAL` | Plan generated, needs approval | `uv run python -m tools.sessions.jules_approve_plan <SESSION_ID>`               |
 | `AWAITING_USER_FEEDBACK` | Question asked                 | `python3 -m tools.sessions.jules_send_message <SESSION_ID> "Your answer"` |
 | `IN_PROGRESS`            | Session running                | Monitor — no action needed.                                               |
 | `COMPLETED`              | Needs audit                    | Recovery manager automatically triggers `jules_audit_session_pr.py`.      |
@@ -130,17 +130,17 @@ Examples:
 
 ```bash
 # Find stale sessions (no activity for more than 2 hours)
-python3 -m tools.sessions.find_stale_sessions --hours 2
+uv run python -m tools.sessions.jules_list_sessions --state IN_PROGRESS AWAITING_USER_FEEDBACK --json
 ```
 
 ```bash
 # Find failed sessions that are retryable
-python3 -m tools.sessions.find_retryable_failed_sessions
+uv run python -m tools.sessions.jules_list_sessions --state FAILED --json
 ```
 
 ```bash
 # List sessions with specific labels
-python3 -m tools.sessions.list_sessions --label "bug" --label "urgent"
+uv run python -m tools.sessions.jules_list_sessions --state IN_PROGRESS --json
 ```
 
 For more details, refer to [`docs/guides/operations.md`](../guides/operations.md).
