@@ -8,8 +8,6 @@ reviews:
     - "!.letta/**"
     - "!node_modules/**"
     - "!data/**"
-    # GitHub Actions/configuration is out of scope for this review pass.
-    - "!.github/**"
     - "!docs/forensics/migrated_forensics_data.json"
     - "!docs/forensics/session_pr_integrated_2026-08-06.json"
     - "!docs/forensics/**/*.json"

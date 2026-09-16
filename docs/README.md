@@ -77,11 +77,15 @@ The canonical layout for the four target repositories is:
 ```
 
 Raw session payloads, state, caches, and generated artifacts are ignored by the
-Jules repository. Keep only curated Markdown summaries under `sessions/<id>/`.
-Use the canonical repository for normal work and isolate each editable worktree
-by repository, session, and branch under that repository's `state/<session-id>/`.
+Jules repository. Keep durable findings and curated session summaries under the
+relevant `workspaces/<repo>/analysis/`; do not rely on ignored `sessions/<id>/`
+contents. Use the localized state worktree for target work and isolate each
+editable worktree by repository, session, and branch under that repository's
+`state/<session-id>/`. Use a canonical target checkout only when explicitly
+authorized.
 
-Typical operations (run from the canonical target repository or this repository):
+Typical operations (run from the Jules repository; target work is localized under
+`workspaces/<repo>/state/`):
 
 ```bash
 jules remote list --repo

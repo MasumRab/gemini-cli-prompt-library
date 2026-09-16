@@ -11,8 +11,9 @@ Each command maps to a former /tmp script, now parameterized:
     python -m tools.reviews.cli authorize-fix --pr 570 --session <id> --findings "..."
     python -m tools.reviews.cli refresh       --pr 775 --session <id> --current-head abc123 --reviewed-head def456
 
-All commands support --json for machine-readable output and --dry-run to
-preview without side effects.
+Commands expose options only where their subparser implements them. Check each
+subcommand's help for its supported options; delivery and authorization provide
+`--dry-run` previews.
 """
 
 from __future__ import annotations
@@ -97,7 +98,8 @@ def cmd_download(args: argparse.Namespace) -> None:
     summary_lines: list[str] = []
 
     for key, group in sorted(group_by_branch(sessions).items()):
-        combined = out_dir / f"{key}-all-reviews.md"
+        safe_key = key.replace("/", "__").replace("\\", "__")
+        combined = out_dir / f"{safe_key}-all-reviews.md"
         with open(combined, "w") as f:
             for s in group:
                 fetch_review_messages(api, s, sleep=args.sleep)
@@ -198,7 +200,7 @@ def cmd_aggregate(args: argparse.Namespace) -> None:
 
     targets: list[dict] = []
     for key, latest in sorted(latest_map.items()):
-        safe = key.replace("/", "_")
+        safe = key.replace("/", "__").replace("\\", "__")
         review_file = reviews_dir / f"{safe}-all-reviews.md"
         has_file = review_file.exists()
         targets.append(

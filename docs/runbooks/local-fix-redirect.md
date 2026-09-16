@@ -4,6 +4,11 @@ Fix a Jules session's work by making **local direct changes** to its files,
 push the corrected state back to the session's branch, and redirect the
 session to continue from that state.
 
+**Authorization gate:** Before materializing or modifying anything, record the
+explicit implementation authorization, target repository, existing PR/branch,
+base ref, and exact file scope. Review-only work may inspect and report, but
+must not edit, commit, push, or authorize implementation.
+
 ## When to use
 
 - The session produced wrong, stale, or regressed work and orchestrator-side
@@ -27,15 +32,18 @@ uv run python3 -m tools.sessions.jules_list_sessions --state FAILED AWAITING_USE
 
 | Need | Command | Result |
 |------|---------|--------|
-| Inspect only | `jules remote pull --session <id> > /tmp/patch.diff` | Session's full diff (all files it touched) to stdout |
-| **Editable isolated copy (recommended)** | `jules teleport <id>` | Clones repo → checks out the session's starting branch → applies its patch. Isolated fix surface |
-| Apply into an existing worktree | `jules remote pull --session <id> --apply` | Applies in place. Use only inside a target-repo worktree (`wt/` or `workspaces/<repo>/state/`), **never** the canonical `~/github/remote/<repo>` checkout |
+| Inspect only | `jules remote pull --session <id> > workspaces/<repo>/sessions/<id>/pull.diff` | Session diff to ignored local storage |
+| **Editable isolated copy (recommended)** | `jules teleport <id>` | Create/inspect only under the matching `workspaces/<repo>/state/<id>/` worktree |
+| Apply into an existing worktree | `jules remote pull --session <id> --apply` | Applies in place. Use only inside the verified target-repo worktree under `workspaces/<repo>/state/`, **never** an unpushed sibling or canonical checkout |
 
 Notes:
 
 - CLI pull returns a patch only for sessions that **made commits/pushes**.
   Chat-only sessions return `No diff found`.
-- The patch is the session's pushed state — its VM scratch is unreachable.
+- A pullable patch is an artifact, not proof of a current remote branch. Before
+  treating it as branch state or pushing, resolve and verify the target repo,
+  PR, branch, remote URL, base ref, and current remote head with GitHub/Git.
+- The patch is the session's exported state; its VM scratch is unreachable.
 
 ## 3. Make the local direct changes
 
