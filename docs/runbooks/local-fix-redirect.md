@@ -34,7 +34,7 @@ uv run python3 -m tools.sessions.jules_list_sessions --state FAILED AWAITING_USE
 |------|---------|--------|
 | Inspect only | `jules remote pull --session <id> > workspaces/<repo>/sessions/<id>/pull.diff` | Session diff to ignored local storage |
 | **Editable isolated copy (recommended)** | `jules teleport <id>` | Create/inspect only under the matching `workspaces/<repo>/state/<id>/` worktree |
-| Apply into an existing worktree | `jules remote pull --session <id> --apply` | Applies in place. Use only inside the verified target-repo worktree under `workspaces/<repo>/state/`, **never** an unpushed sibling or canonical checkout |
+| Apply into an existing worktree | `git -C workspaces/<repo>/state/<id> status --short` then `jules remote pull --session <id> --apply` | First require an empty status. Apply only inside the verified target-repo worktree under `workspaces/<repo>/state/`, **never** an unpushed sibling or canonical checkout; stop if status is not clean |
 
 Notes:
 
@@ -68,20 +68,46 @@ session's PR branch, then send a wake-up message:
 ```bash
 git push origin HEAD:<session-pr-branch>
 
+# Log before sending; use the repo-scoped prompt log and preserve the exact body.
+cat >> workspaces/<repo>/prompts/sent_responses.md <<'EOF'
+session_id: <session_id>
+prompt_type: local-fix-wakeup
+prompt_sent: <paste exact message below>
+outcome: pending
+EOF
 uv run python3 -m tools.sessions.jules_send_message <session_id> \
   "Wake-up: your work on <branch> needs adjustment. I pushed corrected state
-   (commit <sha>): fixed <a>, <b>. The branch now reflects current main plus
-   the fixes. Please re-verify <x>, run lint/tests, and push any follow-up.
-   Drift protocol: fetch origin main and diff \$(git merge-base HEAD
-   origin/main)..origin/main for every file you touch — never work from
-   memory or cached snapshots."
+   (commit <sha>): fixed <a>, <b>. The branch was verified at <base-ref> before
+   the fix; no claim of current-main ancestry is made unless it was merged or
+   rebased. Please fetch the target base, re-verify <x>, run lint/tests, and
+   push any follow-up.
+   Drift protocol: fetch the target base and diff \$(git merge-base HEAD
+   <base-ref>)..<base-ref> for every file you touch — never work from
+   memory or cached snapshots. Record the response outcome in the prompt log."
 ```
 
 ### Route B — the session fixes it (for explainable fixes)
 
-Send precise instructions (exact files, expected behavior, drift protocol)
-and let the session change and push its own branch. Keeps session ownership;
-always include the drift protocol for sessions with stale snapshots.
+Log the exact message before sending, then send precise instructions (exact
+files, expected behavior, target base, and drift protocol). After the send,
+append the delivery/outcome to the same repo-scoped prompt log. Let the session
+change and push its own branch; this keeps session ownership. Do not claim the
+branch contains current main unless the session explicitly merged or rebased
+that verified base. Always include the drift protocol for stale snapshots.
+
+```bash
+cat >> workspaces/<repo>/prompts/sent_responses.md <<'EOF'
+session_id: <session_id>
+prompt_type: local-fix-guidance
+prompt_sent: <paste exact message below>
+outcome: pending
+EOF
+uv run python3 -m tools.sessions.jules_send_message <session_id> \
+  "Fix only <files> for <finding>. Fetch and verify <base-ref> first; report
+   current head, base, checks, and push SHA. Do not claim current-main ancestry
+   unless you merge or rebase it. Record delivery outcome in the prompt log."
+```
+
 
 ## 5. Verify — against GitHub, never the session's claims
 
