@@ -23,8 +23,50 @@ workspaces/EmailIntelligence/
 │   ├── JULES_FINAL_MESSAGE*.md  # Drafts for final message
 │   ├── JULES_UPDATE_MESSAGE.md
 │   └── SESSION_GUIDANCE_REPORT.md
-└── state/            # Per-agent scratch (patches, worktrees)
+└── state/            # Per-session editable worktrees, isolated by branch
 ```
+
+## Canonical paths and operations
+
+The canonical checkout is `/home/masum/github/remote/EmailIntelligence`.
+Raw Jules artifacts belong under `sessions/<session-id>/`; the entire
+`sessions/` directory is local-only and ignored. Move durable findings to
+`analysis/`. Disposable editable worktrees belong at
+`/home/masum/github/remote/jules/workspaces/EmailIntelligence/state/<session-id>/`,
+with one branch per session. Existing registered worktrees are intentionally left
+in place during this pass;
+see the migration note in `docs/README.md` before relocating any dirty worktree.
+
+```bash
+jules remote list --repo
+jules remote list --session
+jules remote pull --session <session-id>
+jules teleport <session-id>
+git -C /home/masum/github/remote/EmailIntelligence worktree add \\
+  /home/masum/github/remote/jules/workspaces/EmailIntelligence/state/<session-id> <branch-or-commit>
+```
+
+`jules teleport` is available; run `jules teleport --help` for current options.
+The canonical remote is `https://github.com/MasumRab/EmailIntelligence.git`.
+
+### Review boundary
+
+This README is Jules orchestration documentation tracked in the Jules
+repository. Running CodeRabbit from `/home/masum/github/remote/jules`—including
+from this workspace directory—reviews Jules repository changes, not
+EmailIntelligence source. Do not `cd` into a workspace artifact directory and
+mistake it for a target checkout.
+
+For target-session inspection, use `jules remote list|pull` and the registered
+localized `state/<session-id>/` worktree. A target review may run there only
+after verifying its Git root, branch/PR, base ref, and task. Do not read, edit,
+test, or stage the unpushed sibling `/home/masum/github/remote/EmailIntelligence`
+by default; it may contain unrelated user changes. Workspace `sessions/`,
+`state/`, caches, generated files, and temporary exports are disposable and
+ignored; they are not application source and must not be included in a Jules
+review or repair. Use `git status --short --ignored` and `git check-ignore` to
+confirm the boundary. Review findings are hypotheses: verify each path against
+the current localized target worktree before editing.
 
 ## Key Context
 

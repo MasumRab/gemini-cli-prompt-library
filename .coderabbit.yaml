@@ -1,15 +1,17 @@
 reviews:
   path_filters:
     - "**"
-    - "!*.md"
-    - "!*.json"
-    - "!*.db"
-    - "!*.txt"
-    - "!*.lock"
-    - "!*.bak"
+    # Keep repository instructions and review configuration visible to review.
+    # Do not broadly exclude Markdown, JSON, TXT, or lockfiles.
+    # Workspace projections are local session state, not Jules source.
+    - "!workspaces/**"
+    - "!.letta/**"
+    - "!node_modules/**"
     - "!data/**"
-    - "!.github/emailintelligence/**"
+    # GitHub Actions/configuration is out of scope for this review pass.
+    - "!.github/**"
     - "!docs/forensics/migrated_forensics_data.json"
     - "!docs/forensics/session_pr_integrated_2026-08-06.json"
     - "!docs/forensics/**/*.json"
-    - "!data/**/*.json"
+    - "!*.db"
+    - "!*.bak"

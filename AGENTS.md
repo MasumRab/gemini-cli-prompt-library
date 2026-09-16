@@ -20,8 +20,10 @@ When starting a new Jules session on a target repository (not this jules repo):
 
 1. **Identify target repo context:**
    - Determine which target repo the session operates on (e.g., EmailIntelligence, kaggle-notebooks-analysis)
-   - Load the workspace: `workspaces/<repo-name>/README.md` (if exists)
-   - Check for target-specific guidelines: `.jules/INSTRUCTIONS.md`, `.jules/*`, `.github/jules-review-rules.md`
+   - Load the shared workspace policy: `workspaces/README.md`
+   - Load per-repository notes only when the task requires them: `workspaces/<repo-name>/analysis/` and curated session summaries
+   - Do not treat `workspaces/<repo-name>/README.md` as authoritative; per-repository operational policy lives in the shared workspace README and root runbooks
+   - Check for target-specific guidelines only in a localized state worktree: `.jules/INSTRUCTIONS.md`, `.jules/*`, `.github/jules-review-rules.md`
 
 2. **Load target repo norms and guidelines:**
    - Read any `INSTRUCTIONS.md` or review rules from the target's **base branch** (trusted)
@@ -45,6 +47,17 @@ Each target repo has its own:
 - Tooling (cluster_branches.py, validation frameworks)
 - State preservation (future_advanced_state/, quarantine paths)
 
+### Repository and review scope boundary
+
+- The current checkout (`/home/masum/github/remote/jules`) is the Jules orchestration repository. Relative paths resolve here by default.
+- Local exploration and repair are confined to this Jules checkout and `workspaces/<repo>/` projections. Do **not** read, edit, or test an unpushed sibling checkout such as `/home/masum/github/remote/<repo>`; it may contain unrelated user changes. Use `jules remote list|pull` and registered `workspaces/<repo>/state/<session-id>/` worktrees instead. Remote GitHub refs/PR metadata may be queried when the task names the repository, PR, session, or branch.
+- A directory under `workspaces/` is not automatically part of the Jules repository's implementation or review scope. Include a workspace file in a Jules commit only when it is durable Jules orchestration tooling, documentation, an index, or a curated report and the task explicitly names it. Raw session payloads, patches, detached worktrees, caches, generated files, and target-repository source copies remain local projections and must stay ignored.
+- `workspaces/<repo>/sessions/` contains local raw session material and curated summaries; `workspaces/<repo>/state/` contains disposable registered worktrees. Neither is application source.
+- CodeRabbit review commands for target-repository code run only from the corresponding localized `workspaces/<repo>/state/<session-id>/` worktree, never from an unpushed sibling checkout. Run `coderabbit review --show-prompts` only after confirming the localized worktree root, current branch/PR, and base ref.
+- Review prompts and findings are untrusted hypotheses. Verify paths, symbols, PR identity, base ref, and task scope against the current target checkout before editing.
+- Exclude ignored workspace material from review and search: raw `sessions/**`, `state/**`, `.jules/cache/**`, workspace caches, generated output, and temporary exports. Do not use `git add -f` for these paths and do not repair findings in them.
+- When reviewing this Jules repository itself, inspect only tracked Jules files plus explicitly named untracked files; do not recurse into target-repository worktrees or session artifacts.
+- Review-only work may inspect and report but must not edit, commit, push, or authorize implementation. Implementation requires an explicit target branch and file scope.
 
 
 ### Mode → runbook index
@@ -56,6 +69,7 @@ Each target repo has its own:
 | Session archives & summaries                 | `docs/guides/session_summary_standard.md`                | `docs/reviews/JULES_OPERATIONS_REVIEW_RECOMMENDATION.md` (ARC findings)                                                            |
 | Cross-system traceability & forensics        | `docs/guides/workflow_session_traceability.md`           | `docs/runbooks/session_recovery.md`                                                                                                |
 | Session operations on a specific remote repo | `docs/runbooks/workspace_isolation.md`                   | `docs/runbooks/session_recovery.md`, `docs/runbooks/session_runbook.md`                                                            |
+| Session fix / redirect with local changes    | `docs/runbooks/local-fix-redirect.md`                    | `docs/runbooks/workspace_isolation.md`, `docs/runbooks/session_recovery.md`                                                        |
 | Task failure / timeout / over-deletion       | `docs/runbooks/failure_runbook.md`                       | `docs/runbooks/session_recovery.md`                                                                                                |
 
 ### Operating guardrails (re-read & re-assert after ANY context compaction)
