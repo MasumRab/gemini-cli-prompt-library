@@ -12,7 +12,7 @@ dependencies = [
     "requests==2.32.3",
     "dspy>=3.1.2",
     "datasets==4.1.1",
-    "urllib3==2.3.0",
+    "urllib3>=2.5.0,<3",
     "cloudpickle==3.1.0",
     "pyyaml>=6.0",
     "toml>=0.10.2",
