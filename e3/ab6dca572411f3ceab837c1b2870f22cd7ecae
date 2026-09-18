@@ -1,0 +1,24 @@
+dspy_integration/framework/optimizers/bootstrap.py
+  h_f89acae1eff7fb 2
+pyproject.toml
+  h_f89acae1eff7fb 15
+requirements.txt
+  h_f89acae1eff7fb 4
+scripts/generate_manifest.py
+  h_f89acae1eff7fb 31
+tools/api/jules_api_client.py
+  h_f89acae1eff7fb 45
+uv.lock
+  h_f89acae1eff7fb 553,2692,2694,2696
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "e3ab6dca572411f3ceab837c1b2870f22cd7ecae",
+  "prompts": {},
+  "humans": {
+    "h_f89acae1eff7fb": {
+      "author": "MasumRab <masum.rab@gmail.com>"
+    }
+  }
+}
