@@ -273,15 +273,32 @@ For OpenCode Go, the provider must additionally:
 from typing import Optional
 from dspy_helm.providers.base import BaseProvider, ProviderResponse, RateLimitConfig
 
-class OpenCodeGoProvider(BaseProvider):
-    ANTHROPIC_MODELS = {"minimax-m3", "minimax-m2.7", "minimax-m2.5",
-                        "qwen3.8-max", "qwen3.7-max", "qwen3.7-plus", "qwen3.6-plus", "qwen3.5-plus"}
 
-    def __init__(self, model: str = "deepseek-v4-flash",
-                 api_key: Optional[str] = None,
-                 rate_limit: Optional[RateLimitConfig] = None):
-        super().__init__(name="OpenCode Go", command="api",
-                         subcommand="opencode_go", model=model, rate_limit=rate_limit)
+class OpenCodeGoProvider(BaseProvider):
+    ANTHROPIC_MODELS = {
+        "minimax-m3",
+        "minimax-m2.7",
+        "minimax-m2.5",
+        "qwen3.8-max",
+        "qwen3.7-max",
+        "qwen3.7-plus",
+        "qwen3.6-plus",
+        "qwen3.5-plus",
+    }
+
+    def __init__(
+        self,
+        model: str = "deepseek-v4-flash",
+        api_key: Optional[str] = None,
+        rate_limit: Optional[RateLimitConfig] = None,
+    ):
+        super().__init__(
+            name="OpenCode Go",
+            command="api",
+            subcommand="opencode_go",
+            model=model,
+            rate_limit=rate_limit,
+        )
         self.api_key = api_key or os.environ.get("OPENCODE_API_KEY", "")
         self.base_url = "https://opencode.ai/zen/go/v1"
         self.is_anthropic = model in self.ANTHROPIC_MODELS

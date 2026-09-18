@@ -16,6 +16,7 @@ AI coding agents (Claude Code, Amp, OpenCode, Gemini CLI, etc.) run commands wit
 ```python
 # ❌ This HANGS when run by an AI agent:
 from InquirerPy import inquirer
+
 result = inquirer.select(message="Choose:", choices=["A", "B"]).execute()
 ```
 
@@ -36,19 +37,20 @@ When an AI agent runs this code:
 import os
 import sys
 
+
 def is_agentic() -> bool:
     """Detect if running under an AI coding agent or CI."""
-    
+
     # TTY checks (most reliable)
     if not sys.stdin.isatty():
         return True
     if not sys.stdout.isatty():
         return True
-    
+
     # Terminal type
     if os.environ.get("TERM") in ("dumb", ""):
         return True
-    
+
     # Known agent/CI environment variables
     agent_vars = {
         "AGENT_MODE": "1",
@@ -57,12 +59,13 @@ def is_agentic() -> bool:
         "GITLAB_CI": "true",
         "NONINTERACTIVE": "1",
     }
-    
+
     for var, expected in agent_vars.items():
         if os.environ.get(var) == expected:
             return True
-    
+
     return False
+
 
 def is_interactive() -> bool:
     """Inverse of is_agentic()."""
@@ -78,6 +81,7 @@ from .agentic import is_agentic
 
 T = TypeVar("T")
 
+
 def smart_select(
     message: str,
     choices: List[T],
@@ -88,37 +92,45 @@ def smart_select(
         if default is not None:
             return default
         return choices[0]  # First choice as fallback
-    
+
     from InquirerPy import inquirer
+
     return inquirer.select(
         message=message,
         choices=choices,
         default=default,
     ).execute()
 
+
 def smart_confirm(message: str, default: bool = True) -> bool:
     """Confirm prompt. Uses default in agentic mode."""
     if is_agentic():
         return default
-    
+
     from InquirerPy import inquirer
+
     return inquirer.confirm(message=message, default=default).execute()
+
 
 def smart_text(message: str, default: str = "") -> str:
     """Text input. Uses default in agentic mode."""
     if is_agentic():
         return default
-    
+
     from InquirerPy import inquirer
+
     return inquirer.text(message=message, default=default).execute()
+
 
 def smart_password(message: str) -> str:
     """Password input. Returns empty in agentic mode."""
     if is_agentic():
         return ""  # Or raise an error
-    
+
     from InquirerPy import inquirer
+
     return inquirer.secret(message=message).execute()
+
 
 def smart_fuzzy(
     message: str,
@@ -128,13 +140,15 @@ def smart_fuzzy(
     """Fuzzy search select. Uses default in agentic mode."""
     if is_agentic():
         return default or choices[0]
-    
+
     from InquirerPy import inquirer
+
     return inquirer.fuzzy(
         message=message,
         choices=choices,
         default=default,
     ).execute()
+
 
 def smart_checkbox(
     message: str,
@@ -144,13 +158,15 @@ def smart_checkbox(
     """Multi-select. Uses defaults in agentic mode."""
     if is_agentic():
         return defaults or []
-    
+
     from InquirerPy import inquirer
+
     return inquirer.checkbox(
         message=message,
         choices=choices,
         default=defaults,
     ).execute()
+
 
 def smart_filepath(
     message: str,
@@ -160,8 +176,9 @@ def smart_filepath(
     """File path input. Uses default in agentic mode."""
     if is_agentic():
         return default
-    
+
     from InquirerPy import inquirer
+
     return inquirer.filepath(
         message=message,
         default=default,
@@ -179,13 +196,16 @@ from typing import Any
 from enum import Enum
 from rich.console import Console
 
+
 class OutputFormat(str, Enum):
     human = "human"
     json = "json"
 
+
 def get_console() -> Console:
     """Get console configured for environment."""
     return Console(force_terminal=sys.stdout.isatty())
+
 
 def output(data: Any, format: OutputFormat = OutputFormat.human):
     """Output data in specified format."""
@@ -230,9 +250,11 @@ from enum import Enum
 
 app = typer.Typer()
 
+
 class Format(str, Enum):
     human = "human"
     json = "json"
+
 
 @app.command()
 def list_scenarios(
@@ -240,9 +262,10 @@ def list_scenarios(
 ):
     """List available scenarios."""
     scenarios = ["security_review", "unit_test", "documentation"]
-    
+
     if format == Format.json:
         import json
+
         print(json.dumps(scenarios))
     else:
         for s in scenarios:
@@ -255,26 +278,27 @@ def list_scenarios(
 from src.utils.prompts import smart_select, smart_confirm
 from src.utils.agentic import is_agentic
 
+
 def guided_workflow():
     """Run guided workflow with agentic fallback."""
-    
+
     # Select scenario
     scenario = smart_select(
         message="Select scenario:",
         choices=["security_review", "unit_test", "documentation"],
         default="security_review",  # Used in agentic mode
     )
-    
+
     # Confirm optimization
     optimize = smart_confirm(
         message="Run optimization?",
         default=True,  # Used in agentic mode
     )
-    
+
     # In agentic mode, print what was selected
     if is_agentic():
         print(f"[agentic] Selected: {scenario}, optimize={optimize}")
-    
+
     return run_scenario(scenario, optimize)
 ```
 
@@ -307,13 +331,16 @@ def evaluate(
 import pytest
 from src.utils.agentic import is_agentic
 
+
 def test_agentic_with_env(monkeypatch):
     monkeypatch.setenv("AGENT_MODE", "1")
     assert is_agentic() == True
 
+
 def test_agentic_ci(monkeypatch):
     monkeypatch.setenv("CI", "true")
     assert is_agentic() == True
+
 
 def test_interactive_default(monkeypatch):
     # Clear all agentic indicators
@@ -327,8 +354,9 @@ def test_interactive_default(monkeypatch):
 ```python
 def test_smart_select_agentic(monkeypatch):
     monkeypatch.setenv("AGENT_MODE", "1")
-    
+
     from src.utils.prompts import smart_select
+
     result = smart_select(
         message="Choose:",
         choices=["A", "B", "C"],
@@ -336,10 +364,12 @@ def test_smart_select_agentic(monkeypatch):
     )
     assert result == "B"  # Uses default
 
+
 def test_smart_confirm_agentic(monkeypatch):
     monkeypatch.setenv("AGENT_MODE", "1")
-    
+
     from src.utils.prompts import smart_confirm
+
     assert smart_confirm("Proceed?", default=True) == True
     assert smart_confirm("Proceed?", default=False) == False
 ```
@@ -352,11 +382,13 @@ from myapp import app
 
 runner = CliRunner()
 
+
 def test_json_output():
     result = runner.invoke(app, ["list", "--format", "json"])
     assert result.exit_code == 0
-    
+
     import json
+
     data = json.loads(result.stdout)
     assert isinstance(data, list)
 ```

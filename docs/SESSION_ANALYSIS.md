@@ -116,12 +116,14 @@ Feature 004: Guided CLI Workflows required interactive + headless mode support.
 ### Detection Pattern
 ```python
 def is_agentic() -> bool:
-    return any([
-        not sys.stdin.isatty(),
-        not sys.stdout.isatty(),
-        os.environ.get("AGENT_MODE") == "1",
-        os.environ.get("CI") == "true",
-    ])
+    return any(
+        [
+            not sys.stdin.isatty(),
+            not sys.stdout.isatty(),
+            os.environ.get("AGENT_MODE") == "1",
+            os.environ.get("CI") == "true",
+        ]
+    )
 ```
 
 ---

@@ -75,9 +75,11 @@ def get_patch_id(commit_hash: str) -> str:
     # Must pipe 'git show' to 'git patch-id' and return the first 40 chars
     pass
 
+
 def is_ancestor(ancestor: str, descendant: str) -> bool:
     # Returns True if ancestor exists in descendant's history
     pass
+
 
 def get_merge_parents(commit_hash: str) -> list[str]:
     # Returns parents using 'git rev-list --parents -n 1 <hash>'
