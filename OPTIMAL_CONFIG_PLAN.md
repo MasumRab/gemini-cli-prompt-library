@@ -233,7 +233,7 @@ class Improve(dspy.Module):
     def __init__(self):
         super().__init__()
         self.improve = dspy.ChainOfThought(ImproveSignature)
-    
+
     def forward(self, original_prompt: str) -> dspy.Prediction:
         return self.improve(original_prompt=original_prompt)
 ```

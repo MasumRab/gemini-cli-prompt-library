@@ -31,6 +31,8 @@ class BaseOptimizer(ABC):
         max_labeled_demos: int = 3,
         num_threads: int = 16,
     ):
+        if metric is None:
+            raise ValueError("metric is required")
         self.metric = metric
         self.max_bootstrapped_demos = max_bootstrapped_demos
         self.max_labeled_demos = max_labeled_demos

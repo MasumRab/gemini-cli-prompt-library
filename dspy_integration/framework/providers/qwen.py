@@ -1,4 +1,5 @@
-"""Qwen provider."""
-from dspy_helm.providers.qwen import Provider as QwenProvider
+"""qwen provider."""
 
-__all__ = ["QwenProvider"]
+from dspy_helm.providers.qwen import QwenCodeProvider
+
+__all__ = ["QwenCodeProvider"]

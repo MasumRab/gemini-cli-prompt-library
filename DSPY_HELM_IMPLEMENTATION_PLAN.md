@@ -216,7 +216,7 @@ class ProviderResponse:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
-@dataclass  
+@dataclass
 class RateLimitConfig:
     """Configuration for rate limiting."""
     enabled: bool = True
@@ -227,7 +227,7 @@ class RateLimitConfig:
 
 class BaseProvider(ABC):
     """Abstract base class for CLI providers."""
-    
+
     def __init__(
         self,
         name: str,
@@ -238,7 +238,7 @@ class BaseProvider(ABC):
     ):
         """
         Initialize provider.
-        
+
         Args:
             name: Provider display name
             command: CLI command to run
@@ -251,51 +251,51 @@ class BaseProvider(ABC):
         self.subcommand = subcommand
         self.model = model
         self.rate_limit = rate_limit or RateLimitConfig()
-        
+
         self._last_request_time = 0.0
         self._retry_count = 0
-    
+
     @abstractmethod
     def _execute_cli(self, prompt: str, **kwargs) -> ProviderResponse:
         """
         Execute the CLI command.
-        
+
         Args:
             prompt: Prompt to send
             **kwargs: Additional arguments
-        
+
         Returns:
             ProviderResponse with result or error
         """
         ...
-    
+
     def call(self, prompt: str, **kwargs) -> ProviderResponse:
         """
         Call the provider with retry logic for rate limits.
-        
+
         Args:
             prompt: Prompt to send
             **kwargs: Additional arguments
-        
+
         Returns:
             ProviderResponse with result
         """
         if not self.rate_limit.enabled:
             return self._execute_cli(prompt, **kwargs)
-        
+
         max_retries = self.rate_limit.max_retries
         backoff = self.rate_limit.backoff_factor
-        
+
         for attempt in range(max_retries + 1):
             response = self._execute_cli(prompt, **kwargs)
-            
+
             if response.success:
                 self._retry_count = 0
                 return response
-            
+
             if not response.rate_limited:
                 return response
-            
+
             if attempt < max_retries:
                 wait_time = min(backoff * (2 ** attempt), self.rate_limit.max_backoff)
                 logger.warning(
@@ -306,14 +306,14 @@ class BaseProvider(ABC):
             else:
                 logger.error(f"Max retries exceeded for {self.name}")
                 return response
-        
+
         return ProviderResponse(
             success=False,
             error="Max retries exceeded",
             provider=self.name,
             model=self.model
         )
-    
+
     def __repr__(self) -> str:
         return f"{self.name}(model={self.model})"
 
@@ -321,61 +321,61 @@ class BaseProvider(ABC):
 class ProviderChain:
     """
     Chain of providers with failover support.
-    
+
     Manages rotation through providers when rate limits
     are encountered.
     """
-    
+
     def __init__(self, providers: List[BaseProvider]):
         """
         Initialize provider chain.
-        
+
         Args:
             providers: List of providers in priority order
         """
         self.providers = providers
         self._current_index = 0
-    
+
     def call(self, prompt: str, **kwargs) -> ProviderResponse:
         """
         Call providers in sequence with failover.
-        
+
         Args:
             prompt: Prompt to send
             **kwargs: Additional arguments
-        
+
         Returns:
             ProviderResponse from first successful provider
         """
         last_error = None
-        
+
         for provider in self.providers:
             response = provider.call(prompt, **kwargs)
-            
+
             if response.success:
                 return response
-            
+
             last_error = response.error
             logger.info(
                 f"Provider {provider.name} failed: {response.error}. "
                 f"Trying next provider..."
             )
-        
+
         return ProviderResponse(
             success=False,
             error=f"All providers failed: {last_error}",
             provider="none",
             model="none"
         )
-    
+
     def add_provider(self, provider: BaseProvider) -> None:
         """Add provider to chain."""
         self.providers.append(provider)
-    
+
     def set_fallback_order(self, provider_names: List[str]) -> None:
         """
         Reorder providers by name.
-        
+
         Args:
             provider_names: List of provider names in desired order
         """
@@ -414,7 +414,7 @@ logger = logging.getLogger(__name__)
 
 class OpenCodeProvider(BaseProvider):
     """Provider for OpenCode CLI."""
-    
+
     def __init__(
         self,
         model: str = "gpt-4o-mini",
@@ -422,7 +422,7 @@ class OpenCodeProvider(BaseProvider):
     ):
         """
         Initialize OpenCode provider.
-        
+
         Args:
             model: Model to use (gpt-4o-mini, claude-3-5-sonnet, deepseek-chat)
             rate_limit: Rate limiting configuration
@@ -434,21 +434,21 @@ class OpenCodeProvider(BaseProvider):
             model=model,
             rate_limit=rate_limit
         )
-    
+
     def _execute_cli(self, prompt: str, **kwargs) -> ProviderResponse:
         """
         Execute prompt via OpenCode CLI.
-        
+
         Args:
             prompt: Prompt to send
             **kwargs: Additional arguments (ignored)
-        
+
         Returns:
             ProviderResponse with result
         """
         import time
         start_time = time.time()
-        
+
         try:
             result = subprocess.run(
                 ["opencode", "ask", prompt],
@@ -456,14 +456,14 @@ class OpenCodeProvider(BaseProvider):
                 text=True,
                 timeout=120
             )
-            
+
             latency = time.time() - start_time
-            
+
             if result.returncode != 0:
                 error_output = result.stderr or result.stdout
-                
+
                 rate_limited = self._is_rate_limited(error_output)
-                
+
                 return ProviderResponse(
                     success=False,
                     error=error_output,
@@ -472,7 +472,7 @@ class OpenCodeProvider(BaseProvider):
                     rate_limited=rate_limited,
                     latency_seconds=latency
                 )
-            
+
             return ProviderResponse(
                 success=True,
                 content=result.stdout.strip(),
@@ -480,7 +480,7 @@ class OpenCodeProvider(BaseProvider):
                 model=self.model,
                 latency_seconds=latency
             )
-            
+
         except subprocess.TimeoutExpired:
             return ProviderResponse(
                 success=False,
@@ -489,7 +489,7 @@ class OpenCodeProvider(BaseProvider):
                 model=self.model,
                 latency_seconds=time.time() - start_time
             )
-        
+
         except Exception as e:
             return ProviderResponse(
                 success=False,
@@ -498,14 +498,14 @@ class OpenCodeProvider(BaseProvider):
                 model=self.model,
                 latency_seconds=time.time() - start_time
             )
-    
+
     def _is_rate_limited(self, output: str) -> bool:
         """
         Detect if output indicates rate limiting.
-        
+
         Args:
             output: CLI output or error message
-        
+
         Returns:
             True if rate limited
         """
@@ -518,7 +518,7 @@ class OpenCodeProvider(BaseProvider):
             "capacity",
             "try again later"
         ]
-        
+
         output_lower = output.lower()
         return any(indicator in output_lower for indicator in rate_limit_indicators)
 ```
@@ -542,7 +542,7 @@ from .base import BaseProvider, ProviderResponse, RateLimitConfig
 
 class QwenCodeProvider(BaseProvider):
     """Provider for Qwen Code CLI."""
-    
+
     def __init__(
         self,
         model: str = "qwen2.5-coder:32b",
@@ -550,7 +550,7 @@ class QwenCodeProvider(BaseProvider):
     ):
         """
         Initialize Qwen Code provider.
-        
+
         Args:
             model: Model to use
             rate_limit: Rate limiting configuration
@@ -562,20 +562,20 @@ class QwenCodeProvider(BaseProvider):
             model=model,
             rate_limit=rate_limit
         )
-    
+
     def _execute_cli(self, prompt: str, **kwargs) -> ProviderResponse:
         """
         Execute prompt via Qwen Code CLI.
-        
+
         Args:
             prompt: Prompt to send
             **kwargs: Additional arguments
-        
+
         Returns:
             ProviderResponse with result
         """
         start_time = time.time()
-        
+
         try:
             result = subprocess.run(
                 ["qwen-code", "ask", prompt],
@@ -583,13 +583,13 @@ class QwenCodeProvider(BaseProvider):
                 text=True,
                 timeout=120
             )
-            
+
             latency = time.time() - start_time
-            
+
             if result.returncode != 0:
                 error_output = result.stderr or result.stdout
                 rate_limited = self._is_rate_limited(error_output)
-                
+
                 return ProviderResponse(
                     success=False,
                     error=error_output,
@@ -598,7 +598,7 @@ class QwenCodeProvider(BaseProvider):
                     rate_limited=rate_limited,
                     latency_seconds=latency
                 )
-            
+
             return ProviderResponse(
                 success=True,
                 content=result.stdout.strip(),
@@ -606,7 +606,7 @@ class QwenCodeProvider(BaseProvider):
                 model=self.model,
                 latency_seconds=latency
             )
-            
+
         except subprocess.TimeoutExpired:
             return ProviderResponse(
                 success=False,
@@ -615,7 +615,7 @@ class QwenCodeProvider(BaseProvider):
                 model=self.model,
                 latency_seconds=time.time() - start_time
             )
-        
+
         except Exception as e:
             return ProviderResponse(
                 success=False,
@@ -624,7 +624,7 @@ class QwenCodeProvider(BaseProvider):
                 model=self.model,
                 latency_seconds=time.time() - start_time
             )
-    
+
     def _is_rate_limited(self, output: str) -> bool:
         """Detect rate limiting indicators."""
         rate_limit_indicators = [
@@ -634,7 +634,7 @@ class QwenCodeProvider(BaseProvider):
             "busy",
             "try again"
         ]
-        
+
         output_lower = output.lower()
         return any(indicator in output_lower for indicator in rate_limit_indicators)
 ```
@@ -658,7 +658,7 @@ from .base import BaseProvider, ProviderResponse, RateLimitConfig
 
 class GeminiProvider(BaseProvider):
     """Provider for Gemini CLI."""
-    
+
     def __init__(
         self,
         model: str = "gemini-1.5-flash",
@@ -666,7 +666,7 @@ class GeminiProvider(BaseProvider):
     ):
         """
         Initialize Gemini provider.
-        
+
         Args:
             model: Model to use
             rate_limit: Rate limiting configuration
@@ -678,20 +678,20 @@ class GeminiProvider(BaseProvider):
             model=model,
             rate_limit=rate_limit
         )
-    
+
     def _execute_cli(self, prompt: str, **kwargs) -> ProviderResponse:
         """
         Execute prompt via Gemini CLI.
-        
+
         Args:
             prompt: Prompt to send
             **kwargs: Additional arguments
-        
+
         Returns:
             ProviderResponse with result
         """
         start_time = time.time()
-        
+
         try:
             result = subprocess.run(
                 ["gemini", "ask", prompt],
@@ -699,13 +699,13 @@ class GeminiProvider(BaseProvider):
                 text=True,
                 timeout=120
             )
-            
+
             latency = time.time() - start_time
-            
+
             if result.returncode != 0:
                 error_output = result.stderr or result.stdout
                 rate_limited = self._is_rate_limited(error_output)
-                
+
                 return ProviderResponse(
                     success=False,
                     error=error_output,
@@ -714,7 +714,7 @@ class GeminiProvider(BaseProvider):
                     rate_limited=rate_limited,
                     latency_seconds=latency
                 )
-            
+
             return ProviderResponse(
                 success=True,
                 content=result.stdout.strip(),
@@ -722,7 +722,7 @@ class GeminiProvider(BaseProvider):
                 model=self.model,
                 latency_seconds=latency
             )
-            
+
         except subprocess.TimeoutExpired:
             return ProviderResponse(
                 success=False,
@@ -731,7 +731,7 @@ class GeminiProvider(BaseProvider):
                 model=self.model,
                 latency_seconds=time.time() - start_time
             )
-        
+
         except Exception as e:
             return ProviderResponse(
                 success=False,
@@ -740,7 +740,7 @@ class GeminiProvider(BaseProvider):
                 model=self.model,
                 latency_seconds=time.time() - start_time
             )
-    
+
     def _is_rate_limited(self, output: str) -> bool:
         """Detect rate limiting indicators."""
         rate_limit_indicators = [
@@ -750,7 +750,7 @@ class GeminiProvider(BaseProvider):
             "quota exceeded",
             "user rate limit"
         ]
-        
+
         output_lower = output.lower()
         return any(indicator in output_lower for indicator in rate_limit_indicators)
 ```
@@ -776,9 +776,9 @@ from .gemini import GeminiProvider
 def create_provider_chain() -> ProviderChain:
     """
     Create provider chain with default providers.
-    
+
     Order: OpenCode → Qwen → Gemini (failover priority)
-    
+
     Returns:
         ProviderChain with all providers configured
     """
@@ -808,7 +808,7 @@ def create_provider_chain() -> ProviderChain:
             )
         )
     ]
-    
+
     return ProviderChain(providers)
 
 
@@ -826,7 +826,7 @@ def get_default_provider() -> OpenCodeProvider:
 
 __all__ = [
     "BaseProvider",
-    "ProviderResponse", 
+    "ProviderResponse",
     "RateLimitConfig",
     "ProviderChain",
     "OpenCodeProvider",
@@ -862,42 +862,42 @@ class BaseScenario(ABC):
     """
     Abstract base class for all evaluation scenarios.
     """
-    
+
     INPUT_FIELDS: List[str] = []
     OUTPUT_FIELDS: List[str] = []
     DEFAULT_SPLIT_RATIO: float = 0.8
     MIN_TRAIN_SIZE: int = 5
     MIN_VAL_SIZE: int = 3
-    
+
     def __init__(self, test_size: float = 0.2, seed: int = 42):
         self.test_size = test_size
         self.seed = seed
         random.seed(seed)
-    
+
     def load_data(self) -> Tuple[List[dspy.Example], List[dspy.Example]]:
         """Load and split dataset into train/validation sets."""
         raw_data = self._load_raw_data()
-        
+
         if len(raw_data) < self.MIN_TRAIN_SIZE + self.MIN_VAL_SIZE:
             raise ValueError(
                 f"Insufficient data: need at least {self.MIN_TRAIN_SIZE + self.MIN_VAL_SIZE} "
                 f"examples, got {len(raw_data)}"
             )
-        
+
         train_data, val_data = self._split_data(raw_data)
-        
+
         return (
             self._to_dspy_examples(train_data),
             self._to_dspy_examples(val_data)
         )
-    
+
     @abstractmethod
     def _load_raw_data(self) -> List[Dict[str, Any]]:
         """Load raw data from source."""
         ...
-    
+
     def _split_data(
-        self, 
+        self,
         data: List[Dict[str, Any]]
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         """Split data into train and validation sets."""
@@ -908,14 +908,14 @@ class BaseScenario(ABC):
                 int(len(data) * (1 - self.test_size))
             )
         )
-        
+
         train_data = data[:split_idx]
         val_data = data[split_idx:]
-        
+
         return train_data, val_data
-    
+
     def _to_dspy_examples(
-        self, 
+        self,
         data: List[Dict[str, Any]]
     ) -> List[dspy.Example]:
         """Convert data dictionaries to dspy.Example objects."""
@@ -926,31 +926,31 @@ class BaseScenario(ABC):
                 example = example.with_inputs(*self.INPUT_FIELDS)
             examples.append(example)
         return examples
-    
+
     @abstractmethod
     def make_prompt(self, row: Dict[str, Any]) -> str:
         """Convert a data row to a prompt string."""
         ...
-    
+
     @abstractmethod
     def metric(
-        self, 
-        example: dspy.Example, 
-        pred: dspy.Prediction, 
+        self,
+        example: dspy.Example,
+        pred: dspy.Prediction,
         trace: Optional[Any] = None
     ) -> float:
         """Evaluate prediction against ground truth."""
         ...
-    
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(test_size={self.test_size}, seed={self.seed})"
 
 
 class ScenarioRegistry:
     """Registry for scenario classes (Open/Closed Principle)."""
-    
+
     _scenarios: Dict[str, Type[BaseScenario]] = {}
-    
+
     @classmethod
     def register(cls, name: str) -> callable:
         """Decorator to register a scenario class."""
@@ -962,7 +962,7 @@ class ScenarioRegistry:
             cls._scenarios[name] = scenario_class
             return scenario_class
         return decorator
-    
+
     @classmethod
     def get(cls, name: str) -> Type[BaseScenario]:
         """Get a scenario class by name."""
@@ -972,7 +972,7 @@ class ScenarioRegistry:
                 f"Unknown scenario: '{name}'. Available scenarios: {available}"
             )
         return cls._scenarios[name]
-    
+
     @classmethod
     def list(cls) -> List[str]:
         """List all registered scenarios."""
@@ -1595,7 +1595,7 @@ from dspy.teleprompt import MIPROv2
 @OptimizerRegistry.register("MIPROv2")
 class MIPROv2Optimizer(BaseOptimizer):
     """MIPROv2 optimizer for prompt optimization."""
-    
+
     def __init__(
         self,
         metric,
@@ -1615,7 +1615,7 @@ class MIPROv2Optimizer(BaseOptimizer):
         self.auto = auto
         self.prompt_model = prompt_model
         self.task_model = task_model
-    
+
     def _create_teleprompter(self) -> MIPROv2:
         return MIPROv2(
             metric=self.metric,
@@ -1626,15 +1626,15 @@ class MIPROv2Optimizer(BaseOptimizer):
             task_model=self.task_model,
             num_threads=self.num_threads
         )
-    
+
     def compile(self, program, trainset, valset):
         import dspy
-        
+
         if not dspy.settings.lm:
             raise RuntimeError(
                 "No LM configured. Call dspy.configure(lm=...) first."
             )
-        
+
         teleprompter = self._create_teleprompter()
         return teleprompter.compile(program, trainset=trainset, valset=valset)
 ```
@@ -1653,7 +1653,7 @@ from dspy.teleprompt import BootstrapFewShot, BootstrapFewShotWithRandomSearch
 @OptimizerRegistry.register("BootstrapFewShot")
 class BootstrapFewShotOptimizer(BaseOptimizer):
     """BootstrapFewShot optimizer."""
-    
+
     def _create_teleprompter(self) -> BootstrapFewShot:
         return BootstrapFewShot(
             metric=self.metric,
@@ -1666,7 +1666,7 @@ class BootstrapFewShotOptimizer(BaseOptimizer):
 @OptimizerRegistry.register("BootstrapFewShotWithRandomSearch")
 class BootstrapFewShotRandomSearchOptimizer(BaseOptimizer):
     """BootstrapFewShot with Random Search optimizer."""
-    
+
     def __init__(
         self,
         metric,
@@ -1682,7 +1682,7 @@ class BootstrapFewShotRandomSearchOptimizer(BaseOptimizer):
             num_threads=num_threads
         )
         self.num_candidate_programs = num_candidate_programs
-    
+
     def _create_teleprompter(self) -> BootstrapFewShotWithRandomSearch:
         return BootstrapFewShotWithRandomSearch(
             metric=self.metric,
@@ -1712,7 +1712,7 @@ import dspy
 
 class Evaluator:
     """Evaluation harness for DSPy programs."""
-    
+
     def __init__(
         self,
         metric: Callable,
@@ -1724,7 +1724,7 @@ class Evaluator:
         self.num_threads = num_threads
         self.display_progress = display_progress
         self.display_table = display_table
-        
+
         self._evaluator = dspy.Evaluate(
             devset=None,
             metric=metric,
@@ -1732,7 +1732,7 @@ class Evaluator:
             display_progress=display_progress,
             display_table=display_table
         )
-    
+
     def evaluate(
         self,
         program: dspy.Module,
@@ -1741,13 +1741,13 @@ class Evaluator:
     ) -> Dict[str, Any]:
         """Evaluate a program on a dataset."""
         self._evaluator.devset = devset
-        
+
         if return_outputs:
             from dspy.utils.parallelizer import ParallelExecutor
-            
+
             results = []
             executor = ParallelExecutor(num_threads=self.num_threads)
-            
+
             def process_item(example):
                 try:
                     pred = program(**example.inputs())
@@ -1755,9 +1755,9 @@ class Evaluator:
                     return (example, pred, score)
                 except Exception as e:
                     return (example, None, 0.0)
-            
+
             raw_results = executor.execute(process_item, devset)
-            
+
             total_score = 0.0
             for example, pred, score in raw_results:
                 if score is None:
@@ -1768,9 +1768,9 @@ class Evaluator:
                     "prediction": dict(pred) if pred else None,
                     "score": score
                 })
-            
+
             avg_score = total_score / len(devset) if devset else 0.0
-            
+
             return {
                 "score": avg_score,
                 "count": len(devset),
@@ -1782,14 +1782,14 @@ class Evaluator:
                 "score": avg_score,
                 "count": len(devset)
             }
-    
+
     def export_results(self, results: Dict[str, Any], output_path: Path) -> None:
         """Export evaluation results to JSON."""
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         with open(output_path, 'w') as f:
             json.dump(results, f, indent=2, default=str)
-        
+
         print(f"Results exported to: {output_path}")
 ```
 
@@ -1827,18 +1827,18 @@ def create_parser() -> argparse.ArgumentParser:
 Examples:
   List available scenarios:
     python -m dspy_helm.cli --list-scenarios
-  
+
   Evaluate a scenario:
     python -m dspy_helm.cli --scenario security_review --evaluate-only
-  
+
   Optimize with MIPROv2:
     python -m dspy_helm.cli --scenario security_review --optimizer MIPROv2
-  
+
   Use specific provider:
     python -m dspy_helm.cli --scenario unit_test --provider qwen
         """
     )
-    
+
     parser.add_argument("--scenario", help="Scenario name to run")
     parser.add_argument(
         "--optimizer",
@@ -1882,7 +1882,7 @@ Examples:
         action="store_true",
         help="Enable verbose output"
     )
-    
+
     return parser
 
 
@@ -1917,28 +1917,28 @@ def run_pipeline(
     from scenarios import ScenarioRegistry
     from optimizers import OptimizerRegistry
     from eval import Evaluator
-    
+
     if verbose:
         print(f"Loading scenario: {scenario_name}")
-    
+
     scenario_class = ScenarioRegistry.get(scenario_name)
     scenario = scenario_class()
     trainset, valset = scenario.load_data()
-    
+
     if verbose:
         print(f"Train size: {len(trainset)}, Val size: {len(valset)}")
-    
+
     from dspy_integration.modules import get_module_for_scenario
     program = get_module_for_scenario(scenario_name)
-    
+
     if provider_name != "auto" or model_name != "auto":
         configure_lm_from_provider(provider_name, model_name)
-    
+
     if evaluate_only:
         evaluator = Evaluator(metric=scenario.metric)
         results = evaluator.evaluate(program, valset)
         print(f"Evaluation Score: {results['score']:.2%}")
-        
+
         output_path = Path(output_dir) / scenario_name / "evaluation.json"
         evaluator.export_results(results, output_path)
     else:
@@ -1947,13 +1947,13 @@ def run_pipeline(
             scenario=scenario,
             optimizer_name=optimizer_name
         )
-        
+
         optimized = pipeline.run(trainset, valset)
-        
+
         evaluator = Evaluator(metric=scenario.metric)
         results = evaluator.evaluate(optimized, valset)
         print(f"Optimized Score: {results['score']:.2%}")
-        
+
         output_path = Path(output_dir) / scenario_name / model_name.replace("/", "_")
         output_path.mkdir(parents=True, exist_ok=True)
         optimized.save(output_path / f"{optimizer_name}.json")
@@ -1964,24 +1964,24 @@ def main():
     """Main entry point."""
     parser = create_parser()
     args = parser.parse_args()
-    
+
     if args.list_scenarios:
         from scenarios import ScenarioRegistry
         print("Available Scenarios:")
         for name in ScenarioRegistry.list():
             print(f"  - {name}")
         return
-    
+
     if args.list_optimizers:
         from optimizers import OptimizerRegistry
         print("Available Optimizers:")
         for name in OptimizerRegistry.list():
             print(f"  - {name}")
         return
-    
+
     if not args.scenario:
         parser.error("--scenario is required")
-    
+
     try:
         run_pipeline(
             scenario_name=args.scenario,
