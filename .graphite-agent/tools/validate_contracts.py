@@ -21,35 +21,32 @@ def validate_output(name, data):
     contract = load_contract(name)
     if not contract:
         return True, f"No contract for {name}"
-
+    
     # Handle empty/minimal contracts (lists, empty dicts)
     if isinstance(contract, list):
         return True, f"{name}: contract is list schema, skipping type validation"
     if not isinstance(contract, dict):
-        return (
-            True,
-            f"{name}: contract is {type(contract).__name__}, skipping validation",
-        )
-
+        return True, f"{name}: contract is {type(contract).__name__}, skipping validation"
+    
     # Minimal validation: check type constraints
     expected_type = contract.get("type")
     if expected_type == "object" and not isinstance(data, dict):
         return False, f"{name}: expected object, got {type(data).__name__}"
     if expected_type == "array" and not isinstance(data, list):
         return False, f"{name}: expected array, got {type(data).__name__}"
-
+    
     # Check required properties if specified
     if "properties" in contract and isinstance(data, dict):
         for prop, schema in contract["properties"].items():
             if schema.get("required") and prop not in data:
                 return False, f"{name}: missing required property {prop}"
-
+    
     return True, f"{name}: valid"
 
 
 def main():
     failures = []
-
+    
     # Map output files to contract names
     checks = {
         "analysis_summary.json": "analysis_summary",
@@ -68,12 +65,12 @@ def main():
         "status_audit.json": "status_audit",
         "execution_plan.json": "execution_plan",
     }
-
+    
     for output_file, contract_name in checks.items():
         output_path = OUTPUTS_DIR / output_file
         if not output_path.exists():
             continue
-
+        
         try:
             data = json.loads(output_path.read_text())
             valid, msg = validate_output(contract_name, data)
@@ -81,7 +78,7 @@ def main():
                 failures.append(msg)
         except json.JSONDecodeError as e:
             failures.append(f"{output_file}: invalid JSON - {e}")
-
+    
     if failures:
         print("Contract validation failed:")
         for f in failures:

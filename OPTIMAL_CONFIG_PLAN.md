@@ -229,12 +229,11 @@ class ImproveSignature(dspy.Signature):
     improved_prompt = dspy.OutputField(desc="The improved version of the prompt")
     changes_summary = dspy.OutputField(desc="Summary of the changes made")
 
-
 class Improve(dspy.Module):
     def __init__(self):
         super().__init__()
         self.improve = dspy.ChainOfThought(ImproveSignature)
-
+    
     def forward(self, original_prompt: str) -> dspy.Prediction:
         return self.improve(original_prompt=original_prompt)
 ```

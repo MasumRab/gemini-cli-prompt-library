@@ -21,9 +21,7 @@ class V72TargetTests(unittest.TestCase):
         self.cwd = Path(self.tmp.name)
         self.agent = self.cwd / ".graphite-agent"
         (self.agent / "outputs").mkdir(parents=True)
-        shutil.copy(
-            FIX_V72 / "analysis_snapshot.json", self.agent / "analysis_snapshot.json"
-        )
+        shutil.copy(FIX_V72 / "analysis_snapshot.json", self.agent / "analysis_snapshot.json")
         shutil.copy(FIX_V72 / "plan.json", self.agent / "plan.json")
         self.old = Path.cwd()
         os.chdir(self.cwd)
@@ -41,7 +39,10 @@ class V72TargetTests(unittest.TestCase):
         branches = self.core.target_analyse()
         merge_branch = branches.get("feature/merge-conflict-resolution", {})
         # target_analyse reports target_confirmed when declared_base matches inferred root_branch
-        self.assertEqual(merge_branch.get("diagnostic_category"), "target_confirmed")
+        self.assertEqual(
+            merge_branch.get("diagnostic_category"),
+            "target_confirmed"
+        )
 
     def test_cross_root_blocked(self):
         # v72 has single-root, but test that cross-root branches are excluded from stacks
@@ -59,9 +60,7 @@ class V72MergeTests(unittest.TestCase):
         self.cwd = Path(self.tmp.name)
         self.agent = self.cwd / ".graphite-agent"
         (self.agent / "outputs").mkdir(parents=True)
-        shutil.copy(
-            FIX_V72 / "analysis_snapshot.json", self.agent / "analysis_snapshot.json"
-        )
+        shutil.copy(FIX_V72 / "analysis_snapshot.json", self.agent / "analysis_snapshot.json")
         shutil.copy(FIX_V72 / "plan.json", self.agent / "plan.json")
         self.old = Path.cwd()
         os.chdir(self.cwd)
@@ -76,10 +75,7 @@ class V72MergeTests(unittest.TestCase):
         tri = self.core.rj(self.agent / "outputs" / "triage_packets.json", {})
         merge_branch = tri.get("feature/merge-conflict-resolution")
         self.assertIsNotNone(merge_branch)
-        self.assertEqual(
-            merge_branch.get("diagnostic_category"),
-            "in_target_conflict_resolution_merge",
-        )
+        self.assertEqual(merge_branch.get("diagnostic_category"), "in_target_conflict_resolution_merge")
 
     def test_merge_conflict_blocked_in_stack(self):
         self.core.root_health()
@@ -97,9 +93,7 @@ class V72StaleRootTests(unittest.TestCase):
         self.cwd = Path(self.tmp.name)
         self.agent = self.cwd / ".graphite-agent"
         (self.agent / "outputs").mkdir(parents=True)
-        shutil.copy(
-            FIX_V72 / "analysis_snapshot.json", self.agent / "analysis_snapshot.json"
-        )
+        shutil.copy(FIX_V72 / "analysis_snapshot.json", self.agent / "analysis_snapshot.json")
         shutil.copy(FIX_V72 / "plan.json", self.agent / "plan.json")
         self.old = Path.cwd()
         os.chdir(self.cwd)

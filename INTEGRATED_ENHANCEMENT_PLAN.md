@@ -226,17 +226,16 @@ Uses a meta-prompt to analyze user requests and select the best command.
 from typing import Dict, List, Optional, Tuple
 from .registry import CommandRegistry
 
-
 class IntelligentDispatcher:
     """Routes natural language requests to appropriate commands."""
-
+    
     def __init__(self, registry: CommandRegistry):
         self.registry = registry
-
+    
     def dispatch(self, user_request: str) -> Dict:
         """
         Analyze user request and return best command match.
-
+        
         Returns:
             {
                 "command": str,           # e.g., "/code-review:security"
@@ -248,17 +247,17 @@ class IntelligentDispatcher:
         """
         # Step 1: Get all available commands
         all_commands = list(self.registry._commands.values())
-
+        
         # Step 2: Use LLM or heuristic to select best command
         # For MVP, use keyword matching
         best_match = self._keyword_match(user_request, all_commands)
-
+        
         # Step 3: Generate refined prompt
         refined_prompt = self._refine_prompt(user_request, best_match)
-
+        
         # Step 4: Find alternatives
         alternatives = self._find_alternatives(user_request, best_match, all_commands)
-
+        
         return {
             "command": best_match["name"],
             "refined_prompt": refined_prompt,
@@ -266,34 +265,32 @@ class IntelligentDispatcher:
             "alternatives": alternatives,
             "reasoning": best_match.get("reasoning", "Matched by keyword analysis"),
         }
-
+    
     def _keyword_match(self, request: str, commands: List[Dict]) -> Dict:
         """Simple keyword matching for MVP."""
         request_lower = request.lower()
         keywords = request_lower.split()
-
+        
         best_score = 0
         best_cmd = commands[0]
-
+        
         for cmd in commands:
             score = sum(1 for kw in keywords if kw in cmd["description"].lower())
             if score > best_score:
                 best_score = score
                 best_cmd = cmd
-
+        
         best_cmd["confidence"] = best_score / max(len(keywords), 1)
         best_cmd["reasoning"] = f"Matched {best_score} keywords"
         return best_cmd
-
+    
     def _refine_prompt(self, request: str, command: Dict) -> str:
         """Generate optimized prompt for the selected command."""
         # Load the command's TOML and inject user's request
         # This is a placeholder - full implementation uses LLM
         return request
-
-    def _find_alternatives(
-        self, request: str, best: Dict, commands: List[Dict]
-    ) -> List[Dict]:
+    
+    def _find_alternatives(self, request: str, best: Dict, commands: List[Dict]) -> List[Dict]:
         """Find alternative commands that might also apply."""
         # Return top 3 alternatives by keyword overlap
         return []
@@ -327,12 +324,8 @@ def normalize_args(args: List[str]) -> List[str]:
 # In cli.py - Add to argument parser
 robot_parser = subparsers.add_parser("robot", help="Robot/AI mode output")
 robot_parser.add_argument("--robot", action="store_true", help="Enable robot mode")
-robot_parser.add_argument(
-    "--robot-format", choices=["json", "jsonl", "compact"], default="json"
-)
-robot_parser.add_argument(
-    "--robot-meta", action="store_true", help="Include performance metadata"
-)
+robot_parser.add_argument("--robot-format", choices=["json", "jsonl", "compact"], default="json")
+robot_parser.add_argument("--robot-meta", action="store_true", help="Include performance metadata")
 robot_parser.add_argument("--fields", help="Comma-separated fields to include")
 robot_parser.add_argument("--max-content-length", type=int, help="Truncate long fields")
 robot_parser.add_argument("--max-tokens", type=int, help="Soft token budget")
@@ -405,12 +398,10 @@ def test_load_all_commands():
     registry = CommandRegistry()
     assert len(registry._commands) == 41  # All TOML files
 
-
 def test_search_by_keyword():
     registry = CommandRegistry()
     results = registry.search("security")
     assert len(results) > 0
-
 
 # tests/test_dispatcher.py
 def test_dispatch_returns_structure():
@@ -429,7 +420,6 @@ def test_robot_mode_json():
     result = run_cli(["--robot", "--json", "list"])
     assert result.is_json
     assert "scenarios" in result.data
-
 
 def test_forgiving_parsing():
     # Single-dash long flag should work
