@@ -70,9 +70,11 @@ from typing import Optional
 from enum import Enum
 import typer
 
+
 class Optimizer(str, Enum):
     miprov2 = "MIPROv2"
     bootstrap = "BootstrapFewShot"
+
 
 @app.command()
 def run(
@@ -111,9 +113,11 @@ def run(
 ```python
 import fire
 
+
 class DSPyHELM:
     def evaluate(self, scenario: str, optimizer: str = None):
         return {"scenario": scenario, "optimizer": optimizer}
+
 
 if __name__ == "__main__":
     fire.Fire(DSPyHELM)
@@ -138,6 +142,7 @@ if __name__ == "__main__":
 ```python
 # This HANGS when run by AI agent (no TTY):
 from InquirerPy import inquirer
+
 result = inquirer.select(message="Choose:", choices=["A", "B"]).execute()
 ```
 
@@ -223,6 +228,7 @@ AGENT_INDICATORS = {
     "NONINTERACTIVE": "1",
 }
 
+
 def is_agentic() -> bool:
     """Detect if running under an AI coding agent."""
     # TTY checks
@@ -230,17 +236,18 @@ def is_agentic() -> bool:
         return True
     if not sys.stdout.isatty():
         return True
-    
+
     # Terminal type
     if os.environ.get("TERM") in ("dumb", ""):
         return True
-    
+
     # Environment variables
     for var, expected in AGENT_INDICATORS.items():
         if os.environ.get(var) == expected:
             return True
-    
+
     return False
+
 
 def is_interactive() -> bool:
     return not is_agentic()
@@ -255,6 +262,7 @@ from .agentic import is_agentic
 
 T = TypeVar("T")
 
+
 def smart_select(
     message: str,
     choices: List[T],
@@ -263,37 +271,45 @@ def smart_select(
     """Select with agentic fallback."""
     if is_agentic():
         return default if default else choices[0]
-    
+
     from InquirerPy import inquirer
+
     return inquirer.select(
         message=message,
         choices=choices,
         default=default,
     ).execute()
 
+
 def smart_confirm(message: str, default: bool = True) -> bool:
     """Confirm with agentic fallback."""
     if is_agentic():
         return default
-    
+
     from InquirerPy import inquirer
+
     return inquirer.confirm(message=message, default=default).execute()
+
 
 def smart_text(message: str, default: str = "") -> str:
     """Text input with agentic fallback."""
     if is_agentic():
         return default
-    
+
     from InquirerPy import inquirer
+
     return inquirer.text(message=message, default=default).execute()
+
 
 def smart_fuzzy(message: str, choices: List[str], default: str = None) -> str:
     """Fuzzy select with agentic fallback."""
     if is_agentic():
         return default or choices[0]
-    
+
     from InquirerPy import inquirer
+
     return inquirer.fuzzy(message=message, choices=choices).execute()
+
 
 def smart_checkbox(
     message: str,
@@ -303,8 +319,9 @@ def smart_checkbox(
     """Checkbox with agentic fallback."""
     if is_agentic():
         return defaults or choices[:1]
-    
+
     from InquirerPy import inquirer
+
     return inquirer.checkbox(message=message, choices=choices).execute()
 ```
 
@@ -319,13 +336,16 @@ from enum import Enum
 from rich.console import Console
 from rich.table import Table
 
+
 class OutputFormat(str, Enum):
     human = "human"
     json = "json"
     jsonl = "jsonl"
 
+
 def get_console() -> Console:
     return Console(force_terminal=sys.stdout.isatty())
+
 
 def output(data: Any, format: OutputFormat = OutputFormat.human, title: str = None):
     if format == OutputFormat.json:
@@ -415,7 +435,9 @@ src/
 ### CLI Testing
 ```python
 from typer.testing import CliRunner
+
 runner = CliRunner()
+
 
 def test_json_output():
     result = runner.invoke(app, ["evaluate", "test", "--json"])
@@ -465,10 +487,12 @@ console = Console(
     no_color=os.environ.get("NO_COLOR") is not None,
 )
 
+
 # JSON fallback pattern
 def output_result(data: dict, json_mode: bool = False):
     if json_mode:
         import json
+
         print(json.dumps(data, indent=2))
     else:
         console.print(data)
@@ -494,6 +518,7 @@ def output_result(data: dict, json_mode: bool = False):
 ```python
 from textual.pilot import Pilot
 
+
 async def test_app():
     """Run Textual app in headless mode."""
     async with MyApp().run_test() as pilot:
@@ -501,7 +526,7 @@ async def test_app():
         await pilot.press("tab")
         await pilot.press("enter")
         await pilot.click("#submit")
-        
+
         # Assert on UI state
         assert pilot.app.query_one("#result").text == "Success"
 ```
@@ -541,6 +566,7 @@ from .agentic import is_agentic
 
 T = TypeVar("T")
 
+
 def smart_select(
     message: str,
     choices: List[T],
@@ -549,7 +575,9 @@ def smart_select(
     if is_agentic():
         return default if default is not None else choices[0]
     from InquirerPy import inquirer
+
     return inquirer.select(message=message, choices=choices, default=default).execute()
+
 
 def smart_checkbox(
     message: str,
@@ -559,19 +587,25 @@ def smart_checkbox(
     if is_agentic():
         return defaults if defaults else []
     from InquirerPy import inquirer
+
     return inquirer.checkbox(message=message, choices=choices).execute()
+
 
 def smart_text(message: str, default: str = "") -> str:
     if is_agentic():
         return default
     from InquirerPy import inquirer
+
     return inquirer.text(message=message, default=default).execute()
+
 
 def smart_confirm(message: str, default: bool = True) -> bool:
     if is_agentic():
         return default
     from InquirerPy import inquirer
+
     return inquirer.confirm(message=message, default=default).execute()
+
 
 def smart_fuzzy(
     message: str,
@@ -581,7 +615,9 @@ def smart_fuzzy(
     if is_agentic():
         return default if default else choices[0]
     from InquirerPy import inquirer
+
     return inquirer.fuzzy(message=message, choices=choices).execute()
+
 
 def smart_filepath(
     message: str,
@@ -591,11 +627,13 @@ def smart_filepath(
     if is_agentic():
         return str(default)
     from InquirerPy import inquirer
+
     return inquirer.filepath(
         message=message,
         default=str(default),
         only_directories=only_directories,
     ).execute()
+
 
 def smart_number(
     message: str,
@@ -606,6 +644,7 @@ def smart_number(
     if is_agentic():
         return default if default is not None else 0
     from InquirerPy import inquirer
+
     return inquirer.number(
         message=message,
         default=default,
@@ -613,11 +652,13 @@ def smart_number(
         max_allowed=max_allowed,
     ).execute()
 
+
 def smart_secret(message: str, default: str = "") -> str:
     """Password input. Returns default in agentic mode."""
     if is_agentic():
         return default  # Or check env var
     from InquirerPy import inquirer
+
     return inquirer.secret(message=message).execute()
 ```
 

@@ -20,7 +20,9 @@ class AgentCoreHelperTests(unittest.TestCase):
         self.cwd = Path(self.tmp.name)
         self.agent = self.cwd / ".graphite-agent"
         (self.agent / "outputs").mkdir(parents=True)
-        shutil.copy(FIX / "analysis_snapshot.json", self.agent / "analysis_snapshot.json")
+        shutil.copy(
+            FIX / "analysis_snapshot.json", self.agent / "analysis_snapshot.json"
+        )
         shutil.copy(FIX / "plan.json", self.agent / "plan.json")
         self.old = Path.cwd()
         os.chdir(self.cwd)

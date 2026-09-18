@@ -33,7 +33,7 @@ New CLI commands are available to help you work with DSPy:
     from dspy_integration.modules.feature_dev import FeatureDevModule
 
     # Configure your LM
-    dspy.settings.configure(lm=dspy.Google(model='gemini-pro'))
+    dspy.settings.configure(lm=dspy.Google(model="gemini-pro"))
 
     # Run the module
     dev_agent = FeatureDevModule()
