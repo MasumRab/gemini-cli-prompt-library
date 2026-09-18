@@ -26,10 +26,7 @@ def get_github_token() -> str:
     """Get GitHub token from environment."""
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if not token:
-        print(
-            "ERROR: GITHUB_TOKEN or GH_TOKEN environment variable not set",
-            file=sys.stderr,
-        )
+        print("ERROR: GITHUB_TOKEN or GH_TOKEN environment variable not set", file=sys.stderr)
         sys.exit(1)
     return token
 
@@ -42,7 +39,6 @@ def get_pr_info_from_session(session: Dict) -> Optional[Dict]:
 
     # Parse: https://github.com/owner/repo/pull/123
     import re
-
     match = re.match(r"https://github\.com/([^/]+)/([^/]+)/pull/(\d+)", pr_url)
     if not match:
         return None
@@ -66,7 +62,7 @@ def get_session_context(store: JulesSessionStore, session_id: str) -> Dict:
     with store._conn() as conn:
         rows = conn.execute(
             "SELECT * FROM activities WHERE session_id=? ORDER BY create_time ASC",
-            (sid,),
+            (sid,)
         ).fetchall()
         activities = [dict(r) for r in rows]
 
@@ -106,9 +102,7 @@ def generate_feedback_comment(session_id: str, context: Dict) -> str:
         action = "Please review the generated plan and reply with **@jules approve** to proceed, or provide guidance on changes needed."
         category = "Plan Approval Needed"
     elif "user_feedback" in state_lower:
-        if "select" in latest_agent.lower() and (
-            "pr" in latest_agent.lower() or "pull request" in latest_agent.lower()
-        ):
+        if "select" in latest_agent.lower() and ("pr" in latest_agent.lower() or "pull request" in latest_agent.lower()):
             action = "Agent needs guidance on which PR to work on. Reply with **@jules work on PR #XXX** or specify selection criteria."
             category = "PR Selection Needed"
         elif latest_agent.strip().endswith("?"):
@@ -154,9 +148,7 @@ def generate_feedback_comment(session_id: str, context: Dict) -> str:
     return comment
 
 
-def post_pr_comment(
-    owner: str, repo: str, pr_number: int, body: str, token: str
-) -> bool:
+def post_pr_comment(owner: str, repo: str, pr_number: int, body: str, token: str) -> bool:
     """Post a comment to a GitHub PR."""
     url = f"https://api.github.com/repos/{owner}/{repo}/issues/{pr_number}/comments"
     headers = {
@@ -176,21 +168,11 @@ def post_pr_comment(
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Post @jules feedback to PRs for awaiting sessions"
-    )
+    parser = argparse.ArgumentParser(description="Post @jules feedback to PRs for awaiting sessions")
     parser.add_argument("--session", help="Specific session ID to process")
-    parser.add_argument(
-        "--all-awaiting",
-        action="store_true",
-        help="Process all sessions awaiting feedback",
-    )
-    parser.add_argument(
-        "--dry-run", action="store_true", help="Show comments without posting"
-    )
-    parser.add_argument(
-        "--list", action="store_true", help="List sessions with PRs awaiting feedback"
-    )
+    parser.add_argument("--all-awaiting", action="store_true", help="Process all sessions awaiting feedback")
+    parser.add_argument("--dry-run", action="store_true", help="Show comments without posting")
+    parser.add_argument("--list", action="store_true", help="List sessions with PRs awaiting feedback")
     args = parser.parse_args()
 
     store = JulesSessionStore()
@@ -213,7 +195,7 @@ def main():
             session_id = session.get("session_id", "")[:21]
             state = session.get("state", "")[:27]
             pr_str = f"#{pr_info['number']}"
-            repo = pr_info["repo"][:34]
+            repo = pr_info['repo'][:34]
             title = session.get("title", "")[:40]
             print(f"{session_id:<22} {state:<28} {pr_str:<10} {repo:<35} {title}")
         return
@@ -224,9 +206,7 @@ def main():
 
     # Filter to specific session if requested
     if args.session:
-        sessions_with_prs = [
-            (s, p) for s, p in sessions_with_prs if s.get("session_id") == args.session
-        ]
+        sessions_with_prs = [(s, p) for s, p in sessions_with_prs if s.get("session_id") == args.session]
         if not sessions_with_prs:
             print(f"Session {args.session} not found or has no PR.")
             return
@@ -235,9 +215,7 @@ def main():
 
     for session, pr_info in sessions_with_prs:
         session_id = session.get("session_id", "")
-        print(
-            f"\n📋 Processing {session_id} -> {pr_info['owner']}/{pr_info['repo']}#{pr_info['number']}"
-        )
+        print(f"\n📋 Processing {session_id} -> {pr_info['owner']}/{pr_info['repo']}#{pr_info['number']}")
 
         context = get_session_context(store, session_id)
         comment = generate_feedback_comment(session_id, context)
@@ -252,10 +230,7 @@ def main():
             )
             if success:
                 # Optionally store a note in the local DB
-                store.set_notes(
-                    session_id,
-                    f"PR feedback posted to #{pr_info['number']} at {pr_info['url']}",
-                )
+                store.set_notes(session_id, f"PR feedback posted to #{pr_info['number']} at {pr_info['url']}")
 
 
 if __name__ == "__main__":

@@ -26,10 +26,7 @@ def validate_output(name, data):
     if isinstance(contract, list):
         return True, f"{name}: contract is list schema, skipping type validation"
     if not isinstance(contract, dict):
-        return (
-            True,
-            f"{name}: contract is {type(contract).__name__}, skipping validation",
-        )
+        return True, f"{name}: contract is {type(contract).__name__}, skipping validation"
 
     # Minimal validation: check type constraints
     expected_type = contract.get("type")
