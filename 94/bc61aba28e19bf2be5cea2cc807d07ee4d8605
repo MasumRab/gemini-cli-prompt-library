@@ -1,0 +1,18 @@
+pyproject.toml
+  h_f89acae1eff7fb 15
+requirements.txt
+  h_f89acae1eff7fb 4
+uv.lock
+  h_f89acae1eff7fb 553,2692,2694,2696
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "94bc61aba28e19bf2be5cea2cc807d07ee4d8605",
+  "prompts": {},
+  "humans": {
+    "h_f89acae1eff7fb": {
+      "author": "MasumRab <masum.rab@gmail.com>"
+    }
+  }
+}
