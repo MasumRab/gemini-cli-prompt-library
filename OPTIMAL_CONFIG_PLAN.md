@@ -229,7 +229,6 @@ class ImproveSignature(dspy.Signature):
     improved_prompt = dspy.OutputField(desc="The improved version of the prompt")
     changes_summary = dspy.OutputField(desc="Summary of the changes made")
 
-
 class Improve(dspy.Module):
     def __init__(self):
         super().__init__()

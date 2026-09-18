@@ -205,7 +205,6 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ProviderResponse:
     """Response from a provider."""
-
     success: bool
     content: str = ""
     provider: str = ""
@@ -220,7 +219,6 @@ class ProviderResponse:
 @dataclass
 class RateLimitConfig:
     """Configuration for rate limiting."""
-
     enabled: bool = True
     max_retries: int = 3
     backoff_factor: float = 1.0
@@ -236,7 +234,7 @@ class BaseProvider(ABC):
         command: str,
         subcommand: str,
         model: str,
-        rate_limit: Optional[RateLimitConfig] = None,
+        rate_limit: Optional[RateLimitConfig] = None
     ):
         """
         Initialize provider.
@@ -299,7 +297,7 @@ class BaseProvider(ABC):
                 return response
 
             if attempt < max_retries:
-                wait_time = min(backoff * (2**attempt), self.rate_limit.max_backoff)
+                wait_time = min(backoff * (2 ** attempt), self.rate_limit.max_backoff)
                 logger.warning(
                     f"Rate limited by {self.name}, retrying in {wait_time}s "
                     f"(attempt {attempt + 1}/{max_retries})"
@@ -313,7 +311,7 @@ class BaseProvider(ABC):
             success=False,
             error="Max retries exceeded",
             provider=self.name,
-            model=self.model,
+            model=self.model
         )
 
     def __repr__(self) -> str:
@@ -367,7 +365,7 @@ class ProviderChain:
             success=False,
             error=f"All providers failed: {last_error}",
             provider="none",
-            model="none",
+            model="none"
         )
 
     def add_provider(self, provider: BaseProvider) -> None:
@@ -383,8 +381,7 @@ class ProviderChain:
         """
         name_to_provider = {p.name: p for p in self.providers}
         self.providers = [
-            name_to_provider[name]
-            for name in provider_names
+            name_to_provider[name] for name in provider_names
             if name in name_to_provider
         ]
 ```
@@ -419,7 +416,9 @@ class OpenCodeProvider(BaseProvider):
     """Provider for OpenCode CLI."""
 
     def __init__(
-        self, model: str = "gpt-4o-mini", rate_limit: Optional[RateLimitConfig] = None
+        self,
+        model: str = "gpt-4o-mini",
+        rate_limit: Optional[RateLimitConfig] = None
     ):
         """
         Initialize OpenCode provider.
@@ -433,7 +432,7 @@ class OpenCodeProvider(BaseProvider):
             command="opencode",
             subcommand="ask",
             model=model,
-            rate_limit=rate_limit,
+            rate_limit=rate_limit
         )
 
     def _execute_cli(self, prompt: str, **kwargs) -> ProviderResponse:
@@ -448,12 +447,14 @@ class OpenCodeProvider(BaseProvider):
             ProviderResponse with result
         """
         import time
-
         start_time = time.time()
 
         try:
             result = subprocess.run(
-                ["opencode", "ask", prompt], capture_output=True, text=True, timeout=120
+                ["opencode", "ask", prompt],
+                capture_output=True,
+                text=True,
+                timeout=120
             )
 
             latency = time.time() - start_time
@@ -469,7 +470,7 @@ class OpenCodeProvider(BaseProvider):
                     provider=self.name,
                     model=self.model,
                     rate_limited=rate_limited,
-                    latency_seconds=latency,
+                    latency_seconds=latency
                 )
 
             return ProviderResponse(
@@ -477,7 +478,7 @@ class OpenCodeProvider(BaseProvider):
                 content=result.stdout.strip(),
                 provider=self.name,
                 model=self.model,
-                latency_seconds=latency,
+                latency_seconds=latency
             )
 
         except subprocess.TimeoutExpired:
@@ -486,7 +487,7 @@ class OpenCodeProvider(BaseProvider):
                 error="Command timed out after 120 seconds",
                 provider=self.name,
                 model=self.model,
-                latency_seconds=time.time() - start_time,
+                latency_seconds=time.time() - start_time
             )
 
         except Exception as e:
@@ -495,7 +496,7 @@ class OpenCodeProvider(BaseProvider):
                 error=str(e),
                 provider=self.name,
                 model=self.model,
-                latency_seconds=time.time() - start_time,
+                latency_seconds=time.time() - start_time
             )
 
     def _is_rate_limited(self, output: str) -> bool:
@@ -515,7 +516,7 @@ class OpenCodeProvider(BaseProvider):
             "429",
             "exceeded quota",
             "capacity",
-            "try again later",
+            "try again later"
         ]
 
         output_lower = output.lower()
@@ -545,7 +546,7 @@ class QwenCodeProvider(BaseProvider):
     def __init__(
         self,
         model: str = "qwen2.5-coder:32b",
-        rate_limit: Optional[RateLimitConfig] = None,
+        rate_limit: Optional[RateLimitConfig] = None
     ):
         """
         Initialize Qwen Code provider.
@@ -559,7 +560,7 @@ class QwenCodeProvider(BaseProvider):
             command="qwen-code",
             subcommand="ask",
             model=model,
-            rate_limit=rate_limit,
+            rate_limit=rate_limit
         )
 
     def _execute_cli(self, prompt: str, **kwargs) -> ProviderResponse:
@@ -580,7 +581,7 @@ class QwenCodeProvider(BaseProvider):
                 ["qwen-code", "ask", prompt],
                 capture_output=True,
                 text=True,
-                timeout=120,
+                timeout=120
             )
 
             latency = time.time() - start_time
@@ -595,7 +596,7 @@ class QwenCodeProvider(BaseProvider):
                     provider=self.name,
                     model=self.model,
                     rate_limited=rate_limited,
-                    latency_seconds=latency,
+                    latency_seconds=latency
                 )
 
             return ProviderResponse(
@@ -603,7 +604,7 @@ class QwenCodeProvider(BaseProvider):
                 content=result.stdout.strip(),
                 provider=self.name,
                 model=self.model,
-                latency_seconds=latency,
+                latency_seconds=latency
             )
 
         except subprocess.TimeoutExpired:
@@ -612,7 +613,7 @@ class QwenCodeProvider(BaseProvider):
                 error="Command timed out after 120 seconds",
                 provider=self.name,
                 model=self.model,
-                latency_seconds=time.time() - start_time,
+                latency_seconds=time.time() - start_time
             )
 
         except Exception as e:
@@ -621,7 +622,7 @@ class QwenCodeProvider(BaseProvider):
                 error=str(e),
                 provider=self.name,
                 model=self.model,
-                latency_seconds=time.time() - start_time,
+                latency_seconds=time.time() - start_time
             )
 
     def _is_rate_limited(self, output: str) -> bool:
@@ -631,7 +632,7 @@ class QwenCodeProvider(BaseProvider):
             "too many requests",
             "429",
             "busy",
-            "try again",
+            "try again"
         ]
 
         output_lower = output.lower()
@@ -661,7 +662,7 @@ class GeminiProvider(BaseProvider):
     def __init__(
         self,
         model: str = "gemini-1.5-flash",
-        rate_limit: Optional[RateLimitConfig] = None,
+        rate_limit: Optional[RateLimitConfig] = None
     ):
         """
         Initialize Gemini provider.
@@ -675,7 +676,7 @@ class GeminiProvider(BaseProvider):
             command="gemini",
             subcommand="ask",
             model=model,
-            rate_limit=rate_limit,
+            rate_limit=rate_limit
         )
 
     def _execute_cli(self, prompt: str, **kwargs) -> ProviderResponse:
@@ -693,7 +694,10 @@ class GeminiProvider(BaseProvider):
 
         try:
             result = subprocess.run(
-                ["gemini", "ask", prompt], capture_output=True, text=True, timeout=120
+                ["gemini", "ask", prompt],
+                capture_output=True,
+                text=True,
+                timeout=120
             )
 
             latency = time.time() - start_time
@@ -708,7 +712,7 @@ class GeminiProvider(BaseProvider):
                     provider=self.name,
                     model=self.model,
                     rate_limited=rate_limited,
-                    latency_seconds=latency,
+                    latency_seconds=latency
                 )
 
             return ProviderResponse(
@@ -716,7 +720,7 @@ class GeminiProvider(BaseProvider):
                 content=result.stdout.strip(),
                 provider=self.name,
                 model=self.model,
-                latency_seconds=latency,
+                latency_seconds=latency
             )
 
         except subprocess.TimeoutExpired:
@@ -725,7 +729,7 @@ class GeminiProvider(BaseProvider):
                 error="Command timed out after 120 seconds",
                 provider=self.name,
                 model=self.model,
-                latency_seconds=time.time() - start_time,
+                latency_seconds=time.time() - start_time
             )
 
         except Exception as e:
@@ -734,7 +738,7 @@ class GeminiProvider(BaseProvider):
                 error=str(e),
                 provider=self.name,
                 model=self.model,
-                latency_seconds=time.time() - start_time,
+                latency_seconds=time.time() - start_time
             )
 
     def _is_rate_limited(self, output: str) -> bool:
@@ -744,7 +748,7 @@ class GeminiProvider(BaseProvider):
             "too many requests",
             "429",
             "quota exceeded",
-            "user rate limit",
+            "user rate limit"
         ]
 
         output_lower = output.lower()
@@ -781,16 +785,28 @@ def create_provider_chain() -> ProviderChain:
     providers = [
         OpenCodeProvider(
             model="gpt-4o-mini",
-            rate_limit=RateLimitConfig(enabled=True, max_retries=3, backoff_factor=1.0),
+            rate_limit=RateLimitConfig(
+                enabled=True,
+                max_retries=3,
+                backoff_factor=1.0
+            )
         ),
         QwenCodeProvider(
             model="qwen2.5-coder:32b",
-            rate_limit=RateLimitConfig(enabled=True, max_retries=3, backoff_factor=0.5),
+            rate_limit=RateLimitConfig(
+                enabled=True,
+                max_retries=3,
+                backoff_factor=0.5
+            )
         ),
         GeminiProvider(
             model="gemini-1.5-flash",
-            rate_limit=RateLimitConfig(enabled=True, max_retries=3, backoff_factor=2.0),
-        ),
+            rate_limit=RateLimitConfig(
+                enabled=True,
+                max_retries=3,
+                backoff_factor=2.0
+            )
+        )
     ]
 
     return ProviderChain(providers)
@@ -800,7 +816,11 @@ def get_default_provider() -> OpenCodeProvider:
     """Get the default (primary) provider."""
     return OpenCodeProvider(
         model="gpt-4o-mini",
-        rate_limit=RateLimitConfig(enabled=True, max_retries=3, backoff_factor=1.0),
+        rate_limit=RateLimitConfig(
+            enabled=True,
+            max_retries=3,
+            backoff_factor=1.0
+        )
     )
 
 
@@ -813,7 +833,7 @@ __all__ = [
     "QwenCodeProvider",
     "GeminiProvider",
     "create_provider_chain",
-    "get_default_provider",
+    "get_default_provider"
 ]
 ```
 
@@ -866,7 +886,10 @@ class BaseScenario(ABC):
 
         train_data, val_data = self._split_data(raw_data)
 
-        return (self._to_dspy_examples(train_data), self._to_dspy_examples(val_data))
+        return (
+            self._to_dspy_examples(train_data),
+            self._to_dspy_examples(val_data)
+        )
 
     @abstractmethod
     def _load_raw_data(self) -> List[Dict[str, Any]]:
@@ -874,12 +897,16 @@ class BaseScenario(ABC):
         ...
 
     def _split_data(
-        self, data: List[Dict[str, Any]]
+        self,
+        data: List[Dict[str, Any]]
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         """Split data into train and validation sets."""
         split_idx = max(
             self.MIN_TRAIN_SIZE,
-            min(len(data) - self.MIN_VAL_SIZE, int(len(data) * (1 - self.test_size))),
+            min(
+                len(data) - self.MIN_VAL_SIZE,
+                int(len(data) * (1 - self.test_size))
+            )
         )
 
         train_data = data[:split_idx]
@@ -887,7 +914,10 @@ class BaseScenario(ABC):
 
         return train_data, val_data
 
-    def _to_dspy_examples(self, data: List[Dict[str, Any]]) -> List[dspy.Example]:
+    def _to_dspy_examples(
+        self,
+        data: List[Dict[str, Any]]
+    ) -> List[dspy.Example]:
         """Convert data dictionaries to dspy.Example objects."""
         examples = []
         for row in data:
@@ -904,15 +934,16 @@ class BaseScenario(ABC):
 
     @abstractmethod
     def metric(
-        self, example: dspy.Example, pred: dspy.Prediction, trace: Optional[Any] = None
+        self,
+        example: dspy.Example,
+        pred: dspy.Prediction,
+        trace: Optional[Any] = None
     ) -> float:
         """Evaluate prediction against ground truth."""
         ...
 
     def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__name__}(test_size={self.test_size}, seed={self.seed})"
-        )
+        return f"{self.__class__.__name__}(test_size={self.test_size}, seed={self.seed})"
 
 
 class ScenarioRegistry:
@@ -923,7 +954,6 @@ class ScenarioRegistry:
     @classmethod
     def register(cls, name: str) -> callable:
         """Decorator to register a scenario class."""
-
         def decorator(scenario_class: Type[BaseScenario]) -> Type[BaseScenario]:
             if not issubclass(scenario_class, BaseScenario):
                 raise TypeError(
@@ -931,7 +961,6 @@ class ScenarioRegistry:
                 )
             cls._scenarios[name] = scenario_class
             return scenario_class
-
         return decorator
 
     @classmethod
@@ -1575,13 +1604,13 @@ class MIPROv2Optimizer(BaseOptimizer):
         num_threads: int = 16,
         auto: str = "light",
         prompt_model=None,
-        task_model=None,
+        task_model=None
     ):
         super().__init__(
             metric=metric,
             max_bootstrapped_demos=max_bootstrapped_demos,
             max_labeled_demos=max_labeled_demos,
-            num_threads=num_threads,
+            num_threads=num_threads
         )
         self.auto = auto
         self.prompt_model = prompt_model
@@ -1595,14 +1624,16 @@ class MIPROv2Optimizer(BaseOptimizer):
             auto=self.auto,
             prompt_model=self.prompt_model,
             task_model=self.task_model,
-            num_threads=self.num_threads,
+            num_threads=self.num_threads
         )
 
     def compile(self, program, trainset, valset):
         import dspy
 
         if not dspy.settings.lm:
-            raise RuntimeError("No LM configured. Call dspy.configure(lm=...) first.")
+            raise RuntimeError(
+                "No LM configured. Call dspy.configure(lm=...) first."
+            )
 
         teleprompter = self._create_teleprompter()
         return teleprompter.compile(program, trainset=trainset, valset=valset)
@@ -1628,7 +1659,7 @@ class BootstrapFewShotOptimizer(BaseOptimizer):
             metric=self.metric,
             max_bootstrapped_demos=self.max_bootstrapped_demos,
             max_labeled_demos=self.max_labeled_demos,
-            num_threads=self.num_threads,
+            num_threads=self.num_threads
         )
 
 
@@ -1642,13 +1673,13 @@ class BootstrapFewShotRandomSearchOptimizer(BaseOptimizer):
         max_bootstrapped_demos: int = 3,
         max_labeled_demos: int = 3,
         num_threads: int = 16,
-        num_candidate_programs: int = 10,
+        num_candidate_programs: int = 10
     ):
         super().__init__(
             metric=metric,
             max_bootstrapped_demos=max_bootstrapped_demos,
             max_labeled_demos=max_labeled_demos,
-            num_threads=num_threads,
+            num_threads=num_threads
         )
         self.num_candidate_programs = num_candidate_programs
 
@@ -1658,7 +1689,7 @@ class BootstrapFewShotRandomSearchOptimizer(BaseOptimizer):
             max_bootstrapped_demos=self.max_bootstrapped_demos,
             max_labeled_demos=self.max_labeled_demos,
             num_candidate_programs=self.num_candidate_programs,
-            num_threads=self.num_threads,
+            num_threads=self.num_threads
         )
 ```
 
@@ -1687,7 +1718,7 @@ class Evaluator:
         metric: Callable,
         num_threads: int = 16,
         display_progress: bool = True,
-        display_table: int = 0,
+        display_table: int = 0
     ):
         self.metric = metric
         self.num_threads = num_threads
@@ -1699,14 +1730,14 @@ class Evaluator:
             metric=metric,
             num_threads=num_threads,
             display_progress=display_progress,
-            display_table=display_table,
+            display_table=display_table
         )
 
     def evaluate(
         self,
         program: dspy.Module,
         devset: List[dspy.Example],
-        return_outputs: bool = False,
+        return_outputs: bool = False
     ) -> Dict[str, Any]:
         """Evaluate a program on a dataset."""
         self._evaluator.devset = devset
@@ -1732,26 +1763,31 @@ class Evaluator:
                 if score is None:
                     score = 0.0
                 total_score += score
-                results.append(
-                    {
-                        "example": dict(example),
-                        "prediction": dict(pred) if pred else None,
-                        "score": score,
-                    }
-                )
+                results.append({
+                    "example": dict(example),
+                    "prediction": dict(pred) if pred else None,
+                    "score": score
+                })
 
             avg_score = total_score / len(devset) if devset else 0.0
 
-            return {"score": avg_score, "count": len(devset), "outputs": results}
+            return {
+                "score": avg_score,
+                "count": len(devset),
+                "outputs": results
+            }
         else:
             avg_score = self._evaluator(program)
-            return {"score": avg_score, "count": len(devset)}
+            return {
+                "score": avg_score,
+                "count": len(devset)
+            }
 
     def export_results(self, results: Dict[str, Any], output_path: Path) -> None:
         """Export evaluation results to JSON."""
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(output_path, "w") as f:
+        with open(output_path, 'w') as f:
             json.dump(results, f, indent=2, default=str)
 
         print(f"Results exported to: {output_path}")
@@ -1800,7 +1836,7 @@ Examples:
 
   Use specific provider:
     python -m dspy_helm.cli --scenario unit_test --provider qwen
-        """,
+        """
     )
 
     parser.add_argument("--scenario", help="Scenario name to run")
@@ -1808,38 +1844,44 @@ Examples:
         "--optimizer",
         default="MIPROv2",
         choices=["MIPROv2", "BootstrapFewShot", "BootstrapFewShotWithRandomSearch"],
-        help="Optimizer to use (default: MIPROv2)",
+        help="Optimizer to use (default: MIPROv2)"
     )
     parser.add_argument(
         "--provider",
         default="auto",
         choices=["auto", "opencode", "qwen", "gemini"],
-        help="Provider to use (default: auto - uses failover chain)",
+        help="Provider to use (default: auto - uses failover chain)"
     )
     parser.add_argument(
         "--model",
         default="auto",
-        help="Model to use (default: auto - uses provider default)",
+        help="Model to use (default: auto - uses provider default)"
     )
     parser.add_argument(
-        "--evaluate-only", action="store_true", help="Only evaluate, don't optimize"
+        "--evaluate-only",
+        action="store_true",
+        help="Only evaluate, don't optimize"
     )
     parser.add_argument(
         "--output",
         default="agents",
-        help="Output directory for results (default: agents)",
+        help="Output directory for results (default: agents)"
     )
     parser.add_argument(
         "--list-scenarios",
         action="store_true",
-        help="List available scenarios and exit",
+        help="List available scenarios and exit"
     )
     parser.add_argument(
         "--list-optimizers",
         action="store_true",
-        help="List available optimizers and exit",
+        help="List available optimizers and exit"
     )
-    parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Enable verbose output"
+    )
 
     return parser
 
@@ -1853,11 +1895,7 @@ def configure_lm_from_provider(provider_name: str, model: str) -> None:
     elif provider_name == "qwen":
         if model == "auto":
             model = "qwen2.5-coder:32b"
-        dspy.configure(
-            lm=dspy.OpenAI(
-                model=model, api_key="not-needed", base_url="http://localhost:8000/v1"
-            )
-        )
+        dspy.configure(lm=dspy.OpenAI(model=model, api_key="not-needed", base_url="http://localhost:8000/v1"))
     elif provider_name == "gemini":
         if model == "auto":
             model = "gemini-1.5-flash"
@@ -1873,7 +1911,7 @@ def run_pipeline(
     model_name: str,
     output_dir: str,
     evaluate_only: bool = False,
-    verbose: bool = False,
+    verbose: bool = False
 ) -> None:
     """Run the evaluation/optimization pipeline."""
     from scenarios import ScenarioRegistry
@@ -1891,7 +1929,6 @@ def run_pipeline(
         print(f"Train size: {len(trainset)}, Val size: {len(valset)}")
 
     from dspy_integration.modules import get_module_for_scenario
-
     program = get_module_for_scenario(scenario_name)
 
     if provider_name != "auto" or model_name != "auto":
@@ -1906,9 +1943,9 @@ def run_pipeline(
         evaluator.export_results(results, output_path)
     else:
         from dspy_helm import OptimizationPipeline
-
         pipeline = OptimizationPipeline(
-            scenario=scenario, optimizer_name=optimizer_name
+            scenario=scenario,
+            optimizer_name=optimizer_name
         )
 
         optimized = pipeline.run(trainset, valset)
@@ -1930,7 +1967,6 @@ def main():
 
     if args.list_scenarios:
         from scenarios import ScenarioRegistry
-
         print("Available Scenarios:")
         for name in ScenarioRegistry.list():
             print(f"  - {name}")
@@ -1938,7 +1974,6 @@ def main():
 
     if args.list_optimizers:
         from optimizers import OptimizerRegistry
-
         print("Available Optimizers:")
         for name in OptimizerRegistry.list():
             print(f"  - {name}")
@@ -1955,13 +1990,12 @@ def main():
             model_name=args.model,
             output_dir=args.output,
             evaluate_only=args.evaluate_only,
-            verbose=args.verbose,
+            verbose=args.verbose
         )
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         if args.verbose:
             import traceback
-
             traceback.print_exc()
         sys.exit(1)
 

@@ -632,9 +632,9 @@ class JulesSessionStore:
             result = self.sync_page(
                 client,
                 page_size=page_size,
-                activity_limit=activity_limit - sessions_synced
-                if activity_limit
-                else 0,
+                activity_limit=(
+                    activity_limit - sessions_synced if activity_limit else 0
+                ),
                 activity_max=activity_max,
             )
             sessions_synced += result["new_synced"]

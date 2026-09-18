@@ -226,7 +226,6 @@ Uses a meta-prompt to analyze user requests and select the best command.
 from typing import Dict, List, Optional, Tuple
 from .registry import CommandRegistry
 
-
 class IntelligentDispatcher:
     """Routes natural language requests to appropriate commands."""
 
@@ -291,9 +290,7 @@ class IntelligentDispatcher:
         # This is a placeholder - full implementation uses LLM
         return request
 
-    def _find_alternatives(
-        self, request: str, best: Dict, commands: List[Dict]
-    ) -> List[Dict]:
+    def _find_alternatives(self, request: str, best: Dict, commands: List[Dict]) -> List[Dict]:
         """Find alternative commands that might also apply."""
         # Return top 3 alternatives by keyword overlap
         return []
@@ -327,12 +324,8 @@ def normalize_args(args: List[str]) -> List[str]:
 # In cli.py - Add to argument parser
 robot_parser = subparsers.add_parser("robot", help="Robot/AI mode output")
 robot_parser.add_argument("--robot", action="store_true", help="Enable robot mode")
-robot_parser.add_argument(
-    "--robot-format", choices=["json", "jsonl", "compact"], default="json"
-)
-robot_parser.add_argument(
-    "--robot-meta", action="store_true", help="Include performance metadata"
-)
+robot_parser.add_argument("--robot-format", choices=["json", "jsonl", "compact"], default="json")
+robot_parser.add_argument("--robot-meta", action="store_true", help="Include performance metadata")
 robot_parser.add_argument("--fields", help="Comma-separated fields to include")
 robot_parser.add_argument("--max-content-length", type=int, help="Truncate long fields")
 robot_parser.add_argument("--max-tokens", type=int, help="Soft token budget")
@@ -405,12 +398,10 @@ def test_load_all_commands():
     registry = CommandRegistry()
     assert len(registry._commands) == 41  # All TOML files
 
-
 def test_search_by_keyword():
     registry = CommandRegistry()
     results = registry.search("security")
     assert len(results) > 0
-
 
 # tests/test_dispatcher.py
 def test_dispatch_returns_structure():
@@ -429,7 +420,6 @@ def test_robot_mode_json():
     result = run_cli(["--robot", "--json", "list"])
     assert result.is_json
     assert "scenarios" in result.data
-
 
 def test_forgiving_parsing():
     # Single-dash long flag should work
