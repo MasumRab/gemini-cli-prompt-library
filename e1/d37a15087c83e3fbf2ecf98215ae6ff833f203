@@ -1,0 +1,14 @@
+uv.lock
+  h_f89acae1eff7fb 1-3010
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "e1d37a15087c83e3fbf2ecf98215ae6ff833f203",
+  "prompts": {},
+  "humans": {
+    "h_f89acae1eff7fb": {
+      "author": "MasumRab <masum.rab@gmail.com>"
+    }
+  }
+}
