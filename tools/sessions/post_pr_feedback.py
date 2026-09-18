@@ -1,3 +1,7 @@
+import sys
+import os
+import re
+
 #!/usr/bin/env python3
 """
 Post @jules feedback comments to PRs for sessions awaiting user feedback.
@@ -9,7 +13,6 @@ Usage:
 """
 
 import argparse
-import json
 import os
 import sys
 from pathlib import Path
@@ -41,7 +44,6 @@ def get_pr_info_from_session(session: Dict) -> Optional[Dict]:
         return None
 
     # Parse: https://github.com/owner/repo/pull/123
-    import re
 
     match = re.match(r"https://github\.com/([^/]+)/([^/]+)/pull/(\d+)", pr_url)
     if not match:
