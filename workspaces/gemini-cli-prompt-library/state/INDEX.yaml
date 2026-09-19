@@ -1,0 +1,18 @@
+version: 3
+workspace_repository: MasumRab/gemini-cli-prompt-library
+canonical_remote: https://github.com/MasumRab/gemini-cli-prompt-library.git
+workspace: workspaces/gemini-cli-prompt-library
+admin_clone: workspaces/gemini-cli-prompt-library/.target-repo
+worktree_root: workspaces/gemini-cli-prompt-library/state
+worktree_owner_repository: MasumRab/gemini-cli-prompt-library
+worktree_owner_remote: https://github.com/MasumRab/gemini-cli-prompt-library.git
+sessions:
+  - session_id: "3904526157749798491"
+    role: target_detached_inspection
+    worktree: state/3904526157749798491
+    repository: MasumRab/gemini-cli-prompt-library
+    branch: null
+    base_ref: d0b35e2d560e370683f6e30991e39549042011d3
+    head_ref: d0b35e2d560e370683f6e30991e39549042011d3
+    status: detached_inspection
+    artifact_dir: sessions/3904526157749798491

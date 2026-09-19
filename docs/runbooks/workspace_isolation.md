@@ -11,17 +11,26 @@ truth.
 
 ## Workspace layout
 
-`workspaces/` is for **target repositories being operated on** — each subdirectory
-is named after the repo (not the owner). The jules repo itself uses its own
-`session_tracking/` structure; it does not nest under `workspaces/`.
+`workspaces/` is for **Jules session-operation projections** — each subdirectory
+is named after the target repo (not the owner). The workspace name does not prove
+that a registered worktree checks out that target repository: verify
+`git -C <state-path> remote -v` and `git rev-parse --show-toplevel`. Existing
+EmailIntelligence state entries were created from the Jules repository for
+inspection and are not yet EmailIntelligence repair worktrees. Recreate or
+replace an entry from the target repository before using it for repair. Once its
+root and remote are verified as EmailIntelligence, it is the approved local
+repair surface: agents may edit, commit, and push to the existing PR branch
+after explicit authorization and remote-head verification. The Jules repo
+itself also has its own `session_tracking/` structure.
 
 ```text
 workspaces/<repo-name>/
 ├── sessions/        fully ignored raw session projections
 ├── analysis/        tracked findings and summaries
 ├── prompts/         sent_responses.md and message proposals
+├── .target-repo/    ignored target-repository Git admin clone
 ├── state/INDEX.yaml tracked session/worktree coordination metadata
-└── state/<id>/      ignored per-session worktree
+└── state/<id>/      ignored target-repository worktree
 ```
 
 Examples:
@@ -81,33 +90,66 @@ session pushed changes does.
 
 ```bash
 # Inspect the patch (no changes applied); keep raw output in the ignored workspace
+# (cwd-independent — safe from anywhere)
 mkdir -p workspaces/<repo>/sessions/<session_id>
 jules remote pull --session <session_id> \
   > workspaces/<repo>/sessions/<session_id>/pull.diff
 
-# Apply only after verifying a clean localized worktree
- git -C workspaces/<repo>/state/<session_id> status --short
+# Apply ONLY from inside the verified target-repo worktree (never the Jules root)
+cd workspaces/<repo>/state/<session_id>
+git status --short          # must be empty — stop if not
+git remote get-url origin   # must be the target repo, not MasumRab/jules
 jules remote pull --session <session_id> --apply
 ```
+
+**CWD contract for apply/teleport (verified CLI behavior):** `jules remote pull
+--apply` and `jules teleport` bind to the Git repository in the current working
+directory. Inside a repo matching the session's repository, the patch is
+applied directly to that working tree — no new folder. Outside any matching
+repo, `teleport` creates a fresh clone `./jules-<repo>-<sessionid>/` in cwd.
+Consequences:
+
+- Apply patches only inside a verified `state/<id>/` worktree (never the Jules
+  root, never an unpushed sibling).
+- **Never run `teleport` inside `.target-repo/`** — the admin clone matches the
+  session's repo, so the patch would dirty the admin clone's main checkout.
+  The admin clone is the worktree owner and stays clean.
+- Use `teleport` only to bootstrap a workspace with no admin clone: run it from
+  a neutral cwd, then relocate the created clone to `state/<id>/` and INDEX it.
+- Resolve the session's true repo first from `sourceContext.source` or the PR
+  URL — never from the directory you happen to be in.
 
 ### Worktree-based manual fix (for conflicts the session cannot resolve)
 
 ```bash
-# 1. Create isolated worktree from the PR branch under the Jules workspace
+# 1. Create/reuse a target-repository worktree under the Jules workspace.
+# The command must be run against the target repository's Git metadata, not
+# the Jules repository. Prefer the existing PR branch; do not create a new
+# branch unless explicit isolation is authorized.
 mkdir -p workspaces/<repo>/state
-git worktree add \
+TARGET_ADMIN_CLONE=workspaces/<repo>/.target-repo
+git -C "$TARGET_ADMIN_CLONE" fetch origin "$branch" "$base"
+git -C "$TARGET_ADMIN_CLONE" worktree add \
   workspaces/<repo>/state/session-$pr-fix \
-  origin/$branch -b fix/pr-$pr-rebase
+  origin/$branch
 
-# 2. Merge current base to surface conflicts
+# 2. Verify this is the target repository before editing
 cd workspaces/<repo>/state/session-$pr-fix
+git rev-parse --show-toplevel
+git remote get-url origin
+git status --short
+
+# 3. Merge current base to surface conflicts only when required
 git merge origin/$base --no-edit
 
-# 3. Resolve per hunk (3-way: merge-base, ours, theirs) — never checkout --ours/--theirs wholesale
+# 4. Resolve per hunk (3-way: merge-base, ours, theirs) — never checkout --ours/--theirs wholesale
 
-# 4. Verify: git diff origin/$base...HEAD must show ONLY intended changes
+# 5. Verify: git diff origin/$base...HEAD must show ONLY intended changes
 
-# 5. Push back to the PR branch
+# 6. Update the target repo's state/INDEX.yaml with verified repository,
+# branch, base/head, and status metadata.
+
+# 7. Push back to the existing PR branch only after ownership is verified
 git push origin HEAD:$branch
 ```
 

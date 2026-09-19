@@ -1,26 +1,39 @@
 # Schema for tracked per-repository Jules state indexes.
-version: 1
+version: 3
 required:
   - version
-  - repository
+  - workspace_repository
   - canonical_remote
   - workspace
+  - admin_clone
   - worktree_root
+  - worktree_owner_repository
+  - worktree_owner_remote
   - sessions
 session_required:
   - session_id
   - role
   - worktree
+  - repository
   - branch
   - base_ref
+  - head_ref
   - status
 fields:
+  admin_clone: ignored target-repository clone that owns all target worktrees
+  worktree_owner_repository: repository checked out by target worktrees; must match workspace_repository
+  worktree_owner_remote: remote URL configured in admin_clone; must match canonical_remote
+  repository: repository actually checked out by this indexed worktree
   branch: existing remote branch name or null for detached inspection
   base_ref: verified commit/ref used to create the worktree
+  head_ref: verified current worktree commit
   status: detached_inspection | active_repair | pushed | blocked | superseded
   artifact_dir: ignored relative session artifact directory or null
 rules:
-  - Track this metadata schema and INDEX.yaml files.
-  - Ignore worktree contents, patches, caches, logs, credentials, and raw API/SDK exports.
-  - Record a branch or pushed state only after verifying it against the target remote.
+  - Track this metadata schema, registry.yaml, and INDEX.yaml files.
+  - Ignore target admin clones, worktree contents, patches, caches, logs, credentials, and raw API/SDK exports.
+  - Each target workspace owns an ignored admin clone; only that clone may create its target worktrees.
+  - The admin clone remote and each target worktree remote must match the canonical remote.
+  - Existing worktrees of the Jules repository are legacy inspection-only entries and cannot be used for target repair.
+  - A verified target worktree may be edited, committed, and pushed to an existing PR branch after authorization and remote-head verification.
   - One index entry identifies one repository/session/worktree; do not reuse entries.

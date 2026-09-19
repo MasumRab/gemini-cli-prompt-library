@@ -1,9 +1,11 @@
 # Jules Workspaces
 
 This directory contains local, repository-scoped projections used by Jules
-session operations. It is not a collection of target-repository checkouts, and
-it is not automatically part of the Jules application source or CodeRabbit
-review scope.
+session operations. It is not a collection of target-repository checkouts.
+A workspace name identifies the session's target context, not the repository
+actually checked out in a registered state worktree. Verify the worktree root
+and remote before using it. Workspaces are not automatically part of the Jules
+application source or CodeRabbit review scope.
 
 ## Layout
 
@@ -14,9 +16,14 @@ jules/workspaces/
     ├── sessions/<session-id>/        # fully ignored raw session projections
     ├── analysis/                     # tracked findings, summaries, and reports
     ├── prompts/                      # tracked message proposals/logs
+    ├── .target-repo/                 # ignored target Git admin clone
     ├── state/INDEX.yaml              # tracked session/worktree coordination state
-    └── state/<session-id>/           # ignored registered editable worktree
+    └── state/<session-id>/           # ignored target-repository worktree
 ```
+
+The authoritative target mapping is tracked in
+[`workspaces/registry.yaml`](registry.yaml). It maps each target to its
+canonical remote, ignored admin clone, state root, and tracked index.
 
 Current repository projections:
 
@@ -98,9 +105,59 @@ git check-ignore -v \
   workspaces/<repo>/state/<SESSION_ID>/README.md
 ```
 
-`jules teleport` and explicit `git worktree` creation must still leave the
-editable checkout under the matching `workspaces/<repo>/state/<session-id>/`
-namespace. Confirm registration with `git worktree list --porcelain`.
+`jules teleport` and explicit target-repository `git worktree` creation must
+leave the editable checkout under the matching
+`workspaces/<repo>/state/<session-id>/` namespace. The source repository for
+creation must be the target remote, not the Jules checkout. Confirm both
+registration and repository identity:
+
+```bash
+git worktree list --porcelain
+git -C workspaces/<repo>/state/<session-id> rev-parse --show-toplevel
+git -C workspaces/<repo>/state/<session-id> remote get-url origin
+git -C workspaces/<repo>/state/<session-id> status --short
+```
+
+For concrete target-repository examples, copy
+`workspaces/target-worktree.template.yaml` and use the per-repository examples
+below. Existing EmailIntelligence `state/<id>` entries currently point to the
+Jules repository and must first be recreated or replaced from the target
+repository before use. Once verified as target-repository worktrees, these
+localized state paths are the approved repair surfaces: agents may edit,
+commit, and push fixes to the existing EmailIntelligence PR branch, subject to
+explicit authorization and remote-head verification.
+
+### Target worktree examples
+
+```bash
+# EmailIntelligence
+mkdir -p workspaces/EmailIntelligence/state
+# Run only from an explicitly authorized target-repo context/ref:
+git -C workspaces/EmailIntelligence/.target-repo worktree add \\
+  "$PWD/workspaces/EmailIntelligence/state/<SESSION_ID>" \\
+  origin/<PR_BRANCH>
+
+# Gemini CLI prompt library
+git -C workspaces/gemini-cli-prompt-library/.target-repo worktree add \\
+  workspaces/gemini-cli-prompt-library/state/<SESSION_ID> \\
+  origin/<PR_BRANCH>
+
+# Gemini full-stack LangGraph
+git -C workspaces/gemini-fullstack-langgraph-quickstart/.target-repo worktree add \\
+  workspaces/gemini-fullstack-langgraph-quickstart/state/<SESSION_ID> \\
+  origin/<PR_BRANCH>
+
+# Kaggle notebooks analysis
+git -C workspaces/kaggle-notebooks-analysis/.target-repo worktree add \\
+  workspaces/kaggle-notebooks-analysis/state/<SESSION_ID> \\
+  origin/<PR_BRANCH>
+```
+
+Before creating any target worktree: resolve the named repository and PR,
+fetch its remote, confirm the branch exists, check the destination is unused,
+and record the actual worktree repository in that repo's `state/INDEX.yaml`.
+Do not create a new branch unless the existing PR branch cannot safely be
+updated or explicit isolation is authorized.
 
 ## Tracking policy
 

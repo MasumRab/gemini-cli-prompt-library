@@ -1,0 +1,9 @@
+version: 3
+workspace_repository: MasumRab/kaggle-notebooks-analysis
+canonical_remote: https://github.com/MasumRab/kaggle-notebooks-analysis.git
+workspace: workspaces/kaggle-notebooks-analysis
+admin_clone: workspaces/kaggle-notebooks-analysis/.target-repo
+worktree_root: workspaces/kaggle-notebooks-analysis/state
+worktree_owner_repository: MasumRab/kaggle-notebooks-analysis
+worktree_owner_remote: https://github.com/MasumRab/kaggle-notebooks-analysis.git
+sessions: []

@@ -30,11 +30,37 @@ uv run python3 -m tools.sessions.jules_list_sessions --state FAILED AWAITING_USE
 
 ## 2. Materialize the session's working state
 
-| Need | Command | Result |
-|------|---------|--------|
-| Inspect only | `mkdir -p workspaces/<repo>/sessions/<id> && jules remote pull --session <id> > workspaces/<repo>/sessions/<id>/pull.diff` | Session diff to ignored local storage |
-| **Editable isolated copy (recommended)** | `jules teleport <id>` | Create/inspect only under the matching `workspaces/<repo>/state/<id>/` worktree |
-| Apply into an existing worktree | `git -C workspaces/<repo>/state/<id> status --short` then `jules remote pull --session <id> --apply` | First require an empty status. Apply only inside the verified target-repo worktree under `workspaces/<repo>/state/`, **never** an unpushed sibling or canonical checkout; stop if status is not clean |
+**Resolve the target repo first.** The session's repository comes from the API
+(`sourceContext.source`, e.g. `sources/github/MasumRab/EmailIntelligence`) or the
+PR URL — never from the directory you happen to be in. Map it to the workspace:
+`MasumRab/EmailIntelligence` → `workspaces/EmailIntelligence/`.
+
+**CWD contract (verified CLI behavior):** `jules teleport` and
+`jules remote pull --apply` bind to the Git repository in the current working
+directory. If cwd is inside a repo matching the session's repository, the
+patch is applied **directly to that working tree** (no new folder). If cwd is
+not inside a matching repo, `teleport` creates a fresh clone
+`./jules-<repo>-<sessionid>/` in cwd and applies the patch as uncommitted
+changes. Therefore:
+
+| Need | Procedure |
+|------|-----------|
+| Inspect patch only (repo-independent) | `mkdir -p workspaces/<repo>/sessions/<id> && jules remote pull --session <id> > workspaces/<repo>/sessions/<id>/pull.diff` |
+| **Apply into a disposable worktree (recommended)** | Create the worktree from the admin clone first, then apply inside it: `git -C workspaces/<repo>/.target-repo fetch origin <branch> && git -C workspaces/<repo>/.target-repo worktree add workspaces/<repo>/state/<id> origin/<branch>` → `cd workspaces/<repo>/state/<id> && git status --short` (must be empty) `&& git remote get-url origin` (must be the target repo) `&& jules remote pull --session <id> --apply` |
+| Bootstrap a workspace with no admin clone yet | Run `jules teleport <id>` from a **neutral cwd** (never the Jules repo root, never an unpushed sibling), then move the created `jules-<repo>-<id>/` clone to `workspaces/<repo>/state/<id>/` and record it in INDEX.yaml |
+
+Rules:
+
+- **Never run `teleport` or `remote pull --apply` from the Jules repo root** —
+  it materializes the session's patch into a jules-repo checkout (the legacy
+  wrong-repo worktree failure mode).
+- **Never run `teleport` from inside `.target-repo/`** — the admin clone matches
+  the session's repo, so the patch would be applied directly to the admin
+  clone's main checkout, dirtying the worktree owner. The admin clone stays
+  clean; patches land in disposable `state/<id>/` worktrees.
+- **Never run them from an unpushed sibling checkout** of the target repo.
+- If the workspace has no `.target-repo` admin clone yet, create it first:
+  `git clone https://github.com/<owner>/<repo>.git workspaces/<repo>/.target-repo`
 
 Notes:
 

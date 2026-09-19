@@ -1,54 +1,98 @@
-# Tracked session-state index for EmailIntelligence.
-# The directories named by session ID are disposable registered Git worktrees;
-# this file is the portable coordination state agents should read first.
-version: 1
-repository: MasumRab/EmailIntelligence
+# Tracked coordination metadata for target-owned EmailIntelligence worktrees.
+version: 3
+workspace_repository: MasumRab/EmailIntelligence
 canonical_remote: https://github.com/MasumRab/EmailIntelligence.git
 workspace: workspaces/EmailIntelligence
+admin_clone: workspaces/EmailIntelligence/.target-repo
 worktree_root: workspaces/EmailIntelligence/state
+worktree_owner_repository: MasumRab/EmailIntelligence
+worktree_owner_remote: https://github.com/MasumRab/EmailIntelligence.git
+repair_policy: verified target worktrees may be edited, committed, and pushed to existing PR branches after authorization and remote-head verification
+# Legacy jules-repo inspection worktrees under state/ were removed 2026-09-19
+# after their session patches were preserved in sessions/<id>/. Re-materialize
+# any needed session from the target admin clone, never from the Jules repo.
 sessions:
-  - session_id: "12998852914377637541"
-    role: inspection
-    worktree: state/12998852914377637541
+  - session_id: mas-pr-632
+    role: target_detached_inspection
+    worktree: state/mas-pr-632
+    repository: MasumRab/EmailIntelligence
     branch: null
-    base_ref: 0859e07
+    base_ref: 83f468642695958a834314982356195034c1d5c6
+    head_ref: 83f468642695958a834314982356195034c1d5c6
     status: detached_inspection
-    artifact_dir: sessions/12998852914377637541
-  - session_id: "15849735980747386761"
-    role: inspection
-    worktree: state/15849735980747386761
-    branch: null
-    base_ref: 0859e07
-    status: detached_inspection
-    artifact_dir: sessions/15849735980747386761
-  - session_id: "18095420007057529466"
-    role: inspection
-    worktree: state/18095420007057529466
-    branch: null
-    base_ref: 0859e07
-    status: detached_inspection
-    artifact_dir: sessions/18095420007057529466
-  - session_id: "2960310825137265296"
-    role: inspection
-    worktree: state/2960310825137265296
-    branch: null
-    base_ref: 0859e07
-    status: detached_inspection
-    artifact_dir: sessions/2960310825137265296
-  - session_id: "596003508416904399"
-    role: inspection
-    worktree: state/596003508416904399
-    branch: null
-    base_ref: 0859e07
-    status: detached_inspection
-    artifact_dir: sessions/596003508416904399
-  - session_id: "session-audit-20260916"
-    role: audit
-    worktree: state/session-audit-20260916
-    branch: null
-    base_ref: 0859e07
-    status: detached_inspection
-    artifact_dir: null
-
-# Update this index only with verified refs. Never record credentials, raw API
-# payloads, or claims of a push without a remote SHA and command evidence.
+  - session_id: pr-775-fix-linting
+    role: target_pr_repair
+    worktree: state/pr-775-fix-linting
+    repository: MasumRab/EmailIntelligence
+    branch: fix-linting-src-main
+    base_ref: 78c3190b542f967ecc2f5acba109ea7d0fe3e024
+    head_ref: 78c3190b542f967ecc2f5acba109ea7d0fe3e024
+    status: active_repair
+  - session_id: pr-790-debounce-search
+    role: target_pr_repair
+    worktree: state/pr-790-debounce-search
+    repository: MasumRab/EmailIntelligence
+    branch: fix/debounce-search-dashboard
+    base_ref: 8e87a22eef68f10240473b143fbc30898ed4ee28
+    head_ref: 8e87a22eef68f10240473b143fbc30898ed4ee28
+    status: active_repair
+  - session_id: pr-791-ci-infrastructure
+    role: target_pr_repair
+    worktree: state/pr-791-ci-infrastructure
+    repository: MasumRab/EmailIntelligence
+    branch: fix/ci-infrastructure-2506962712549882166
+    base_ref: 25fa197c5c68ae246396d72d23da996f5342c313
+    head_ref: 25fa197c5c68ae246396d72d23da996f5342c313
+    status: active_repair
+  - session_id: pr-808-deps-ci
+    role: target_pr_repair
+    worktree: state/pr-808-deps-ci
+    repository: MasumRab/EmailIntelligence
+    branch: fix/deps-pip-actions-10041449041565916881
+    base_ref: ebf9e3e8edc3c9b2c697d86fad401a41607c6d37
+    head_ref: ebf9e3e8edc3c9b2c697d86fad401a41607c6d37
+    status: active_repair
+  - session_id: taskmaster
+    role: target_branch_worktree
+    worktree: state/taskmaster
+    repository: MasumRab/EmailIntelligence
+    branch: taskmaster
+    base_ref: 633b774ab866469e0166f5ecf6237486d9d272b7
+    head_ref: 633b774ab866469e0166f5ecf6237486d9d272b7
+    status: active_repair
+  - session_id: pr-636-salvage
+    role: target_pr_repair
+    worktree: state/pr-636-fix
+    repository: MasumRab/EmailIntelligence
+    branch: fix/pr-636-salvage
+    base_ref: ead1a6d4
+    head_ref: 6366dfce
+    status: completed
+    notes: pushed to sentinel/fix-cmd-injection-deployment-scripts-14323196579621021860 (PR#636, +2/-2)
+  - session_id: pr-479-salvage
+    role: target_pr_repair
+    worktree: state/pr-479-fix
+    repository: MasumRab/EmailIntelligence
+    branch: fix/pr-479-salvage
+    base_ref: ead1a6d4
+    head_ref: e41c428c
+    status: completed
+    notes: pushed to sentinel-secure-token-endpoint-9119171047628725306 (PR#479, +6/-0)
+  - session_id: pr-338-salvage
+    role: target_pr_repair
+    worktree: state/pr-338-fix
+    repository: MasumRab/EmailIntelligence
+    branch: fix/pr-338-salvage
+    base_ref: ead1a6d4
+    head_ref: 42deb6c8
+    status: completed
+    notes: pushed to sentinel-fix-zip-slip-plugin-manager-8449104713119985854 (PR#338, +60/-0)
+  - session_id: pr-815-salvage
+    role: target_pr_repair
+    worktree: state/pr-815-fix
+    repository: MasumRab/EmailIntelligence
+    branch: fix/pr-815-salvage
+    base_ref: ead1a6d4
+    head_ref: 0e43a2ae
+    status: completed
+    notes: pushed to bolt-smart-filter-lazy-eval-12679806066699207963-8821656087735709478 (PR#815, +200/-103)

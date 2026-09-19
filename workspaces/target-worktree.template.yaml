@@ -1,0 +1,23 @@
+# Copy this entry into workspaces/<repo>/state/INDEX.yaml only after creation.
+# Replace every placeholder; verify commands before recording branch/head.
+# The worktree must be created from the target workspace's ignored admin clone,
+# not from the Jules repository or an unpushed sibling checkout.
+version: 3
+workspace_repository: <OWNER>/<TARGET_REPO>
+canonical_remote: https://github.com/<OWNER>/<TARGET_REPO>.git
+workspace: workspaces/<TARGET_REPO>
+admin_clone: workspaces/<TARGET_REPO>/.target-repo
+worktree_root: workspaces/<TARGET_REPO>/state
+worktree_owner_repository: <OWNER>/<TARGET_REPO>
+worktree_owner_remote: https://github.com/<OWNER>/<TARGET_REPO>.git
+worktree_remote: https://github.com/<OWNER>/<TARGET_REPO>.git
+sessions:
+  - session_id: "<SESSION_ID>"
+    role: target_repo_repair
+    worktree: state/<SESSION_ID>
+    worktree_repository: <OWNER>/<TARGET_REPO>
+    branch: <existing-pr-branch>
+    base_ref: <verified-base-sha-or-ref>
+    head_ref: <verified-head-sha>
+    status: active_repair
+    artifact_dir: sessions/<SESSION_ID>

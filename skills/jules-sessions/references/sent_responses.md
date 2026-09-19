@@ -1158,3 +1158,22 @@ restores with CURRENT branch state baked in.
 
 All restores carry: (1) explicit current branch tip, (2) instruction to fetch first,
 (3) no trust in snapshot, (4) lane-specific tasks.
+
+## 2026-09-18 — FAILED session salvage (workspace audit)
+
+| Session | Type | Content |
+|---------|------|---------|
+| 10041449041565916881 | wake-up/salvage | MAS-125 deps: rebase branch onto current main, drop already-landed work (command injection d057676b, lodash 4.18.1), push to existing branch fix/deps-pip-actions-... (PR#808 closed unmerged) |
+| 11267029240983047750 | wake-up/salvage | gemini-fullstack maintenance: 90-file patch never pushed; re-apply on new branch agent/maintenance-cleanup-... from current main, split commits, must end with pushed commits |
+
+Context: 16 FAILED sessions audited via patch pulls into workspaces/<repo>/sessions/<id>/pull.diff.
+14 were obsolete (review targets dead/superseded — lodash CVE fixed on main, DoS fixed via PR#688,
+duplicate debounce PRs 693/790/792). Only these 2 had unlanded unique work.
+
+## 2026-09-19 — Stale-branch salvage surgery (PRs 636, 479, 338, 815)
+Manual orchestrator surgery (no session messages needed — sessions were FAILED/obsolete):
+- PR#636 (14323196579621021860): dropped 7 stale-snapshot commits incl. -4,775-line deletion bomb; kept PathValidator fix (validate_and_resolve_db_path). Pushed 6366dfce → +2/-2, mergeable:true, CI green.
+- PR#479 (9119171047628725306): token fix duplicated in PR#807 (dropped); kept model_manager singleton (fixes latent ImportError in enhanced_routes.py on main). Pushed e41c428c → +6/-0, mergeable:true, CI green.
+- PR#338 (8449104713119985854): zip-slip fix already on main (stronger SecurityError version); kept regression test test_plugin_security.py (passes against main, 1/1). Pushed 42deb6c8 → +60/-0, mergeable:true, CI green.
+- PR#815 (12679806066699207963): dropped 13 workflow stale-deletes, verify_model_safety removal, lockfile churn; kept lazy-eval _EmailContext refactor + sqlite mkdir + UI panel. Pushed 0e43a2ae → +200/-103, mergeable:true, CI green. 9/9 smart-filter tests pass.
+Findings on main (not PR-scoped): validate_host in setup/validation.py lost regex check during launch.py refactor (defense-in-depth loss, Popen list-args bounds it); python_backend model_manager singleton missing (fixed via PR#479 salvage).

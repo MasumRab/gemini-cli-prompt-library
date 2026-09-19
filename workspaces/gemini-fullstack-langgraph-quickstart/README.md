@@ -20,19 +20,21 @@ workspaces/gemini-fullstack-langgraph-quickstart/
 
 ## Canonical paths and operations
 
-Canonical checkout: `/home/masum/github/remote/gemini-fullstack-langgraph-quickstart`.
-Keep raw artifacts under `sessions/<session-id>/` (only curated Markdown
-summaries are retained) and put disposable editable worktrees at
-`/home/masum/github/remote/jules/workspaces/gemini-fullstack-langgraph-quickstart/state/<session-id>/`,
-with one branch per session. Existing registered worktrees are not moved in this pass.
+Canonical target remote: `MasumRab/gemini-fullstack-langgraph-quickstart`.
+Use the ignored workspace admin clone at
+`workspaces/gemini-fullstack-langgraph-quickstart/.target-repo` as the sole
+worktree owner. Keep raw artifacts under `sessions/<session-id>/` and put target
+worktrees at `workspaces/gemini-fullstack-langgraph-quickstart/state/<session-id>/`,
+with one branch per session. Existing worktrees are not moved unless their Git
+owner is verified.
 
 ```bash
 jules remote list --repo
 jules remote list --session
 jules remote pull --session <session-id>
 jules teleport <session-id>
-git -C /home/masum/github/remote/gemini-fullstack-langgraph-quickstart worktree add \\
-  /home/masum/github/remote/jules/workspaces/gemini-fullstack-langgraph-quickstart/state/<session-id> <branch-or-commit>
+git -C workspaces/gemini-fullstack-langgraph-quickstart/.target-repo worktree add \\
+  workspaces/gemini-fullstack-langgraph-quickstart/state/<session-id> <branch-or-commit>
 ```
 
 `jules teleport` is available; run `jules teleport --help` for current options.

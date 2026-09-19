@@ -42,13 +42,26 @@ activities_*.json
 # Put durable findings and curated summaries in workspaces/<repo>/analysis/.
 # Keep the entire sessions directory ignored; do not store tracked summaries here.
 /workspaces/*/sessions/
-# Per-session state contains disposable registered worktrees. Track only the
-# portable coordination index; ignore each materialized worktree's contents.
+# Per-session state contains disposable target-repository worktrees. Track only
+# portable coordination indexes; ignore materialized worktree contents.
 /workspaces/*/state/*/**
 !/workspaces/*/state/INDEX.yaml
+# Also ignore the state subdirectory entries themselves (a /*/** pattern
+# matches contents, not the dir; worktrees with .git pointers still show
+# as untracked embedded-repo candidates otherwise).
+/workspaces/*/state/*/
+
+# Each workspace's target-repository clone owns its own Git metadata and
+# worktrees. Never commit the clone, its .git directory, or checkout contents.
+/workspaces/*/.target-repo/
+/workspaces/*/.target-repo/**
 # Workspace-local caches, generated output, and temporary exports.
 .jules/cache/**
 /workspaces/*/.cache/**
 /workspaces/*/cache/**
 /workspaces/*/generated/**
 /workspaces/*/tmp/**
+
+# Session store databases are local runtime state, never tracked.
+/jules_sessions_store_api.db
+/jules_sessions_store_api_via_store.db

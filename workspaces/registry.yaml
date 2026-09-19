@@ -1,0 +1,36 @@
+# Target-repository workspace registry.
+# The registry is tracked; target clones and materialized worktrees are ignored.
+version: 1
+workspace_root: workspaces
+repositories:
+  - name: EmailIntelligence
+    repository: MasumRab/EmailIntelligence
+    remote: https://github.com/MasumRab/EmailIntelligence.git
+    admin_clone: workspaces/EmailIntelligence/.target-repo
+    state_root: workspaces/EmailIntelligence/state
+    index: workspaces/EmailIntelligence/state/INDEX.yaml
+  - name: gemini-cli-prompt-library
+    repository: MasumRab/gemini-cli-prompt-library
+    remote: https://github.com/MasumRab/gemini-cli-prompt-library.git
+    admin_clone: workspaces/gemini-cli-prompt-library/.target-repo
+    state_root: workspaces/gemini-cli-prompt-library/state
+    index: workspaces/gemini-cli-prompt-library/state/INDEX.yaml
+  - name: gemini-fullstack-langgraph-quickstart
+    repository: MasumRab/gemini-fullstack-langgraph-quickstart
+    remote: https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart.git
+    admin_clone: workspaces/gemini-fullstack-langgraph-quickstart/.target-repo
+    state_root: workspaces/gemini-fullstack-langgraph-quickstart/state
+    index: workspaces/gemini-fullstack-langgraph-quickstart/state/INDEX.yaml
+  - name: kaggle-notebooks-analysis
+    repository: MasumRab/kaggle-notebooks-analysis
+    remote: https://github.com/MasumRab/kaggle-notebooks-analysis.git
+    admin_clone: workspaces/kaggle-notebooks-analysis/.target-repo
+    state_root: workspaces/kaggle-notebooks-analysis/state
+    index: workspaces/kaggle-notebooks-analysis/state/INDEX.yaml
+rules:
+  - The admin clone is the Git worktree owner for its target repository.
+  - Create target worktrees with git -C <admin_clone> worktree add.
+  - Verify remote and repository identity before editing or pushing.
+  - Never use the Jules root repository to create target worktrees.
+  - Never use an unpushed sibling checkout by default.
+  - Existing Jules-owned inspection worktrees remain inspection-only until migrated.

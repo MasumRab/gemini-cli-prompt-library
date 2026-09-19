@@ -1,0 +1,9 @@
+version: 3
+workspace_repository: MasumRab/gemini-fullstack-langgraph-quickstart
+canonical_remote: https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart.git
+workspace: workspaces/gemini-fullstack-langgraph-quickstart
+admin_clone: workspaces/gemini-fullstack-langgraph-quickstart/.target-repo
+worktree_root: workspaces/gemini-fullstack-langgraph-quickstart/state
+worktree_owner_repository: MasumRab/gemini-fullstack-langgraph-quickstart
+worktree_owner_remote: https://github.com/MasumRab/gemini-fullstack-langgraph-quickstart.git
+sessions: []

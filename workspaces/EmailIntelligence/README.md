@@ -23,13 +23,16 @@ workspaces/EmailIntelligence/
 │   ├── JULES_FINAL_MESSAGE*.md  # Drafts for final message
 │   ├── JULES_UPDATE_MESSAGE.md
 │   └── SESSION_GUIDANCE_REPORT.md
+├── .target-repo/     # Ignored EmailIntelligence Git admin clone
 ├── state/INDEX.yaml  # Tracked session/worktree coordination metadata
-└── state/<session-id>/ # Ignored editable worktrees, isolated by branch
+└── state/<session-id>/ # Ignored target-repository worktrees, isolated by branch
 ```
 
 ## Canonical paths and operations
 
-The canonical checkout is `/home/masum/github/remote/EmailIntelligence`.
+The canonical target remote is `MasumRab/EmailIntelligence`.
+`/home/masum/github/remote/EmailIntelligence` is a sibling canonical checkout
+that may contain unpushed user changes and is not a default worktree source.
 Raw Jules artifacts belong under `sessions/<session-id>/`; the entire
 `sessions/` directory is local-only and ignored. Move durable findings to
 `analysis/`. Disposable editable worktrees belong at
@@ -50,10 +53,20 @@ jules teleport <session-id>
 git worktree list --porcelain
 ```
 
-Do not run `git worktree add` from the unpushed sibling checkout. If explicit
-creation is necessary, use the existing repository worktree administration and
-record the resulting path and verified base in `state/INDEX.yaml`; never reuse a
-state directory for another session or branch.
+Create target worktrees only from the workspace-owned admin clone, never from
+the Jules root or unpushed sibling checkout:
+
+```bash
+git -C workspaces/EmailIntelligence/.target-repo fetch origin <pr-branch> <base>
+git -C workspaces/EmailIntelligence/.target-repo worktree add \\
+  workspaces/EmailIntelligence/state/<session-id> origin/<pr-branch>
+git -C workspaces/EmailIntelligence/state/<session-id> remote get-url origin
+```
+
+Record the resulting repository, branch, base, and head in
+`state/INDEX.yaml`; never reuse a state directory for another session or
+branch. A verified target worktree may be edited, committed, and pushed to the
+existing PR branch after explicit authorization.
 
 `jules teleport` is available; run `jules teleport --help` for current options.
 The canonical remote is `https://github.com/MasumRab/EmailIntelligence.git`.
@@ -66,9 +79,15 @@ from this workspace directory—reviews Jules repository changes, not
 EmailIntelligence source. Do not `cd` into a workspace artifact directory and
 mistake it for a target checkout.
 
-For target-session inspection, use `jules remote list|pull` and the registered
-localized `state/<session-id>/` worktree. A target review may run there only
-after verifying its Git root, branch/PR, base ref, and task. Do not read, edit,
+For target-session inspection, use `jules remote list|pull` and a localized
+`state/<session-id>/` worktree only after verifying its actual Git root and
+remote. Existing state entries in this workspace currently check out the Jules
+repository, despite the workspace name; recreate or replace an entry from the
+EmailIntelligence target repository before repair. Once verified as an
+EmailIntelligence worktree, it is the approved repair surface: agents may edit,
+commit, and push to the existing PR branch after explicit authorization,
+branch/PR, base-ref, and remote-head verification. A target review/fix still
+requires those checks before editing. Do not read, edit,
 test, or stage the unpushed sibling `/home/masum/github/remote/EmailIntelligence`
 by default; it may contain unrelated user changes. Workspace `sessions/`,
 `state/`, caches, generated files, and temporary exports are disposable and
