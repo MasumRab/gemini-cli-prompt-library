@@ -25,6 +25,7 @@ import argparse
 import sys
 import time
 from pathlib import Path
+from typing import Optional
 
 # Ensure we can import the local modules
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -56,7 +57,7 @@ def get_store_high_water(store: JulesSessionStore) -> tuple[str | None, float]:
     return latest, _parse_ts(latest or "")
 
 
-def main() -> int:
+def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[1])
     parser.add_argument(
         "--max-pages",
@@ -69,7 +70,7 @@ def main() -> int:
         action="store_true",
         help="Report what would be synced without writing",
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     store = JulesSessionStore()
     client = JulesAPIClient()

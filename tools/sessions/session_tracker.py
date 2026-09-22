@@ -345,6 +345,9 @@ def create_tracking_file(session: Dict[str, Any], analysis: Dict[str, Any]) -> P
 
 def list_awaiting_sessions():
     """List all sessions awaiting feedback."""
+    from tools.store.staleness import ensure_fresh
+
+    ensure_fresh(quiet=True)  # sync-before-read gate
     store = JulesSessionStore()
     awaiting = get_awaiting_sessions(store)
 
@@ -366,6 +369,9 @@ def list_awaiting_sessions():
 
 def track_sessions(sync_first: bool = False, limit: int = 100):
     """Create tracking files for all awaiting sessions."""
+    from tools.store.staleness import ensure_fresh
+
+    ensure_fresh(quiet=True)  # sync-before-read gate
     store = JulesSessionStore()
 
     if sync_first:
