@@ -19,17 +19,17 @@ curl -H "x-goog-api-key: $JULES_API_KEY" \
 https://jules.googleapis.com/v1alpha/sessions
 ```
 
-[Authentication Guide](/docs/api/reference/authentication) Detailed setup instructions for API key authentication.
+[Authentication Guide](https://jules.google.com/docs/api/reference/authentication) Detailed setup instructions for API key authentication.
 
 ## Endpoints
 
-[Sessions](/docs/api/reference/sessions) Create and manage coding sessions. Sessions represent a unit of work where Jules executes tasks on your codebase.
+[Sessions](https://jules.google.com/docs/api/reference/sessions) Create and manage coding sessions. Sessions represent a unit of work where Jules executes tasks on your codebase.
 
-[Activities](/docs/api/reference/activities) Monitor session progress through activities. Each activity represents an event like plan generation, messages, or completion.
+[Activities](https://jules.google.com/docs/api/reference/activities) Monitor session progress through activities. Each activity represents an event like plan generation, messages, or completion.
 
-[Sources](/docs/api/reference/sources) List and retrieve connected repositories. Sources represent GitHub repositories that Jules can work with.
+[Sources](https://jules.google.com/docs/api/reference/sources) List and retrieve connected repositories. Sources represent GitHub repositories that Jules can work with.
 
-[Types](/docs/api/reference/types) Reference for all data types used in the API including Session, Activity, Plan, Artifact, and more.
+[Types](https://jules.google.com/docs/api/reference/types) Reference for all data types used in the API including Session, Activity, Plan, Artifact, and more.
 
 ## Common Patterns
 

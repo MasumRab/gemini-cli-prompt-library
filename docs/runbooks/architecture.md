@@ -17,8 +17,8 @@ tools/
 ├── utils/            # Shared auth, pre-flight checks
 ├── shell/            # Shell automation scripts
 ├── sdk/              # Node.js @google/jules-sdk bridge
-└── tests/            # Pytest suite (37 tests)
-commands/             # Shell wrapper commands (10 wrappers)
+└── tests/            # Pytest suite (87 tests across 12 files)
+commands/             # Shell wrapper commands (16 wrappers)
 skills/               # AI agent skill definitions (7 skills)
 docs/                 # Runbooks, guides, references, actions
 ```

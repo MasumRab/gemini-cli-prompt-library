@@ -1,5 +1,13 @@
 # Jules GitHub Integration Runbook
 
+> **⚠️ Partially superseded (2026-09):** The self-hosted `/jules` slash-command
+> section below (single `jules.yml` workflow) predates the canonical
+> 11-workflow stack. For current workflow deployment, see
+> `docs/actions/README.md` (authorities index) and
+> `docs/actions/TARGET_REPOSITORY_ADJUSTMENTS.md` (distribution gates).
+> The `@jules` routing model, tool inventory, and session↔PR correlation
+> sections below remain current.
+
 ## Overview
 
 Jules sessions produce GitHub PRs as outputs. These tools correlate sessions with PRs and automate safety checks.
@@ -14,6 +22,12 @@ On any PR that Jules created, leave a comment with:
 
 Jules automatically routes the message to the session that created the PR.
 This works on every Jules-created PR — no GitHub Action or webhook setup needed.
+
+Note: comments **without** an `@jules` mention (human, SonarCloud, CodeRabbit,
+Sourcery) are invisible to sessions — the mention is the only inbound channel.
+On user-created PRs there is no session to route to. See
+`session_runbook.md` for the full routing model (sessions have no GitHub
+write access; review text flows out via chat `[VERDICT]` replies).
 
 ## Self-Hosted `/jules` Slash Command (for any PR, not just Jules-created)
 

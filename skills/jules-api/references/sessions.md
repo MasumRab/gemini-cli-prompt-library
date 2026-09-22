@@ -38,7 +38,7 @@ https://jules.googleapis.com/v1alpha/sessions
 
 ### Response
 
-Returns the created [Session](/docs/api/reference/types#session) object:
+Returns the created [Session](https://jules.google.com/docs/api/reference/types#session) object:
 
 ```json
 {

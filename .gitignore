@@ -65,3 +65,7 @@ activities_*.json
 # Session store databases are local runtime state, never tracked.
 /jules_sessions_store_api.db
 /jules_sessions_store_api_via_store.db
+
+# GitNexus tool-generated mirrors (canonical copies live in .agents/skills/)
+/.claude/
+/CLAUDE.md
