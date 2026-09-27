@@ -26,6 +26,7 @@ node_modules/
 *.log
 .letta/settings.json
 .letta/settings.local.json
+.letta/worktrees/
 
 # Build artifacts
 dist/
