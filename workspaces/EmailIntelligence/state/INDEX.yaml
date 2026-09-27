@@ -96,3 +96,48 @@ sessions:
     head_ref: 0e43a2ae
     status: completed
     notes: pushed to bolt-smart-filter-lazy-eval-12679806066699207963-8821656087735709478 (PR#815, +200/-103)
+  - session_id: 9976353698363073761
+    role: target_drift_repair
+    worktree: state/9976353698363073761
+    repository: MasumRab/EmailIntelligence
+    branch: sentinel-fix-command-injection-scripts-9976353698363073761
+    base_ref: origin/main@89d8b4d2
+    head_ref: b58117cb
+    status: drift_repair_pending
+    note: PR#648 branch; merging current main before session wake-up (2026-09-26)
+  - session_id: 6253952775512400589
+    role: target_drift_repair
+    worktree: state/6253952775512400589
+    repository: MasumRab/EmailIntelligence
+    branch: sentinel-fix-auth-endpoint-6253952775512400589
+    base_ref: origin/main@89d8b4d2
+    head_ref: 7e391144
+    status: drift_repair_pending
+    note: PR#807 branch; merging current main before session wake-up (2026-09-26)
+  - session_id: 9443413523109439597
+    role: target_drift_repair
+    worktree: state/9443413523109439597
+    repository: MasumRab/EmailIntelligence
+    branch: jules-9443413523109439597-37dda406
+    base_ref: origin/main@89d8b4d2
+    head_ref: 23643e97
+    status: drift_repair_pending
+    note: PR#692 branch; merging current main before session wake-up (2026-09-26)
+  - session_id: 14823980629961743161
+    role: target_drift_repair
+    worktree: state/14823980629961743161
+    repository: MasumRab/EmailIntelligence
+    branch: bolt/search-debounce-14823980629961743161
+    base_ref: origin/main@89d8b4d2
+    head_ref: c5ebdc18
+    status: drift_repair_pending
+    note: PR#732 branch; merging current main before session wake-up (2026-09-26)
+  - session_id: 6236298220428978887
+    role: target_drift_repair
+    worktree: state/6236298220428978887
+    repository: MasumRab/EmailIntelligence
+    branch: fix-ci-infrastructure-2506962712549882166-6236298220428978887
+    base_ref: origin/main@89d8b4d2
+    head_ref: 3596ee79
+    status: drift_repair_pending
+    note: PR#832 branch; merging current main before session wake-up (2026-09-26)

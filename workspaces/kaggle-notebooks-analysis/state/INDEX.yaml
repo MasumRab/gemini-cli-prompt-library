@@ -6,4 +6,12 @@ admin_clone: workspaces/kaggle-notebooks-analysis/.target-repo
 worktree_root: workspaces/kaggle-notebooks-analysis/state
 worktree_owner_repository: MasumRab/kaggle-notebooks-analysis
 worktree_owner_remote: https://github.com/MasumRab/kaggle-notebooks-analysis.git
-sessions: []
+sessions:
+  - session_id: jules-session-manager-skill
+    role: target_documentation_repair
+    worktree: state/jules-session-manager-skill
+    repository: MasumRab/kaggle-notebooks-analysis
+    branch: fix/jules-session-manager-skill
+    base_ref: origin/main@aa53fc370941631b89706f8eca0016de9d4ac1fa
+    head_ref: aa53fc370941631b89706f8eca0016de9d4ac1fa
+    status: active_repair
