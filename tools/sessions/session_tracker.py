@@ -10,6 +10,8 @@ Usage:
     python session_tracker.py --sync    # Sync from API first (requires JULES_API_KEY)
     python session_tracker.py --track   # Create tracking files from local store
     python session_tracker.py --list    # List awaiting sessions
+
+Reads are local-only. ``--sync`` is the explicit opt-in for API requests.
 """
 
 import argparse
@@ -344,10 +346,7 @@ def create_tracking_file(session: Dict[str, Any], analysis: Dict[str, Any]) -> P
 
 
 def list_awaiting_sessions():
-    """List all sessions awaiting feedback."""
-    from tools.store.staleness import ensure_fresh
-
-    ensure_fresh(quiet=True)  # sync-before-read gate
+    """List locally stored sessions awaiting feedback; never contacts the API."""
     store = JulesSessionStore()
     awaiting = get_awaiting_sessions(store)
 
@@ -368,10 +367,7 @@ def list_awaiting_sessions():
 
 
 def track_sessions(sync_first: bool = False, limit: int = 100):
-    """Create tracking files for all awaiting sessions."""
-    from tools.store.staleness import ensure_fresh
-
-    ensure_fresh(quiet=True)  # sync-before-read gate
+    """Create tracking files from local data, optionally syncing when requested."""
     store = JulesSessionStore()
 
     if sync_first:
@@ -440,7 +436,7 @@ def main():
         "--no-sync", action="store_true", help="Use only local store (default)"
     )
     parser.add_argument(
-        "--list", action="store_true", help="Just list awaiting sessions"
+        "--list", action="store_true", help="List awaiting sessions from local store only"
     )
     parser.add_argument(
         "--limit", type=int, default=100, help="Max sessions to sync from API"

@@ -5,8 +5,8 @@ SQLite store for cross-repo PR triage data.
 Single file (~/.jules/pr_store.db), one schema, ``repo`` column — the
 SQLite translation of the per-repo PostgreSQL design. Populated on
 demand by Letta agents via tools/store/sync_prs.py; freshness is
-tracked per repo in sync_meta (``last_pr_sync:<repo>``) so the same
-sync-before-read gate pattern as the session store applies.
+tracked per repo in sync_meta (``last_pr_sync:<repo>``) for reporting only.
+Explicit sync requests fetch regardless of timestamp; age never gates them.
 
 Schema (per the Sept 2026 PR-tracking design, SQLite subset):
     pull_request  — core PR row, generated churn/size/abandoned columns

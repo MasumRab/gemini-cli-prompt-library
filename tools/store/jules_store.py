@@ -548,7 +548,7 @@ class JulesSessionStore:
             return []
 
     def find_stale_sessions(self, hours: int = 2) -> List[Dict]:
-        """Sessions needing state refresh from API (outcome IS NULL, old last_seen)."""
+        """List old, unresolved sessions as candidates; does not fetch or refresh them."""
         cutoff = (
             (datetime.now(timezone.utc) - timedelta(hours=hours))
             .isoformat()

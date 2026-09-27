@@ -2,17 +2,16 @@
 """
 Sync PR data from GitHub into the PR store, per repo, incrementally.
 
-Designed to be invoked by Letta agents on request. For each repo:
-  1. Skip if fresh (last_pr_sync:<repo> watermark within threshold)
-     unless --force.
-  2. gh pr list --json … (one call per state bucket: open + merged/closed
+Designed to be invoked explicitly by Letta agents on request. An explicit
+sync always fetches; freshness timestamps are informational and never gate
+the request. For each repo:
+  1. gh pr list --json … (one call per state bucket: open + merged/closed
      recent) → upsert.
 
 Usage:
-    uv run python tools/store/sync_prs.py                    # all repos, if stale
+    uv run python tools/store/sync_prs.py                    # explicitly sync all repos
     uv run python tools/store/sync_prs.py --repo EmailIntelligence
-    uv run python tools/store/sync_prs.py --force            # ignore freshness
-    uv run python tools/store/sync_prs.py --status           # report only
+    uv run python tools/store/sync_prs.py --status           # freshness/status report only
 """
 
 import argparse
@@ -102,12 +101,8 @@ def fetch_rollups(repo: str, prs: list[dict[str, Any]]) -> None:
 def sync_repo(
     store: PRStore,
     repo: str,
-    force: bool = False,
-    max_age: float = DEFAULT_MAX_AGE_HOURS,
 ) -> str:
-    """Sync one repo. Returns status string."""
-    if not force and not store.is_repo_stale(repo, max_age):
-        return "fresh (skipped)"
+    """Explicitly sync one repo regardless of the age of its stored data."""
 
     t0 = time.time()
     prs = gh_pr_list(repo, "open", 200)
@@ -125,18 +120,23 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="PR store sync")
     parser.add_argument("--repo", choices=REPOS, help="Sync a single repo")
     parser.add_argument(
-        "--force", action="store_true", help="Sync even if watermark is fresh"
+        "--force",
+        action="store_true",
+        help="Deprecated compatibility flag; explicit syncs always fetch",
     )
     parser.add_argument(
         "--max-age",
         type=float,
         default=DEFAULT_MAX_AGE_HOURS,
-        help=f"Freshness threshold hours (default {DEFAULT_MAX_AGE_HOURS})",
+        help=f"Informational freshness threshold hours for --status (default {DEFAULT_MAX_AGE_HOURS})",
     )
     parser.add_argument(
         "--status", action="store_true", help="Report watermark status only"
     )
     args = parser.parse_args()
+
+    if args.max_age < 0:
+        parser.error("--max-age must be non-negative")
 
     store = PRStore()
     repos = [args.repo] if args.repo else REPOS
@@ -161,7 +161,7 @@ def main() -> int:
     failed = 0
     for r in repos:
         try:
-            print(f"{r}: {sync_repo(store, r, force=args.force, max_age=args.max_age)}")
+            print(f"{r}: {sync_repo(store, r)}")
         except Exception as e:
             print(f"{r}: FAILED — {e}")
             failed += 1

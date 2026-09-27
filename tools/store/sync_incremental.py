@@ -84,6 +84,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     upserted = 0
     scanned = 0
     pages = 0
+    upsert_failures = 0
     next_token: str | None = None
     stopped_reason = "page cap"
 
@@ -131,6 +132,7 @@ def main(argv: Optional[list[str]] = None) -> int:
                     store.upsert_session(sess)
                 except Exception as e:
                     print(f"⚠️  Failed to upsert session {sid}: {e}")
+                    upsert_failures += 1
                     continue
             upserted += 1
             page_changes += 1
@@ -157,6 +159,9 @@ def main(argv: Optional[list[str]] = None) -> int:
         f"✅ Stopped: {stopped_reason} — {pages} pages, {scanned} scanned in {elapsed:.2f}s"
     )
     print(f"💾 Upserted: {upserted}{' (dry-run)' if args.dry_run else ''}")
+    if upsert_failures:
+        print(f"❌ Failed to upsert {upsert_failures} session(s); sync is incomplete")
+        return 1
 
     if not args.dry_run:
         with store._conn() as conn:
