@@ -1,0 +1,75 @@
+# prompts/_runner.yaml — completed
+#
+# The delivered file truncated at `routing:` / `confidence_`. Everything below
+# the marker is regenerated 2026-09-26 from the companion README contract,
+# which stated: per-prompt auto-apply thresholds P1>=0.70 P2>=0.60 P3>=0.60
+# P4>=0.75 P5>=0.80; below threshold the judgment is still persisted but base
+# tables are NOT mutated, and the case routes to
+# triage_event(actor='human_queue').
+#
+# Sections ABOVE the marker are delivered verbatim and must not be altered.
+# Anything richer than the above could not be inferred — see brief §15 Q5.
+
+version: 1
+
+defaults:
+  temperature: 0
+  response_format: json_object
+  max_output_tokens: 800
+  retries: 2
+  on_parse_failure: dead_letter
+
+persistence:
+  table: core.llm_judgment
+  key: [subject_type, subject_key, task_code, input_hash, prompt_version]
+  required_fields: [output, confidence, rationale, model, prompt_version, input_hash]
+
+# ---------------- regenerated below this line ----------------
+routing:
+
+  # Per-prompt auto-apply threshold. A judgment at or above its threshold may
+  # write into base tables; below it, the judgment is still persisted (so the
+  # decision is auditable and cacheable) but nothing is mutated.
+  confidence:
+    apply_threshold:
+      P1: 0.70      # comment intent/severity/actionability, addressed, commit quality
+      P2: 0.60      # PR <-> Linear linking
+      P3: 0.60      # Jules session detection
+      P4: 0.75      # triage action, duplicate cluster, coherence, conflicts
+      P5: 0.80      # cross-source reconciliation, abandonment root cause
+    # Ungrounded field => the prompt contract requires null with confidence <= 0.5,
+    # which lands below every threshold above and therefore never auto-applies.
+    ungrounded_ceiling: 0.5
+
+  # What happens when confidence < the prompt's apply_threshold.
+  on_below_threshold:
+    persist: true                 # always record the judgment
+    apply: false                  # never mutate pr_comment / pr_triage / pr_linear_link / pr_jules_session
+    route_to: triage_event        # audit trail entry, actor = 'human_queue'
+    route_actor: human_queue
+    queue_note: "confidence below apply_threshold; pending human review"
+
+  # Invalid output after `defaults.retries` attempts with the validator error
+  # appended (per the README contract): terminal for this input.
+  on_schema_invalid:
+    after_retries: dead_letter
+    dead_letter_resource: llm_judgment
+
+  # Cache: identical rendered prompt at the same prompt_version costs nothing on
+  # re-sync. Keyed on input_hash in core.llm_judgment, so a PR re-fetched with an
+  # unchanged comment body produces no model call.
+  cache:
+    enabled: true
+    key: [subject_key, task_code, input_hash, prompt_version]
+    on_hit: reuse_stored_judgment
+
+  # Below this, the judgment is not even persisted as a routing decision — it is
+  # treated as a parse failure instead, because a near-zero confidence usually
+  # means the input was malformed rather than ambiguous.
+  # CHOICE: 0.10 is not evidenced; the README contract named only per-prompt
+  # apply thresholds. Set to null to disable if a stored judgment is always wanted.
+  hard_floor: 0.10
+
+  promotion_gates:                # from the README contract, restated for the runner
+    P1: {intent_accuracy_min: 0.85, severity_pm1_min: 0.95}
+    P4: {action_agreement_min: 0.80}
