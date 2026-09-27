@@ -1,6 +1,9 @@
 # jules-session-manager - Gemini CLI Extension
 
-This extension provides Manage Jules AI sessions for Gemini CLI.
+This extension provides guidance for managing Jules AI sessions from the Jules repo.
+Use `SKILL.md` as the canonical procedure; repository commands there assume the Jules
+repository root and must not be applied to a target repo without checking its own
+instructions.
 
 ## Installation
 
@@ -14,4 +17,5 @@ Invoke with natural language after installation.
 
 ## Environment Variables
 
-See SKILL.md for required credentials.
+See `SKILL.md` for authentication and raw-session archive guidance. Never paste API
+keys into a command or file.

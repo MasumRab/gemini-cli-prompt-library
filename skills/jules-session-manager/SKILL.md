@@ -1,160 +1,104 @@
 ---
 name: jules-session-manager
-description: "Manage Google Jules AI sessions - list, inspect activities, send messages, and track PR tasks with integrated session-PR correlation"
-category: [ai, session-management, pr-tracking]
-type: [guide, tool]
-tags: [jules, sessions, management, pr-tracking, activities, correlation, triage]
-trigger_keywords:
-  - jules session
-  - jules api
-  - inspect jules sessions
-  - session-pr mapping
-  - /jules-triage
-  - jules session manager
-dependencies:
-  - jules-api
-  - jules-cli
-usage_context:
-  - when: "managing Jules sessions"
-    confidence: high
-  - when: "inspecting session activities"
-    confidence: high
-  - when: "PR-task correlation"
-    confidence: high
-  - when: "jules triage"
-    confidence: high
-complexity: moderate
-frequency: frequent
-auto_load: context
+description: "Inspects, triages, and manages Google Jules sessions, including session activity, recovery, plan approval, and session-to-PR correlation. Use when listing or investigating Jules sessions, sending a message, approving a plan, or relating sessions to GitHub PRs."
+metadata: {category: [ai, session-management, pr-tracking], tags: [jules, sessions, management, activities, correlation, triage]}
 ---
 
 # Jules Session Manager
 
-## Overview
+Use this skill only in the Jules repository, whose operator tools are under `tools/`.
+For a target repository's own Jules commands, first inspect that repository's trusted
+instructions and runbooks; do not transplant these Jules-repo commands into it. The
+skill is task guidance, not authorization to mutate a session or repository.
 
-Enhanced session manager with integrated Session-PR correlation capabilities. Uses the new architectural framework for authentication and bidirectional mapping between Jules sessions and GitHub PRs.
+## Choose the right scope
 
-## Usage
+- Determine the target repository and exact session IDs first. Session listings are
+  account-wide unless explicitly filtered; do not assume a session belongs to the
+  repository you're currently working in.
+- Prefer repo-scoped intent inspection:
 
-### Recommended Workflow
+  ```bash
+  uv run python -m tools.sessions.jules_intent_metadata --repo <OWNER/REPO> --pending
+  ```
 
-```bash
-# Step 1: Run pre-flight checks
-./tools/utils/pre_flight_check.sh
+  This filters by the session's inferred target repository, preferring
+  `sourceContext.source` and falling back to PR URLs or repo names. Verify each result
+  before treating it as conclusive; it is not a complete historical inventory.
 
-# Step 2: List all active sessions
-python3 tools/sessions/jules_list_sessions.py
+- For the general session list, use:
 
-# Step 3: Correlate sessions with PRs (comprehensive triage)
-python3 tools/pr/session_pr_triage.py --repo <owner>/<repo>
+  ```bash
+  uv run python -m tools.sessions.jules_list_sessions --pending
+  ```
 
-# Step 4: Inspect specific session activities
-python3 tools/sessions/jules_list_activities.py <SESSION_ID>
-```
+- Inspect activities, including full untruncated messages when needed:
 
-### Legacy Scripts
+  ```bash
+  uv run python -m tools.sessions.jules_list_activities <SESSION_ID> --full
+  ```
 
-```bash
-# Basic session listing (legacy bash script)
-skills/jules-session-manager/scripts/list_sessions.sh
+- For PR/session forensics, use the procedure in
+  `docs/guides/workflow_session_traceability.md`; use current GitHub data and session
+  artifacts as evidence, not titles or guessed branch names alone.
 
-# Dry-run mode for testing
-skills/jules-session-manager/scripts/list_sessions.sh --dry-run
-```
+## Before changing session state
 
-### Agent Invocation
-
-- "List Jules sessions"
-- "Inspect session activities"
-- "Check Jules API"
-- "Map sessions to PRs"
-- "/jules-list"
-- "/jules-inspect"
-- "/jules-triage"
-
-## Capabilities
-
-- **Session Listing**: Fetch all Jules sessions with state filtering
-- **Activity Inspection**: Retrieve detailed session activity logs
-- **Message Sending**: Send messages to active sessions
-- **Session-PR Correlation**: Bidirectional mapping between sessions and PRs
-- **Branch Name Extraction**: Extract session IDs from branch names
-- **PR Link Detection**: Scan activities for PR creation links
-- **JSON Export**: Save session-PR mappings to session_pr_map.json
-
-## Authentication
-
-Uses centralized auth manager for validation:
+Read `docs/runbooks/session_recovery.md` and verify the current session state and
+repository association. The canonical mutation commands are:
 
 ```bash
-python3 tools/utils/auth_manager.py
+uv run python -m tools.sessions.jules_send_message <SESSION_ID> "<message>"
+uv run python -m tools.sessions.jules_approve_plan <SESSION_ID>
 ```
 
-Required environment variables:
+Do not send a message, approve a plan, archive, delete, or otherwise change a session
+unless the user's request authorizes that specific action. `sendMessage` can work for
+FAILED or COMPLETED sessions too; terminal state alone does not establish that work is
+closed or authorize a new message.
 
-- `JULES_API_KEY` - Jules API key (validated against placeholder patterns)
-- `GITHUB_TOKEN` - GitHub personal access token with repo scope
+For sessions in another repository, follow `docs/runbooks/workspace_isolation.md`:
+scope every query by repo, use only a verified target-owned registered worktree for
+target code, and log every outbound message in the corresponding workspace
+`prompts/sent_responses.md` before or immediately after sending. Do not explore or edit
+an unpushed sibling checkout.
 
-## Pre-Flight Checks
+## Authentication and tools
 
-Always run before session operations:
+The Python tools read `JULES_API_KEY` from the environment (the Jules REST API uses the
+`X-Goog-Api-Key` header). Do not print, paste, or store credentials. Use `uv run` for
+all Python commands; older bare `python`/`python3` invocations without `uv run` are
+stale.
+
+The repository's unified command is also available for basic session operations (run
+from the Jules repo root):
 
 ```bash
-./tools/utils/pre_flight_check.sh
+uv run python -m tools.cli.jules-manager --help
+uv run python -m tools.cli.jules-manager list
+uv run python -m tools.cli.jules-manager session <SESSION_ID>
+uv run python -m tools.cli.jules-manager send <SESSION_ID> "<message>"
+uv run python -m tools.cli.jules-manager approve <SESSION_ID>
 ```
 
-Checks performed:
+Use the focused `tools.sessions.*` commands above for repo filtering, activity
+inspection, and session messaging/plan approval. Follow
+`docs/runbooks/session_recovery.md` for diagnosis and recovery guidance. Do not rely on
+commands copied from older `.kilo/commands/` or `scripts/jules_tools/` layouts.
 
-1. Authentication validation
-2. Clean working directory verification
-3. Branch safety (warns if on main)
+## Session data and archives
 
-## Examples
+Printing data for transient inspection is not archiving. This repository does not yet
+contain the proposed `jules-session-archive` skill. Before redirecting raw Jules session
+or activity output to a durable file, follow
+`docs/guides/session_summary_standard.md` and
+`docs/reviews/JULES_OPERATIONS_REVIEW_RECOMMENDATION.md`. Avoid unreviewed raw exports
+and never place credentials in archived data.
 
-### Full Session-PR Triage
+## References
 
-```bash
-# Run comprehensive correlation analysis
-python3 tools/pr/session_pr_triage.py --repo <owner>/<repo>
-```
-
-Output:
-
-```
-================================================================================
-SESSION ID           PR #       CONFIDENCE   METHOD
-================================================================================
-2977177834934208195  #66        High         Activity Log: PR Link Detected
-2977177834934208196  #65        Medium       PR Branch Name Match
-================================================================================
-Total Mapped: 2
-💾 Saved detailed map to session_pr_map.json
-```
-
-### List Sessions by State
-
-```bash
-python3 tools/sessions/jules_list_sessions.py --state IN_PROGRESS
-```
-
-### Inspect Session Activities
-
-```bash
-python3 tools/sessions/jules_list_activities.py 2977177834934208195 --limit 50
-```
-
-## Session-PR Mapping Methods
-
-The triage tool uses multiple methods to correlate sessions with PRs:
-
-1. **Activity Log: Branch Creation** - Detects `git checkout -b` commands in session activities
-2. **Activity Log: PR Link Detected** - Scans for GitHub PR URLs in agent messages
-3. **PR Branch Name Match** - Matches session IDs in branch names (session-_, jules-_, task-\*)
-
-## Related Runbooks
-
-- See `docs/guides/workflow_session_traceability.md` for the canonical historical
-  session-forensics procedure, evidence confidence, and Actions-run correlation rules.
-- See `docs/runbooks/SESSION_RECOVERY.md` for recovery procedures
-- See `docs/runbooks/GITHUB_INTEGRATION.md` for PR workflow guidelines
-- See `docs/runbooks/AUTH_SETUP.md` for authentication troubleshooting
+- `docs/reference/rest_api_reference.md` — endpoints, request shapes, and API behavior
+- `docs/runbooks/session_recovery.md` — state-based diagnosis and recovery
+- `docs/runbooks/workspace_isolation.md` — per-repository workspace and message logging
+- `docs/guides/workflow_session_traceability.md` — session/PR/run correlation evidence
+- `docs/reviews/JULES_OPERATIONS_REVIEW_RECOMMENDATION.md` — current operator-tool gaps

@@ -184,8 +184,11 @@ post-write validation. It should link to the standard rather than duplicating it
 
 - `jules-workflows`: replace the Session Archive `curl > file` recipe with the hardened
   `sync_session.sh`. This is an operator workflow, not a GitHub Action.
-- `jules-session-manager`: state that stdout inspection is exempt but redirecting raw
-  output requires the archive skill.
+- `jules-session-manager`: stdout inspection is exempt; redirecting raw output requires
+  the archive skill. The skill now points to current `tools.sessions.*` entry points,
+  repo-scoped intent inspection, recovery/workspace runbooks, and explicit mutation
+  authorization. Continue to keep archive schemas in the canonical standard rather
+  than duplicating them in this skill.
 - `jules-sessions`: document that `sync_session.sh` creates validated companions.
 - `wrapup-session`: do not apply the raw archive policy to derived reports.
 

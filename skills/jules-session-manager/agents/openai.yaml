@@ -1,5 +1,5 @@
 name: Jules Session Manager
-description: Manage Google Jules AI agent sessions
+description: Inspect Google Jules sessions and activities, diagnose recovery states, perform explicitly authorized messages and plan approvals, and correlate sessions with PRs using Jules-project tools.
 version: 1.0.0
 ui:
   display_name: "Jules Session Manager"
@@ -15,15 +15,18 @@ capabilities:
   - List all Jules sessions
   - Inspect session activities
   - Send messages to sessions
+  - Approve session plans
+  - Diagnose recovery states
   - Track PR task associations
-  - Fetch session history
+  - Inspect session history
 triggers:
   commands:
     - /jules-list
     - /jules-inspect
-    - /jules-send
   natural_language:
     - "list jules sessions"
-    - "inspect jules api"
-    - "check jules activities"
+    - "inspect jules activities"
+    - "recover a jules session"
+    - "approve a jules plan"
+    - "correlate jules sessions with PRs"
     - "jules session manager"
