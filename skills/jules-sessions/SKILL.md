@@ -390,12 +390,16 @@ The skill includes reference files in `references/`:
 | `task_schedule.json`  | Example 11-task orchestration schedule              |
 | `prompts.md`          | Pre-formatted prompts for EmailIntelligence        |
 | `prompt_templates.md` | Workspace-generic prompt library (fill and send)    |
+| `pr_tracking_queries.md` | Joining session state to **PR state** via the per-repo PR tracking DB |
 
 Load when needed:
 
 ```bash
 # View WIP patterns
 cat references/wip_analysis.md
+
+# PR state behind a session (joins to workspaces/<repo>/generated/pr_tracking.db)
+cat references/pr_tracking_queries.md
 
 # Use schedule schema
 jq '.' references/task_schedule.json
