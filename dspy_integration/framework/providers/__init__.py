@@ -13,7 +13,8 @@ Priority: Groq → HuggingFace → OpenRouter → Gemini (all with free tiers!)
 """
 
 import logging
-from .base import BaseProvider, ProviderResponse, RateLimitConfig, ProviderChain
+from dspy_helm.providers.base import ProviderResponse, RateLimitConfig, ProviderChain
+from .base import BaseProvider
 from .groq import GroqProvider
 from .huggingface import HuggingFaceProvider
 from .puter import PuterFreeProvider
