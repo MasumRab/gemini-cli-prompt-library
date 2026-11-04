@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Execute approved Graphite commands from the queue."""
+"""Execute approved Graphite commands from the queue.
+
+This script reads recommendations.json and executes safe approved actions
+using the Graphite CLI (`gt branch track`).
+"""
 
 import json
 import subprocess
@@ -17,8 +21,12 @@ def execute_approved():
         print("No recommendations found.")
         return
 
-    with open(RECOMMENDATIONS_FILE) as f:
-        recommendations = json.load(f)
+    try:
+        with open(RECOMMENDATIONS_FILE) as f:
+            recommendations = json.load(f)
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"Error reading recommendations: {e}", file=sys.stderr)
+        sys.exit(1)
 
     executed = []
     for branch, rec in recommendations.items():
@@ -55,13 +63,29 @@ def execute_approved():
                         "error": "gt command not found",
                     }
                 )
+            except Exception as e:
+                executed.append(
+                    {
+                        "branch": branch,
+                        "action": action,
+                        "status": "failed",
+                        "error": str(e),
+                    }
+                )
 
     # Write execution results
-    with open(OUTPUTS_DIR / "execution_results.json", "w") as f:
-        json.dump(executed, f, indent=2)
+    try:
+        with open(OUTPUTS_DIR / "execution_results.json", "w") as f:
+            json.dump(executed, f, indent=2)
+    except OSError as e:
+        print(f"Error writing execution results: {e}", file=sys.stderr)
 
     print(f"Executed {len(executed)} approved commands.")
 
 
 if __name__ == "__main__":
-    execute_approved()
+    try:
+        execute_approved()
+    except Exception as e:
+        print(f"Execution failed: {e}", file=sys.stderr)
+        sys.exit(1)
