@@ -171,8 +171,8 @@ Provide production-ready test code with:
         self, example: "dspy.Example", pred: "dspy.Prediction", trace=None
     ) -> float:
         """Evaluate unit test generation quality."""
-        expected = example.tests.lower()
-        pred_text = str(pred.tests).lower()
-        if expected in pred_text:
+        expected = str(getattr(example, "tests", "")).lower()
+        pred_text = str(getattr(pred, "tests", "")).lower()
+        if expected and expected in pred_text:
             return 1.0
         return 0.0

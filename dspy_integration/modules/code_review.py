@@ -28,6 +28,7 @@ class CodeReview(dspy.Module):
 
 class CodeReviewOptimizer(dspy.Module):
     """Optimized code review module."""
+
     # TODO [Low Priority]: Optimize this module using dspy.MIPROv2 or BootstrapFewShot for better prompt performance.
     # The current implementation uses a basic ChainOfThought without compiled examples.
 

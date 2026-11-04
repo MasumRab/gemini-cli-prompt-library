@@ -7,9 +7,8 @@ updating registry entries manually.
 """
 
 import importlib
-import os
 from pathlib import Path
-from typing import Any, Dict, Optional, Type
+from typing import Any, Optional, Type
 
 
 class DynamicModuleLoader:
@@ -127,8 +126,8 @@ class DynamicModuleLoader:
         Returns:
             String in PascalCase format
         """
-        parts = snake_case.split('_')
-        return ''.join(part.capitalize() for part in parts)
+        parts = snake_case.split("_")
+        return "".join(part.capitalize() for part in parts)
 
     def _get_available_modules(self) -> list:
         """

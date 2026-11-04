@@ -1,14 +1,18 @@
 from dataclasses import dataclass
 from dspy_integration.framework.manifest import get_commands
 
+
 @dataclass
 class Command:
     name: str
     category: str
     description: str
 
+
 def dispatch(user_input):
     # TODO [Phase 3 - CASS Integration]: Replace this simple keyword matching with Hybrid Search.
+    # TODO [Architecture - Medium Priority]: Integrate `IntelligentDispatcher` instead of redundant logic.
+    # Reason: The `IntelligentDispatcher` in registry.py is not being used here, leading to duplicated and less robust matching logic.
 
     commands = get_commands()
     user_input = user_input.lower()
@@ -38,10 +42,13 @@ def dispatch(user_input):
     if best_match:
         return Command(
             name=best_match["name"],
-            category=best_match.get("category", "unknown"), # Handle missing category safely
-            description=best_match["description"]
+            category=best_match.get(
+                "category", "unknown"
+            ),  # Handle missing category safely
+            description=best_match["description"],
         )
     return None
+
 
 if __name__ == "__main__":
     test_input = "my test is broken"

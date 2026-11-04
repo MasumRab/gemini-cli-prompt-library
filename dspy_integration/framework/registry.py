@@ -40,7 +40,7 @@ class CommandRegistry:
                                 author=data.get("author", ""),
                                 tags=data.get("tags", []),
                             )
-                        except Exception as e:
+                        except (OSError, ValueError, KeyError) as e:
                             print(f"Error loading command {command_name}: {e}")
         return commands
 
@@ -69,10 +69,15 @@ class CommandRegistry:
         return self.commands.get(name)
 
 
+_DEFAULT_REGISTRY = None
+
+
 def get_command(name):
     """Convenience function to get a command from the default registry."""
-    registry = CommandRegistry()
-    return registry.get_command(name)
+    global _DEFAULT_REGISTRY
+    if _DEFAULT_REGISTRY is None:
+        _DEFAULT_REGISTRY = CommandRegistry()
+    return _DEFAULT_REGISTRY.get_command(name)
 
 
 class IntelligentDispatcher:

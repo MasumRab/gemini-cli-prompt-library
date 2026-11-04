@@ -14,8 +14,14 @@ Run with: pytest tests/test_real_integration.py -v
 
 import pytest
 import sys
+import os
 from pathlib import Path
 from typing import Optional
+
+# Skip all tests in this file unless API keys are present
+pytestmark = pytest.mark.skipif(
+    not os.environ.get("OPENCODE_API_KEY"), reason="Requires API keys"
+)
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -126,7 +132,7 @@ class TestGoogleGeminiProvider:
         """Test basic completion with Gemini 1.5 Flash (free tier)."""
         from dspy_helm.providers.gemini import GeminiProvider
 
-        api_key = get_gemini_api_key()
+        get_gemini_api_key()
         # Gemini provider uses subprocess to call gemini CLI
         provider = GeminiProvider(model="gemini-1.5-flash")
 
