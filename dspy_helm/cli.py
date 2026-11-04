@@ -88,7 +88,7 @@ def run_evaluation(
     setup_dspy_lm(provider, model)
 
     if evaluate_only:
-        print(f"\nEvaluating without optimization...")
+        print("\nEvaluating without optimization...")
         evaluator = Evaluator(metric=scenario.metric)
         results = evaluator.evaluate(program, valset)
         print(f"Score: {results.get('score', 'N/A')}")
@@ -100,7 +100,7 @@ def run_evaluation(
         optimizer = optimizer_class(metric=scenario.metric)
         optimized_program = optimizer.compile(program, trainset, valset)
 
-        print(f"\nEvaluating optimized program...")
+        print("\nEvaluating optimized program...")
         evaluator = Evaluator(metric=scenario.metric)
         results = evaluator.evaluate(optimized_program, valset)
         print(f"Score: {results.get('score', 'N/A')}")
@@ -185,7 +185,7 @@ Examples:
         sys.exit(1)
 
     try:
-        result = run_evaluation(
+        run_evaluation(
             scenario_name=args.scenario,
             optimizer_name=args.optimizer,
             evaluate_only=args.evaluate_only,

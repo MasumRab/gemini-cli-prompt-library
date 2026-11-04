@@ -1,0 +1,15 @@
+[
+  {
+    "id": "q-000001",
+    "branch": "feature/triage",
+    "priority": "high",
+    "question": "Choose intended handling for feature/triage.",
+    "options": [
+      "parent=main",
+      "leave_triage",
+      "exclude_from_migration"
+    ],
+    "recommended_option": "leave_triage",
+    "confidence": "medium"
+  }
+]

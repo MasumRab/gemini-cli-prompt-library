@@ -1,0 +1,21 @@
+{
+  "schema_version": "6.2",
+  "required_top_level_keys": ["schema_version", "edges"],
+  "edge_required_keys": [
+    "id",
+    "from_ref",
+    "to_ref",
+    "edge_type",
+    "classification",
+    "status",
+    "confidence",
+    "root_branch",
+    "evidence"
+  ],
+  "allowed_classifications": [
+    "executable",
+    "triage_only",
+    "blocked",
+    "informational"
+  ]
+}

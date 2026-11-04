@@ -1,0 +1,6 @@
+ruleDirs:
+- /home/masum/github/gemini-cli-prompt-library/.
+testConfigs:
+- testDir: /home/masum/github/gemini-cli-prompt-library/rule-tests
+utilDirs:
+- /home/masum/github/gemini-cli-prompt-library/utils

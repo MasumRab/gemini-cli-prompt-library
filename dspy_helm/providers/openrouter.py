@@ -7,6 +7,7 @@ Adapter for OpenRouter API with support for:
 """
 
 from typing import Optional
+import os
 import openai
 import time
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
@@ -36,10 +37,7 @@ class OpenRouterProvider(BaseProvider):
             model=model,
             rate_limit=rate_limit,
         )
-        self.api_key = (
-            api_key
-            or "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"
-        )
+        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY")
         self.base_url = "https://openrouter.ai/api/v1"
 
     def _execute_cli(self, prompt: str, **kwargs) -> ProviderResponse:

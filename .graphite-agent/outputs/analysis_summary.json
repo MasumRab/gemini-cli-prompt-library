@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "configured_roots": [
+      "main"
+    ],
+    "default_root": "main"
+  },
+  "counts": {
+    "branches_total": 5,
+    "execution_queue": 2,
+    "manual_triage_queue": 1
+  },
+  "by_status": {
+    "safe": 1,
+    "needs_restack": 1,
+    "manual_triage": 1,
+    "cross_root_conflict": 1,
+    "blocked_merge_commits": 1
+  },
+  "by_root": {
+    "main": 5
+  },
+  "indexes": {
+    "safe_branches": [
+      "feature/safe"
+    ],
+    "needs_restack_branches": [
+      "feature/restack"
+    ],
+    "cross_root_branches": [
+      "feature/cross"
+    ],
+    "merge_blocked_branches": [
+      "feature/merge-conflict-resolution"
+    ],
+    "unrooted_branches": [],
+    "manual_triage_branches": [
+      "feature/triage"
+    ]
+  }
+}

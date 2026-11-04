@@ -4,7 +4,6 @@ Pytest configuration and fixtures for DSPy-HELM tests.
 
 import pytest
 import sys
-import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -44,6 +43,7 @@ class MockField:
 
 class MockSignature:
     __fields__ = {"code": MockField(), "review": MockField()}
+    model_fields = {"code": MockField(), "review": MockField()}
 
 
 _dspy_mock.Signature = MockSignature
