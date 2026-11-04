@@ -5,11 +5,11 @@ Provides abstraction layer for different CLI tools
 following the Strategy pattern for provider rotation.
 """
 
-import logging
-import time
 from abc import ABC, abstractmethod
+from typing import Optional, Dict, Any, List
+import time
+import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +113,8 @@ class BaseProvider(ABC):
             if attempt < max_retries:
                 wait_time = min(backoff * (2**attempt), self.rate_limit.max_backoff)
                 logger.warning(
-                    f"Rate limited by {self.name}, retrying in {wait_time}s " f"(attempt {attempt + 1}/{max_retries})"
+                    f"Rate limited by {self.name}, retrying in {wait_time}s "
+                    f"(attempt {attempt + 1}/{max_retries})"
                 )
                 time.sleep(wait_time)
             else:
@@ -148,19 +149,17 @@ class ProviderChain:
         """
         self.providers = providers
         self._current_index = 0
-        # TODO [High Priority]: Implement exponential backoff for provider failover to mitigate rate limits.
 
     def call(self, prompt: str, **kwargs) -> ProviderResponse:
         """
-        Attempt each provider in priority order and return the first successful response.
+        Call providers in sequence with failover.
 
-        Parameters:
-            prompt (str): The prompt to send to each provider.
-            **kwargs: Additional keyword arguments forwarded to each provider's call.
+        Args:
+            prompt: Prompt to send
+            **kwargs: Additional arguments
 
         Returns:
-            ProviderResponse: The response from the first provider that succeeds; if all providers fail,
-                a ProviderResponse with `success=False` and `error` summarizing the last provider error.
+            ProviderResponse from first successful provider
         """
         last_error = None
 
@@ -171,7 +170,10 @@ class ProviderChain:
                 return response
 
             last_error = response.error
-            logger.info(f"Provider {provider.name} failed: {response.error}. " f"Trying next provider...")
+            logger.info(
+                f"Provider {provider.name} failed: {response.error}. "
+                f"Trying next provider..."
+            )
 
         return ProviderResponse(
             success=False,
@@ -192,4 +194,8 @@ class ProviderChain:
             provider_names: List of provider names in desired order
         """
         name_to_provider = {p.name: p for p in self.providers}
-        self.providers = [name_to_provider[name] for name in provider_names if name in name_to_provider]
+        self.providers = [
+            name_to_provider[name]
+            for name in provider_names
+            if name in name_to_provider
+        ]

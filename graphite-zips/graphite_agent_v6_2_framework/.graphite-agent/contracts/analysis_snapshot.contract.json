@@ -1,0 +1,13 @@
+{
+  "schema_version": "6.2",
+  "required_top_level_keys": [
+    "schema_version",
+    "metadata",
+    "pr_catalog",
+    "branch_graph",
+    "relationship_graph",
+    "lookup_tables",
+    "detail_refs",
+    "summary_index"
+  ]
+}

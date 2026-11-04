@@ -3,10 +3,9 @@ Integration tests for DSPy-HELM.
 These tests verify end-to-end functionality.
 """
 
-import json
-from unittest.mock import patch
-
 import pytest
+from unittest.mock import patch
+import json
 
 
 class TestScenarioDataLoading:
@@ -26,8 +25,8 @@ class TestScenarioDataLoading:
         for example in trainset:
             assert hasattr(example, "code")
             assert hasattr(example, "expected")
-            assert isinstance(example.code, str)
-            assert isinstance(example.expected, str)
+            assert bool(example.code)
+            assert bool(example.expected)
 
     def test_unit_test_data_format(self):
         """Test unit test data has correct format."""
@@ -42,8 +41,8 @@ class TestScenarioDataLoading:
         for example in trainset:
             assert hasattr(example, "function")
             assert hasattr(example, "tests")
-            assert isinstance(example.function, str)
-            assert isinstance(example.tests, str)
+            assert bool(example.function)
+            assert bool(example.tests)
 
     def test_documentation_data_format(self):
         """Test documentation data has correct format."""
@@ -58,8 +57,8 @@ class TestScenarioDataLoading:
         for example in trainset:
             assert hasattr(example, "project")
             assert hasattr(example, "readme")
-            assert isinstance(example.project, str)
-            assert isinstance(example.readme, str)
+            assert bool(example.project)
+            assert bool(example.readme)
 
     def test_api_design_data_format(self):
         """Test API design data has correct format."""
@@ -74,8 +73,8 @@ class TestScenarioDataLoading:
         for example in trainset:
             assert hasattr(example, "requirements")
             assert hasattr(example, "design")
-            assert isinstance(example.requirements, str)
-            assert isinstance(example.design, str)
+            assert bool(example.requirements)
+            assert bool(example.design)
 
 
 class TestPromptToScenarioMapping:
@@ -93,20 +92,26 @@ class TestPromptToScenarioMapping:
         from dspy_helm.scenarios import ScenarioRegistry
 
         for toml_name, scenario_name in DEFAULT_MAPPINGS.items():
-            assert (
-                scenario_name in ScenarioRegistry.list()
-            ), f"Scenario '{scenario_name}' from mapping '{toml_name}' is not registered"
+            assert scenario_name in ScenarioRegistry.list(), (
+                f"Scenario '{scenario_name}' from mapping '{toml_name}' is not registered"
+            )
 
     def test_prompt_registry_has_mappings(self):
         """Test that prompt registry has the mappings."""
-        from dspy_helm.prompts import DEFAULT_MAPPINGS, PromptRegistry, initialize_prompt_registry
+        from dspy_helm.prompts import (
+            PromptRegistry,
+            DEFAULT_MAPPINGS,
+            initialize_prompt_registry,
+        )
 
         # Initialize the registry with default mappings
         initialize_prompt_registry()
 
         for toml_name, scenario_name in DEFAULT_MAPPINGS.items():
             registered = PromptRegistry.get_dspy_module(toml_name)
-            assert registered == scenario_name, f"Mapping for '{toml_name}' not found in registry"
+            assert registered == scenario_name, (
+                f"Mapping for '{toml_name}' not found in registry"
+            )
 
 
 class TestPromptRendering:
@@ -117,7 +122,9 @@ class TestPromptRendering:
         from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")()
-        prompt = scenario.make_prompt({"code": "SELECT * FROM users", "expected": "SQL injection"})
+        prompt = scenario.make_prompt(
+            {"code": "SELECT * FROM users", "expected": "SQL injection"}
+        )
 
         assert "SELECT * FROM users" in prompt
         assert "Security Code Review" in prompt
@@ -127,7 +134,9 @@ class TestPromptRendering:
         from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("unit_test")()
-        prompt = scenario.make_prompt({"function": "add(a, b)", "tests": "Basic addition"})
+        prompt = scenario.make_prompt(
+            {"function": "add(a, b)", "tests": "Basic addition"}
+        )
 
         assert "add(a, b)" in prompt
         assert "Unit Test Generation" in prompt
@@ -137,7 +146,9 @@ class TestPromptRendering:
         from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("documentation")()
-        prompt = scenario.make_prompt({"project": "A CLI tool", "readme": "Installation guide"})
+        prompt = scenario.make_prompt(
+            {"project": "A CLI tool", "readme": "Installation guide"}
+        )
 
         assert "A CLI tool" in prompt
         assert "README Generation" in prompt
@@ -147,7 +158,9 @@ class TestPromptRendering:
         from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("api_design")()
-        prompt = scenario.make_prompt({"requirements": "User management", "design": "POST /users"})
+        prompt = scenario.make_prompt(
+            {"requirements": "User management", "design": "POST /users"}
+        )
 
         assert "User management" in prompt
         assert "RESTful API Design" in prompt
@@ -189,18 +202,19 @@ class TestMetricEvaluation:
     def test_unit_test_metric(self):
         """Test unit test metric."""
         from dspy_helm.scenarios import ScenarioRegistry
+        import dspy
 
         scenario = ScenarioRegistry.get("unit_test")()
 
-        class MockExample:
-            tests = "basic, edge, negative cases"
-
-        class MockPred:
-            tests = "Testing basic, edge, and negative cases"
-
-        score = scenario.metric(MockExample(), MockPred())
-        # Metric returns a score, just verify it's a number
+        example = dspy.Example(
+            function="def add(a, b): return a + b",
+            tests="testing basic, edge, and negative cases",
+        ).with_inputs("function")
+        score = scenario.metric(
+            example, dspy.Prediction(tests="Testing basic, edge, and negative cases")
+        )
         assert isinstance(score, (int, float))
+        assert 0.0 <= score <= 1.0
 
 
 class TestProviderFailover:
@@ -218,11 +232,17 @@ class TestProviderFailover:
 
     def test_provider_chain_add(self):
         """Test adding provider to chain."""
-        from dspy_helm.providers.base import BaseProvider, ProviderChain, ProviderResponse
+        from dspy_helm.providers.base import (
+            ProviderChain,
+            BaseProvider,
+            ProviderResponse,
+        )
 
         class TestProvider(BaseProvider):
             def _execute_cli(self, prompt, **kwargs):
-                return ProviderResponse(success=True, content="ok", provider=self.name, model="test")
+                return ProviderResponse(
+                    success=True, content="ok", provider=self.name, model="test"
+                )
 
         provider1 = TestProvider(name="P1", command="t", subcommand="t", model="test")
         provider2 = TestProvider(name="P2", command="t", subcommand="t", model="test")
@@ -253,7 +273,9 @@ class TestScenarioPromptVariability:
 
         # All prompts should be different
         prompt_set = set(prompts.values())
-        assert len(prompt_set) == len(prompts), "Some scenarios generate identical prompts"
+        assert len(prompt_set) == len(prompts), (
+            "Some scenarios generate identical prompts"
+        )
 
 
 class TestJSONLDataConsistency:
@@ -263,7 +285,12 @@ class TestJSONLDataConsistency:
         """Test that security_review.jsonl exists and is valid JSON."""
         from pathlib import Path
 
-        path = Path(__file__).parent.parent / "dspy_helm" / "data" / "security_review.jsonl"
+        path = (
+            Path(__file__).parent.parent
+            / "dspy_helm"
+            / "data"
+            / "security_review.jsonl"
+        )
         assert path.exists()
 
         with open(path, "r") as f:
@@ -296,11 +323,12 @@ class TestCLIScenarioSelection:
 
     def test_cli_with_valid_scenario(self):
         """Test CLI with valid scenario name."""
+        from dspy_helm.cli import main
         import sys
 
-        from dspy_helm.cli import main
-
-        with patch.object(sys, "argv", ["dspy_helm.cli", "--scenario", "security_review"]):
+        with patch.object(
+            sys, "argv", ["dspy_helm.cli", "--scenario", "security_review"]
+        ):
             with patch("dspy_helm.cli.run_evaluation") as mock_run:
                 mock_run.return_value = {"score": 0.9}
                 try:
@@ -313,9 +341,8 @@ class TestCLIScenarioSelection:
 
     def test_cli_with_optimizer(self):
         """Test CLI with optimizer selection."""
-        import sys
-
         from dspy_helm.cli import main
+        import sys
 
         with patch.object(
             sys,

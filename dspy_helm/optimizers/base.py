@@ -3,7 +3,7 @@ Base classes for DSPy optimizers.
 """
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, List, Protocol, Type
+from typing import List, Protocol, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:
     import dspy
@@ -45,13 +45,12 @@ class BaseOptimizer(ABC):
         trainset: List["dspy.Example"],
         valset: List["dspy.Example"],
     ) -> "dspy.Module":
+
         teleprompter = self._create_teleprompter()
         return teleprompter.compile(program, trainset=trainset, valset=valset)
 
     def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__name__}(max_bootstrapped={self.max_bootstrapped_demos}, max_labeled={self.max_labeled_demos})"
-        )
+        return f"{self.__class__.__name__}(max_bootstrapped={self.max_bootstrapped_demos}, max_labeled={self.max_labeled_demos})"
 
 
 class OptimizerRegistry:

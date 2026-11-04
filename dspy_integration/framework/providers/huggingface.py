@@ -1,7 +1,4 @@
-"""
-HuggingFace Inference API Provider.
-"""
+"""Huggingface provider."""
+from dspy_helm.providers.huggingface import Provider as HuggingfaceProvider
 
-from dspy_helm.providers.huggingface import HuggingFaceProvider
-
-__all__ = ["HuggingFaceProvider"]
+__all__ = ["HuggingfaceProvider"]

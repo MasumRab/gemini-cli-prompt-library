@@ -2,9 +2,8 @@
 Error handling and edge case tests for DSPy-HELM.
 """
 
-from unittest.mock import MagicMock, patch
-
 import pytest
+from unittest.mock import MagicMock, patch
 
 
 class TestScenarioEdgeCases:
@@ -12,9 +11,8 @@ class TestScenarioEdgeCases:
 
     def test_empty_data_fallback(self):
         """Test scenario handles missing JSONL file."""
-        from pathlib import Path
-
         from dspy_helm.scenarios.security_review import SecurityReviewScenario
+        from pathlib import Path
 
         # Create scenario with non-existent data path
         scenario = SecurityReviewScenario()
@@ -79,7 +77,11 @@ class TestProviderEdgeCases:
 
     def test_provider_chain_with_single_provider(self):
         """Test provider chain with single provider."""
-        from dspy_helm.providers.base import BaseProvider, ProviderChain, ProviderResponse
+        from dspy_helm.providers.base import (
+            BaseProvider,
+            ProviderChain,
+            ProviderResponse,
+        )
 
         class TestProvider(BaseProvider):
             def _execute_cli(self, prompt, **kwargs):
@@ -90,7 +92,9 @@ class TestProviderEdgeCases:
                     model=self.model,
                 )
 
-        provider = TestProvider(name="Single", command="t", subcommand="t", model="test")
+        provider = TestProvider(
+            name="Single", command="t", subcommand="t", model="test"
+        )
         chain = ProviderChain([provider])
 
         response = chain.call("Test prompt")
@@ -141,9 +145,8 @@ class TestPromptEdgeCases:
 
     def test_prompt_with_no_variables(self):
         """Test prompt with no variables."""
-        from pathlib import Path
-
         from dspy_helm.prompts import TOMLPrompt
+        from pathlib import Path
 
         prompt = TOMLPrompt(
             name="static",
@@ -157,9 +160,8 @@ class TestPromptEdgeCases:
 
     def test_prompt_with_empty_content(self):
         """Test prompt with empty content."""
-        from pathlib import Path
-
         from dspy_helm.prompts import TOMLPrompt
+        from pathlib import Path
 
         prompt = TOMLPrompt(
             name="empty",
@@ -172,12 +174,13 @@ class TestPromptEdgeCases:
 
     def test_prompt_registry_clear(self):
         """Test clearing prompt registry."""
+        from dspy_helm.prompts import PromptRegistry, TOMLPrompt
         from pathlib import Path
 
-        from dspy_helm.prompts import PromptRegistry, TOMLPrompt
-
         # Add some prompts
-        PromptRegistry._prompts["test/prompt"] = TOMLPrompt("prompt", Path("/test.toml"), {"prompt": "{{x}}"})
+        PromptRegistry._prompts["test/prompt"] = TOMLPrompt(
+            "prompt", Path("/test.toml"), {"prompt": "{{x}}"}
+        )
 
         # Clear
         PromptRegistry.clear()
@@ -204,9 +207,8 @@ class TestCLIEdgeCases:
 
     def test_cli_without_args_shows_help(self, capsys):
         """Test CLI without arguments shows help."""
-        import sys
-
         from dspy_helm.cli import main
+        import sys
 
         with patch.object(sys, "argv", ["dspy_helm.cli"]):
             with pytest.raises(SystemExit):
@@ -218,11 +220,12 @@ class TestCLIEdgeCases:
 
     def test_cli_with_invalid_scenario(self):
         """Test CLI with invalid scenario name."""
+        from dspy_helm.cli import main
         import sys
 
-        from dspy_helm.cli import main
-
-        with patch.object(sys, "argv", ["dspy_helm.cli", "--scenario", "invalid_scenario"]):
+        with patch.object(
+            sys, "argv", ["dspy_helm.cli", "--scenario", "invalid_scenario"]
+        ):
             with pytest.raises(SystemExit) as exc_info:
                 main()
 
@@ -231,9 +234,8 @@ class TestCLIEdgeCases:
 
     def test_cli_with_invalid_optimizer(self):
         """Test CLI with invalid optimizer name."""
-        import sys
-
         from dspy_helm.cli import main
+        import sys
 
         with patch.object(
             sys,
@@ -283,9 +285,8 @@ class TestDataLoadingEdgeCases:
 
     def test_scenario_with_insufficient_data(self):
         """Test scenario handles insufficient data gracefully."""
-        from typing import Any, Dict, List
-
         from dspy_helm.scenarios.base import BaseScenario, ScenarioRegistry
+        from typing import List, Dict, Any
 
         # Create a minimal scenario with few examples
         @ScenarioRegistry.register("minimal_test")
@@ -314,25 +315,36 @@ class TestDataLoadingEdgeCases:
 class TestMetricEdgeCases:
     """Test edge cases for metrics."""
 
-    def test_metric_with_none_trace(self, mock_scenario_classes):
+    def test_metric_with_none_trace(self):
         """Test metric handles None trace."""
         from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")()
-        mock_example, mock_pred = mock_scenario_classes("SQL injection", "SQL injection detected")
 
-        score = scenario.metric(mock_example, mock_pred, trace=None)
+        class MockExample:
+            expected = "SQL injection"
+
+        class MockPred:
+            review = "SQL injection detected"
+
+        # Should work with trace=None (default)
+        score = scenario.metric(MockExample(), MockPred(), trace=None)
         assert isinstance(score, float)
         assert 0.0 <= score <= 1.0
 
-    def test_metric_with_empty_prediction(self, mock_scenario_classes):
+    def test_metric_with_empty_prediction(self):
         """Test metric handles empty prediction."""
         from dspy_helm.scenarios import ScenarioRegistry
 
         scenario = ScenarioRegistry.get("security_review")()
-        mock_example, mock_pred = mock_scenario_classes("SQL injection", "")
 
-        score = scenario.metric(mock_example, mock_pred)
+        class MockExample:
+            expected = "SQL injection"
+
+        class MockPred:
+            review = ""
+
+        score = scenario.metric(MockExample(), MockPred())
         assert isinstance(score, float)
 
 

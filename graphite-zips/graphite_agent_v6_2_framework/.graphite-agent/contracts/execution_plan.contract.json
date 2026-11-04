@@ -1,0 +1,16 @@
+{
+  "schema_version": "6.2",
+  "required_top_level_keys": ["schema_version", "execution_queue"],
+  "execution_queue_item_required_keys": [
+    "id",
+    "branch",
+    "resolved_parent",
+    "root_branch",
+    "status",
+    "action",
+    "relationship_edges",
+    "preconditions"
+  ],
+  "allowed_statuses": ["safe", "needs_restack"],
+  "allowed_actions": ["track_only", "track_and_restack"]
+}

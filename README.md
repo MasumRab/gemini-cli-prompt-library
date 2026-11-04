@@ -178,15 +178,10 @@ The DSPy integration provides intelligent command routing and prompt optimizatio
 - `pip install dspy rich>=13.0 tomli`
 
 ### Installation
-
-To make the `dspy-integration` Python tool available globally across your machine:
-
-**1. Request the Install Script**
 ```bash
-/prompts:dspy-install "install"
+cd .
+pip install -e .
 ```
-
-**2. Run the generated script**, which uses `uv` to safely install the tool without polluting your system Python.
 
 ### Usage with Gemini CLI
 
@@ -277,8 +272,7 @@ Expand the reach of this library beyond the standard `gemini-cli`:
 Based on the prompts in this library, here are key principles:
 
 ### 1. **Be Specific**
-
-```text
+```
 ❌ "Review this code"
 ✅ "Perform a security analysis focusing on input validation, SQL injection, and XSS vulnerabilities"
 ```
@@ -351,7 +345,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-## 👤 About me
+## About me
 My name is Harish Garg. I am a solo developer. I write at my blog [here](https://harishgarg.com/).
 
 I also maintain a [MCP Resources Directory](https://www.mcpstack.org/) & a [coding ai tools directory](https://www.codeaidirectory.com/)
