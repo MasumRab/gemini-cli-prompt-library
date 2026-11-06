@@ -214,15 +214,19 @@ jobs:
           SESSION_RESOURCE="${SESSION_NAME:-sessions/${SESSION_ID}}"
           for i in $(seq 1 40); do
             sleep 15
+            set +e
             RESPONSE=$(curl -sS --fail-with-body --connect-timeout 10 --max-time 60 \
               "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}?view=FULL" \
               -H "X-Goog-Api-Key: ${JULES_API_KEY}")
+            set -e
             STATE=$(echo "$RESPONSE" | jq -r '.state // "UNKNOWN"')
             if [ "$STATE" = "COMPLETED" ] || [ "$STATE" = "FAILED" ]; then
               echo "session_state=$STATE" >> "$GITHUB_OUTPUT"
+              set +e
               ACTS=$(curl -sS --fail-with-body --connect-timeout 10 --max-time 60 \
                 "https://jules.googleapis.com/v1alpha/${SESSION_RESOURCE}/activities?pageSize=100" \
                 -H "X-Goog-Api-Key: ${JULES_API_KEY}")
+              set -e
               echo "$ACTS" | jq -r '[(.activities // [])[] | select(.agentMessaged.agentMessage != null)][-1].agentMessaged.agentMessage // "Analysis unavailable"' > /tmp/jules-rebuild-analysis.txt
               exit 0
             fi
