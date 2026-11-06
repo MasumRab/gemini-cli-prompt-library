@@ -26,9 +26,7 @@ p.add_argument("--reason", required=True, help="Reason for choice")
 a = p.parse_args()
 
 try:
-    result = record_decision(
-        a.question, a.branch, a.choice, a.reason, "target_intent"
-    )
+    result = record_decision(a.question, a.branch, a.choice, a.reason, "target_intent")
     print(json.dumps(result, indent=2))
 except Exception as e:
     print(f"Target decision recording failed: {e}", file=sys.stderr)
