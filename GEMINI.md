@@ -56,6 +56,7 @@ This extension provides a curated library of high-quality prompts for common dev
 - **dspy-convert**: Convert TOML prompts to DSPy modules
 - **dspy-qa**: QA reviewer for DSPy code
 - **dspy-refine**: Refine DSPy modules
+- **dspy-install**: DSPy Integration Installer
 - **dspy-cookbook**: Suggest DSPy patterns
 - **evaluate**: Simulate QA review for a prompt
 - **refine**: Refine an existing prompt based on feedback

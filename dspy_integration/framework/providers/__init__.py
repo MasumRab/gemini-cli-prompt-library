@@ -16,10 +16,12 @@ import logging
 from .base import BaseProvider, ProviderResponse, RateLimitConfig, ProviderChain
 from .groq import GroqProvider
 from .huggingface import HuggingFaceProvider
-from .puter import PuterFreeProvider
-from .opencode_zen import OpenCodeZenProvider
-from .openrouter import OpenRouterProvider
+from .puter import PuterProvider as PuterFreeProvider
+from .opencode_zen import OpencodeZenProvider as OpenCodeZenProvider
+from .openrouter import OpenrouterProvider as OpenRouterProvider
 from .gemini import GeminiProvider
+from .opencode import OpencodeProvider as OpenCodeProvider
+from .qwen import QwenProvider as QwenCodeProvider
 
 logger = logging.getLogger(__name__)
 
@@ -147,6 +149,8 @@ __all__ = [
     "OpenCodeZenProvider",
     "OpenRouterProvider",
     "GeminiProvider",
+    "OpenCodeProvider",
+    "QwenCodeProvider",
     "create_provider_chain",
     "get_default_provider",
     "get_provider_by_name",
