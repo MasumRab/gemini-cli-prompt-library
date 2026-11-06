@@ -1,4 +1,5 @@
-"""Gemini provider."""
-from dspy_helm.providers.gemini import Provider as GeminiProvider
+"""gemini provider."""
+
+from dspy_helm.providers.gemini import GeminiProvider
 
 __all__ = ["GeminiProvider"]

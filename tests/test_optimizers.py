@@ -207,13 +207,13 @@ class TestOptimizerRegistry:
 class TestOptimizerCompile:
     """Test optimizer compile functionality."""
 
-    @patch("dspy_integration.framework.optimizers.mipro_v2.dspy")
-    def test_compile_requires_lm(self, mock_dspy):
+    @patch("dspy.settings")
+    def test_compile_requires_lm(self, mock_dspy_settings):
         """Test that compile requires LM to be configured."""
         from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
 
-        mock_dspy.settings.lm = None
-        mock_dspy.settings.configure = MagicMock()
+        mock_dspy_settings.lm = None
+        mock_dspy_settings.configure = MagicMock()
 
         # Test that passing None as metric raises ValueError
         with pytest.raises(ValueError, match="metric is required"):

@@ -21,8 +21,9 @@ except ImportError as e:
     sys.exit(1)
 
 p = argparse.ArgumentParser(description="Run Graphite analysis pipeline")
-p.add_argument("--legacy-analyser", action="store_true",
-               help="Generate live git snapshot directly")
+p.add_argument(
+    "--legacy-analyser", action="store_true", help="Generate live git snapshot directly"
+)
 a = p.parse_args()
 
 try:

@@ -230,16 +230,16 @@ def is_agentic() -> bool:
         return True
     if not sys.stdout.isatty():
         return True
-    
+
     # Terminal type
     if os.environ.get("TERM") in ("dumb", ""):
         return True
-    
+
     # Environment variables
     for var, expected in AGENT_INDICATORS.items():
         if os.environ.get(var) == expected:
             return True
-    
+
     return False
 
 def is_interactive() -> bool:
@@ -263,7 +263,7 @@ def smart_select(
     """Select with agentic fallback."""
     if is_agentic():
         return default if default else choices[0]
-    
+
     from InquirerPy import inquirer
     return inquirer.select(
         message=message,
@@ -275,7 +275,7 @@ def smart_confirm(message: str, default: bool = True) -> bool:
     """Confirm with agentic fallback."""
     if is_agentic():
         return default
-    
+
     from InquirerPy import inquirer
     return inquirer.confirm(message=message, default=default).execute()
 
@@ -283,7 +283,7 @@ def smart_text(message: str, default: str = "") -> str:
     """Text input with agentic fallback."""
     if is_agentic():
         return default
-    
+
     from InquirerPy import inquirer
     return inquirer.text(message=message, default=default).execute()
 
@@ -291,7 +291,7 @@ def smart_fuzzy(message: str, choices: List[str], default: str = None) -> str:
     """Fuzzy select with agentic fallback."""
     if is_agentic():
         return default or choices[0]
-    
+
     from InquirerPy import inquirer
     return inquirer.fuzzy(message=message, choices=choices).execute()
 
@@ -303,7 +303,7 @@ def smart_checkbox(
     """Checkbox with agentic fallback."""
     if is_agentic():
         return defaults or choices[:1]
-    
+
     from InquirerPy import inquirer
     return inquirer.checkbox(message=message, choices=choices).execute()
 ```
@@ -501,7 +501,7 @@ async def test_app():
         await pilot.press("tab")
         await pilot.press("enter")
         await pilot.click("#submit")
-        
+
         # Assert on UI state
         assert pilot.app.query_one("#result").text == "Success"
 ```

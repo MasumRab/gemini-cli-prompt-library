@@ -1,4 +1,5 @@
-"""Opencode Zen provider."""
-from dspy_helm.providers.opencode_zen import Provider as OpencodeZenProvider
+"""opencode_zen provider."""
 
-__all__ = ["OpencodeZenProvider"]
+from dspy_helm.providers.opencode_zen import OpenCodeZenProvider
+
+__all__ = ["OpenCodeZenProvider"]
