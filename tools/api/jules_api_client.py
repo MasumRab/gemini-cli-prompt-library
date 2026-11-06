@@ -14,12 +14,14 @@ JULES_API_BASE_URL = "https://jules.googleapis.com/v1alpha"
 
 def get_api_key() -> str:
     """Retrieve the Jules API key from the environment.
-    
+
     Supports JULES_API_KEY (primary).
     """
     key = os.environ.get("JULES_API_KEY")
     if not key:
-        print("ERROR: Jules API key not found. Please set JULES_API_KEY.", file=sys.stderr)
+        print(
+            "ERROR: Jules API key not found. Please set JULES_API_KEY.", file=sys.stderr
+        )
         sys.exit(1)
     return key
 
@@ -32,17 +34,25 @@ def _validate_not_placeholder(name: str, value: str) -> None:
       - ``test-key``, ``test_key``, ``your-key-here``
     """
     import re as _re
+
     placeholders = [
-        _re.compile(r) for r in (
-            r"^YOUR_", r"CHANGE_ME", r"^<.*>$", r"^\{\{.*\}\}$",
-            r"^test[_-]key$", r"^your[_-]key", r"placeholder",
-            r"^xxx+$", r"^dummy$",
+        _re.compile(r)
+        for r in (
+            r"^YOUR_",
+            r"CHANGE_ME",
+            r"^<.*>$",
+            r"^\{\{.*\}\}$",
+            r"^test[_-]key$",
+            r"^your[_-]key",
+            r"placeholder",
+            r"^xxx+$",
+            r"^dummy$",
         )
     ]
     for pattern in placeholders:
         if pattern.search(value):
             print(
-                f"ERROR: {name} value \"{value[:40]}\" looks like a placeholder "
+                f'ERROR: {name} value "{value[:40]}" looks like a placeholder '
                 f"(matched: {pattern.pattern}). Set the real API key via env var.",
                 file=sys.stderr,
             )
@@ -84,7 +94,7 @@ def jules_request(
         except urllib.error.HTTPError as e:
             if e.code in (429,) or 500 <= e.code < 600:
                 if attempt < max_retries - 1:
-                    time.sleep(2 ** attempt)
+                    time.sleep(2**attempt)
                     continue
             body_text = e.read().decode("utf-8", errors="replace")
             raise RuntimeError(
@@ -92,7 +102,7 @@ def jules_request(
             ) from e
         except urllib.error.URLError as e:
             if attempt < max_retries - 1:
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
                 continue
             raise RuntimeError(
                 f"Jules API connection error for {method} {endpoint}: {e.reason}"
@@ -128,7 +138,11 @@ class JulesAPIClient:
     ) -> Dict[str, Any]:
         """Make an API request using the instance's credentials."""
         return jules_request(
-            endpoint, method=method, body=body, api_key=self.api_key, base_url=self.base_url
+            endpoint,
+            method=method,
+            body=body,
+            api_key=self.api_key,
+            base_url=self.base_url,
         )
 
     # ------------------------------------------------------------------
@@ -136,7 +150,9 @@ class JulesAPIClient:
     # ------------------------------------------------------------------
 
     def list_sessions(
-        self, page_size: int = 50, max_results: Optional[int] = None,
+        self,
+        page_size: int = 50,
+        max_results: Optional[int] = None,
         page_token: Optional[str] = None,
     ) -> Generator[Dict[str, Any], None, None]:
         """Yield sessions, handling pagination automatically.
@@ -150,7 +166,9 @@ class JulesAPIClient:
         """
         remaining = max_results  # None means no limit
         while True:
-            effective_page = min(page_size, remaining) if remaining is not None else page_size
+            effective_page = (
+                min(page_size, remaining) if remaining is not None else page_size
+            )
             params = f"?pageSize={effective_page}"
             if page_token:
                 params += f"&pageToken={page_token}"
@@ -254,7 +272,9 @@ class JulesAPIClient:
         page_token = None
         remaining = max_results  # None means no limit
         while True:
-            effective_page = min(page_size, remaining) if remaining is not None else page_size
+            effective_page = (
+                min(page_size, remaining) if remaining is not None else page_size
+            )
             params = f"?pageSize={effective_page}"
             if page_token:
                 params += f"&pageToken={page_token}"
@@ -348,6 +368,7 @@ class JulesAPIClient:
             TimeoutError if the target state is not reached.
         """
         import time as _time
+
         deadline = _time.monotonic() + timeout
         while _time.monotonic() < deadline:
             session = self.get_session(session_id)
@@ -362,7 +383,9 @@ class JulesAPIClient:
             f"within {timeout}s (last state: {state})"
         )
 
-    def ask(self, session_id: str, question: str, timeout: float = 120) -> Dict[str, Any]:
+    def ask(
+        self, session_id: str, question: str, timeout: float = 120
+    ) -> Dict[str, Any]:
         """Send a message and wait for the agent's reply.
 
         Polls activities until an ``agentMessaged`` activity appears
@@ -377,6 +400,7 @@ class JulesAPIClient:
             The agent's reply activity dict.
         """
         import time as _time
+
         before = _time.monotonic()
         self.send_message(session_id, question)
         deadline = before + timeout
@@ -391,9 +415,7 @@ class JulesAPIClient:
                     return act
             known = len(activities)
             _time.sleep(2)
-        raise TimeoutError(
-            f"Agent did not reply to {session_id} within {timeout}s"
-        )
+        raise TimeoutError(f"Agent did not reply to {session_id} within {timeout}s")
 
     def store_activities(self, session_id: str) -> int:
         """Fetch all activities for a session and upsert them into the store.
@@ -410,14 +432,18 @@ class JulesAPIClient:
                 "Pass store= to JulesAPIClient()."
             )
         sid = session_id.replace("sessions/", "")
-        activities = list(self.list_activities(session_id, page_size=100, max_results=500))
+        activities = list(
+            self.list_activities(session_id, page_size=100, max_results=500)
+        )
         return self._store.upsert_activities(sid, activities)
 
     # ------------------------------------------------------------------
     # Sources
     # ------------------------------------------------------------------
 
-    def list_sources(self, page_size: int = 100) -> Generator[Dict[str, Any], None, None]:
+    def list_sources(
+        self, page_size: int = 100
+    ) -> Generator[Dict[str, Any], None, None]:
         """Yield all connected sources, handling pagination automatically.
 
         Uses GET /v1alpha/sources.
@@ -454,9 +480,7 @@ class JulesAPIClient:
             RuntimeError: If the source returns 404 (not connected/authorized).
         """
         if "/" not in owner_repo:
-            raise ValueError(
-                f"Invalid repo format '{owner_repo}'. Use 'owner/repo'."
-            )
+            raise ValueError(f"Invalid repo format '{owner_repo}'. Use 'owner/repo'.")
         owner, repo = owner_repo.split("/", 1)
         self.get_source(owner, repo)
         return f"sources/github/{owner_repo}"
