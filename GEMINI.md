@@ -57,6 +57,7 @@ This extension provides a curated library of high-quality prompts for common dev
 - **dspy-qa**: QA reviewer for DSPy code
 - **dspy-refine**: Refine DSPy modules
 - **dspy-cookbook**: Suggest DSPy patterns
+- **prompts-dspy-install**: Install DSPy and dependencies
 - **evaluate**: Simulate QA review for a prompt
 - **refine**: Refine an existing prompt based on feedback
 - **test-case**: Generate test cases to verify prompt performance
