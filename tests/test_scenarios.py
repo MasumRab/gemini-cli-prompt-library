@@ -3,6 +3,7 @@ Tests for DSPy-HELM scenarios.
 """
 
 import pytest
+
 from dspy_helm.scenarios import ScenarioRegistry
 
 

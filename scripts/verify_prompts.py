@@ -1,7 +1,7 @@
 import os
-import tomllib
 import re
 import sys
+import tomllib
 
 
 def get_toml_files(root_dir):
@@ -75,7 +75,8 @@ def verify_prompts():
                     pass  # OK
                 else:
                     errors.append(
-                        f"File {file_path} (checked: {command_name_prefixed}, {command_name_simple}) not found in {registry_file}"
+                        f"File {file_path} (checked: {command_name_prefixed}, {command_name_simple}) "
+                        f"not found in {registry_file}"
                     )
 
         except tomllib.TOMLDecodeError as e:

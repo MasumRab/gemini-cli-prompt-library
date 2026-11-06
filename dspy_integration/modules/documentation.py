@@ -1,16 +1,13 @@
-import dspy
 from typing import Optional
+
+import dspy
 
 
 class DocumentationSignature(dspy.Signature):
     """Write documentation for the specified code element."""
 
-    input_code: str = dspy.InputField(
-        desc="The function, class, or code snippet to document"
-    )
-    documented_code: str = dspy.OutputField(
-        desc="Complete code with documentation (docstrings, comments)"
-    )
+    input_code: str = dspy.InputField(desc="The function, class, or code snippet to document")
+    documented_code: str = dspy.OutputField(desc="Complete code with documentation (docstrings, comments)")
 
 
 class Documentation(dspy.Module):

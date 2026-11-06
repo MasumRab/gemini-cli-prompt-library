@@ -1,13 +1,12 @@
-import dspy
 from typing import Optional
+
+import dspy
 
 
 class UnitTestSignature(dspy.Signature):
     """Write a unit test for the specified function or class."""
 
-    input_code: str = dspy.InputField(
-        desc="The function, class, or code snippet to write tests for"
-    )
+    input_code: str = dspy.InputField(desc="The function, class, or code snippet to write tests for")
     test_code: str = dspy.OutputField(desc="Complete, working unit test code")
 
 
