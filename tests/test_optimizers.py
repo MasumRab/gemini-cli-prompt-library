@@ -109,11 +109,24 @@ class TestMIPROv2Optimizer:
         assert optimizer.prompt_model == "gpt-4"
         assert optimizer.task_model == "gpt-3.5-turbo"
 
-    def test_create_teleprompter(self):
+    @patch("dspy.teleprompt.MIPROv2")
+    def test_create_teleprompter(self, mock_mipro):
         """Test creating MIPROv2 teleprompter."""
+        from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
 
-        # Skip - requires local import inside method, complex to mock
-        pytest.skip("MIPROv2 teleprompter test requires real dspy library")
+        mock_mipro.return_value = MagicMock()
+
+        mock_metric = MagicMock()
+        optimizer = MIPROv2Optimizer(metric=mock_metric)
+
+        teleprompter = optimizer._create_teleprompter()
+        assert teleprompter is not None
+
+        # Verify MIPROv2 was called with correct args
+        mock_mipro.assert_called_once()
+        call_kwargs = mock_mipro.call_args[1]
+        assert call_kwargs["metric"] is mock_metric
+        assert call_kwargs["max_bootstrapped_demos"] == 3
 
 
 class TestBootstrapFewShotOptimizer:
@@ -164,14 +177,26 @@ class TestBootstrapFewShotRandomSearchOptimizer:
         assert optimizer.metric is mock_metric
         assert optimizer.num_candidate_programs == 15
 
-    def test_create_teleprompter(self):
+    @patch("dspy.teleprompt.BootstrapFewShotWithRandomSearch")
+    def test_create_teleprompter(self, mock_bs):
         """Test creating teleprompter with random search."""
-
-        # Skip - requires local import inside method, complex to mock
-        pytest.skip(
-            "BootstrapFewShotRandomSearch teleprompter test requires real dspy library"
+        from dspy_integration.framework.optimizers.bootstrap import (
+            BootstrapFewShotRandomSearchOptimizer,
         )
 
+        mock_bs.return_value = MagicMock()
+
+        mock_metric = MagicMock()
+        optimizer = BootstrapFewShotRandomSearchOptimizer(
+            metric=mock_metric,
+            num_candidate_programs=10,
+        )
+
+        teleprompter = optimizer._create_teleprompter()
+        assert teleprompter is not None
+
+        call_kwargs = mock_bs.call_args[1]
+        assert call_kwargs["num_candidate_programs"] == 10
 
 class TestOptimizerRegistry:
     """Test optimizer registry."""
@@ -207,17 +232,25 @@ class TestOptimizerRegistry:
 class TestOptimizerCompile:
     """Test optimizer compile functionality."""
 
-    @patch("dspy_integration.framework.optimizers.mipro_v2.dspy")
-    def test_compile_requires_lm(self, mock_dspy):
+    @patch("dspy.settings")
+    def test_compile_requires_lm(self, mock_settings):
         """Test that compile requires LM to be configured."""
         from dspy_integration.framework.optimizers.mipro_v2 import MIPROv2Optimizer
 
-        mock_dspy.settings.lm = None
-        mock_dspy.settings.configure = MagicMock()
+        # Configure mock to have no LM
+        mock_settings.lm = None
 
-        # Test that passing None as metric raises ValueError
-        with pytest.raises(ValueError, match="metric is required"):
-            MIPROv2Optimizer(metric=None)
+        mock_metric = MagicMock()
+        optimizer = MIPROv2Optimizer(metric=mock_metric)
+
+        mock_program = MagicMock()
+        mock_trainset = []
+        mock_valset = []
+
+        with pytest.raises(RuntimeError) as exc_info:
+            optimizer.compile(mock_program, mock_trainset, mock_valset)
+
+        assert "No LM configured" in str(exc_info.value)
 
 
 if __name__ == "__main__":
