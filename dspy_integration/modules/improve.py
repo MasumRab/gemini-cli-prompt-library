@@ -4,9 +4,9 @@ DSPy module for prompt improvement.
 This module provides a ChainOfThought-based approach to improving prompts.
 """
 
-from typing import Optional, Dict, Any
-import dspy
+from typing import Any, Dict, Optional
 
+import dspy
 from pydantic import BaseModel, Field
 
 

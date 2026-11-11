@@ -6,9 +6,10 @@ Adapter for Gemini CLI tool with support for:
 - gemini-1.5-pro
 """
 
-from typing import Optional
 import subprocess
 import time
+from typing import Optional
+
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
 
 
@@ -49,9 +50,7 @@ class GeminiProvider(BaseProvider):
         start_time = time.time()
 
         try:
-            result = subprocess.run(
-                ["gemini", "ask", prompt], capture_output=True, text=True, timeout=120
-            )
+            result = subprocess.run(["gemini", "ask", prompt], capture_output=True, text=True, timeout=120)
 
             latency = time.time() - start_time
 

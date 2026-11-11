@@ -24,25 +24,36 @@ class CommandRegistry:
         for category in os.listdir(self.commands_dir):
             category_path = os.path.join(self.commands_dir, category)
             if os.path.isdir(category_path):
-                for command_file in os.listdir(category_path):
-                    if command_file.endswith(".toml"):
-                        command_name = command_file[:-5]
-                        try:
-                            with open(
-                                os.path.join(category_path, command_file), "rb"
-                            ) as f:
-                                data = tomllib.load(f)
-                            commands[command_name] = Command(
-                                name=command_name,
-                                category=category,
-                                description=data.get("description", ""),
-                                prompt=data.get("prompt", ""),
-                                author=data.get("author", ""),
-                                tags=data.get("tags", []),
-                            )
-                        except (OSError, ValueError, KeyError) as e:
-                            print(f"Error loading command {command_name}: {e}")
+                self._load_category_commands(category, category_path, commands)
         return commands
+
+    def _load_category_commands(self, category, category_path, commands):
+        """Load all commands from a specific category directory."""
+        for command_file in os.listdir(category_path):
+            if command_file.endswith(".toml"):
+                command_name = command_file[:-5]
+                try:
+                    command_obj = self._load_command_file(
+                        category, category_path, command_file
+                    )
+                    if command_obj:
+                        commands[command_name] = command_obj
+                except (OSError, ValueError, KeyError) as e:
+                    print(f"Error loading command {command_name}: {e}")
+
+    def _load_command_file(self, category, category_path, command_file):
+        """Parse a single command TOML file."""
+        command_name = command_file[:-5]
+        with open(os.path.join(category_path, command_file), "rb") as f:
+            data = tomllib.load(f)
+        return Command(
+            name=command_name,
+            category=category,
+            description=data.get("description", ""),
+            prompt=data.get("prompt", ""),
+            author=data.get("author", ""),
+            tags=data.get("tags", []),
+        )
 
     def search(self, keyword):
         """Search for commands by keyword in name, description, or tags."""

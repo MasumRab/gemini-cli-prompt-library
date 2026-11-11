@@ -12,13 +12,13 @@ Provides unified interface for:
 Priority: Groq → HuggingFace → OpenRouter → Gemini (all with free tiers!)
 """
 
-from .base import BaseProvider, ProviderResponse, RateLimitConfig, ProviderChain
+from .base import BaseProvider, ProviderChain, ProviderResponse, RateLimitConfig
+from .gemini import GeminiProvider
 from .groq import GroqProvider
 from .huggingface import HuggingFaceProvider
-from .puter import PuterFreeProvider
 from .opencode_zen import OpenCodeZenProvider
 from .openrouter import OpenRouterProvider
-from .gemini import GeminiProvider
+from .puter import PuterFreeProvider
 
 
 def create_provider_chain() -> ProviderChain:

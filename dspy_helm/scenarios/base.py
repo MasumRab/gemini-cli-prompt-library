@@ -4,9 +4,9 @@ Base classes for DSPy-HELM scenarios.
 SOLID-compliant base classes with registry pattern.
 """
 
-from abc import ABC, abstractmethod
-from typing import List, Tuple, Type, Dict, Any, Optional, TYPE_CHECKING
 import random
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type
 
 if TYPE_CHECKING:
     import dspy
@@ -32,8 +32,7 @@ class BaseScenario(ABC):
 
         if len(raw_data) < self.MIN_TRAIN_SIZE + self.MIN_VAL_SIZE:
             raise ValueError(
-                f"Insufficient data: need at least {self.MIN_TRAIN_SIZE + self.MIN_VAL_SIZE} "
-                f"examples, got {len(raw_data)}"
+                f"Insufficient data: need at least {self.MIN_TRAIN_SIZE + self.MIN_VAL_SIZE} " f"examples, got {len(raw_data)}"
             )
 
         train_data, val_data = self._split_data(raw_data)
@@ -45,9 +44,7 @@ class BaseScenario(ABC):
         """Load raw data from source."""
         ...
 
-    def _split_data(
-        self, data: List[Dict[str, Any]]
-    ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    def _split_data(self, data: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         """Split data into train and validation sets."""
         split_idx = max(
             self.MIN_TRAIN_SIZE,
@@ -87,9 +84,7 @@ class BaseScenario(ABC):
         ...
 
     def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__name__}(test_size={self.test_size}, seed={self.seed})"
-        )
+        return f"{self.__class__.__name__}(test_size={self.test_size}, seed={self.seed})"
 
 
 class ScenarioRegistry:
@@ -103,9 +98,7 @@ class ScenarioRegistry:
 
         def decorator(scenario_class: Type[BaseScenario]) -> Type[BaseScenario]:
             if not issubclass(scenario_class, BaseScenario):
-                raise TypeError(
-                    f"{scenario_class.__name__} must be a subclass of BaseScenario"
-                )
+                raise TypeError(f"{scenario_class.__name__} must be a subclass of BaseScenario")
             cls._scenarios[name] = scenario_class
             return scenario_class
 
@@ -116,9 +109,7 @@ class ScenarioRegistry:
         """Get a scenario class by name."""
         if name not in cls._scenarios:
             available = ", ".join(cls._scenarios.keys())
-            raise ValueError(
-                f"Unknown scenario: '{name}'. Available scenarios: {available}"
-            )
+            raise ValueError(f"Unknown scenario: '{name}'. Available scenarios: {available}")
         return cls._scenarios[name]
 
     @classmethod

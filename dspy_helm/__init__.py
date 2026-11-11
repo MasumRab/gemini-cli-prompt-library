@@ -22,45 +22,41 @@ Usage:
     python -m dspy_helm.cli --list-scenarios
 """
 
+from .eval import Evaluator
+from .optimizers import (
+    BaseOptimizer,
+    BootstrapFewShotOptimizer,
+    BootstrapFewShotRandomSearchOptimizer,
+    IOptimizer,
+    MIPROv2Optimizer,
+    OptimizerRegistry,
+)
+from .prompts import (
+    PromptRegistry,
+    TOMLPrompt,
+    TOMLToDSPyConverter,
+    initialize_prompt_registry,
+    load_commands_prompts,
+)
 from .providers import (
     BaseProvider,
-    ProviderResponse,
-    RateLimitConfig,
-    ProviderChain,
+    GeminiProvider,
     OpenCodeZenProvider,
     OpenRouterProvider,
-    GeminiProvider,
+    ProviderChain,
+    ProviderResponse,
+    RateLimitConfig,
     create_provider_chain,
     get_default_provider,
     get_provider_by_name,
 )
-
 from .scenarios import (
+    APIDesignScenario,
     BaseScenario,
+    DocumentationScenario,
     ScenarioRegistry,
     SecurityReviewScenario,
     UnitTestScenario,
-    DocumentationScenario,
-    APIDesignScenario,
-)
-
-from .optimizers import (
-    BaseOptimizer,
-    IOptimizer,
-    OptimizerRegistry,
-    MIPROv2Optimizer,
-    BootstrapFewShotOptimizer,
-    BootstrapFewShotRandomSearchOptimizer,
-)
-
-from .eval import Evaluator
-
-from .prompts import (
-    TOMLPrompt,
-    PromptRegistry,
-    TOMLToDSPyConverter,
-    load_commands_prompts,
-    initialize_prompt_registry,
 )
 
 __version__ = "1.0.0"
@@ -96,6 +92,12 @@ __all__ = [
     "BootstrapFewShotRandomSearchOptimizer",
     # Evaluation
     "Evaluator",
+    # Prompts
+    "PromptRegistry",
+    "TOMLPrompt",
+    "TOMLToDSPyConverter",
+    "initialize_prompt_registry",
+    "load_commands_prompts",
 ]
 
 
@@ -118,9 +120,9 @@ def run_pipeline(
         output_dir: Output directory for results
         evaluate_only: Only evaluate, don't optimize
     """
-    from .scenarios import ScenarioRegistry
-    from .optimizers import OptimizerRegistry
     from .eval import Evaluator
+    from .optimizers import OptimizerRegistry
+    from .scenarios import ScenarioRegistry
 
     # Load scenario
     scenario_class = ScenarioRegistry.get(scenario_name)
@@ -133,10 +135,7 @@ def run_pipeline(
 
         program = get_module_for_scenario(scenario_name)
     except ImportError:
-        raise ImportError(
-            "dspy_integration not available. "
-            "Ensure dspy_integration.modules is importable."
-        )
+        raise ImportError("dspy_integration not available. " "Ensure dspy_integration.modules is importable.")
 
     if evaluate_only:
         evaluator = Evaluator(metric=scenario.metric)

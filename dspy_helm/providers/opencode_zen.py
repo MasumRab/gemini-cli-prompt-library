@@ -9,9 +9,11 @@ Adapter for OpenCode Zen gateway with support for:
 - gpt-5-nano (FREE)
 """
 
-from typing import Optional
-import openai
 import time
+from typing import Optional
+
+import openai
+
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
 
 

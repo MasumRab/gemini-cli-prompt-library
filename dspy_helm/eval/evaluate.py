@@ -2,9 +2,9 @@
 Evaluation harness for DSPy programs.
 """
 
-from typing import List, Callable, Dict, Any, TYPE_CHECKING
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, Callable, Dict, List
 
 if TYPE_CHECKING:
     import dspy

@@ -1,14 +1,13 @@
-import dspy
 from typing import Optional
+
+import dspy
 
 
 class SecurityReviewSignature(dspy.Signature):
     """Security Code Review. Analyzes code for security vulnerabilities."""
 
     code = dspy.InputField(desc="Code snippet to review for security issues")
-    review = dspy.OutputField(
-        desc="Security review with vulnerabilities, severity, and fixes"
-    )
+    review = dspy.OutputField(desc="Security review with vulnerabilities, severity, and fixes")
 
 
 class SecurityReview(dspy.Module):

@@ -13,13 +13,14 @@ Priority: Groq → HuggingFace → OpenRouter → Gemini (all with free tiers!)
 """
 
 import logging
-from .base import BaseProvider, ProviderResponse, RateLimitConfig, ProviderChain
+
+from .base import BaseProvider, ProviderChain, ProviderResponse, RateLimitConfig
+from .gemini import GeminiProvider
 from .groq import GroqProvider
 from .huggingface import HuggingFaceProvider
-from .puter import PuterFreeProvider
 from .opencode_zen import OpenCodeZenProvider
 from .openrouter import OpenRouterProvider
-from .gemini import GeminiProvider
+from .puter import PuterFreeProvider
 
 logger = logging.getLogger(__name__)
 
@@ -51,9 +52,7 @@ def create_provider_chain() -> ProviderChain:
             provider = get_provider_by_name(forced_provider.lower())
             return ProviderChain([provider])
         except ValueError as e:
-            logger.warning(
-                f"Configured provider '{forced_provider}' not found. Falling back to default chain. Error: {e}"
-            )
+            logger.warning(f"Configured provider '{forced_provider}' not found. Falling back to default chain. Error: {e}")
             # Fall through to default chain
 
     # Default Chain
@@ -95,9 +94,7 @@ def get_default_provider() -> BaseProvider:
         try:
             return get_provider_by_name(forced_provider.lower())
         except ValueError as e:
-            logger.warning(
-                f"Configured provider '{forced_provider}' not found. Falling back to Groq. Error: {e}"
-            )
+            logger.warning(f"Configured provider '{forced_provider}' not found. Falling back to Groq. Error: {e}")
             pass
 
     return GroqProvider(

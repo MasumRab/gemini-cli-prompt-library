@@ -8,9 +8,11 @@ https://huggingface.co/inference-api
 """
 
 import os
-from typing import Optional
-import requests
 import time
+from typing import Optional
+
+import requests
+
 from .base import BaseProvider, ProviderResponse, RateLimitConfig
 
 
@@ -46,9 +48,7 @@ class HuggingFaceProvider(BaseProvider):
             rate_limit=rate_limit,
         )
         self.base_url = "https://api-inference.huggingface.co/models/"
-        self.api_key = os.environ.get("HF_API_KEY", "") or os.environ.get(
-            "HUGGINGFACE_API_KEY", ""
-        )
+        self.api_key = os.environ.get("HF_API_KEY", "") or os.environ.get("HUGGINGFACE_API_KEY", "")
         self.session = requests.Session()
         headers = {
             "User-Agent": "DSPy-HELM/1.0",
@@ -99,7 +99,7 @@ class HuggingFaceProvider(BaseProvider):
                     content = data[0].get("generated_text", "")
                     # Remove the input prompt from response if included
                     if content.startswith(prompt):
-                        content = content[len(prompt) :].strip()
+                        content = content[len(prompt):].strip()
                     return ProviderResponse(
                         success=True,
                         content=content,
