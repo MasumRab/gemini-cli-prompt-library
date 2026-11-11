@@ -436,7 +436,7 @@ jobs:
           }
 
           SESSION_RESOURCE="${SESSION_NAME:-sessions/${SESSION_ID}}"
-          MAX_ATTEMPTS=60
+          MAX_ATTEMPTS=120
 
           for i in $(seq 1 $MAX_ATTEMPTS); do
             sleep 15
@@ -479,6 +479,8 @@ jobs:
             const prNumber = context.payload.pull_request?.number || context.payload.issue.number;
             const headSha = '${{ steps.prepare.outputs.head_sha }}';
             const sessionState = '${{ steps.poll.outputs.session_state }}';
+            let prevFindingsComment = null;
+            let prevFindings = {};
 
             const verdictMatch = reviewText.match(/\[VERDICT\]:\s*(approve|comment|block)|<!--\s*verdict:\s*(approve|comment|block)\s*-->/i);
             const verdict = verdictMatch ? (verdictMatch[1] || verdictMatch[2]).toLowerCase() : null;
@@ -517,12 +519,37 @@ jobs:
             }
 
             // Parse per-line findings from Jules output
-            const findingRegex = /<!--\s*FINDING\s+severity="([^"]+)"\s+file="([^"]+)"\s+line="?(\d+)"?(?:\s+reason="([^"]*)")?\s*-->/gi;
+            // Flexible FINDING parser: match the full HTML comment, then extract attributes individually
+            const findingRegex = /<!--\s*FINDING\s+([\s\S]*?)\s*-->/gi;
             const comments = [];
             let findingMatch;
             const seen = new Set();
+
+            // Fetch previously posted findings from PR comments for cross-session dedup
+            const allComments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+            prevFindingsComment = allComments.find(c => c.body?.includes('<!-- jules-posted-findings -->'));
+            if (prevFindingsComment) {
+              try {
+                prevFindings = JSON.parse(prevFindingsComment.body.replace(/.*<!-- jules-posted-findings -->\n?/, '').trim());
+                for (const k of Object.keys(prevFindings)) {
+                  seen.add(k);
+                }
+              } catch (e) { /* ignore parse errors */ }
+            }
+
             while ((findingMatch = findingRegex.exec(reviewText)) !== null) {
-              const [, severity, file, line, reason] = findingMatch;
+              const attrs = findingMatch[1];
+              const severity = (attrs.match(/\bseverity\s*=\s*["']([^"']+)["']/i) || [])[1];
+              const file = (attrs.match(/\bfile\s*=\s*["']([^"']+)["']/i) || [])[1];
+              const line = (attrs.match(/\bline\s*=\s*["']?(\d+)["']?/i) || [])[1];
+              const reason = (attrs.match(/\breason\s*=\s*["']([^"']*)["']/i) || [])[1];
+              if (!severity || !file || !line) continue;
+
               const key = `${file}:${line}`;
               if (seen.has(key)) continue;
               seen.add(key);
@@ -571,12 +598,82 @@ jobs:
               });
             }
 
+            // Save posted findings for cross-session dedup. Seeded from the previous map:
+            // replacing it with only this run's findings drops every earlier key, so those
+            // findings are re-posted by a later session.
+            const postedFindings = { ...prevFindings };
+            // Re-read the tracking comment immediately before writing. This job can overlap
+            // with the other Jules review workflow, and that one may have merged in findings
+            // of its own since this run read the comment; writing our stale copy back would
+            // drop them.
+            let freshFindingsComment = prevFindingsComment;
+            try {
+              const latestComments = await github.paginate(github.rest.issues.listComments, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                per_page: 100,
+              });
+              const latest = latestComments
+                .filter(c => c.body?.includes('<!-- jules-posted-findings -->'))
+                .pop();
+              if (latest) {
+                freshFindingsComment = latest;
+                Object.assign(
+                  postedFindings,
+                  JSON.parse(latest.body.replace(/.*<!-- jules-posted-findings -->\n?/, '').trim())
+                );
+              }
+            } catch (e) {
+              core.warning(`Could not re-read the findings comment before saving: ${e.message}`);
+            }
+            for (const c of comments) {
+              postedFindings[`${c.path}:${c.line}`] = true;
+            }
+            // Update or create the findings tracking comment
+            const findingsBody = `<!-- jules-posted-findings -->\n${JSON.stringify(postedFindings)}`;
+            if (freshFindingsComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: freshFindingsComment.id,
+                body: findingsBody,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: findingsBody,
+              });
+            }
+
+      - name: Post feedback summary
+        if: always() && steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_exhausted != 'true'
+        shell: bash
+        env:
+          SESSION_NAME: ${{ steps.create.outputs.session_name }}
+          SESSION_ID: ${{ steps.create.outputs.session_id }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          if [ -n "$SESSION_NAME" ] || [ -n "$SESSION_ID" ]; then
+            SESSION="${SESSION_NAME:-sessions/${SESSION_ID}}"
+            echo "Posting feedback summary for session $SESSION on $PR_URL"
+            # post_pr_feedback.py may or may not be available — run if found
+            if command -v python3 &>/dev/null && [ -f "tools/sessions/post_pr_feedback.py" ]; then
+              python3 tools/sessions/post_pr_feedback.py --session "$SESSION" --pr-url "$PR_URL" || echo "Warning: feedback tool failed (non-fatal)"
+            else
+              echo "post_pr_feedback.py not available — skipping feedback summary"
+            fi
+          fi
+
       - name: Upload session output
         if: always() && steps.prepare.outputs.skip != 'true' && steps.create.outputs.quota_exhausted != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: jules-force-review-${{ github.event.pull_request.number }}
           path: /tmp/jules-force-review-output.txt
+          if-no-files-found: ignore
           retention-days: 30
 
       - name: Remove jules-force-review label
