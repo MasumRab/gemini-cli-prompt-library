@@ -429,6 +429,7 @@ jobs:
             const headSha = '${{ steps.prepare.outputs.head_sha }}';
             const sessionState = '${{ steps.poll.outputs.session_state }}';
             let prevFindingsComment = null;
+            let prevFindings = {};
 
             // Split walkthrough from review before parsing
             const wtStart = '<!-- walkthrough_start -->';
@@ -499,7 +500,7 @@ jobs:
             prevFindingsComment = allComments.find(c => c.body?.includes('<!-- jules-posted-findings -->'));
             if (prevFindingsComment) {
               try {
-                const prevFindings = JSON.parse(prevFindingsComment.body.replace(/.*<!-- jules-posted-findings -->\n?/, '').trim());
+                prevFindings = JSON.parse(prevFindingsComment.body.replace(/.*<!-- jules-posted-findings -->\n?/, '').trim());
                 for (const k of Object.keys(prevFindings)) {
                   seen.add(k);
                 }
@@ -578,8 +579,10 @@ jobs:
               }
             }
 
-            // Save posted findings for cross-session dedup
-            const postedFindings = {};
+            // Save posted findings for cross-session dedup. Seeded from the previous map:
+            // replacing it with only this run's findings drops every earlier key, so those
+            // findings are re-posted by a later session.
+            const postedFindings = { ...prevFindings };
             for (const c of comments) {
               postedFindings[`${c.path}:${c.line}`] = true;
             }
@@ -626,4 +629,5 @@ jobs:
         with:
           name: jules-review-${{ github.event.pull_request.number }}
           path: /tmp/jules-review-output.txt
+          if-no-files-found: ignore
           retention-days: 30
