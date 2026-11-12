@@ -4,8 +4,6 @@ name: Robin
 on:
   pull_request:
     types: [opened, reopened, ready_for_review]
-  issue_comment:
-    types: [created]
 
 permissions:
   actions: read
