@@ -11,9 +11,15 @@ permissions:
   contents: read
   pull-requests: read
 
+# Cancel superseded runs for the same PR/ref to avoid redundant runner time.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -34,6 +40,7 @@ jobs:
   test:
     name: Test on ${{ matrix.os }} / Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
